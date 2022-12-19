@@ -1,20 +1,10 @@
-import { Post } from "../lib/types";
-
-const EXTERNAL_DATA_URL = "https://ruchern.xyz";
-
 const generateSiteMap = (posts) => `<?xml version="1.0" encoding="UTF-8"?>
    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-     <url>
-       <loc>https://jsonplaceholder.typicode.com</loc>
-     </url>
-     <url>
-       <loc>https://jsonplaceholder.typicode.com/guide</loc>
-     </url>
      ${posts
        .map(({ slug }) => {
          return `
            <url>
-               <loc>${`${EXTERNAL_DATA_URL}/${slug}`}</loc>
+               <loc>${`https://ruchern.xyz/${slug}`}</loc>
            </url>
         `;
        })
@@ -28,8 +18,10 @@ const SiteMap = () => {
 
 export const getServerSideProps = async ({ res }) => {
   // We make an API call to gather the URLs for our site
-  const request = await fetch(EXTERNAL_DATA_URL);
-  const posts: Post[] = await request.json();
+  const request = await fetch(
+    "https://dev.to/api/articles?username=ruchernchong"
+  );
+  const posts = await request.json();
 
   // We generate the XML sitemap with the posts data
   const sitemap = generateSiteMap(posts);
