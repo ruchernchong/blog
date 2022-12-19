@@ -14,7 +14,7 @@ export default function Footer() {
   return (
     <footer className="flex flex-col justify-center items-center max-w-2xl mx-auto">
       <hr className="w-full border-1 border-neutral-200 dark:border-neutral-800 mb-8" />
-      <div className="flex justify-between">
+      <div className="flex justify-between mb-8">
         <ExternalLink href="https://github.com/ruchern-chong">
           GitHub
         </ExternalLink>
