@@ -7,7 +7,13 @@ import avatar from "public/avatar.jpg";
 
 export default function PostPage({ post }) {
   return (
-    <Container>
+    <Container
+      title={`${post.title} - Ru Chern`}
+      description={post.description}
+      image={post.social_image}
+      date={post.published_at}
+      type="article"
+    >
       <article className="prose dark:prose-invert prose-img:rounded-2xl max-w-2xl mx-auto">
         <h1>{post.title}</h1>
         <div className="flex justify-between items-center w-full text-neutral-600 dark:text-neutral-400">

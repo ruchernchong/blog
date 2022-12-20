@@ -18,11 +18,11 @@ export default function Container(props) {
   const { children, ...customMeta } = props;
   const router = useRouter();
   const meta = {
-    ...customMeta,
     title: "Ru Chern - Developer, Investor, Author",
     description: "Frontend developer",
     image: "",
     type: "website",
+    ...customMeta,
   };
 
   return (
