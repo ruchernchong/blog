@@ -57,18 +57,17 @@ export default function Home({
           </div>
         </div>
         <Suspense fallback={null}>
-          <div className="">
-            {posts.map(({ description, slug, title }) => {
-              return (
-                <BlogPost
-                  key={title}
-                  description={description}
-                  slug={slug}
-                  title={title}
-                />
-              );
-            })}
-          </div>
+          <h3 className="font-bold text-2xl md:text-4xl mb-6">All Posts</h3>
+          {posts.map(({ description, slug, title }) => {
+            return (
+              <BlogPost
+                key={title}
+                description={description}
+                slug={slug}
+                title={title}
+              />
+            );
+          })}
         </Suspense>
       </div>
     </Container>
