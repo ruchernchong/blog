@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Image from "next/image";
 
@@ -8,10 +8,13 @@ import Container from "components/Container";
 import { Post } from "lib/types";
 
 import avatar from "public/avatar.jpg";
+import avatarHover from "public/avatar-hover.jpg";
 
 export default function Home({
   posts,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const [isAvatarHover, setIsAvatarHover] = useState<boolean>(false);
+
   return (
     <Container title="Blog - Ru Chern">
       <div className="flex flex-col justify-center items-start max-w-2xl mx-auto mb-16">
@@ -26,15 +29,31 @@ export default function Home({
               efficient and smarter.
             </p>
           </div>
-          <div className="w-[80px] sm:w-[176px]">
-            <Image
-              src={avatar}
-              sizes="33vw"
-              width={176}
-              alt="Ru Chern Chong"
-              className="rounded-full"
-              priority
-            />
+          <div
+            className="w-[80px] sm:w-[176px] mb-8 cursor-pointer"
+            onMouseOver={() => setIsAvatarHover(true)}
+            onMouseLeave={() => setIsAvatarHover(false)}
+          >
+            {!isAvatarHover && (
+              <Image
+                src={avatar}
+                sizes="33vw"
+                width={176}
+                alt="Ru Chern Chong"
+                className="rounded-full"
+                priority
+              />
+            )}
+            {isAvatarHover && (
+              <Image
+                src={avatarHover}
+                sizes="33vw"
+                width={176}
+                alt="Ru Chern Chong"
+                className="rounded-full"
+                priority
+              />
+            )}
           </div>
         </div>
         <Suspense fallback={null}>
