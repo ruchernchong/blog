@@ -1,6 +1,8 @@
+import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import Container from "../components/Container";
 
+import { DEV_TO_USERNAME } from "config";
 import avatar from "public/avatar.jpg";
 
 export default function PostPage({ post }) {
@@ -26,24 +28,34 @@ export default function PostPage({ post }) {
   );
 }
 
-export async function getStaticPaths() {
-  const posts = await fetch(
-    "https://dev.to/api/articles?username=ruchernchong"
-  ).then((res) => res.json());
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts: Post[] = await fetch("https://dev.to/api/articles/me", {
+    headers: {
+      "api-key": process.env.DEV_TO_API_KEY,
+    },
+  }).then((res) => res.json());
 
   return {
     paths: posts.map(({ slug }) => ({ params: { slug } })),
-    fallback: false,
+    fallback: "blocking",
   };
-}
-export async function getStaticProps({ params }) {
-  const post = await fetch(
-    `https://dev.to/api/articles/ruchernchong/${params.slug}`
-  ).then((res) => res.json());
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const res = await fetch(
+    `https://dev.to/api/articles/${DEV_TO_USERNAME}/${params.slug}`
+  );
+  const post: Post = await res.json();
+
+  if (!res.ok) {
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {
       post,
     },
   };
-}
+};

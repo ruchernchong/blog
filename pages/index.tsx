@@ -1,10 +1,10 @@
 import { Suspense } from "react";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
 
 import Container from "components/Container";
 
-import { InferGetStaticPropsType } from "next";
 import { Post } from "lib/types";
 
 import avatar from "public/avatar.jpg";
@@ -14,7 +14,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function Home({
   posts,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <Container title="Blog - Ru Chern">
       <div className="flex flex-col justify-center items-start max-w-2xl mx-auto mb-16">
@@ -59,10 +59,12 @@ export default function Home({
   );
 }
 
-export const getStaticProps = async () => {
-  const posts: Post[] = await fetch(
-    "https://dev.to/api/articles?username=ruchernchong"
-  ).then((res) => res.json());
+export const getServerSideProps: GetServerSideProps = async () => {
+  const posts: Post[] = await fetch("https://dev.to/api/articles/me", {
+    headers: {
+      "api-key": process.env.DEV_TO_API_KEY,
+    },
+  }).then((res) => res.json());
 
   return {
     props: {

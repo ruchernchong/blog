@@ -1,4 +1,5 @@
 const generateSiteMap = (posts) => `<?xml version="1.0" encoding="UTF-8"?>
+import { GetServerSideProps } from "next";
    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
      ${posts
        .map(({ slug }) => {
@@ -16,12 +17,13 @@ const SiteMap = () => {
   // getServerSideProps will do the heavy lifting
 };
 
-export const getServerSideProps = async ({ res }) => {
+export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   // We make an API call to gather the URLs for our site
-  const request = await fetch(
-    "https://dev.to/api/articles?username=ruchernchong"
-  );
-  const posts = await request.json();
+  const posts = await fetch("https://dev.to/api/articles/me", {
+    headers: {
+      "api-key": process.env.DEV_TO_API_KEY,
+    },
+  }).then((res) => res.json());
 
   // We generate the XML sitemap with the posts data
   const sitemap = generateSiteMap(posts);
