@@ -1,10 +1,9 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
-
 import Footer from "./Footer";
 
-function NavItem({ href, title }) {
+const NavItem = ({ href, title }) => {
   const router = useRouter();
   const isActive = router.asPath === href;
 
@@ -13,7 +12,8 @@ function NavItem({ href, title }) {
       <span>{title}</span>
     </NextLink>
   );
-}
+};
+
 export default function Container(props) {
   const { children, ...customMeta } = props;
   const router = useRouter();

@@ -1,16 +1,13 @@
 import { Suspense } from "react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Image from "next/image";
-import { Inter } from "@next/font/google";
 
+import BlogPost from "components/BlogPost";
 import Container from "components/Container";
 
 import { Post } from "lib/types";
 
 import avatar from "public/avatar.jpg";
-import BlogPost from "../components/BlogPost";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export default function Home({
   posts,

@@ -1,8 +1,8 @@
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
-import Container from "../components/Container";
-
+import Container from "components/Container";
 import { DEV_TO_USERNAME } from "config";
+import { Post } from "lib/types";
 import avatar from "public/avatar.jpg";
 
 export default function PostPage({ post }) {
