@@ -15,9 +15,9 @@ export default function Home({
   return (
     <Container title="Blog - Ru Chern">
       <div className="flex flex-col justify-center items-start max-w-2xl mx-auto mb-16">
-        <div className="flex flex-col-reverse sm:flex-row items-start">
-          <div className="flex flex-col pr-8">
-            <h1 className="font-bold text-3xl md:text-4xl mb-16">
+        <div className="flex flex-col-reverse md:flex-row items-center md:items-start">
+          <div className="flex flex-col md:pr-8">
+            <h1 className="font-bold text-3xl md:text-4xl mb-2">
               Ru Chern <span className="uppercase underline">Chong</span>
             </h1>
             <p className="text-neutral-600 dark:text-neutral-400 mb-16">
