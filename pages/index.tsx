@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Image from "next/image";
 
@@ -13,8 +13,6 @@ import avatarHover from "public/avatar-hover.jpg";
 export default function Home({
   posts,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [isAvatarHover, setIsAvatarHover] = useState<boolean>(false);
-
   return (
     <Container title="Blog - Ru Chern">
       <div className="flex flex-col justify-center items-start max-w-2xl mx-auto mb-16">
@@ -30,31 +28,23 @@ export default function Home({
               efficient and smarter.
             </p>
           </div>
-          <div
-            className="w-[80px] sm:w-[176px] mb-8 cursor-pointer"
-            onMouseOver={() => setIsAvatarHover(true)}
-            onMouseLeave={() => setIsAvatarHover(false)}
-          >
-            {!isAvatarHover && (
-              <Image
-                src={avatar}
-                sizes="33vw"
-                width={176}
-                alt="Ru Chern Chong"
-                className="rounded-full"
-                priority
-              />
-            )}
-            {isAvatarHover && (
-              <Image
-                src={avatarHover}
-                sizes="33vw"
-                width={176}
-                alt="Ru Chern Chong"
-                className="rounded-full"
-                priority
-              />
-            )}
+          <div className="w-[80px] sm:w-[176px] mb-8 relative cursor-pointer">
+            <Image
+              src={avatar}
+              sizes="33vw"
+              width={176}
+              alt="Ru Chern Chong"
+              className="rounded-full opacity-100 hover:opacity-0"
+              priority
+            />
+            <Image
+              src={avatarHover}
+              sizes="33vw"
+              width={176}
+              alt="Ru Chern Chong"
+              className="rounded-full absolute top-0 left-0 opacity-0 hover:opacity-100"
+              priority
+            />
           </div>
         </div>
         <Suspense fallback={null}>
