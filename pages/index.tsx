@@ -14,7 +14,7 @@ export default function Home({
   posts,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
-    <Container title="Blog - Ru Chern">
+    <Container title="Home - Ru Chern">
       <div className="flex flex-col justify-center items-start max-w-2xl mx-auto mb-16">
         <div className="flex flex-col-reverse md:flex-row items-center md:items-start">
           <div className="flex flex-col basis-2/3 md:pr-8">
