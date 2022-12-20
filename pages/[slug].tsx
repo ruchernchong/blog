@@ -1,5 +1,6 @@
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
+import { format, parseISO } from "date-fns";
 import Container from "components/Container";
 import { DEV_TO_USERNAME } from "config";
 import { Post } from "lib/types";
@@ -16,17 +17,22 @@ export default function PostPage({ post }) {
     >
       <article className="prose dark:prose-invert prose-img:rounded-2xl max-w-2xl mx-auto">
         <h1>{post.title}</h1>
-        <div className="flex justify-between items-center w-full text-neutral-600 dark:text-neutral-400">
-          <span className="flex items-center">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full text-neutral-600 dark:text-neutral-400">
+          <div className="flex items-center mb-2">
             <Image
               src={avatar}
               width={24}
-              className="not-prose mr-2"
+              className="not-prose m-0 mr-2"
               alt="Ru Chern Chong"
             />
-            <p>{post.user.name}</p>
-          </span>
-          <span>{post.reading_time_minutes} min read</span>
+            <p className="not-prose m-0">
+              {post.user.name} &middot;{" "}
+              {format(parseISO(post.published_at), "dd MMMM yyyy")}
+            </p>
+          </div>
+          <p className="not-prose m-0 mb-2">
+            {post.reading_time_minutes} min read
+          </p>
         </div>
         <div dangerouslySetInnerHTML={{ __html: post.body_html }} />
       </article>
