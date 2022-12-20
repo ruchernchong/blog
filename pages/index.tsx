@@ -20,9 +20,10 @@ export default function Home({
       <div className="flex flex-col justify-center items-start max-w-2xl mx-auto mb-16">
         <div className="flex flex-col-reverse md:flex-row items-center md:items-start">
           <div className="flex flex-col md:pr-8">
-            <h1 className="font-bold text-3xl md:text-4xl mb-2">
+            <h1 className="font-bold text-3xl md:text-4xl">
               Ru Chern <span className="uppercase underline">Chong</span>
             </h1>
+            <h2 className="mb-4 opacity-75">Developer | Investor | Author</h2>
             <p className="text-neutral-600 dark:text-neutral-400 mb-16">
               Frontend developer with believe that using technology, we are able
               to change how the way we automate things to make living more
