@@ -5,7 +5,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   const feed = new RSS({
     title: "Ru Chern",
     site_url: "https://ruchern.xyz",
-    feed_url: "https://ruchern.xyz/rss.xml",
+    feed_url: "https://ruchern.xyz/feed.xml",
   });
 
   const posts = await fetch("https://dev.to/api/articles/me", {
