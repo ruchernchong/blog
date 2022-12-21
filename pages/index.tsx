@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 import Image from "next/image";
 
 import BlogPost from "components/BlogPost";
@@ -12,7 +12,7 @@ import avatarHover from "public/avatar-hover.jpg";
 
 export default function Home({
   posts,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <Container title="Home - Ru Chern">
       <div className="flex flex-col justify-center items-start max-w-2xl mx-auto mb-16">
@@ -65,7 +65,7 @@ export default function Home({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   const posts: Post[] = await fetch("https://dev.to/api/articles/me", {
     headers: {
       "api-key": process.env.DEV_TO_API_KEY,
