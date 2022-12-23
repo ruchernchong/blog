@@ -1,11 +1,12 @@
 import { GetServerSideProps } from "next";
 import RSS from "rss";
+import { HOST_URL } from "lib/config";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   const feed = new RSS({
     title: "Ru Chern",
-    site_url: "https://ruchern.xyz",
-    feed_url: "https://ruchern.xyz/feed.xml",
+    site_url: HOST_URL,
+    feed_url: `${HOST_URL}/feed.xml`,
   });
 
   const posts = await fetch("https://dev.to/api/articles/me", {
@@ -17,7 +18,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   posts.map((post) => {
     feed.item({
       title: post.title,
-      url: `https://ruchern.xyz/${post.slug}`,
+      url: `${HOST_URL}/${post.slug}`,
       date: post.published_at,
       description: post.description,
     });

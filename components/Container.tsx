@@ -3,6 +3,8 @@ import { useRouter } from "next/router";
 import NextLink from "next/link";
 import Footer from "./Footer";
 
+import { HOST_URL } from "lib/config";
+
 const NavItem = ({ href, title }) => {
   const router = useRouter();
   const isActive = router.asPath === href;
@@ -18,10 +20,10 @@ export default function Container(props) {
   const { children, ...customMeta } = props;
   const router = useRouter();
   const meta = {
-    title: "Ru Chern - Developer | Investor | Author",
+    title: "Home - Ru Chern",
     description:
       "Frontend developer with believe that using technology, we are able to change how the way we automate things to make living more efficient and smarter.",
-    image: "/banner-image.jpg",
+    image: `${HOST_URL}/banner-image.jpg`,
     type: "website",
     ...customMeta,
   };
@@ -32,11 +34,8 @@ export default function Container(props) {
         <title>{meta.title}</title>
         <meta name="robots" content="follow, index" />
         <meta content={meta.description} name="description" />
-        <meta
-          property="og:url"
-          content={`https://ruchern.xyz${router.asPath}`}
-        />
-        <link rel="canonical" href={`https://ruchern.xyz${router.asPath}`} />
+        <meta property="og:url" content={`${HOST_URL}${router.asPath}`} />
+        <link rel="canonical" href={`${HOST_URL}${router.asPath}`} />
         <meta property="og:type" content={meta.type} />
         <meta property="og:site_name" content="Ru Chern" />
         <meta property="og:description" content={meta.description} />

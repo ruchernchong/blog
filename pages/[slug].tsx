@@ -2,7 +2,7 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import { format, parseISO } from "date-fns";
 import Container from "components/Container";
-import { DEV_TO_USERNAME } from "config";
+import { DEV_TO_USERNAME } from "lib/config";
 import { Post } from "lib/types";
 import avatar from "public/avatar.jpg";
 
