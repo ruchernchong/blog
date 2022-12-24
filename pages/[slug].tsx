@@ -15,7 +15,7 @@ export default function PostPage({ post }) {
       date={post.published_at}
       type="article"
     >
-      <article className="prose dark:prose-invert prose-img:rounded-2xl max-w-2xl mx-auto">
+      <article className="prose dark:prose-invert prose-img:rounded-2xl max-w-4xl mx-auto">
         <h1>{post.title}</h1>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full text-neutral-600 dark:text-neutral-400">
           <div className="flex items-center mb-2">
