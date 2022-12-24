@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import { format, parseISO } from "date-fns";
@@ -34,7 +35,9 @@ export default function PostPage({ post }) {
             {post.reading_time_minutes} min read
           </p>
         </div>
-        <div dangerouslySetInnerHTML={{ __html: post.body_html }} />
+        <Suspense fallback={null}>
+          <div dangerouslySetInnerHTML={{ __html: post.body_html }} />
+        </Suspense>
       </article>
     </Container>
   );
