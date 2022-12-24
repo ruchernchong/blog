@@ -25,6 +25,7 @@ export default function PostPage({ post }) {
               width={24}
               className="not-prose m-0 mr-2"
               alt="Ru Chern Chong"
+              priority
             />
             <p className="not-prose m-0">
               {post.user.name} &middot;{" "}
