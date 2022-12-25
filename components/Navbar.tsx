@@ -22,7 +22,7 @@ const NavItem = ({ href, title }) => {
 
 export default function Navbar() {
   return (
-    <div className="sticky top-0 mx-auto mb-8 max-w-4xl bg-neutral-50 p-8 dark:bg-neutral-900">
+    <div className="sticky top-0 z-[1000] mx-auto mb-8 max-w-4xl bg-neutral-50 p-8 dark:bg-neutral-900">
       <nav className="flex items-center justify-start space-x-4">
         <NavItem href="/" title="Home" />
         {/*<NavItem href="/projects" title="Projects" />*/}
