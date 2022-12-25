@@ -16,10 +16,10 @@ export default function PostPage({ post }) {
       date={post.published_at}
       type="article"
     >
-      <article className="prose dark:prose-invert prose-img:rounded-2xl max-w-4xl mx-auto">
+      <article className="prose mx-auto max-w-4xl prose-img:rounded-2xl dark:prose-invert">
         <h1>{post.title}</h1>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full text-neutral-600 dark:text-neutral-400">
-          <div className="flex items-center mb-2">
+        <div className="flex w-full flex-col items-start justify-between text-neutral-600 dark:text-neutral-400 md:flex-row md:items-center">
+          <div className="mb-2 flex items-center">
             <Image
               src={avatar}
               width={24}

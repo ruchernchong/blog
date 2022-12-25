@@ -15,20 +15,20 @@ export default function Home({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <Container title="Home - Ru Chern">
-      <div className="flex flex-col justify-center items-start max-w-4xl mx-auto mb-16">
-        <div className="flex flex-col-reverse md:flex-row items-center md:items-start">
-          <div className="flex flex-col basis-2/3 md:pr-8">
-            <h1 className="font-bold text-3xl md:text-4xl">
+      <div className="mx-auto mb-16 flex max-w-4xl flex-col items-start justify-center">
+        <div className="flex flex-col-reverse items-center md:flex-row md:items-start">
+          <div className="flex basis-2/3 flex-col md:pr-8">
+            <h1 className="text-3xl font-bold md:text-4xl">
               Ru Chern <span className="uppercase underline">Chong</span>
             </h1>
             <h2 className="mb-4">Developer | Investor | Author</h2>
-            <p className="text-neutral-600 dark:text-neutral-400 mb-16">
+            <p className="mb-16 text-neutral-600 dark:text-neutral-400">
               Frontend developer with believe that using technology, we are able
               to change how the way we automate things to make living more
               efficient and smarter.
             </p>
           </div>
-          <div className="w-[80px] sm:w-[176px] mb-8 relative cursor-pointer">
+          <div className="relative mb-8 w-[80px] cursor-pointer sm:w-[176px]">
             <Image
               src={avatar}
               sizes="33vw"
@@ -42,13 +42,13 @@ export default function Home({
               sizes="33vw"
               width={176}
               alt="Ru Chern Chong"
-              className="rounded-full absolute top-0 left-0 opacity-0 hover:opacity-100"
+              className="absolute top-0 left-0 rounded-full opacity-0 hover:opacity-100"
               priority
             />
           </div>
         </div>
         <Suspense fallback={null}>
-          <h3 className="font-bold text-2xl md:text-4xl mb-6">All Posts</h3>
+          <h3 className="mb-6 text-2xl font-bold md:text-4xl">All Posts</h3>
           {posts.map(({ description, slug, title }) => {
             return (
               <BlogPost

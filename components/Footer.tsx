@@ -11,7 +11,7 @@ const ExternalLink = ({ href, children }) => {
       href={href}
       target="_blank"
       rel="me noreferrer"
-      className="transition hover:opacity-50 mr-6 last:m-0"
+      className="mr-6 transition last:m-0 hover:opacity-50"
     >
       {children}
     </a>
@@ -19,9 +19,9 @@ const ExternalLink = ({ href, children }) => {
 };
 export default function Footer() {
   return (
-    <footer className="flex flex-col justify-center items-center max-w-4xl mx-auto">
-      <hr className="w-full border-1 border-neutral-200 dark:border-neutral-800 mb-8" />
-      <div className="flex justify-between mb-8">
+    <footer className="mx-auto flex max-w-4xl flex-col items-center justify-center">
+      <hr className="border-1 mb-8 w-full border-neutral-200 dark:border-neutral-800" />
+      <div className="mb-8 flex justify-between">
         <ExternalLink href="https://github.com/ruchern-chong">
           <IconGithub
             width={24}

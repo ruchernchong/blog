@@ -11,7 +11,7 @@ const NavItem = ({ href, title }) => {
       href={href}
       className={classNames(
         isActive
-          ? "dark:text-sky-300 font-semibold underline underline-offset-8"
+          ? "font-semibold underline underline-offset-8 dark:text-sky-300"
           : "dark:text-neutral-50"
       )}
     >
@@ -22,8 +22,8 @@ const NavItem = ({ href, title }) => {
 
 export default function Navbar() {
   return (
-    <div className="bg-neutral-50 dark:bg-neutral-900 max-w-4xl mx-auto p-8 mb-8 sticky top-0">
-      <nav className="flex justify-start items-center space-x-4">
+    <div className="sticky top-0 mx-auto mb-8 max-w-4xl bg-neutral-50 p-8 dark:bg-neutral-900">
+      <nav className="flex items-center justify-start space-x-4">
         <NavItem href="/" title="Home" />
         {/*<NavItem href="/projects" title="Projects" />*/}
       </nav>

@@ -40,7 +40,7 @@ export default function Container(props) {
         )}
       </Head>
       <Navbar />
-      <main className="max-w-4xl mx-auto px-8">
+      <main className="mx-auto max-w-4xl px-8">
         {children}
         <Footer />
       </main>
