@@ -37,7 +37,10 @@ export default function PostPage({ post }) {
           </p>
         </div>
         <Suspense fallback={null}>
-          <div dangerouslySetInnerHTML={{ __html: post.body_html }} />
+          <div
+            dangerouslySetInnerHTML={{ __html: post.body_html }}
+            className="prose-pre:rounded-2xl prose-pre:shadow-md prose-pre:shadow-slate-600"
+          />
         </Suspense>
       </article>
     </Container>
