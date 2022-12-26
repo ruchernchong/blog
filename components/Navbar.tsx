@@ -27,6 +27,7 @@ export default function Navbar() {
       <nav className="flex items-center justify-between">
         <div className="space-x-6">
           <NavItem href="/" title="Home" />
+          <NavItem href="/about" title="About" />
           {/*<NavItem href="/projects" title="Projects" />*/}
         </div>
         <ThemeToggle />
