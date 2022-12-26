@@ -15,12 +15,19 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     },
   }).then((res) => res.json());
 
-  posts.map((post) => {
+  posts.map(async (post) => {
     feed.item({
       title: post.title,
       url: `${HOST_URL}/${post.slug}`,
       date: post.published_at,
       description: post.description,
+      custom_elements: [
+        {
+          "content:encoded": {
+            _cdata: post.body_markdown,
+          },
+        },
+      ],
     });
   });
 
