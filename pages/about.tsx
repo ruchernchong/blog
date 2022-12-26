@@ -38,6 +38,7 @@ const About = () => {
                         height={72}
                         sizes="100vw"
                         alt={`${name} logo`}
+                        priority
                       />
                     )}
                   </div>
