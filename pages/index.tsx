@@ -11,7 +11,7 @@ export default function Home({
   posts,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
-    <Container title="Home - Ru Chern">
+    <Container title="Ru Chern">
       <div className="mx-auto mb-16 flex max-w-4xl flex-col items-start justify-center">
         <Author
           description="Developer | Investor | Author"
