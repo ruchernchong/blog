@@ -22,14 +22,14 @@ export default function Footer() {
     <footer className="mx-auto flex max-w-4xl flex-col items-center justify-center">
       <hr className="border-1 mb-8 w-full border-neutral-200 dark:border-neutral-800" />
       <div className="mb-8 flex justify-between">
-        <ExternalLink href="https://github.com/ruchern-chong">
+        <ExternalLink href="https://github.com/ruchernchong">
           <IconGithub
             width={24}
             height={24}
             className="dark:fill-neutral-400"
           />
         </ExternalLink>
-        <ExternalLink href="https://www.linkedin.com/in/ruchern-chong">
+        <ExternalLink href="https://www.linkedin.com/in/ruchernchong">
           <IconLinkedIn
             width={24}
             height={24}
