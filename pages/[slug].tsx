@@ -8,14 +8,20 @@ import { Post } from "lib/types";
 import avatar from "public/avatar.jpg";
 
 export default function PostPage({ post }) {
+  const ogImageUrlParams = {
+    title: post.title,
+    date: format(parseISO(post.published_at), "dd MMMM yyyy"),
+  };
+  const urlParams = Object.entries(ogImageUrlParams)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+  const ogImageUrl = encodeURI(`${HOST_URL}/api/og?${urlParams}`);
+
   return (
     <Container
       title={`${post.title} - Ru Chern`}
       description={post.description}
-      image={`${HOST_URL}/api/og?title=${post.title}?date=${format(
-        parseISO(post.published_at),
-        "dd MMMM yyyy"
-      )}`}
+      image={ogImageUrl}
       date={post.published_at}
       type="article"
     >
