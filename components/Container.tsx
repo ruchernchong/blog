@@ -12,6 +12,7 @@ export default function Container(props) {
     title: "Ru Chern",
     description:
       "Frontend developer with believe that using technology, we are able to change how the way we automate things to make living more efficient and smarter.",
+    author: "Ru Chern Chong",
     image: `${HOST_URL}/cover-image.png`,
     type: "website",
     ...customMeta,
@@ -22,7 +23,8 @@ export default function Container(props) {
       <Head>
         <title>{meta.title}</title>
         <meta name="robots" content="follow, index" />
-        <meta content={meta.description} name="description" />
+        <meta name="description" content={meta.description} />
+        <meta name="author" content={meta.author} />
         <meta property="og:url" content={`${HOST_URL}${router.asPath}`} />
         <link rel="canonical" href={`${HOST_URL}${router.asPath}`} />
         <meta property="og:type" content={meta.type} />
