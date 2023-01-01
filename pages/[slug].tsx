@@ -8,6 +8,10 @@ import { Post } from "lib/types";
 import avatar from "public/avatar.jpg";
 
 export default function PostPage({ post }) {
+  const canonicalUrl = new URL(post.canonical_url);
+  const originalPostUrl = canonicalUrl?.href;
+  const originalPostHostname = canonicalUrl?.hostname;
+
   const ogImageUrlParams = {
     title: post.title,
     date: format(parseISO(post.published_at), "dd MMMM yyyy"),
@@ -45,6 +49,14 @@ export default function PostPage({ post }) {
             {post.reading_time_minutes} min read
           </p>
         </div>
+        {canonicalUrl && (
+          <div className="text-sm italic text-neutral-600 dark:text-neutral-400">
+            Also published at{" "}
+            <a href={originalPostUrl} target="_blank" rel="noreferrer">
+              {originalPostHostname}
+            </a>
+          </div>
+        )}
         <Suspense fallback={null}>
           <div
             dangerouslySetInnerHTML={{ __html: post.body_html }}

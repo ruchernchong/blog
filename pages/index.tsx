@@ -19,13 +19,14 @@ export default function Home({
         />
         <Suspense fallback={null}>
           <h2 className="mb-6 text-3xl font-bold md:text-4xl">All Posts</h2>
-          {posts.map(({ description, slug, title }) => {
+          {posts.map(({ title, slug, description, published_at }) => {
             return (
               <BlogPost
                 key={title}
-                description={description}
-                slug={slug}
                 title={title}
+                slug={slug}
+                description={description}
+                publishedAt={published_at}
               />
             );
           })}
