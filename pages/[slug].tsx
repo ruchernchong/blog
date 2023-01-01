@@ -12,7 +12,10 @@ export default function PostPage({ post }) {
     <Container
       title={`${post.title} - Ru Chern`}
       description={post.description}
-      image={`${HOST_URL}/og?title=${post.title}?date=${post.published_at}`}
+      image={`${HOST_URL}/og?title=${post.title}?date=${format(
+        parseISO(post.published_at),
+        "dd MMMM yyyy"
+      )}`}
       date={post.published_at}
       type="article"
     >
