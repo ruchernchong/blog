@@ -12,7 +12,7 @@ export default function Container(props) {
     title: "Ru Chern",
     description:
       "Frontend developer with believe that using technology, we are able to change how the way we automate things to make living more efficient and smarter.",
-    image: `${HOST_URL}/banner-image.jpg`,
+    image: `${HOST_URL}/cover-image.png`,
     type: "website",
     ...customMeta,
   };
