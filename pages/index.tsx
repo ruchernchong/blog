@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 
 import Container from "components/Container";
@@ -17,25 +16,23 @@ export default function Home({
           description="Developer | Investor | Author"
           hideTagline={true}
         />
-        <Suspense fallback={null}>
-          <h2 className="mb-6 text-3xl font-bold md:text-4xl">
-            All Posts{" "}
-            <sup className="sups text-2xl text-neutral-600 dark:text-neutral-400">
-              ({posts.length})
-            </sup>
-          </h2>
-          {posts.map(({ title, slug, description, published_at }) => {
-            return (
-              <BlogPost
-                key={title}
-                title={title}
-                slug={slug}
-                description={description}
-                publishedAt={published_at}
-              />
-            );
-          })}
-        </Suspense>
+        <h2 className="mb-6 text-3xl font-bold md:text-4xl">
+          All Posts{" "}
+          <sup className="sups text-2xl text-neutral-600 dark:text-neutral-400">
+            ({posts.length})
+          </sup>
+        </h2>
+        {posts.map(({ title, slug, description, published_at }) => {
+          return (
+            <BlogPost
+              key={title}
+              title={title}
+              slug={slug}
+              description={description}
+              publishedAt={published_at}
+            />
+          );
+        })}
       </div>
     </Container>
   );

@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import { format, parseISO } from "date-fns";
@@ -57,12 +56,10 @@ export default function PostPage({ post }) {
             </a>
           </div>
         )}
-        <Suspense fallback={null}>
-          <div
-            dangerouslySetInnerHTML={{ __html: post.body_html }}
-            className="prose-pre:shadow-md prose-pre:shadow-slate-600"
-          />
-        </Suspense>
+        <div
+          dangerouslySetInnerHTML={{ __html: post.body_html }}
+          className="prose-pre:shadow-md prose-pre:shadow-slate-600"
+        />
       </article>
     </Container>
   );
