@@ -3,16 +3,25 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import { format, parseISO } from "date-fns";
 import Container from "components/Container";
-import { DEV_TO_USERNAME } from "lib/config";
+import { DEV_TO_USERNAME, HOST_URL } from "lib/config";
 import { Post } from "lib/types";
 import avatar from "public/avatar.jpg";
 
 export default function PostPage({ post }) {
+  const ogImageUrlParams = {
+    title: post.title,
+    date: format(parseISO(post.published_at), "dd MMMM yyyy"),
+  };
+  const urlParams = Object.entries(ogImageUrlParams)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+  const ogImageUrl = encodeURI(`${HOST_URL}/api/og?${urlParams}`);
+
   return (
     <Container
       title={`${post.title} - Ru Chern`}
       description={post.description}
-      image={post.social_image}
+      image={ogImageUrl}
       date={post.published_at}
       type="article"
     >
