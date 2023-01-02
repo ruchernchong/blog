@@ -12,7 +12,7 @@
     "@heroicons/react": "^2.0.13",
     "@types/node": "18.11.18",
     "@types/react": "18.0.26",
-    "@types/react-dom": "18.0.9",
+    "@types/react-dom": "18.0.10",
     "@vercel/analytics": "^0.1.6",
     "@vercel/og": "^0.0.21",
     "classnames": "^2.3.2",
