@@ -1,6 +1,6 @@
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 
-import Container from "components/Container";
+import Layout from "components/Layout";
 import Author from "components/Author";
 import BlogPost from "components/BlogPost";
 
@@ -10,7 +10,7 @@ export default function Home({
   posts,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
-    <Container title="Ru Chern">
+    <Layout title="Ru Chern">
       <div className="mx-auto mb-16 flex max-w-4xl flex-col items-start justify-center">
         <Author
           description="Developer | Investor | Author"
@@ -34,7 +34,7 @@ export default function Home({
           );
         })}
       </div>
-    </Container>
+    </Layout>
   );
 }
 

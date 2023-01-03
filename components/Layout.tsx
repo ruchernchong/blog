@@ -6,7 +6,7 @@ import Footer from "./Footer";
 
 import { HOST_URL } from "lib/config";
 
-export default function Container(props) {
+export default function Layout(props) {
   const { children, ...customMeta } = props;
   const router = useRouter();
   const meta = {
