@@ -1,11 +1,12 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { motion } from "framer-motion";
 import Navbar from "components/Navbar";
 import Footer from "./Footer";
 
 import { HOST_URL } from "lib/config";
 
-export default function Container(props) {
+export default function Layout(props) {
   const { children, ...customMeta } = props;
   const router = useRouter();
   const meta = {
@@ -42,10 +43,16 @@ export default function Container(props) {
         )}
       </Head>
       <Navbar />
-      <main className="mx-auto max-w-4xl px-8">
+      <motion.main
+        initial={{ opacity: 0, x: -200, y: 0 }}
+        animate={{ opacity: 1, x: 0, y: 0 }}
+        exit={{ opacity: 0, x: 0, y: 100 }}
+        transition={{ type: "linear" }}
+        className="mx-auto max-w-4xl px-8"
+      >
         {children}
         <Footer />
-      </main>
+      </motion.main>
     </div>
   );
 }

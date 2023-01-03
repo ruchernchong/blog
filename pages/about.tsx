@@ -1,14 +1,14 @@
 import Image from "next/image";
 import classNames from "classnames";
 
-import Container from "components/Container";
+import Layout from "components/Layout";
 import Author from "components/Author";
 
 import companies from "data/companies";
 
 const About = () => {
   return (
-    <Container title="About - Ru Chern">
+    <Layout title="About - Ru Chern">
       <div className="mx-auto mb-16 flex max-w-4xl flex-col items-start justify-center">
         <Author />
       </div>
@@ -67,7 +67,7 @@ const About = () => {
           </a>
         </p>
       </section>
-    </Container>
+    </Layout>
   );
 };
 

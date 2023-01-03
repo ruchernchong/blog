@@ -1,7 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import { format, parseISO } from "date-fns";
-import Container from "components/Container";
+import Layout from "components/Layout";
 import { DEV_TO_USERNAME, HOST_URL } from "lib/config";
 import { Post } from "lib/types";
 import avatar from "public/avatar.jpg";
@@ -21,7 +21,7 @@ export default function PostPage({ post }) {
   const ogImageUrl = encodeURI(`${HOST_URL}/api/og?${urlParams}`);
 
   return (
-    <Container
+    <Layout
       title={`${post.title} - Ru Chern`}
       description={post.description}
       image={ogImageUrl}
@@ -61,7 +61,7 @@ export default function PostPage({ post }) {
           className="prose-pre:shadow-md prose-pre:shadow-slate-600"
         />
       </article>
-    </Container>
+    </Layout>
   );
 }
 
