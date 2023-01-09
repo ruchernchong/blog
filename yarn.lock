@@ -2021,13 +2021,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yoga-layout@npm:1.9.2":
-  version: 1.9.2
-  resolution: "@types/yoga-layout@npm:1.9.2"
-  checksum: dbc3d6ab997d50fe1fcca5dd6822982c8fe586145ab648e0e97c3bc4ebc93d0b40c9edd75febaba374d61f60c1379b639f6be652965c776a901bf1068f2eac87
-  languageName: node
-  linkType: hard
-
 "@typescript-eslint/parser@npm:^5.42.0":
   version: 5.47.1
   resolution: "@typescript-eslint/parser@npm:5.47.1"
@@ -2099,14 +2092,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vercel/og@npm:^0.0.21":
-  version: 0.0.21
-  resolution: "@vercel/og@npm:0.0.21"
+"@vercel/og@npm:^0.0.23":
+  version: 0.0.23
+  resolution: "@vercel/og@npm:0.0.23"
   dependencies:
     "@resvg/resvg-wasm": 2.0.0-alpha.4
-    satori: 0.0.44
-    yoga-wasm-web: 0.1.2
-  checksum: 6db209c43e170ce6b9db5181b24b7db2c41c2c79dde7e14a59f296e74f3aeb99944001a6827708397e287a5cf6eaeca21521aef07466d2d206c3c9f780c7b13d
+    satori: 0.0.46
+    yoga-wasm-web: 0.3.0
+  checksum: b092fa6d8d4283d83dc06f6d2c6455e3bc4bcaa5457792d3f3a48445b1288f04440b510d5e58bc5c9b3f351f1553a76deda56ee130f64622b5e97f46af58fd9c
   languageName: node
   linkType: hard
 
@@ -5156,7 +5149,7 @@ __metadata:
     "@types/react": 18.0.26
     "@types/react-dom": 18.0.10
     "@vercel/analytics": ^0.1.6
-    "@vercel/og": ^0.0.21
+    "@vercel/og": ^0.0.23
     autoprefixer: ^10.4.13
     classnames: ^2.3.2
     date-fns: ^2.29.3
@@ -5666,9 +5659,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"satori@npm:0.0.44":
-  version: 0.0.44
-  resolution: "satori@npm:0.0.44"
+"satori@npm:0.0.46":
+  version: 0.0.46
+  resolution: "satori@npm:0.0.46"
   dependencies:
     "@shuding/opentype.js": 1.4.0-beta.0
     css-background-parser: ^0.1.0
@@ -5676,8 +5669,8 @@ __metadata:
     css-to-react-native: ^3.0.0
     emoji-regex: ^10.2.1
     postcss-value-parser: ^4.2.0
-    yoga-layout-prebuilt: ^1.10.0
-  checksum: a6087d9c615d1239c7d0864bac61c21b5fab7c78260127e72de60368d26aaaff7aeb90a7c6f8a632eabc43f05668e28ba19345ceff82d534b7a94b309876315d
+    yoga-wasm-web: ^0.3.0
+  checksum: 0a0a73637a9ca6c2aec7cbb2ff58677791c764dd83b03b6908864914ce0f46aaee4e67aa9544d6a3ac449056c4fa3436f914404913c2f18718802410aa3d1ec9
   languageName: node
   linkType: hard
 
@@ -6414,18 +6407,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yoga-layout-prebuilt@npm:^1.10.0":
-  version: 1.10.0
-  resolution: "yoga-layout-prebuilt@npm:1.10.0"
-  dependencies:
-    "@types/yoga-layout": 1.9.2
-  checksum: 6954c7c7b04c585a1c974391bea4734611adb85702b5e9131549a1d3dc5b94e69bcfea34121cdaeb5e702663bf290fcce5374910128e54d1031503a57c062865
-  languageName: node
-  linkType: hard
-
-"yoga-wasm-web@npm:0.1.2":
-  version: 0.1.2
-  resolution: "yoga-wasm-web@npm:0.1.2"
-  checksum: 0e7fa70efe1cf50888e950a43104545b15df7267e66a3b7b072092d04dec78815966f4ab685db5de83a026318f93a3bd5404d866c42a6b7457f9fdc8533593ef
+"yoga-wasm-web@npm:0.3.0, yoga-wasm-web@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "yoga-wasm-web@npm:0.3.0"
+  checksum: 5d3ea343e06e694cf498e2c496c30aa3ad9d3f7dce9a8554e73649a53d01312165fdfb3d1efa0ef234adc1ef23cd80c2e1a9a271a2701a11250d48df447fa0da
   languageName: node
   linkType: hard
