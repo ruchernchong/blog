@@ -1,5 +1,4 @@
 import { GetServerSideProps } from "next";
-import fs from "fs";
 
 const generateSiteMap = (
   slugs: string[]
@@ -29,14 +28,14 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     },
   }).then((res) => res.json());
 
-  const randomMusings = fs.readdirSync("data/random-musings");
+  // const randomMusings = fs.readdirSync("data/random-musings");
 
   const pages = [
     ...["", "about", "random-musings"],
     ...posts.map(({ slug }) => `blog/${slug}`),
-    ...randomMusings.map(
-      (randomMusing) => `random-musings/${randomMusing.replace(".md", "")}`
-    ),
+    // ...randomMusings.map(
+    //   (randomMusing) => `random-musings/${randomMusing.replace(".md", "")}`
+    // ),
   ];
 
   // We generate the XML sitemap with the page slugs
