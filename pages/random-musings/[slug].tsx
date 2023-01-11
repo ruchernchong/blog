@@ -32,13 +32,12 @@ const RandomMusingsPage = ({ frontmatter, content }) => {
 };
 
 export const getStaticPaths: GetStaticPaths = () => {
-  const files = fs.readdirSync("data/random-musings");
-  const paths = files.map((file) => ({
-    params: { slug: file.replace(".md", "") },
-  }));
+  const randomMusings = fs.readdirSync("data/random-musings");
 
   return {
-    paths,
+    paths: randomMusings.map((file) => ({
+      params: { slug: file.replace(".md", "") },
+    })),
     fallback: "blocking",
   };
 };
