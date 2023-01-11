@@ -27,7 +27,7 @@ export default function Home({
             <BlogPost
               key={title}
               title={title}
-              slug={slug}
+              slug={`/blog/${slug}`}
               description={description}
               publishedAt={published_at}
             />
