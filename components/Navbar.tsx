@@ -28,6 +28,7 @@ export default function Navbar() {
         <div className="space-x-6">
           <NavItem href="/" title="Home" />
           <NavItem href="/about" title="About" />
+          <NavItem href="/random-musings" title="Random Musings" />
           {/*<NavItem href="/projects" title="Projects" />*/}
         </div>
         <ThemeToggle />
