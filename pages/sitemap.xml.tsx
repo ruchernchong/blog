@@ -1,4 +1,7 @@
 import { GetServerSideProps } from "next";
+import { Post } from "lib/types";
+import { sanityClient } from "lib/sanity-server";
+import { indexQuery } from "lib/queries";
 
 const generateSiteMap = (
   slugs: string[]
@@ -22,17 +25,12 @@ const SiteMap = () => {
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   // We make an API call to gather the URLs for our site
-  const posts = await fetch("https://dev.to/api/articles/me", {
-    headers: {
-      "api-key": process.env.DEV_TO_API_KEY,
-    },
-  }).then((res) => res.json());
-
+  const posts: Post[] = await sanityClient.fetch(indexQuery);
   // const randomMusings = fs.readdirSync("data/random-musings");
 
   const pages = [
     ...["", "about", "random-musings"],
-    ...posts.map(({ slug }) => `blog/${slug}`),
+    ...posts.map(({ slug }) => `blog/${slug.current}`),
     // ...randomMusings.map(
     //   (randomMusing) => `random-musings/${randomMusing.replace(".md", "")}`
     // ),
