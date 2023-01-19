@@ -30,7 +30,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
 
   const pages = [
     ...["", "about", "random-musings"],
-    ...posts.map(({ slug }) => `blog/${slug.current}`),
+    ...posts.map(({ slug }) => `blog/${slug}`),
     // ...randomMusings.map(
     //   (randomMusing) => `random-musings/${randomMusing.replace(".md", "")}`
     // ),

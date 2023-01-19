@@ -1,6 +1,10 @@
 export const indexQuery = `
-*[_type == "post"] | order(date desc)
+*[_type == "post"] | order(date desc) {
+    ...,
+    "slug": slug.current
+}
 `;
+
 export const postQuery = `{
     "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0]
 }

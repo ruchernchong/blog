@@ -29,7 +29,7 @@ export default function Home({
             <BlogPost
               key={title}
               title={title}
-              slug={`/blog/${slug.current}`}
+              slug={`/blog/${slug}`}
               excerpt={excerpt}
               date={date}
             />
