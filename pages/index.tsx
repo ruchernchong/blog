@@ -4,6 +4,8 @@ import Layout from "components/Layout";
 import Author from "components/Author";
 import BlogPost from "components/BlogPost";
 
+import { indexQuery } from "lib/queries";
+import { sanityClient } from "lib/sanity-server";
 import { Post } from "lib/types";
 
 export default function Home({
@@ -22,14 +24,14 @@ export default function Home({
             ({posts.length})
           </sup>
         </h2>
-        {posts.map(({ title, slug, description, published_at }) => {
+        {posts.map(({ title, slug, excerpt, date }) => {
           return (
             <BlogPost
               key={title}
               title={title}
-              slug={`/blog/${slug}`}
-              description={description}
-              publishedAt={published_at}
+              slug={`/blog/${slug.current}`}
+              excerpt={excerpt}
+              date={date}
             />
           );
         })}
@@ -38,12 +40,8 @@ export default function Home({
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
-  const posts: Post[] = await fetch("https://dev.to/api/articles/me", {
-    headers: {
-      "api-key": process.env.DEV_TO_API_KEY,
-    },
-  }).then((res) => res.json());
+export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
+  const posts: Post[] = await sanityClient.fetch(indexQuery);
 
   return {
     props: {
