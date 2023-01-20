@@ -1,35 +1,34 @@
 import { GetServerSideProps } from "next";
 import RSS from "rss";
 import { HOST_URL } from "lib/config";
+import { Post } from "lib/types";
+import { sanityClient } from "lib/sanity-server";
+import { indexQuery } from "lib/queries";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   const feed = new RSS({
     title: "Ru Chern",
     site_url: HOST_URL,
-    feed_url: `${HOST_URL}/feed`,
+    feed_url: `${HOST_URL}/feed.xml`,
   });
 
-  const posts = await fetch("https://dev.to/api/articles/me", {
-    headers: {
-      "api-key": process.env.DEV_TO_API_KEY,
-    },
-  }).then((res) => res.json());
+  const posts: Post[] = await sanityClient.fetch(indexQuery);
 
-  posts.map(async (post) => {
+  posts.map(async (post) =>
     feed.item({
       title: post.title,
-      url: `${HOST_URL}/${post.slug}`,
-      date: post.published_at,
-      description: post.description,
+      url: `${HOST_URL}/blog/${post.slug}`,
+      date: post.date,
+      description: post.excerpt,
       custom_elements: [
         {
           "content:encoded": {
-            _cdata: post.body_markdown,
+            _cdata: post.content,
           },
         },
       ],
-    });
-  });
+    })
+  );
 
   res.setHeader("Content-Type", "text/xml");
   res.setHeader(

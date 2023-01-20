@@ -6,14 +6,10 @@ import { HOST_URL } from "lib/config";
 import { postQuery, postSlugsQuery } from "lib/queries";
 import { sanityClient } from "lib/sanity-server";
 import { MDXRemote } from "next-mdx-remote";
-import { serialize } from "next-mdx-remote/serialize";
 import readingTime from "reading-time";
-import remarkGfm from "remark-gfm";
-import rehypeSlug from "rehype-slug";
-import rehypeCodeTitles from "rehype-code-titles";
-import rehypePrism from "rehype-prism-plus";
 
 import avatar from "public/avatar.jpg";
+import { mdxToHtml } from "lib/mdxToHtml";
 
 export default function PostPage({ post }) {
   // const canonicalUrl = new URL(post.canonical_url);
@@ -83,12 +79,14 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { post } = await sanityClient.fetch(postQuery, {
     slug: params.slug,
   });
-  const mdxSource = await serialize(post.content, {
-    mdxOptions: {
-      remarkPlugins: [remarkGfm],
-      rehypePlugins: [rehypeSlug, rehypeCodeTitles, rehypePrism],
-    },
-  });
+
+  if (!post) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const mdxSource = await mdxToHtml(post.content);
 
   return {
     props: {
