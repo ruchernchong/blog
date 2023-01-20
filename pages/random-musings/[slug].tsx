@@ -1,5 +1,4 @@
 import fs from "fs";
-import path from "path";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Layout from "components/Layout";
 import { MDXRemote } from "next-mdx-remote";
@@ -33,7 +32,7 @@ const RandomMusingsPage = ({ frontmatter, content }) => {
 };
 
 export const getStaticPaths: GetStaticPaths = () => {
-  const randomMusings = fs.readdirSync(path.resolve("data/random-musings"));
+  const randomMusings = fs.readdirSync("data/random-musings");
 
   return {
     paths: randomMusings.map((file) => ({
@@ -45,7 +44,7 @@ export const getStaticPaths: GetStaticPaths = () => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const file = fs.readFileSync(
-    path.resolve(`data/random-musings/${params.slug}.md`),
+    `data/random-musings/${params.slug}.md`,
     "utf-8"
   );
   const mdxSource = await serialize(file, {
