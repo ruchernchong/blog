@@ -27,10 +27,10 @@ git clone https://github.com/ruchernchong/portfolio.git
 cd portfolio
 
 # Installing npm packages
-yarn
+pnpm i
 
 # Run the development server
-yarn dev
+pnpm dev
 
 # Setting environment variables
 cp .env.local.example .env.local
