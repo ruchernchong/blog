@@ -16,16 +16,16 @@ export default function PostPage({ post }) {
   // const originalPostUrl = canonicalUrl?.href;
   // const originalPostHostname = canonicalUrl?.hostname;
 
+  const formattedDate = format(parseISO(post.date), "dd MMMM yyyy");
   const ogImageUrlParams = {
     title: post.title,
-    date: format(parseISO(post.date), "dd MMMM yyyy"),
+    date: formattedDate,
   };
   const urlParams = Object.entries(ogImageUrlParams)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
   const ogImageUrl = encodeURI(`${HOST_URL}/api/og?${urlParams}`);
 
-  // @ts-ignore
   return (
     <Layout
       title={`${post.title} - Ru Chern`}
@@ -47,7 +47,9 @@ export default function PostPage({ post }) {
             />
             <p className="not-prose m-0">
               Ru Chern Chong &middot;{" "}
-              {format(parseISO(post.date), "dd MMMM yyyy")}
+              <time dateTime={formattedDate} title={formattedDate}>
+                {formattedDate}
+              </time>
             </p>
           </div>
           <p className="not-prose m-0 mb-2">{post.readingTime}</p>
