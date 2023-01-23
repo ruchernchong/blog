@@ -19,7 +19,7 @@ export default function PostPage({ post }) {
   const formattedDate = format(parseISO(post.date), "dd MMMM yyyy");
   const ogImageUrlParams = {
     title: post.title,
-    date: formattedDate,
+    date: formattedDate
   };
   const urlParams = Object.entries(ogImageUrlParams)
     .map(([key, value]) => `${key}=${value}`)
@@ -34,11 +34,11 @@ export default function PostPage({ post }) {
     author: [
       {
         "@type": "Person",
-        name: "Ru Chern Chong",
-      },
+        name: "Ru Chern Chong"
+      }
     ],
     image: ogImageUrl,
-    datePublished: post.date,
+    datePublished: post.date
   };
 
   return (
@@ -89,18 +89,18 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths: paths.map((slug) => ({ params: { slug } })),
-    fallback: "blocking",
+    fallback: "blocking"
   };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { post } = await sanityClient.fetch(postQuery, {
-    slug: params.slug,
+    slug: params.slug
   });
 
   if (!post) {
     return {
-      notFound: true,
+      notFound: true
     };
   }
 
@@ -111,8 +111,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       post: {
         ...post,
         mdxSource,
-        readingTime: readingTime(post.content).text,
-      },
-    },
+        readingTime: readingTime(post.content).text
+      }
+    }
   };
 };
