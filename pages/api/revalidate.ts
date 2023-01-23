@@ -1,22 +1,50 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { isValidSignature, SIGNATURE_HEADER_NAME } from "@sanity/webhook";
+import { sanityClient } from "lib/sanity-server";
+import { postUpdatedQuery } from "lib/queries";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  // Check for secret to confirm this is a valid request
-  if (req.query.secret !== process.env.REVALIDATE_SECRET) {
-    return res.status(401).json({ message: "Invalid token" });
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const signature = req.headers[SIGNATURE_HEADER_NAME] as string;
+  const body = await readBody(req);
+  if (
+    !isValidSignature(
+      body,
+      signature,
+      process.env.SANITY_STUDIO_REVALIDATE_SECRET
+    )
+  ) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Invalid signature" });
+  }
+
+  const { _id: id } = JSON.parse(body);
+  if (typeof id !== "string" || !id) {
+    return res.status(400).json({ message: "Invalid _id" });
   }
 
   try {
-    // this should be the actual path not a rewritten path
-    // e.g. for "/blog/[slug]" this should be "/blog/post-1"
-    await res.revalidate("/");
-    return res.json({ revalidated: true });
+    const slug = await sanityClient.fetch(postUpdatedQuery, { id });
+    await Promise.all([res.revalidate("/"), res.revalidate(`/blog/${slug}`)]);
+
+    return res.status(200).json({ message: `Update ${slug}` });
   } catch (err) {
-    // If there was an error, Next.js will continue
-    // to show the last successfully generated page
-    return res.status(500).send("Error revalidating");
+    return res.status(500).json({ message: err.message });
   }
-}
+};
+export default handler;
+
+// Next.js will by default parse the body, which can lead to invalid signatures
+export const config = {
+  api: {
+    bodyParser: false
+  }
+};
+
+const readBody = async (readable: NextApiRequest) => {
+  const chunks = [];
+  for await (const chunk of readable) {
+    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+  }
+  return Buffer.concat(chunks).toString("utf-8");
+};
