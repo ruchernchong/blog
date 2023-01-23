@@ -13,7 +13,7 @@ const BlogPost = ({ title, slug, excerpt, date }: Post) => {
           <time
             dateTime={formattedDate}
             title={formattedDate}
-            className="text-sm italic text-neutral-600 dark:text-neutral-400"
+            className="block text-sm italic text-neutral-600 dark:text-neutral-400"
           >
             {formattedDate}
           </time>
