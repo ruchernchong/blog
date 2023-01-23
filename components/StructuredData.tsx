@@ -1,4 +1,3 @@
-import { PropsWithChildren } from "react";
 import Head from "next/head";
 
 type StructuredData = {
@@ -9,7 +8,7 @@ type StructuredData = {
   date: Date;
 };
 
-interface Props extends PropsWithChildren {
+interface Props {
   data: Partial<StructuredData>;
 }
 const StructuredData = ({ data }: Props) => {

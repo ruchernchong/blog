@@ -4,13 +4,12 @@ import { format, parseISO } from "date-fns";
 import Layout from "components/Layout";
 import StructuredData from "components/StructuredData";
 import { HOST_URL } from "lib/config";
+import { mdxToHtml } from "lib/mdxToHtml";
 import { postQuery, postSlugsQuery } from "lib/queries";
 import { sanityClient } from "lib/sanity-server";
 import { MDXRemote } from "next-mdx-remote";
 import readingTime from "reading-time";
-
 import avatar from "public/avatar.jpg";
-import { mdxToHtml } from "lib/mdxToHtml";
 
 export default function PostPage({ post }) {
   // const canonicalUrl = new URL(post.canonical_url);
