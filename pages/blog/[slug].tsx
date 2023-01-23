@@ -2,6 +2,7 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import { format, parseISO } from "date-fns";
 import Layout from "components/Layout";
+import StructuredData from "components/StructuredData";
 import { HOST_URL } from "lib/config";
 import { postQuery, postSlugsQuery } from "lib/queries";
 import { sanityClient } from "lib/sanity-server";
@@ -26,6 +27,21 @@ export default function PostPage({ post }) {
     .join("&");
   const ogImageUrl = encodeURI(`${HOST_URL}/api/og?${urlParams}`);
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.excerpt,
+    author: [
+      {
+        "@type": "Person",
+        name: "Ru Chern Chong",
+      },
+    ],
+    image: ogImageUrl,
+    datePublished: post.date,
+  };
+
   return (
     <Layout
       title={`${post.title} - Ru Chern`}
@@ -34,6 +50,7 @@ export default function PostPage({ post }) {
       date={post.date}
       type="article"
     >
+      <StructuredData data={structuredData} />
       <article className="prose mx-auto mb-6 max-w-4xl prose-img:rounded-2xl dark:prose-invert">
         <h1>{post.title}</h1>
         <div className="flex w-full flex-col items-start justify-between text-neutral-600 dark:text-neutral-400 md:flex-row md:items-center">
