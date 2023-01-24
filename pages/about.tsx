@@ -1,13 +1,14 @@
 import Image from "next/image";
 import classNames from "classnames";
-
 import Layout from "components/Layout";
 import Author from "components/Author";
-
 import companies from "data/companies";
 
 const About = () => {
-  const currentCompany = companies.at(0);
+  const sortedCompanies = companies.sort(
+    (a, b) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime()
+  );
+  const currentCompany = sortedCompanies.at(0);
   const currentPosition = `${currentCompany.title} @ ${currentCompany.name}`;
 
   return (
@@ -21,7 +22,7 @@ const About = () => {
       <section className="prose prose-neutral mx-auto mb-12 max-w-4xl dark:prose-invert md:mb-16">
         <h2 className="text-2xl font-bold md:text-3xl">Work</h2>
         <div className="mb-12 space-y-4 md:mb-16">
-          {companies.map(
+          {sortedCompanies.map(
             ({ name, title, logo, dateStart, dateEnd, location, url }) => {
               return (
                 <a
