@@ -25,7 +25,7 @@ const About = () => {
           {sortedCompanies.map(
             ({ name, title, logo, dateStart, dateEnd, location, url }) => {
               return (
-                <div className="flex items-center space-x-4">
+                <div key={name} className="flex items-center space-x-4">
                   <div
                     className={classNames(
                       "flex h-12 w-12 items-center rounded-2xl p-2 md:h-[72px] md:w-[72px]",
@@ -45,7 +45,6 @@ const About = () => {
                   </div>
                   <div>
                     <a
-                      key={name}
                       href={url}
                       target="_blank"
                       rel="noreferrer"
