@@ -7,16 +7,22 @@ import Author from "components/Author";
 import companies from "data/companies";
 
 const About = () => {
+  const currentCompany = companies.at(0);
+  const currentPosition = `${currentCompany.title} @ ${currentCompany.name}`;
+
   return (
     <Layout title="About - Ru Chern">
       <div className="mx-auto mb-16 flex max-w-4xl flex-col items-start justify-center">
-        <Author />
+        <Author
+          tagline={currentPosition}
+          description="I have been writing code since the younger days through exploring and experimenting. I am a frontend developer having worked in the telecommunications, banking and financial services industry. I believe with technology, we are able to change how the way we automate things to make living more efficient and smarter."
+        />
       </div>
       <section className="prose prose-neutral mx-auto mb-12 max-w-4xl dark:prose-invert md:mb-16">
         <h2 className="text-2xl font-bold md:text-3xl">Work</h2>
         <div className="mb-12 space-y-4 md:mb-16">
           {companies.map(
-            ({ name, logo, dateStart, dateEnd, location, url }) => {
+            ({ name, title, logo, dateStart, dateEnd, location, url }) => {
               return (
                 <a
                   key={name}
@@ -46,6 +52,7 @@ const About = () => {
                     <h3 className="m-0 text-lg font-semibold transition-all hover:tracking-wide hover:text-neutral-400 md:text-2xl">
                       {name}
                     </h3>
+                    <div className="text-lg">{title}</div>
                     <div className="text-sm">
                       {dateStart} - {dateEnd ?? "Present"}
                     </div>

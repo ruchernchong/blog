@@ -8,17 +8,11 @@ type Author = {
   hideDescription?: boolean;
 };
 
-const defaultProps: Partial<Author> = {
-  tagline: "Application Developer @ DBS",
-  description:
-    "I have been writing code since the younger days through exploring and experimenting. I am a frontend developer having worked in the telecommunications, banking and financial services industry. I believe with technology, we are able to change how the way we automate things to make living more efficient and smarter.",
-};
-
 const Author = ({
   tagline,
   description,
   hideTagline = false,
-  hideDescription = false,
+  hideDescription = false
 }: Author) => {
   return (
     <div className="mx-auto mb-8 w-full max-w-4xl">
@@ -44,7 +38,5 @@ const Author = ({
     </div>
   );
 };
-
-Author.defaultProps = defaultProps;
 
 export default Author;
