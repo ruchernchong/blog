@@ -25,13 +25,7 @@ const About = () => {
           {sortedCompanies.map(
             ({ name, title, logo, dateStart, dateEnd, location, url }) => {
               return (
-                <a
-                  key={name}
-                  href={url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center space-x-4 no-underline"
-                >
+                <div className="flex items-center space-x-4">
                   <div
                     className={classNames(
                       "flex h-12 w-12 items-center rounded-2xl p-2 md:h-[72px] md:w-[72px]",
@@ -49,17 +43,25 @@ const About = () => {
                       />
                     )}
                   </div>
-                  <div className="">
-                    <h3 className="m-0 text-lg font-semibold transition-all hover:tracking-wide hover:text-neutral-400 md:text-2xl">
-                      {name}
-                    </h3>
+                  <div>
+                    <a
+                      key={name}
+                      href={url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="no-underline"
+                    >
+                      <h3 className="m-0 text-lg font-semibold transition-all hover:tracking-wide hover:text-neutral-400 md:text-2xl">
+                        {name}
+                      </h3>
+                    </a>
                     <div className="text-lg">{title}</div>
                     <div className="text-sm">
                       {dateStart} - {dateEnd ?? "Present"}
                     </div>
                     <div className="text-sm">{location}</div>
                   </div>
-                </a>
+                </div>
               );
             }
           )}
