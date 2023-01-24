@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import { format, parseISO } from "date-fns";
@@ -79,7 +80,9 @@ export default function PostPage({ post }) {
         {/*    </a>*/}
         {/*  </div>*/}
         {/*)}*/}
-        <MDXRemote {...post.mdxSource} components={MDXComponents} />
+        <Suspense fallback={null}>
+          <MDXRemote {...post.mdxSource} components={MDXComponents} />
+        </Suspense>
       </article>
     </Layout>
   );
