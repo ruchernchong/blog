@@ -2,6 +2,7 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import { format, parseISO } from "date-fns";
 import Layout from "components/Layout";
+import MDXComponents from "components/MDXComponents";
 import StructuredData from "components/StructuredData";
 import { HOST_URL } from "lib/config";
 import { mdxToHtml } from "lib/mdxToHtml";
@@ -78,7 +79,7 @@ export default function PostPage({ post }) {
         {/*    </a>*/}
         {/*  </div>*/}
         {/*)}*/}
-        <MDXRemote {...post.mdxSource} />
+        <MDXRemote {...post.mdxSource} components={MDXComponents} />
       </article>
     </Layout>
   );
