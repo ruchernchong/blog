@@ -6,6 +6,7 @@ import { postUpdatedQuery } from "lib/queries";
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const signature = req.headers[SIGNATURE_HEADER_NAME] as string;
   const body = await readBody(req);
+  console.info(JSON.parse(body));
   if (
     !isValidSignature(
       body,
@@ -13,9 +14,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       process.env.SANITY_STUDIO_REVALIDATE_SECRET
     )
   ) {
-    return res
-      .status(401)
-      .json({ success: false, message: "Invalid signature" });
+    res.status(401).json({ message: "Invalid signature" });
+    return;
   }
 
   const { _id: id } = JSON.parse(body);
@@ -25,10 +25,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     const slug = await sanityClient.fetch(postUpdatedQuery, { id });
-    await Promise.all([res.revalidate("/"), res.revalidate(`/blog/${slug}`)]);
+    await res.revalidate("/");
+    // await Promise.all([res.revalidate("/"), res.revalidate(`/blog/${slug}`)]);
 
     return res.status(200).json({ message: `Update ${slug}` });
   } catch (err) {
+    console.error(err);
     return res.status(500).json({ message: err.message });
   }
 };
