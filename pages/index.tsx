@@ -9,7 +9,7 @@ import { sanityClient } from "lib/sanity-server";
 import { Post } from "lib/types";
 
 export default function Home({
-  posts,
+  posts
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <Layout title="Ru Chern">
@@ -24,14 +24,14 @@ export default function Home({
             ({posts.length})
           </sup>
         </h2>
-        {posts.map(({ title, slug, excerpt, date }) => {
+        {posts.map(({ title, slug, excerpt, publishedDate }) => {
           return (
             <BlogPost
               key={title}
               title={title}
               slug={`/blog/${slug}`}
               excerpt={excerpt}
-              date={date}
+              publishedDate={publishedDate}
             />
           );
         })}
@@ -45,7 +45,7 @@ export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
 
   return {
     props: {
-      posts,
-    },
+      posts
+    }
   };
 };

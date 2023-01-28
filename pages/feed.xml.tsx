@@ -9,7 +9,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   const feed = new RSS({
     title: "Ru Chern",
     site_url: HOST_URL,
-    feed_url: `${HOST_URL}/feed.xml`,
+    feed_url: `${HOST_URL}/feed.xml`
   });
 
   const posts: Post[] = await sanityClient.fetch(indexQuery);
@@ -18,15 +18,15 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     feed.item({
       title: post.title,
       url: `${HOST_URL}/blog/${post.slug}`,
-      date: post.date,
+      date: post.publishedDate,
       description: post.excerpt,
       custom_elements: [
         {
           "content:encoded": {
-            _cdata: post.content,
-          },
-        },
-      ],
+            _cdata: post.content
+          }
+        }
+      ]
     })
   );
 
@@ -39,7 +39,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   res.end();
 
   return {
-    props: {},
+    props: {}
   };
 };
 

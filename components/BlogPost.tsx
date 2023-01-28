@@ -2,8 +2,8 @@ import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { Post } from "lib/types";
 
-const BlogPost = ({ title, slug, excerpt, date }: Post) => {
-  const formattedDate = format(parseISO(date), "dd MMM yyyy");
+const BlogPost = ({ title, slug, excerpt, publishedDate }: Post) => {
+  const formattedDate = format(parseISO(publishedDate), "dd MMM yyyy");
 
   return (
     <Link href={slug} className="w-full">

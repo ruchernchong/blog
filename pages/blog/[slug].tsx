@@ -18,7 +18,9 @@ export default function PostPage({ post }) {
   // const originalPostUrl = canonicalUrl?.href;
   // const originalPostHostname = canonicalUrl?.hostname;
 
-  const formattedDate = format(parseISO(post.date), "dd MMMM yyyy");
+  const publishedDate = post.publishedDate;
+
+  const formattedDate = format(parseISO(publishedDate), "dd MMMM yyyy");
   const ogImageUrlParams = {
     title: post.title,
     date: formattedDate
@@ -40,7 +42,7 @@ export default function PostPage({ post }) {
       }
     ],
     image: ogImageUrl,
-    datePublished: post.date
+    datePublished: publishedDate
   };
 
   return (
@@ -48,7 +50,7 @@ export default function PostPage({ post }) {
       title={`${post.title} - Ru Chern`}
       description={post.excerpt}
       image={ogImageUrl}
-      date={post.date}
+      date={publishedDate}
       type="article"
     >
       <StructuredData data={structuredData} />

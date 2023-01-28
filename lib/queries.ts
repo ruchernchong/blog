@@ -1,5 +1,5 @@
 export const indexQuery = `
-*[_type == "post"] | order(date desc) {
+*[_type == "post"] | order(publishedDate desc) {
     ...,
     "slug": slug.current
 }

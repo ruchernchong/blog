@@ -3,5 +3,5 @@ export type Post = {
   slug: string;
   excerpt: string;
   content?: string;
-  date: string;
+  publishedDate: string;
 };
