@@ -10,8 +10,6 @@ export const postQuery = `{
 }
 `;
 
-export const postSlugsQuery = `
-*[_type == "post" && defined(slug.current)][].slug.current
-`;
+export const postSlugsQuery = `*[_type == "post" && defined(slug.current)][].slug.current`;
 
 export const postUpdatedQuery = `*[_type == "post" && _id == $id].slug.current`;
