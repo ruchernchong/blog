@@ -22,8 +22,7 @@ module.exports = {
 const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self';
-  child-src example.com;
-  style-src 'self' example.com;
+  style-src 'self' 'unsafe-inline';
   font-src 'self';
 `;
 
