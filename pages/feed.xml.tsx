@@ -19,14 +19,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
       title: post.title,
       url: `${HOST_URL}/blog/${post.slug}`,
       date: post.publishedDate,
-      description: post.excerpt,
-      custom_elements: [
-        {
-          "content:encoded": {
-            _cdata: post.content
-          }
-        }
-      ]
+      description: post.excerpt
     })
   );
 
