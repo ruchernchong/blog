@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { format, parseISO } from "date-fns";
+import { format, formatISO, parseISO } from "date-fns";
 import { Post } from "lib/types";
 
 const BlogPost = ({ title, slug, excerpt, publishedDate }: Post) => {
@@ -11,7 +11,7 @@ const BlogPost = ({ title, slug, excerpt, publishedDate }: Post) => {
         <h4 className="mb-2 w-full flex-col text-xl font-medium md:flex md:flex-row md:items-center md:justify-between">
           <span>{title}</span>
           <time
-            dateTime={formattedDate}
+            dateTime={formatISO(parseISO(publishedDate))}
             title={formattedDate}
             className="block text-sm italic text-neutral-600 dark:text-neutral-400"
           >
