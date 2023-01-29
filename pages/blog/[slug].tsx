@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
-import { format, parseISO } from "date-fns";
+import { format, formatISO, parseISO } from "date-fns";
 import Layout from "components/Layout";
 import MDXComponents from "components/MDXComponents";
 import StructuredData from "components/StructuredData";
@@ -68,7 +68,10 @@ export default function PostPage({ post }) {
             />
             <p className="not-prose m-0">
               Ru Chern Chong &middot;{" "}
-              <time dateTime={formattedDate} title={formattedDate}>
+              <time
+                dateTime={formatISO(parseISO(publishedDate))}
+                title={formattedDate}
+              >
                 {formattedDate}
               </time>
             </p>
