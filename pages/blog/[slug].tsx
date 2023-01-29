@@ -38,7 +38,8 @@ export default function PostPage({ post }) {
     author: [
       {
         "@type": "Person",
-        name: "Ru Chern Chong"
+        name: "Ru Chern Chong",
+        url: "https://ruchern.xyz"
       }
     ],
     image: ogImageUrl,
