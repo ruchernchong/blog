@@ -8,7 +8,7 @@ const BlogPost = ({ title, slug, excerpt, publishedDate }: Post) => {
   return (
     <Link href={slug} className="w-full">
       <div className="mb-8 transition hover:opacity-50">
-        <h4 className="mb-2 w-full flex-col text-xl font-medium md:flex md:flex-row md:items-center md:justify-between">
+        <h3 className="mb-2 w-full flex-col text-xl font-medium md:flex md:flex-row md:items-center md:justify-between">
           <span>{title}</span>
           <time
             dateTime={formatISO(parseISO(publishedDate))}
@@ -17,7 +17,7 @@ const BlogPost = ({ title, slug, excerpt, publishedDate }: Post) => {
           >
             {formattedDate}
           </time>
-        </h4>
+        </h3>
         <p className="text-neutral-600 dark:text-neutral-400">{excerpt}</p>
       </div>
     </Link>

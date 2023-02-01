@@ -11,6 +11,7 @@ const ExternalLink = ({ href, children }) => {
       href={href}
       target="_blank"
       rel="me noreferrer"
+      aria-label="Link to social media"
       className="mr-6 transition last:m-0 hover:opacity-50"
     >
       {children}
