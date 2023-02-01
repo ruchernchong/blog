@@ -14,7 +14,7 @@ const RandomMusings = ({ items }) => {
 
   return (
     <Layout title="Random Musings - Ru Chern">
-      <div className="mx-auto mb-16 flex max-w-4xl flex-col items-start justify-center">
+      <div className="mx-auto mb-8 flex max-w-4xl flex-col items-start justify-center">
         <div className="mb-8">
           <h2 className="mb-4 text-3xl font-bold md:text-4xl">
             Random Musings{" "}
@@ -57,14 +57,14 @@ export const getStaticProps: GetStaticProps = async () => {
 
     return {
       slug,
-      frontmatter: data,
+      frontmatter: data
     };
   });
 
   return {
     props: {
-      items,
-    },
+      items
+    }
   };
 };
 

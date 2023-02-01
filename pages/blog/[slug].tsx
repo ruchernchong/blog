@@ -14,10 +14,6 @@ import readingTime from "reading-time";
 import avatar from "public/avatar.jpg";
 
 export default function PostPage({ post }) {
-  // const canonicalUrl = new URL(post.canonical_url);
-  // const originalPostUrl = canonicalUrl?.href;
-  // const originalPostHostname = canonicalUrl?.hostname;
-
   const publishedDate = post.publishedDate;
 
   const formattedDate = format(parseISO(publishedDate), "dd MMMM yyyy");
@@ -78,14 +74,6 @@ export default function PostPage({ post }) {
           </div>
           <p className="not-prose m-0 mb-2">{post.readingTime}</p>
         </div>
-        {/*{canonicalUrl && (*/}
-        {/*  <div className="text-sm italic text-neutral-600 dark:text-neutral-400">*/}
-        {/*    Also published at{" "}*/}
-        {/*    <a href={originalPostUrl} target="_blank" rel="noreferrer">*/}
-        {/*      {originalPostHostname}*/}
-        {/*    </a>*/}
-        {/*  </div>*/}
-        {/*)}*/}
         <Suspense fallback={null}>
           <MDXRemote {...post.mdxSource} components={MDXComponents} />
         </Suspense>

@@ -6,7 +6,7 @@ import Footer from "./Footer";
 
 import { HOST_URL } from "lib/config";
 
-export default function Layout(props) {
+const Layout = (props) => {
   const { children, ...customMeta } = props;
   const router = useRouter();
   const meta = {
@@ -16,7 +16,7 @@ export default function Layout(props) {
     author: "Ru Chern Chong",
     image: `${HOST_URL}/cover-image.png`,
     type: "website",
-    ...customMeta,
+    ...customMeta
   };
 
   return (
@@ -43,16 +43,20 @@ export default function Layout(props) {
         )}
       </Head>
       <Navbar />
-      <motion.main
-        initial={{ opacity: 0, x: -200, y: 0 }}
-        animate={{ opacity: 1, x: 0, y: 0 }}
-        exit={{ opacity: 0, x: 0, y: 100 }}
-        transition={{ type: "linear" }}
-        className="mx-auto max-w-4xl px-8"
-      >
+      <main className="mx-auto max-w-4xl px-4">
+        {/*<motion.main*/}
+        {/*  initial={{ opacity: 0, x: -200, y: 0 }}*/}
+        {/*  animate={{ opacity: 1, x: 0, y: 0 }}*/}
+        {/*  exit={{ opacity: 0, x: 0, y: 100 }}*/}
+        {/*  transition={{ type: "linear" }}*/}
+        {/*  className="mx-auto max-w-4xl px-4"*/}
+        {/*>*/}
         {children}
-        <Footer />
-      </motion.main>
+        {/*</motion.main>*/}
+      </main>
+      <Footer />
     </div>
   );
-}
+};
+
+export default Layout;

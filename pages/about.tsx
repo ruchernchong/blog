@@ -19,9 +19,9 @@ const About = () => {
           description="I have been writing code since the younger days through exploring and experimenting. I am a frontend developer having worked in the telecommunications, banking and financial services industry. I believe with technology, we are able to change how the way we automate things to make living more efficient and smarter."
         />
       </div>
-      <section className="prose prose-neutral mx-auto mb-12 max-w-4xl dark:prose-invert md:mb-16">
+      <section className="prose prose-neutral mx-auto mb-8 max-w-4xl dark:prose-invert">
         <h2 className="text-2xl font-bold md:text-3xl">Work</h2>
-        <div className="mb-12 space-y-4 md:mb-16">
+        <div className="mb-8 space-y-4">
           {sortedCompanies.map(
             ({ name, title, logo, dateStart, dateEnd, location, url }) => {
               return (

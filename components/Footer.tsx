@@ -17,36 +17,32 @@ const ExternalLink = ({ href, children }) => {
     </a>
   );
 };
-export default function Footer() {
-  return (
-    <footer className="mx-auto flex max-w-4xl flex-col items-center justify-center">
-      <hr className="border-1 mb-8 w-full border-neutral-200 dark:border-neutral-800" />
-      <div className="mb-8 flex justify-between">
-        <ExternalLink href="https://github.com/ruchernchong">
-          <IconGithub
-            width={24}
-            height={24}
-            className="dark:fill-neutral-400"
-          />
-        </ExternalLink>
-        <ExternalLink href="https://www.linkedin.com/in/ruchernchong">
-          <IconLinkedIn
-            width={24}
-            height={24}
-            className="dark:fill-neutral-400"
-          />
-        </ExternalLink>
-        <ExternalLink href="https://stackoverflow.com/users/4031163/ru-chern-chong">
-          <IconStackOverflow
-            width={24}
-            height={24}
-            className="dark:fill-neutral-400"
-          />
-        </ExternalLink>
-        <ExternalLink href={`${HOST_URL}/feed.xml`}>
-          <IconRss width={24} height={24} className="dark:fill-neutral-400" />
-        </ExternalLink>
-      </div>
-    </footer>
-  );
-}
+
+const Footer = () => (
+  <footer className="mx-auto px-4 py-8 flex max-w-4xl flex-col items-center justify-center">
+    <div className="flex justify-between">
+      <ExternalLink href="https://github.com/ruchernchong">
+        <IconGithub width={24} height={24} className="dark:fill-neutral-400" />
+      </ExternalLink>
+      <ExternalLink href="https://www.linkedin.com/in/ruchernchong">
+        <IconLinkedIn
+          width={24}
+          height={24}
+          className="dark:fill-neutral-400"
+        />
+      </ExternalLink>
+      <ExternalLink href="https://stackoverflow.com/users/4031163/ru-chern-chong">
+        <IconStackOverflow
+          width={24}
+          height={24}
+          className="dark:fill-neutral-400"
+        />
+      </ExternalLink>
+      <ExternalLink href={`${HOST_URL}/feed.xml`}>
+        <IconRss width={24} height={24} className="dark:fill-neutral-400" />
+      </ExternalLink>
+    </div>
+  </footer>
+);
+
+export default Footer;

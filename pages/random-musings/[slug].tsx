@@ -1,6 +1,8 @@
 import fs from "fs";
+import { Suspense } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Layout from "components/Layout";
+import MDXComponents from "components/MDXComponents";
 import { MDXRemote } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
 import { format, parseISO } from "date-fns";
@@ -9,7 +11,7 @@ import { HOST_URL } from "lib/config";
 const RandomMusingsPage = ({ frontmatter, content }) => {
   const ogImageUrlParams = {
     title: frontmatter.title,
-    date: format(parseISO(frontmatter.date), "dd MMMM yyyy"),
+    date: format(parseISO(frontmatter.date), "dd MMMM yyyy")
   };
   const urlParams = Object.entries(ogImageUrlParams)
     .map(([key, value]) => `${key}=${value}`)
@@ -24,8 +26,10 @@ const RandomMusingsPage = ({ frontmatter, content }) => {
       date={frontmatter.date}
       type="article"
     >
-      <article className="prose mx-auto mb-6 max-w-4xl prose-img:rounded-2xl dark:prose-invert">
-        <MDXRemote {...content} />
+      <article className="prose mx-auto mb-8 max-w-4xl prose-img:rounded-2xl dark:prose-invert">
+        <Suspense fallback={null}>
+          <MDXRemote {...content} components={MDXComponents} />
+        </Suspense>
       </article>
     </Layout>
   );
@@ -36,9 +40,9 @@ export const getStaticPaths: GetStaticPaths = () => {
 
   return {
     paths: randomMusings.map((file) => ({
-      params: { slug: file.replace(".md", "") },
+      params: { slug: file.replace(".md", "") }
     })),
-    fallback: "blocking",
+    fallback: "blocking"
   };
 };
 
@@ -48,15 +52,15 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     "utf-8"
   );
   const mdxSource = await serialize(file, {
-    parseFrontmatter: true,
+    parseFrontmatter: true
   });
   const { frontmatter } = mdxSource;
 
   return {
     props: {
       frontmatter,
-      content: mdxSource,
-    },
+      content: mdxSource
+    }
   };
 };
 
