@@ -5,10 +5,9 @@ import { ThemeProvider } from "next-themes";
 import { Analytics } from "@vercel/analytics/react";
 import "styles/globals.css";
 import "nprogress/nprogress.css";
-import { AnimatePresence } from "framer-motion";
 import NProgress from "nprogress";
 
-export default function App({ Component, pageProps }: AppProps) {
+const App = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
 
   useEffect(() => {
@@ -28,10 +27,10 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <ThemeProvider attribute="class">
-      <AnimatePresence mode="wait" initial={false}>
-        <Component {...pageProps} key={router.asPath} />
-      </AnimatePresence>
+      <Component {...pageProps} key={router.asPath} />
       <Analytics />
     </ThemeProvider>
   );
-}
+};
+
+export default App;

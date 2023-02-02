@@ -1,6 +1,5 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { motion } from "framer-motion";
 import Navbar from "components/Navbar";
 import Footer from "./Footer";
 
@@ -43,17 +42,7 @@ const Layout = (props) => {
         )}
       </Head>
       <Navbar />
-      <main className="mx-auto max-w-4xl px-4">
-        {/*<motion.main*/}
-        {/*  initial={{ opacity: 0, x: -200, y: 0 }}*/}
-        {/*  animate={{ opacity: 1, x: 0, y: 0 }}*/}
-        {/*  exit={{ opacity: 0, x: 0, y: 100 }}*/}
-        {/*  transition={{ type: "linear" }}*/}
-        {/*  className="mx-auto max-w-4xl px-4"*/}
-        {/*>*/}
-        {children}
-        {/*</motion.main>*/}
-      </main>
+      <main className="mx-auto max-w-4xl px-4">{children}</main>
       <Footer />
     </div>
   );
