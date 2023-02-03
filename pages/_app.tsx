@@ -11,6 +11,8 @@ const App = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
 
   useEffect(() => {
+    NProgress.configure({ showSpinner: false });
+
     const handleRouteStart = () => NProgress.start();
     const handleRouteDone = () => NProgress.done();
 
