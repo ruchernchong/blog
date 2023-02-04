@@ -1,17 +1,18 @@
 import { GetServerSideProps } from "next";
-import { Post } from "lib/types";
+import { Post, RandomMusing } from "lib/types";
+import { HOST_URL } from "lib/config";
 import { sanityClient } from "lib/sanity-server";
 import { indexQuery } from "lib/queries";
 
 const generateSiteMap = (
   slugs: string[]
 ) => `<?xml version="1.0" encoding="UTF-8"?>
-   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+   <urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
      ${slugs
        .map((slug) => {
          return `
            <url>
-               <loc>${`https://ruchern.xyz/${slug}`}</loc>
+               <loc>${`${HOST_URL}/${slug}`}</loc>
            </url>
         `;
        })
@@ -26,14 +27,14 @@ const SiteMap = () => {
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   // We make an API call to gather the URLs for our site
   const posts: Post[] = await sanityClient.fetch(indexQuery);
-  // const randomMusings = fs.readdirSync("data/random-musings");
+  const randomMusings: RandomMusing[] = await fetch(
+    "https://raw.githubusercontent.com/ruchernchong/random-musings/main/feed.json"
+  ).then((res) => res.json());
 
   const pages = [
     ...["", "about", "random-musings"],
     ...posts.map(({ slug }) => `blog/${slug}`),
-    // ...randomMusings.map(
-    //   (randomMusing) => `random-musings/${randomMusing.replace(".md", "")}`
-    // ),
+    ...randomMusings.map(({ slug }) => `random-musings/${slug}`)
   ];
 
   // We generate the XML sitemap with the page slugs
@@ -44,7 +45,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   res.end();
 
   return {
-    props: {},
+    props: {}
   };
 };
 
