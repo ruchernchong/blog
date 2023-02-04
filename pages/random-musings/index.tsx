@@ -1,17 +1,14 @@
-import fs from "fs";
-import { GetStaticProps } from "next";
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 import Link from "next/link";
-import matter from "gray-matter";
+import { format, formatISO, parseISO } from "date-fns";
 import Layout from "components/Layout";
-import { format, parseISO } from "date-fns";
+import { RandomMusing } from "lib/types";
 
-const RandomMusings = ({ items }) => {
-  const sortedItemsByDate = items.sort(
-    (a, b) =>
-      new Date(b.frontmatter.date).valueOf() -
-      new Date(a.frontmatter.date).valueOf()
-  );
-
+const RandomMusings = ({
+  items
+}: {
+  items: RandomMusing[];
+}): InferGetStaticPropsType<typeof getStaticProps> => {
   return (
     <Layout title="Random Musings - Ru Chern">
       <div className="mx-auto mb-8 flex max-w-4xl flex-col items-start justify-center">
@@ -27,8 +24,8 @@ const RandomMusings = ({ items }) => {
             randomly
           </p>
         </div>
-        {sortedItemsByDate.map(({ slug, frontmatter }) => {
-          const { title, date } = frontmatter;
+        {items.map(({ title, date, slug }) => {
+          const formattedDate = format(parseISO(date), "dd MMM yyyy");
 
           return (
             <Link
@@ -36,9 +33,17 @@ const RandomMusings = ({ items }) => {
               href={`/random-musings/${slug}`}
               className="w-full"
             >
-              <div className="prose mb-8 transition hover:opacity-50 dark:prose-invert">
-                <div className="">{format(parseISO(date), "dd MMM yyyy")}</div>
-                <div className="text-xl">{title}</div>
+              <div className="prose mb-8 dark:prose-invert">
+                <time
+                  dateTime={formatISO(parseISO(date))}
+                  title={formattedDate}
+                  className="italic text-neutral-600 dark:text-neutral-400"
+                >
+                  {formattedDate}
+                </time>
+                <div className="text-xl font-medium transition hover:opacity-50">
+                  {title}
+                </div>
               </div>
             </Link>
           );
@@ -49,17 +54,9 @@ const RandomMusings = ({ items }) => {
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const files = fs.readdirSync("data/random-musings");
-  const items = files.map((file) => {
-    const slug = file.replace(".md", "");
-    const readFile = fs.readFileSync(`data/random-musings/${file}`, "utf-8");
-    const { data } = matter(readFile);
-
-    return {
-      slug,
-      frontmatter: data
-    };
-  });
+  const items: RandomMusing[] = await fetch(
+    "https://raw.githubusercontent.com/ruchernchong/random-musings/main/feed.json"
+  ).then((res) => res.json());
 
   return {
     props: {
