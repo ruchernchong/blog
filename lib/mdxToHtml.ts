@@ -3,12 +3,11 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeCodeTitles from "rehype-code-titles";
 import rehypePrism from "rehype-prism-plus";
-import { Post } from "lib/types";
 
-export const mdxToHtml = async (content: Post) =>
+export const mdxToHtml = async (content: string) =>
   serialize(content, {
     mdxOptions: {
       remarkPlugins: [remarkGfm],
-      rehypePlugins: [rehypeSlug, rehypeCodeTitles, rehypePrism],
-    },
+      rehypePlugins: [rehypeSlug, rehypeCodeTitles, rehypePrism]
+    }
   });

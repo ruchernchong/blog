@@ -1,17 +1,17 @@
-import fs from "fs";
 import { Suspense } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Layout from "components/Layout";
 import MDXComponents from "components/MDXComponents";
 import { MDXRemote } from "next-mdx-remote";
-import { serialize } from "next-mdx-remote/serialize";
 import { format, parseISO } from "date-fns";
 import { HOST_URL } from "lib/config";
+import { mdxToHtml } from "lib/mdxToHtml";
+import { RandomMusing } from "lib/types";
 
-const RandomMusingsPage = ({ frontmatter, content }) => {
+const RandomMusingsPage = ({ item }) => {
   const ogImageUrlParams = {
-    title: frontmatter.title,
-    date: format(parseISO(frontmatter.date), "dd MMMM yyyy")
+    title: item.title,
+    date: format(parseISO(item.date), "dd MMMM yyyy")
   };
   const urlParams = Object.entries(ogImageUrlParams)
     .map(([key, value]) => `${key}=${value}`)
@@ -20,46 +20,47 @@ const RandomMusingsPage = ({ frontmatter, content }) => {
 
   return (
     <Layout
-      title={`${frontmatter.title} - Ru Chern`}
+      title={`${item.title} - Ru Chern`}
       description="A collection containing fun and interesting things I came across randomly"
       image={ogImageUrl}
-      date={frontmatter.date}
+      date={item.date}
       type="article"
     >
       <article className="prose mx-auto mb-8 max-w-4xl prose-img:rounded-2xl dark:prose-invert">
         <Suspense fallback={null}>
-          <MDXRemote {...content} components={MDXComponents} />
+          <MDXRemote {...item.content} components={MDXComponents} />
         </Suspense>
       </article>
     </Layout>
   );
 };
 
-export const getStaticPaths: GetStaticPaths = () => {
-  const randomMusings = fs.readdirSync("data/random-musings");
+export const getStaticPaths: GetStaticPaths = async () => {
+  const items: RandomMusing[] = await fetch(
+    "https://raw.githubusercontent.com/ruchernchong/random-musings/main/feed.json"
+  ).then((res) => res.json());
 
   return {
-    paths: randomMusings.map((file) => ({
-      params: { slug: file.replace(".md", "") }
-    })),
+    paths: items.map(({ slug }) => ({ params: { slug } })),
     fallback: "blocking"
   };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const file = fs.readFileSync(
-    `data/random-musings/${params.slug}.md`,
-    "utf-8"
-  );
-  const mdxSource = await serialize(file, {
-    parseFrontmatter: true
-  });
-  const { frontmatter } = mdxSource;
+  const items: RandomMusing[] = await fetch(
+    "https://raw.githubusercontent.com/ruchernchong/random-musings/main/feed.json"
+  ).then((res) => res.json());
+
+  const item = items.find(({ slug }) => slug === params.slug);
+
+  const mdxSource = await mdxToHtml(item.content);
 
   return {
     props: {
-      frontmatter,
-      content: mdxSource
+      item: {
+        ...item,
+        content: mdxSource
+      }
     }
   };
 };

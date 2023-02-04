@@ -23,4 +23,5 @@ const BlogPost = ({ title, slug, excerpt, publishedDate }: Post) => {
     </div>
   );
 };
+
 export default BlogPost;

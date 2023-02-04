@@ -5,3 +5,10 @@ export type Post = {
   content?: string;
   publishedDate: string;
 };
+
+export type RandomMusing = {
+  content: string;
+  date: string;
+  slug: string;
+  title: string;
+};
