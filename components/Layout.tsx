@@ -26,7 +26,6 @@ const Layout = (props) => {
         <meta name="description" content={meta.description} />
         <meta name="author" content={meta.author} />
         <meta property="og:url" content={`${HOST_URL}${router.asPath}`} />
-        <link rel="canonical" href={`${HOST_URL}${router.asPath}`} />
         <meta property="og:type" content={meta.type} />
         <meta property="og:site_name" content="Ru Chern" />
         <meta property="og:description" content={meta.description} />
@@ -40,6 +39,7 @@ const Layout = (props) => {
         {meta.date && (
           <meta property="article:published_time" content={meta.date} />
         )}
+        <link rel="canonical" href={`${HOST_URL}${router.asPath}`} />
       </Head>
       <Navbar />
       <main className="mx-auto max-w-4xl px-4">{children}</main>
