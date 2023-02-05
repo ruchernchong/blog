@@ -26,7 +26,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     const slug = parsedBody.slug.current;
-    // await res.revalidate("/");
     await Promise.all([res.revalidate("/"), res.revalidate(`/blog/${slug}`)]);
 
     return res.status(200).json({ message: `Update ${slug}` });
