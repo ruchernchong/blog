@@ -1,12 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { isValidSignature, SIGNATURE_HEADER_NAME } from "@sanity/webhook";
-import { sanityClient } from "lib/sanity-server";
-import { postUpdatedQuery } from "lib/queries";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const signature = req.headers[SIGNATURE_HEADER_NAME] as string;
   const body = await readBody(req);
-  console.info(JSON.parse(body));
+
+  const parsedBody = JSON.parse(body);
+  console.info(parsedBody);
+
   if (
     !isValidSignature(
       body,
@@ -18,15 +19,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const { _id: id } = JSON.parse(body);
+  const { _id: id } = parsedBody;
   if (typeof id !== "string" || !id) {
     return res.status(400).json({ message: "Invalid _id" });
   }
 
   try {
-    const slug = await sanityClient.fetch(postUpdatedQuery, { id });
-    await res.revalidate("/");
-    // await Promise.all([res.revalidate("/"), res.revalidate(`/blog/${slug}`)]);
+    const slug = parsedBody.slug.current;
+    // await res.revalidate("/");
+    await Promise.all([res.revalidate("/"), res.revalidate(`/blog/${slug}`)]);
 
     return res.status(200).json({ message: `Update ${slug}` });
   } catch (err) {
