@@ -28,24 +28,20 @@ const RandomMusings = ({
           const formattedDate = format(parseISO(date), "dd MMM yyyy");
 
           return (
-            <Link
-              key={title}
-              href={`/random-musings/${slug}`}
-              className="w-full"
-            >
-              <div className="prose mb-8 dark:prose-invert">
-                <time
-                  dateTime={formatISO(parseISO(date))}
-                  title={formattedDate}
-                  className="italic text-neutral-600 dark:text-neutral-400"
-                >
-                  {formattedDate}
-                </time>
+            <div key={title} className="prose mb-8 dark:prose-invert">
+              <time
+                dateTime={formatISO(parseISO(date))}
+                title={formattedDate}
+                className="italic text-neutral-600 dark:text-neutral-400"
+              >
+                {formattedDate}
+              </time>
+              <Link href={`/random-musings/${slug}`} className="no-underline">
                 <div className="text-xl font-medium transition hover:opacity-50">
                   {title}
                 </div>
-              </div>
-            </Link>
+              </Link>
+            </div>
           );
         })}
       </div>
