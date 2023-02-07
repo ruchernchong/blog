@@ -1,9 +1,8 @@
 import { GetStaticProps, InferGetStaticPropsType } from "next";
-
 import Layout from "components/Layout";
 import Author from "components/Author";
 import BlogPost from "components/BlogPost";
-
+import FeaturedPosts from "components/FeaturedPosts";
 import { indexQuery } from "lib/queries";
 import { sanityClient } from "lib/sanity-server";
 import { Post } from "lib/types";
@@ -12,6 +11,9 @@ const Home = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => (
   <Layout title="Ru Chern">
     <div className="mx-auto mb-8 flex max-w-4xl flex-col items-start justify-center">
       <Author description="Developer | Investor | Author" hideTagline={true} />
+      {process.env.NEXT_PUBLIC_FEATURE_FEATURED_POST === "true" && (
+        <FeaturedPosts posts={posts} />
+      )}
       <h2 className="mb-6 text-3xl font-bold md:text-4xl">
         All Posts{" "}
         <sup className="sups text-2xl text-neutral-600 dark:text-neutral-400">
