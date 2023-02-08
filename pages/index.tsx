@@ -9,7 +9,7 @@ import { Post } from "lib/types";
 
 const Home = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => (
   <Layout title="Ru Chern">
-    <div className="mx-auto mb-8 flex max-w-4xl flex-col items-start justify-center">
+    <div className="mx-auto mb-8 flex max-w-4xl flex-col justify-center">
       <Author description="Developer | Investor | Author" hideTagline={true} />
       {process.env.NEXT_PUBLIC_FEATURE_FEATURED_POST === "true" && (
         <FeaturedPosts posts={posts} />
@@ -20,17 +20,23 @@ const Home = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => (
           ({posts.length})
         </sup>
       </h2>
-      {posts.map(({ title, slug, excerpt, publishedDate }) => {
-        return (
-          <BlogPost
-            key={title}
-            title={title}
-            slug={`/blog/${slug}`}
-            excerpt={excerpt}
-            publishedDate={publishedDate}
-          />
-        );
-      })}
+      {posts.length === 0 && (
+        <h3 className="text-center italic">
+          There are no posts to display. Get started and write your first one!
+        </h3>
+      )}
+      {posts.length > 0 &&
+        posts.map(({ title, slug, excerpt, publishedDate }) => {
+          return (
+            <BlogPost
+              key={title}
+              title={title}
+              slug={`/blog/${slug}`}
+              excerpt={excerpt}
+              publishedDate={publishedDate}
+            />
+          );
+        })}
     </div>
   </Layout>
 );
