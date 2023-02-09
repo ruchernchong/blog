@@ -3,16 +3,19 @@ import Layout from "components/Layout";
 import Author from "components/Author";
 import BlogPost from "components/BlogPost";
 import FeaturedPosts from "components/FeaturedPosts";
-import { indexQuery } from "lib/queries";
+import { featuredPostsQuery, postsQuery } from "lib/queries";
 import { sanityClient } from "lib/sanity-server";
 import { Post } from "lib/types";
 
-const Home = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => (
+const Home = ({
+  posts,
+  featuredPosts
+}: InferGetStaticPropsType<typeof getStaticProps>) => (
   <Layout title="Ru Chern">
     <div className="mx-auto mb-8 flex max-w-4xl flex-col justify-center">
       <Author description="Developer | Investor | Author" hideTagline={true} />
       {process.env.NEXT_PUBLIC_FEATURE_FEATURED_POST === "true" && (
-        <FeaturedPosts posts={posts} />
+        <FeaturedPosts featuredPosts={featuredPosts} />
       )}
       <h2 className="mb-6 text-3xl font-bold md:text-4xl">
         All Posts{" "}
@@ -42,11 +45,13 @@ const Home = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => (
 );
 
 export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
-  const posts: Post[] = await sanityClient.fetch(indexQuery);
+  const posts: Post[] = await sanityClient.fetch(postsQuery);
+  const featuredPosts: Post[] = await sanityClient.fetch(featuredPostsQuery);
 
   return {
     props: {
-      posts
+      posts,
+      featuredPosts
     }
   };
 };
