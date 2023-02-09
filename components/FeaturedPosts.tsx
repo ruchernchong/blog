@@ -1,18 +1,17 @@
 import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
-import { Post } from "../lib/types";
+import { Post } from "lib/types";
 
 type Props = {
-  posts: Post[];
+  featuredPosts: Post[];
 };
 
-const FeaturedPosts = ({ posts }: Props) => {
+const FeaturedPosts = ({ featuredPosts }: Props) => {
   return (
     <>
       <h2 className="mb-6 text-3xl font-bold md:text-4xl">Featured Posts</h2>
-      <div className="grid md:grid-cols-3 mb-6">
-        {posts
-          // .filter(({ featured }) => Boolean(featured))
+      <div className="mb-6 grid md:grid-cols-3">
+        {featuredPosts
           .slice(0, 3)
           .map(({ title, slug, excerpt, publishedDate }) => {
             const formattedDate = format(
@@ -40,7 +39,7 @@ const FeaturedPosts = ({ posts }: Props) => {
                 >
                   {formattedDate}
                 </time>
-                <p className="text-neutral-600 dark:text-neutral-400 flex-1">
+                <p className="flex-1 text-neutral-600 dark:text-neutral-400">
                   {excerpt}
                 </p>
               </div>

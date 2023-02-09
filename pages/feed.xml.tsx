@@ -3,7 +3,7 @@ import RSS from "rss";
 import { HOST_URL } from "lib/config";
 import { Post } from "lib/types";
 import { sanityClient } from "lib/sanity-server";
-import { indexQuery } from "lib/queries";
+import { postsQuery } from "lib/queries";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   const feed = new RSS({
@@ -12,7 +12,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     feed_url: `${HOST_URL}/feed.xml`
   });
 
-  const posts: Post[] = await sanityClient.fetch(indexQuery);
+  const posts: Post[] = await sanityClient.fetch(postsQuery);
 
   posts.map(async (post) =>
     feed.item({
