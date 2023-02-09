@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Navbar from "components/Navbar";
 import Footer from "./Footer";
 
-import { HOST_URL } from "lib/config";
+import { HOST_URL } from "config";
 
 const Layout = (props) => {
   const { children, ...customMeta } = props;

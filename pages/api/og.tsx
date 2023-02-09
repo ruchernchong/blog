@@ -1,9 +1,9 @@
 import { ImageResponse } from "@vercel/og";
 import { NextRequest } from "next/server";
-import { HOST_URL } from "lib/config";
+import { HOST_URL } from "config";
 
 export const config = {
-  runtime: "edge",
+  runtime: "edge"
 };
 
 const handler = (req: NextRequest) => {

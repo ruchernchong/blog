@@ -1,8 +1,8 @@
 import { GetServerSideProps } from "next";
 import { Post, RandomMusing } from "lib/types";
-import { HOST_URL } from "lib/config";
 import { sanityClient } from "lib/sanity-server";
 import { postsQuery } from "lib/queries";
+import { HOST_URL } from "config";
 
 const generateSiteMap = (
   slugs: string[]

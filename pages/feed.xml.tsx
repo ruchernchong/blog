@@ -1,9 +1,9 @@
 import { GetServerSideProps } from "next";
 import RSS from "rss";
-import { HOST_URL } from "lib/config";
 import { Post } from "lib/types";
 import { sanityClient } from "lib/sanity-server";
 import { postsQuery } from "lib/queries";
+import { HOST_URL } from "config";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   const feed = new RSS({

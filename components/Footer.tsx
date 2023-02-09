@@ -1,9 +1,8 @@
-import { HOST_URL } from "lib/config";
-
 import IconGithub from "public/icon-github.svg";
 import IconLinkedIn from "public/icon-linkedin.svg";
 import IconStackOverflow from "public/icon-stackoverflow.svg";
 import IconRss from "public/icon-rss.svg";
+import { HOST_URL } from "config";
 
 const ExternalLink = ({ href, children }) => {
   return (

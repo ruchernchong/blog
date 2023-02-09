@@ -1,5 +1,5 @@
 import { Head, Html, Main, NextScript } from "next/document";
-import { HOST_URL } from "lib/config";
+import { HOST_URL } from "config";
 
 const Document = () => (
   <Html lang="en">

@@ -4,9 +4,9 @@ import Layout from "components/Layout";
 import MDXComponents from "components/MDXComponents";
 import { MDXRemote } from "next-mdx-remote";
 import { format, parseISO } from "date-fns";
-import { HOST_URL } from "lib/config";
 import { mdxToHtml } from "lib/mdxToHtml";
 import { RandomMusing } from "lib/types";
+import { HOST_URL } from "config";
 
 const RandomMusingsPage = ({ item }) => {
   const ogImageUrlParams = {
