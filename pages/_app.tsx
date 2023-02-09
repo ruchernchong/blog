@@ -25,7 +25,7 @@ const App = ({ Component, pageProps }: AppProps) => {
       router.events.off("routeChangeComplete", handleRouteDone);
       router.events.off("routeChangeError", handleRouteDone);
     };
-  }, []);
+  }, [router.events]);
 
   return (
     <ThemeProvider attribute="class">
