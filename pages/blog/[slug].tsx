@@ -13,13 +13,13 @@ import readingTime from "reading-time";
 import avatar from "public/avatar.jpg";
 import { HOST_URL } from "config";
 
-export default function PostPage({ post }) {
+const PostPage = ({ post }) => {
   const publishedDate = post.publishedDate;
 
   const formattedDate = format(parseISO(publishedDate), "dd MMMM yyyy");
   const ogImageUrlParams = {
     title: post.title,
-    date: formattedDate
+    date: formattedDate,
   };
   const urlParams = Object.entries(ogImageUrlParams)
     .map(([key, value]) => `${key}=${value}`)
@@ -35,11 +35,11 @@ export default function PostPage({ post }) {
       {
         "@type": "Person",
         name: "Ru Chern Chong",
-        url: "https://ruchern.xyz"
-      }
+        url: "https://ruchern.xyz",
+      },
     ],
     image: ogImageUrl,
-    datePublished: publishedDate
+    datePublished: publishedDate,
   };
 
   return (
@@ -80,25 +80,25 @@ export default function PostPage({ post }) {
       </article>
     </Layout>
   );
-}
+};
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const paths = await sanityClient.fetch(postSlugsQuery);
 
   return {
     paths: paths.map((slug) => ({ params: { slug } })),
-    fallback: "blocking"
+    fallback: "blocking",
   };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { post } = await sanityClient.fetch(postQuery, {
-    slug: params.slug
+    slug: params.slug,
   });
 
   if (!post) {
     return {
-      notFound: true
+      notFound: true,
     };
   }
 
@@ -109,8 +109,10 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       post: {
         ...post,
         mdxSource,
-        readingTime: readingTime(post.content).text
-      }
-    }
+        readingTime: readingTime(post.content).text,
+      },
+    },
   };
 };
+
+export default PostPage;
