@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import NextLink from "next/link";
 import classNames from "classnames";
 import ThemeToggle from "components/ThemeToggle";
+import { isFeatureEnabled } from "lib/isFeatureEnabled";
 
 const NavItem = ({ href, title }) => {
   const router = useRouter();
@@ -29,7 +30,7 @@ const Navbar = () => (
         <NavItem href="/about" title="About" />
         <NavItem href="/random-musings" title="Random Musings" />
         {/*<NavItem href="/projects" title="Projects" />*/}
-        {process.env.NEXT_PUBLIC_FEATURE_RESUME_PAGE === "true" && (
+        {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_RESUME_PAGE) && (
           <NavItem href="/resume" title="Resume" />
         )}
       </div>
