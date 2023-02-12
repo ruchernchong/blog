@@ -22,13 +22,16 @@ const NavItem = ({ href, title }) => {
 };
 
 const Navbar = () => (
-  <div className="sticky top-0 z-[1000] mx-auto md:mb-8 max-w-4xl bg-neutral-50 px-4 py-8 dark:bg-neutral-900">
+  <div className="sticky top-0 z-[1000] mx-auto max-w-4xl bg-neutral-50 px-4 py-8 dark:bg-neutral-900 md:mb-8">
     <nav className="flex items-center justify-between">
       <div className="space-x-6">
         <NavItem href="/" title="Home" />
         <NavItem href="/about" title="About" />
         <NavItem href="/random-musings" title="Random Musings" />
         {/*<NavItem href="/projects" title="Projects" />*/}
+        {process.env.NEXT_PUBLIC_FEATURE_RESUME_PAGE === "true" && (
+          <NavItem href="/resume" title="Resume" />
+        )}
       </div>
       <ThemeToggle />
     </nav>
