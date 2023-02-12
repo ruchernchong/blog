@@ -5,7 +5,7 @@ import Layout from "components/Layout";
 import { RandomMusing } from "lib/types";
 
 const RandomMusings = ({
-  items
+  items,
 }: {
   items: RandomMusing[];
 }): InferGetStaticPropsType<typeof getStaticProps> => {
@@ -28,18 +28,18 @@ const RandomMusings = ({
           const formattedDate = format(parseISO(date), "dd MMM yyyy");
 
           return (
-            <div key={title} className="prose mb-8 dark:prose-invert">
+            <div key={title} className="prose mb-2 flex dark:prose-invert">
               <time
                 dateTime={formatISO(parseISO(date))}
                 title={formattedDate}
-                className="italic text-neutral-600 dark:text-neutral-400"
+                className="mr-4 shrink-0 italic text-neutral-600 dark:text-neutral-400"
               >
                 {formattedDate}
               </time>
               <Link href={`/random-musings/${slug}`} className="no-underline">
-                <div className="text-xl font-medium transition hover:opacity-50">
+                <span className="text-xl font-medium transition hover:opacity-50">
                   {title}
-                </div>
+                </span>
               </Link>
             </div>
           );
@@ -56,8 +56,8 @@ export const getStaticProps: GetStaticProps = async () => {
 
   return {
     props: {
-      items
-    }
+      items,
+    },
   };
 };
 
