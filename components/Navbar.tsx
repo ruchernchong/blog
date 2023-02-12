@@ -29,7 +29,9 @@ const Navbar = () => (
         <NavItem href="/" title="Home" />
         <NavItem href="/about" title="About" />
         <NavItem href="/random-musings" title="Random Musings" />
-        {/*<NavItem href="/projects" title="Projects" />*/}
+        {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_PROJECTS_PAGE) && (
+          <NavItem href="/projects" title="Projects" />
+        )}
         {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_RESUME_PAGE) && (
           <NavItem href="/resume" title="Resume" />
         )}
