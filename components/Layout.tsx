@@ -15,7 +15,7 @@ const Layout = (props) => {
     author: "Ru Chern Chong",
     image: `${HOST_URL}/cover-image.png`,
     type: "website",
-    ...customMeta
+    ...customMeta,
   };
 
   return (

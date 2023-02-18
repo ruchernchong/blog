@@ -27,6 +27,9 @@ const Navbar = () => (
     <nav className="flex items-center justify-between">
       <div className="space-x-6">
         <NavItem href="/" title="Home" />
+        {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_BLOG_PAGE) && (
+          <NavItem href="/blog" title="Blog" />
+        )}
         <NavItem href="/about" title="About" />
         <NavItem href="/random-musings" title="Random Musings" />
         {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_PROJECTS_PAGE) && (
