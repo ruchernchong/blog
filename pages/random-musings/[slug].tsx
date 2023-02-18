@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Layout from "components/Layout";
 import MDXComponents from "components/MDXComponents";
+import StructuredData from "components/StructuredData";
 import { MDXRemote } from "next-mdx-remote";
 import { format, parseISO } from "date-fns";
 import { mdxToHtml } from "lib/mdxToHtml";
@@ -11,12 +12,28 @@ import { HOST_URL } from "config";
 const RandomMusingsPage = ({ item }) => {
   const ogImageUrlParams = {
     title: item.title,
-    date: format(parseISO(item.date), "dd MMMM yyyy")
+    date: format(parseISO(item.date), "dd MMMM yyyy"),
   };
   const urlParams = Object.entries(ogImageUrlParams)
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
   const ogImageUrl = encodeURI(`${HOST_URL}/api/og?${urlParams}`);
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: item.title,
+    description: item.excerpt,
+    author: [
+      {
+        "@type": "Person",
+        name: "Ru Chern Chong",
+        url: "https://ruchern.xyz",
+      },
+    ],
+    image: ogImageUrl,
+    datePublished: item.date,
+  };
 
   return (
     <Layout
@@ -26,6 +43,7 @@ const RandomMusingsPage = ({ item }) => {
       date={item.date}
       type="article"
     >
+      <StructuredData data={structuredData} />
       <article className="prose mx-auto mb-8 max-w-4xl prose-img:rounded-2xl dark:prose-invert">
         <Suspense fallback={null}>
           <MDXRemote {...item.content} components={MDXComponents} />
@@ -42,7 +60,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths: items.map(({ slug }) => ({ params: { slug } })),
-    fallback: "blocking"
+    fallback: "blocking",
   };
 };
 
@@ -59,9 +77,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     props: {
       item: {
         ...item,
-        content: mdxSource
-      }
-    }
+        content: mdxSource,
+      },
+    },
   };
 };
 
