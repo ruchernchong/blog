@@ -10,7 +10,7 @@ const FeaturedPosts = ({ featuredPosts }: Props) => {
   return (
     <>
       <h2 className="mb-6 text-3xl font-bold md:text-4xl">Featured Posts</h2>
-      <div className="mb-6 grid md:grid-cols-3 md:gap-4">
+      <div className="mb-12 grid md:grid-cols-3 md:gap-4">
         {featuredPosts
           .slice(0, 3)
           .map(({ title, slug, excerpt, publishedDate }) => {
@@ -23,7 +23,7 @@ const FeaturedPosts = ({ featuredPosts }: Props) => {
               <Link
                 key={title}
                 href={`/blog/${slug}`}
-                className="rounded-2xl border p-4 md:border-neutral-700 hover:md:border-neutral-500"
+                className="mb-6 rounded-2xl border p-4 md:mb-0 md:border-neutral-700 hover:md:border-neutral-500"
               >
                 <div className="mb-8">
                   <div className="flex flex-col-reverse md:flex-col">
