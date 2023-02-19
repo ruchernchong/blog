@@ -19,7 +19,6 @@ const PostPage = ({ post }) => {
   const formattedDate = format(parseISO(publishedDate), "dd MMMM yyyy");
   const ogImageUrlParams = {
     title: post.title,
-    date: formattedDate,
   };
   const urlParams = Object.entries(ogImageUrlParams)
     .map(([key, value]) => `${key}=${value}`)

@@ -10,28 +10,24 @@ const handler = (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.url);
 
-    const hasTitle = searchParams.has("title");
-    const title = hasTitle ? searchParams.get("title")?.slice(0, 100) : "";
-    const hasDate = searchParams.has("date");
-    const date = hasDate ? searchParams.get("date") : "";
+    const title = searchParams.get("title")?.slice(0, 100);
 
     return new ImageResponse(
       (
         <div
           style={{
-            background: `url("${HOST_URL}/cover-image.png")`,
+            background: `url("${HOST_URL}/post-cover-image.png")`,
             width: "100%",
             height: "100%",
             display: "flex",
+            flexDirection: "column",
             justifyContent: "center",
-            alignItems: "flex-end",
-            textAlign: "center",
+            alignItems: "flex-start",
           }}
-          tw="text-white"
+          tw="text-neutral-50"
         >
-          <div tw="flex flex-col items-center mb-12">
+          <div tw="flex ml-[64px]">
             <div tw="text-6xl">{title}</div>
-            <div tw="text-2xl">{date}</div>
           </div>
         </div>
       ),

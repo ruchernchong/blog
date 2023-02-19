@@ -4,7 +4,6 @@ import Layout from "components/Layout";
 import MDXComponents from "components/MDXComponents";
 import StructuredData from "components/StructuredData";
 import { MDXRemote } from "next-mdx-remote";
-import { format, parseISO } from "date-fns";
 import { mdxToHtml } from "lib/mdxToHtml";
 import { RandomMusing } from "lib/types";
 import { HOST_URL } from "config";
@@ -12,7 +11,6 @@ import { HOST_URL } from "config";
 const RandomMusingsPage = ({ item }) => {
   const ogImageUrlParams = {
     title: item.title,
-    date: format(parseISO(item.date), "dd MMMM yyyy"),
   };
   const urlParams = Object.entries(ogImageUrlParams)
     .map(([key, value]) => `${key}=${value}`)
