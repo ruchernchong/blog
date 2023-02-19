@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { HOST_URL } from "config";
 
 export const config = {
-  runtime: "edge"
+  runtime: "edge",
 };
 
 const handler = (req: NextRequest) => {
@@ -41,6 +41,7 @@ const handler = (req: NextRequest) => {
       }
     );
   } catch (e) {
+    console.log(`${e.message}`);
     return new Response("Failed to generate the image", { status: 500 });
   }
 };
