@@ -9,7 +9,7 @@ import { Post } from "lib/types";
 
 const Home = ({
   posts,
-  featuredPosts
+  featuredPosts,
 }: InferGetStaticPropsType<typeof getStaticProps>) => (
   <Layout title="Ru Chern">
     <div className="mx-auto mb-8 flex max-w-4xl flex-col justify-center">
@@ -17,12 +17,15 @@ const Home = ({
       {process.env.NEXT_PUBLIC_FEATURE_FEATURED_POST === "true" && (
         <FeaturedPosts featuredPosts={featuredPosts} />
       )}
-      <h2 className="mb-6 text-3xl font-bold md:text-4xl">
+      <h2 className="mb-2 text-3xl font-bold md:text-4xl">
         All Posts{" "}
         <sup className="sups text-2xl text-neutral-600 dark:text-neutral-400">
           ({posts.length})
         </sup>
       </h2>
+      <div className="mb-6 text-lg text-neutral-600 dark:text-neutral-400">
+        Blog posts on mostly front-end development.
+      </div>
       {posts.length === 0 && (
         <h3 className="text-center italic">
           There are no posts to display. Get started and write your first one!
@@ -51,8 +54,8 @@ export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
   return {
     props: {
       posts,
-      featuredPosts
-    }
+      featuredPosts,
+    },
   };
 };
 
