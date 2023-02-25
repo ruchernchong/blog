@@ -38,7 +38,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="mb-8 md:hidden">
+      <div className="mb-8 w-screen md:hidden">
         <div className="mb-2 flex items-center justify-end px-4 py-4">
           <button
             className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-200 ring-2 ring-neutral-600 transition-all hover:ring-2 dark:bg-neutral-900"
