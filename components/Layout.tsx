@@ -19,7 +19,7 @@ const Layout = (props) => {
   };
 
   return (
-    <div className="bg-neutral-50 dark:bg-neutral-900">
+    <>
       <Head>
         <title>{meta.title}</title>
         <meta name="robots" content="follow, index" />
@@ -44,7 +44,7 @@ const Layout = (props) => {
       <Navbar />
       <main className="mx-auto max-w-4xl px-4">{children}</main>
       <Footer />
-    </div>
+    </>
   );
 };
 

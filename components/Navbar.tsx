@@ -91,7 +91,7 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-      <div className="mx-auto hidden max-w-4xl bg-neutral-50 px-4 py-8 dark:bg-neutral-900 md:mb-8 md:block">
+      <div className="mx-auto hidden max-w-4xl px-4 py-8 md:mb-8 md:block">
         <nav className="flex items-center justify-between">
           <div className="space-x-6">
             <NavItem href="/" title="Home" />
