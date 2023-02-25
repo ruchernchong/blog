@@ -12,6 +12,7 @@ import { MDXRemote } from "next-mdx-remote";
 import readingTime from "reading-time";
 import avatar from "public/avatar.jpg";
 import { HOST_URL } from "config";
+import { Article, WithContext } from "schema-dts";
 
 const PostPage = ({ post }) => {
   const publishedDate = post.publishedDate;
@@ -25,7 +26,7 @@ const PostPage = ({ post }) => {
     .join("&");
   const ogImageUrl = encodeURI(`${HOST_URL}/api/og?${urlParams}`);
 
-  const structuredData = {
+  const structuredData: WithContext<Article> = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
