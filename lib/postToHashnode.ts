@@ -6,7 +6,7 @@ export const postToHashnode = async (publishedPost) => {
 
   const query = `
     mutation createPublicationStory($publicationId: String! , $input: CreateStoryInput!) {
-      createPublicationStory(publicationId: $publicationId,input: $input) {
+      createPublicationStory(publicationId: $publicationId, input: $input) {
         code
         success
         message
@@ -43,6 +43,9 @@ export const postToHashnode = async (publishedPost) => {
     input: {
       title,
       contentMarkdown: content,
+      isPartOfPublication: {
+        publicationId: process.env.HASHNODE_PUBLICATION_ID,
+      },
       isRepublished: {
         originalArticleURL: `${HOST_URL}/blog/${slug}`,
       },
@@ -51,7 +54,7 @@ export const postToHashnode = async (publishedPost) => {
   };
 
   try {
-    const { data } = await fetch("https://api.hashnode.com", {
+    const data = await fetch("https://api.hashnode.com", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -59,9 +62,11 @@ export const postToHashnode = async (publishedPost) => {
       },
       body: JSON.stringify({ query, variables }),
     }).then((res) => res.json());
+    console.log(`data`, data);
 
-    return data.createPublicationStory;
+    return data.data.createPublicationStory;
   } catch (e) {
+    console.error(e);
     return e.message;
   }
 };
