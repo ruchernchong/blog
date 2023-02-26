@@ -8,23 +8,23 @@
   @apply scroll-mt-8;
 }
 
-.anchor {
+.permalink {
   @apply invisible absolute w-4/5 max-w-4xl cursor-pointer pr-4;
 }
 
-.anchor:hover {
+.permalink:hover {
   @apply visible;
 }
 
-.anchor::after {
+.permalink::after {
   @apply -ml-6 content-['#'];
 }
 
-*:hover > .anchor {
+*:hover > .permalink {
   @apply visible text-neutral-400;
 }
 
-h1 .anchor::after {
+h1 .permalink::after {
   @apply content-none;
 }
 

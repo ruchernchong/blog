@@ -17,7 +17,7 @@ export const mdxToHtml = async (content: string) =>
           rehypeAutolinkHeadings,
           {
             properties: {
-              className: ["anchor"],
+              className: ["permalink"],
             },
           },
         ],
