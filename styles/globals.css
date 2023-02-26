@@ -25,3 +25,11 @@
 *:hover > .anchor {
   @apply visible text-neutral-400;
 }
+
+.rehype-code-title {
+  @apply rounded-t-md border-b border-neutral-600 bg-[#2d2d2d] p-4 text-neutral-400;
+}
+
+.rehype-code-title + pre {
+  @apply m-0 rounded-t-none;
+}
