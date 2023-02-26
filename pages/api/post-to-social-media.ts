@@ -19,6 +19,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       .status(200)
       .json({ message: "Successfully published on Dev.to and Hashnode." });
   } catch (e) {
+    console.error(e);
     return res.status(400).json({ message: e.message });
   }
 };

@@ -3,6 +3,7 @@ import { HOST_URL } from "config";
 export const postToHashnode = async (publishedPost) => {
   const { title, content } = publishedPost;
   const slug = publishedPost.slug.current;
+  const publicationId = process.env.HASHNODE_PUBLICATION_ID;
 
   const query = `
     mutation createPublicationStory($publicationId: String! , $input: CreateStoryInput!) {
@@ -39,12 +40,12 @@ export const postToHashnode = async (publishedPost) => {
     }
   `;
   const variables = {
-    publicationId: process.env.HASHNODE_PUBLICATION_ID,
+    publicationId,
     input: {
       title,
       contentMarkdown: content,
       isPartOfPublication: {
-        publicationId: process.env.HASHNODE_PUBLICATION_ID,
+        publicationId,
       },
       isRepublished: {
         originalArticleURL: `${HOST_URL}/blog/${slug}`,
@@ -66,7 +67,6 @@ export const postToHashnode = async (publishedPost) => {
 
     return data.createPublicationStory;
   } catch (e) {
-    console.error(e);
-    return e.message;
+    throw e;
   }
 };
