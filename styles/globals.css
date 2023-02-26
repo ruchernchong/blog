@@ -3,3 +3,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:is(h2, h3, h4, h5, h6) {
+  @apply scroll-mt-8;
+}
+
+.anchor {
+  @apply invisible absolute w-4/5 max-w-4xl cursor-pointer pr-4;
+}
+
+.anchor:hover {
+  @apply visible;
+}
+
+.anchor::after {
+  @apply -ml-6;
+
+  content: "#";
+}
+
+*:hover > .anchor {
+  @apply visible text-neutral-400;
+}
