@@ -23,6 +23,6 @@ export const postToDevCommunity = async (publishedPost) => {
       }),
     }).then((res) => res.json());
   } catch (e) {
-    return e.message;
+    throw e;
   }
 };
