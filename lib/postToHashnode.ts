@@ -54,7 +54,7 @@ export const postToHashnode = async (publishedPost) => {
   };
 
   try {
-    const data = await fetch("https://api.hashnode.com", {
+    const { data } = await fetch("https://api.hashnode.com", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -64,7 +64,7 @@ export const postToHashnode = async (publishedPost) => {
     }).then((res) => res.json());
     console.log(`data`, data);
 
-    return data.data.createPublicationStory;
+    return data.createPublicationStory;
   } catch (e) {
     console.error(e);
     return e.message;
