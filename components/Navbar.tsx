@@ -51,14 +51,14 @@ const Navbar = () => {
         </div>
         <div
           className={classNames(
-            "absolute z-10 h-full w-full bg-neutral-50 dark:bg-neutral-900",
+            "absolute z-10 h-full w-screen bg-neutral-50 dark:bg-neutral-900",
             {
               hidden: !expand,
               block: expand,
             }
           )}
         >
-          <ul className="flex flex-col rounded-lg bg-neutral-50 text-center dark:border-neutral-700 dark:bg-neutral-900">
+          <ul className="flex flex-col bg-neutral-50 text-center dark:border-neutral-700 dark:bg-neutral-900">
             <li className="border-b border-neutral-600 py-4">
               <NavItem href="/" title="Home" />
             </li>
