@@ -17,13 +17,15 @@
 }
 
 .anchor::after {
-  @apply -ml-6;
-
-  content: "#";
+  @apply -ml-6 content-['#'];
 }
 
 *:hover > .anchor {
   @apply visible text-neutral-400;
+}
+
+h1 .anchor::after {
+  @apply content-none;
 }
 
 .rehype-code-title {
