@@ -12,7 +12,9 @@ const generateSiteMap = (
        .map((slug) => {
          return `
            <url>
-               <loc>${`${HOST_URL}/${slug}`}</loc>
+            <loc>${`${HOST_URL}/${slug}`}</loc>
+            <changefreq>weekly</changefreq>
+            <priority>1.0</priority>
            </url>
         `;
        })
@@ -34,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   const pages = [
     ...["", "about", "random-musings"],
     ...posts.map(({ slug }) => `blog/${slug}`),
-    ...randomMusings.map(({ slug }) => `random-musings/${slug}`)
+    ...randomMusings.map(({ slug }) => `random-musings/${slug}`),
   ];
 
   // We generate the XML sitemap with the page slugs
@@ -45,7 +47,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   res.end();
 
   return {
-    props: {}
+    props: {},
   };
 };
 
