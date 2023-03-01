@@ -12,7 +12,7 @@ import { MDXRemote } from "next-mdx-remote";
 import readingTime from "reading-time";
 import avatar from "public/avatar.jpg";
 import { HOST_URL } from "config";
-import { Article, WithContext } from "schema-dts";
+import { BlogPosting, WithContext } from "schema-dts";
 
 const PostPage = ({ post }) => {
   const publishedDate = post.publishedDate;
@@ -26,11 +26,13 @@ const PostPage = ({ post }) => {
     .join("&");
   const ogImageUrl = encodeURI(`${HOST_URL}/api/og?${urlParams}`);
 
-  const structuredData: WithContext<Article> = {
+  const structuredData: WithContext<BlogPosting> = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
     headline: post.title,
+    image: ogImageUrl,
     description: post.excerpt,
+    url: `${HOST_URL}/blog/${post.slug.current}`,
     author: [
       {
         "@type": "Person",
@@ -38,8 +40,12 @@ const PostPage = ({ post }) => {
         url: "https://ruchern.xyz",
       },
     ],
-    image: ogImageUrl,
     datePublished: publishedDate,
+    // TODO: Coming soon
+    // mainEntityOfPage: {
+    //   "@type": "WebPage",
+    //   "@id": `${HOST_URL}/blog`,
+    // },
   };
 
   return (

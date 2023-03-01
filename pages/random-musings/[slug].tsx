@@ -7,6 +7,7 @@ import { MDXRemote } from "next-mdx-remote";
 import { mdxToHtml } from "lib/mdxToHtml";
 import { RandomMusing } from "lib/types";
 import { HOST_URL } from "config";
+import { BlogPosting, WithContext } from "schema-dts";
 
 const RandomMusingsPage = ({ item }) => {
   const ogImageUrlParams = {
@@ -17,11 +18,13 @@ const RandomMusingsPage = ({ item }) => {
     .join("&");
   const ogImageUrl = encodeURI(`${HOST_URL}/api/og?${urlParams}`);
 
-  const structuredData = {
+  const structuredData: WithContext<BlogPosting> = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
     headline: item.title,
+    image: ogImageUrl,
     description: item.excerpt,
+    url: `${HOST_URL}/blog/${item.slug}`,
     author: [
       {
         "@type": "Person",
@@ -29,8 +32,11 @@ const RandomMusingsPage = ({ item }) => {
         url: "https://ruchern.xyz",
       },
     ],
-    image: ogImageUrl,
     datePublished: item.date,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${HOST_URL}/random-musings`,
+    },
   };
 
   return (
