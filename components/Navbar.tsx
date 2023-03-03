@@ -6,6 +6,37 @@ import ThemeToggle from "components/ThemeToggle";
 import { isFeatureEnabled } from "lib/isFeatureEnabled";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 
+type Link = {
+  title: string;
+  href: string;
+  enabled?: boolean;
+};
+
+const links: Link[] = [
+  {
+    title: "Home",
+    href: "/",
+    enabled: true,
+  },
+  {
+    title: "Blog",
+    href: "/blog",
+    enabled: isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_BLOG_PAGE),
+  },
+  { title: "About", href: "/about", enabled: true },
+  { title: "Random Musings", href: "/random-musings", enabled: true },
+  {
+    title: "Projects",
+    href: "/projects",
+    enabled: isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_PROJECTS_PAGE),
+  },
+  {
+    title: "Resume",
+    href: "/resume",
+    enabled: isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_RESUME_PAGE),
+  },
+];
+
 const NavItem = ({ href, title }) => {
   const router = useRouter();
   const isActive = router.asPath === href;
@@ -59,32 +90,17 @@ const Navbar = () => {
           )}
         >
           <ul className="flex flex-col bg-neutral-50 text-center dark:border-neutral-700 dark:bg-neutral-900">
-            <li className="border-b border-neutral-600 py-4">
-              <NavItem href="/" title="Home" />
-            </li>
-            {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_BLOG_PAGE) && (
-              <li className="border-b border-neutral-600 py-4">
-                <NavItem href="/blog" title="Blog" />
-              </li>
-            )}
-            <li className="border-b border-neutral-600 py-4">
-              <NavItem href="/about" title="About" />
-            </li>
-            <li className="border-b border-neutral-600 py-4">
-              <NavItem href="/random-musings" title="Random Musings" />
-            </li>
-            {isFeatureEnabled(
-              process.env.NEXT_PUBLIC_FEATURE_PROJECTS_PAGE
-            ) && (
-              <li className="border-b border-neutral-600 py-4">
-                <NavItem href="/projects" title="Projects" />
-              </li>
-            )}
-            {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_RESUME_PAGE) && (
-              <li className="border-b border-neutral-600 py-4">
-                <NavItem href="/resume" title="Resume" />
-              </li>
-            )}
+            {links.map(({ title, href, enabled }) => {
+              if (!enabled) {
+                return;
+              }
+
+              return (
+                <li className="border-b border-neutral-600 py-4">
+                  <NavItem key={title} href={href} title={title} />
+                </li>
+              );
+            })}
           </ul>
           <div className="flex flex-col items-center py-8">
             <ThemeToggle />
@@ -94,18 +110,13 @@ const Navbar = () => {
       <div className="mx-auto hidden max-w-4xl px-4 py-8 md:mb-8 md:block">
         <nav className="flex items-center justify-between">
           <div className="space-x-6">
-            <NavItem href="/" title="Home" />
-            {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_BLOG_PAGE) && (
-              <NavItem href="/blog" title="Blog" />
-            )}
-            <NavItem href="/about" title="About" />
-            <NavItem href="/random-musings" title="Random Musings" />
-            {isFeatureEnabled(
-              process.env.NEXT_PUBLIC_FEATURE_PROJECTS_PAGE
-            ) && <NavItem href="/projects" title="Projects" />}
-            {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_RESUME_PAGE) && (
-              <NavItem href="/resume" title="Resume" />
-            )}
+            {links.map(({ title, href, enabled }) => {
+              if (!enabled) {
+                return;
+              }
+
+              return <NavItem key={title} href={href} title={title} />;
+            })}
           </div>
           <ThemeToggle />
         </nav>
