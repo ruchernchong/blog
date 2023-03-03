@@ -96,7 +96,7 @@ const Navbar = () => {
               }
 
               return (
-                <li className="border-b border-neutral-600 py-4">
+                <li key={title} className="border-b border-neutral-600 py-4">
                   <NavItem key={title} href={href} title={title} />
                 </li>
               );
