@@ -11,8 +11,10 @@ import {
   getStackOverflowProfile,
   StackOverflowProfile,
 } from "lib/getStackOverflowProfile";
+import { getGitHubPinnedRepositories, PinnedRepository } from "lib/github";
 
 const About = ({
+  pinnedRepositories,
   stackOverflowProfile,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const sortedCompanies = companies.sort(
@@ -42,18 +44,25 @@ const About = ({
       </div>
       <Employment companies={sortedCompanies} />
       {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_CONTRIBUTIONS) && (
-        <Contributions stackOverflow={stackOverflowProfile} />
+        <Contributions
+          pinnedRepositories={pinnedRepositories}
+          stackOverflow={stackOverflowProfile}
+        />
       )}
     </Layout>
   );
 };
 
 export const getStaticProps: GetStaticProps = async () => {
+  const pinnedRepositories: Partial<PinnedRepository>[] =
+    await getGitHubPinnedRepositories();
+
   const stackOverflowProfile: Partial<StackOverflowProfile> =
     await getStackOverflowProfile();
 
   return {
     props: {
+      pinnedRepositories,
       stackOverflowProfile,
     },
   };
