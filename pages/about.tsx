@@ -1,3 +1,4 @@
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 import Layout from "components/Layout";
 import Author from "components/Author";
 import Contributions from "components/Contributions";
@@ -6,8 +7,14 @@ import StructuredData from "components/StructuredData";
 import companies from "data/companies";
 import { WebPage, WithContext } from "schema-dts";
 import { isFeatureEnabled } from "lib/isFeatureEnabled";
+import {
+  getStackOverflowProfile,
+  StackOverflowProfile,
+} from "lib/getStackOverflowProfile";
 
-const About = () => {
+const About = ({
+  stackOverflowProfile,
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const sortedCompanies = companies.sort(
     (a, b) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime()
   );
@@ -35,10 +42,21 @@ const About = () => {
       </div>
       <Employment companies={sortedCompanies} />
       {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_CONTRIBUTIONS) && (
-        <Contributions />
+        <Contributions stackOverflow={stackOverflowProfile} />
       )}
     </Layout>
   );
+};
+
+export const getStaticProps: GetStaticProps = async () => {
+  const stackOverflowProfile: Partial<StackOverflowProfile> =
+    await getStackOverflowProfile();
+
+  return {
+    props: {
+      stackOverflowProfile,
+    },
+  };
 };
 
 export default About;
