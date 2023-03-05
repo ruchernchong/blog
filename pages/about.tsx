@@ -7,7 +7,7 @@ import StructuredData from "@/components/StructuredData";
 import companies from "@/data/companies";
 import { WebPage, WithContext } from "schema-dts";
 import { isFeatureEnabled } from "@/lib/isFeatureEnabled";
-import { getStackOverflowProfile } from "@/lib/getStackOverflowProfile";
+import { getStackOverflowProfile } from "@/lib/stackoverflow";
 import { getGitHubPinnedRepositories } from "@/lib/github";
 
 const About = ({
