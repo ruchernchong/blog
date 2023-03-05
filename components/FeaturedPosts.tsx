@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
-import { Post } from "lib/types";
+import { Post } from "@/lib/types";
 
 type Props = {
   featuredPosts: Post[];

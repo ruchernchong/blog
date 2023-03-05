@@ -1,8 +1,8 @@
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
-import Layout from "components/Layout";
-import { RandomMusing } from "lib/types";
+import Layout from "@/components/Layout";
+import { RandomMusing } from "@/lib/types";
 
 const RandomMusings = ({
   items,

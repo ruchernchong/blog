@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import readBody from "lib/readBody";
-import { postToDevCommunity } from "lib/postToDevCommunity";
-import { postToHashnode } from "lib/postToHashnode";
+import readBody from "@/lib/readBody";
+import { postToDevCommunity } from "@/lib/postToDevCommunity";
+import { postToHashnode } from "@/lib/postToHashnode";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const body = await readBody(req);

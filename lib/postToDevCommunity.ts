@@ -1,6 +1,6 @@
-import { sanityClient } from "lib/sanity-server";
-import { postUpdatedQuery } from "lib/queries";
-import { HOST_URL } from "config";
+import { sanityClient } from "@/lib/sanity-server";
+import { postUpdatedQuery } from "@/lib/queries";
+import { HOST_URL } from "@/config";
 
 export const postToDevCommunity = async (publishedPost) => {
   const { _id: id, content } = publishedPost;

@@ -1,14 +1,14 @@
 import { GetStaticProps, InferGetStaticPropsType } from "next";
-import Layout from "components/Layout";
-import Author from "components/Author";
-import BlogPost from "components/BlogPost";
-import FeaturedPosts from "components/FeaturedPosts";
-import StructuredData from "components/StructuredData";
-import { featuredPostsQuery, postsQuery } from "lib/queries";
-import { sanityClient } from "lib/sanity-server";
-import { Post } from "lib/types";
+import Layout from "@/components/Layout";
+import Author from "@/components/Author";
+import BlogPost from "@/components/BlogPost";
+import FeaturedPosts from "@/components/FeaturedPosts";
+import StructuredData from "@/components/StructuredData";
+import { featuredPostsQuery, postsQuery } from "@/lib/queries";
+import { sanityClient } from "@/lib/sanity-server";
+import { Post } from "@/lib/types";
 import { WebSite, WithContext } from "schema-dts";
-import { HOST_URL } from "config";
+import { HOST_URL } from "@/config";
 
 const Home = ({
   posts,

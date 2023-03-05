@@ -1,4 +1,4 @@
-import { HOST_URL } from "config";
+import { HOST_URL } from "@/config";
 
 export const postToHashnode = async (publishedPost) => {
   const { title, content } = publishedPost;

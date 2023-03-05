@@ -2,16 +2,16 @@ import { Suspense } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import { format, formatISO, parseISO } from "date-fns";
-import Layout from "components/Layout";
-import MDXComponents from "components/MDXComponents";
-import StructuredData from "components/StructuredData";
-import { mdxToHtml } from "lib/mdxToHtml";
-import { postQuery, postSlugsQuery } from "lib/queries";
-import { sanityClient } from "lib/sanity-server";
+import Layout from "@/components/Layout";
+import MDXComponents from "@/components/MDXComponents";
+import StructuredData from "@/components/StructuredData";
+import { mdxToHtml } from "@/lib/mdxToHtml";
+import { postQuery, postSlugsQuery } from "@/lib/queries";
+import { sanityClient } from "@/lib/sanity-server";
 import { MDXRemote } from "next-mdx-remote";
 import readingTime from "reading-time";
 import avatar from "public/avatar.jpg";
-import { HOST_URL } from "config";
+import { HOST_URL } from "@/config";
 import { BlogPosting, WithContext } from "schema-dts";
 
 const PostPage = ({ post }) => {

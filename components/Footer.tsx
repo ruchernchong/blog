@@ -2,7 +2,7 @@ import IconGithub from "public/icon-github.svg";
 import IconLinkedIn from "public/icon-linkedin.svg";
 import IconStackOverflow from "public/icon-stackoverflow.svg";
 import IconRss from "public/icon-rss.svg";
-import { HOST_URL } from "config";
+import { HOST_URL } from "@/config";
 
 const ExternalLink = ({ href, children }) => {
   return (
@@ -19,7 +19,7 @@ const ExternalLink = ({ href, children }) => {
 };
 
 const Footer = () => (
-  <footer className="mx-auto px-4 py-8 flex max-w-4xl flex-col items-center justify-center">
+  <footer className="mx-auto flex max-w-4xl flex-col items-center justify-center px-4 py-8">
     <div className="flex justify-between">
       <ExternalLink href="https://github.com/ruchernchong">
         <IconGithub width={24} height={24} className="dark:fill-neutral-400" />

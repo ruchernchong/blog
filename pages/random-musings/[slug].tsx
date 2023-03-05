@@ -1,12 +1,12 @@
 import { Suspense } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
-import Layout from "components/Layout";
-import MDXComponents from "components/MDXComponents";
-import StructuredData from "components/StructuredData";
+import Layout from "@/components/Layout";
+import MDXComponents from "@/components/MDXComponents";
+import StructuredData from "@/components/StructuredData";
 import { MDXRemote } from "next-mdx-remote";
-import { mdxToHtml } from "lib/mdxToHtml";
-import { RandomMusing } from "lib/types";
-import { HOST_URL } from "config";
+import { mdxToHtml } from "@/lib/mdxToHtml";
+import { RandomMusing } from "@/lib/types";
+import { HOST_URL } from "@/config";
 import { BlogPosting, WithContext } from "schema-dts";
 
 const RandomMusingsPage = ({ item }) => {

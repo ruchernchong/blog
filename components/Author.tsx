@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import Avatar from "components/Avatar";
+import Avatar from "@/components/Avatar";
 
 type Author = {
   tagline?: string;
@@ -12,7 +12,7 @@ const Author = ({
   tagline,
   description,
   hideTagline = false,
-  hideDescription = false
+  hideDescription = false,
 }: Author) => {
   return (
     <div className="mx-auto mb-8 w-full max-w-4xl">

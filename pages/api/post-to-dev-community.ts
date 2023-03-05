@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { sanityClient } from "lib/sanity-server";
-import { postUpdatedQuery } from "lib/queries";
-import readBody from "lib/readBody";
-import { HOST_URL } from "config";
+import { sanityClient } from "@/lib/sanity-server";
+import { postUpdatedQuery } from "@/lib/queries";
+import readBody from "@/lib/readBody";
+import { HOST_URL } from "@/config";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // const body = await readBody(req);

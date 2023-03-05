@@ -1,14 +1,14 @@
 import { GetStaticProps, InferGetStaticPropsType } from "next";
-import Layout from "components/Layout";
-import Author from "components/Author";
-import Contributions from "components/Contributions";
-import Employment from "components/Employment";
-import StructuredData from "components/StructuredData";
-import companies from "data/companies";
+import Layout from "@/components/Layout";
+import Author from "@/components/Author";
+import Contributions from "@/components/Contributions";
+import Employment from "@/components/Employment";
+import StructuredData from "@/components/StructuredData";
+import companies from "@/data/companies";
 import { WebPage, WithContext } from "schema-dts";
-import { isFeatureEnabled } from "lib/isFeatureEnabled";
-import { getStackOverflowProfile } from "lib/getStackOverflowProfile";
-import { getGitHubPinnedRepositories } from "lib/github";
+import { isFeatureEnabled } from "@/lib/isFeatureEnabled";
+import { getStackOverflowProfile } from "@/lib/getStackOverflowProfile";
+import { getGitHubPinnedRepositories } from "@/lib/github";
 
 const About = ({
   pinnedRepositories,

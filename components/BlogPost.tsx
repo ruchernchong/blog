@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
 import { ArrowSmallRightIcon } from "@heroicons/react/24/outline";
-import { Post } from "lib/types";
+import { Post } from "@/lib/types";
 
 const BlogPost = ({ title, slug, excerpt, publishedDate }: Post) => {
   const formattedDate = format(parseISO(publishedDate), "iiii, dd MMMM yyyy");

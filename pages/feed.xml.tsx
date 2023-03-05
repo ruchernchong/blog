@@ -1,15 +1,15 @@
 import { GetServerSideProps } from "next";
 import RSS from "rss";
-import { Post } from "lib/types";
-import { sanityClient } from "lib/sanity-server";
-import { postsQuery } from "lib/queries";
-import { HOST_URL } from "config";
+import { Post } from "@/lib/types";
+import { sanityClient } from "@/lib/sanity-server";
+import { postsQuery } from "@/lib/queries";
+import { HOST_URL } from "@/config";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   const feed = new RSS({
     title: "Ru Chern",
     site_url: HOST_URL,
-    feed_url: `${HOST_URL}/feed.xml`
+    feed_url: `${HOST_URL}/feed.xml`,
   });
 
   const posts: Post[] = await sanityClient.fetch(postsQuery);
@@ -19,7 +19,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
       title: post.title,
       url: `${HOST_URL}/blog/${post.slug}`,
       date: post.publishedDate,
-      description: post.excerpt
+      description: post.excerpt,
     })
   );
 
@@ -32,7 +32,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   res.end();
 
   return {
-    props: {}
+    props: {},
   };
 };
 

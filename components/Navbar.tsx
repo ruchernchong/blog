@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
 import classNames from "classnames";
-import ThemeToggle from "components/ThemeToggle";
-import { isFeatureEnabled } from "lib/isFeatureEnabled";
+import ThemeToggle from "@/components/ThemeToggle";
+import { isFeatureEnabled } from "@/lib/isFeatureEnabled";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 
 type Link = {

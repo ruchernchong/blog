@@ -1,8 +1,8 @@
 import { Fragment } from "react";
 import classNames from "classnames";
 import { BookmarkIcon, StarIcon } from "@heroicons/react/24/outline";
-import { StackOverflowProfile } from "lib/getStackOverflowProfile";
-import { PinnedRepository } from "lib/github";
+import { StackOverflowProfile } from "@/lib/getStackOverflowProfile";
+import { PinnedRepository } from "@/lib/github";
 
 const STACK_OVERFLOW_BADGES = {
   bronze: "bg-[#D1A684]",
