@@ -9,6 +9,7 @@ import { setContext } from "@apollo/client/link/context";
 export type PinnedRepository = {
   id: string;
   name: string;
+  description: string;
   url: string;
   stargazers: {
     totalCount: number;
@@ -47,6 +48,7 @@ export const getGitHubPinnedRepositories = async (): Promise<
                 ... on Repository {
                   id
                   name
+                  description
                   url
                   stargazers {
                     totalCount
