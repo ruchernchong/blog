@@ -7,8 +7,8 @@ import {
 import { setContext } from "@apollo/client/link/context";
 
 export type PinnedRepository = {
-  name: string;
   id: string;
+  name: string;
   url: string;
   stargazers: {
     totalCount: number;
@@ -33,7 +33,9 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-export const getGitHubPinnedRepositories = async () => {
+export const getGitHubPinnedRepositories = async (): Promise<
+  Partial<PinnedRepository>[]
+> => {
   const { data } = await client.query({
     query: gql`
       {
@@ -43,8 +45,8 @@ export const getGitHubPinnedRepositories = async () => {
             edges {
               node {
                 ... on Repository {
-                  name
                   id
+                  name
                   url
                   stargazers {
                     totalCount

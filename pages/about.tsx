@@ -7,11 +7,8 @@ import StructuredData from "components/StructuredData";
 import companies from "data/companies";
 import { WebPage, WithContext } from "schema-dts";
 import { isFeatureEnabled } from "lib/isFeatureEnabled";
-import {
-  getStackOverflowProfile,
-  StackOverflowProfile,
-} from "lib/getStackOverflowProfile";
-import { getGitHubPinnedRepositories, PinnedRepository } from "lib/github";
+import { getStackOverflowProfile } from "lib/getStackOverflowProfile";
+import { getGitHubPinnedRepositories } from "lib/github";
 
 const About = ({
   pinnedRepositories,
@@ -44,21 +41,21 @@ const About = ({
       </div>
       <Employment companies={sortedCompanies} />
       {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_CONTRIBUTIONS) && (
-        <Contributions
-          pinnedRepositories={pinnedRepositories}
-          stackOverflow={stackOverflowProfile}
-        />
+        <>
+          <hr className="mb-8 dark:border-neutral-600" />
+          <Contributions
+            pinnedRepositories={pinnedRepositories}
+            stackOverflow={stackOverflowProfile}
+          />
+        </>
       )}
     </Layout>
   );
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const pinnedRepositories: Partial<PinnedRepository>[] =
-    await getGitHubPinnedRepositories();
-
-  const stackOverflowProfile: Partial<StackOverflowProfile> =
-    await getStackOverflowProfile();
+  const pinnedRepositories = await getGitHubPinnedRepositories();
+  const stackOverflowProfile = await getStackOverflowProfile();
 
   return {
     props: {

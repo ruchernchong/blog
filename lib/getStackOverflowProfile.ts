@@ -21,7 +21,5 @@ export const getStackOverflowProfile = async (): Promise<
     `${STACK_OVERFLOW_API_URL}/users/${USER_ID}?${params}`
   ).then((res) => res.json());
 
-  console.log(`items`, items);
-
   return items.at(0);
 };
