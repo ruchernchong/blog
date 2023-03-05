@@ -1,3 +1,4 @@
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 import Layout from "components/Layout";
 import Author from "components/Author";
 import Contributions from "components/Contributions";
@@ -6,8 +7,13 @@ import StructuredData from "components/StructuredData";
 import companies from "data/companies";
 import { WebPage, WithContext } from "schema-dts";
 import { isFeatureEnabled } from "lib/isFeatureEnabled";
+import { getStackOverflowProfile } from "lib/getStackOverflowProfile";
+import { getGitHubPinnedRepositories } from "lib/github";
 
-const About = () => {
+const About = ({
+  pinnedRepositories,
+  stackOverflowProfile,
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const sortedCompanies = companies.sort(
     (a, b) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime()
   );
@@ -35,10 +41,28 @@ const About = () => {
       </div>
       <Employment companies={sortedCompanies} />
       {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_CONTRIBUTIONS) && (
-        <Contributions />
+        <>
+          <hr className="mb-8 dark:border-neutral-600" />
+          <Contributions
+            pinnedRepositories={pinnedRepositories}
+            stackOverflow={stackOverflowProfile}
+          />
+        </>
       )}
     </Layout>
   );
+};
+
+export const getStaticProps: GetStaticProps = async () => {
+  const pinnedRepositories = await getGitHubPinnedRepositories();
+  const stackOverflowProfile = await getStackOverflowProfile();
+
+  return {
+    props: {
+      pinnedRepositories,
+      stackOverflowProfile,
+    },
+  };
 };
 
 export default About;

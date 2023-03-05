@@ -31,10 +31,10 @@ const Employment = ({ companies }) => {
                   <a
                     href={url}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="nofollow noreferrer"
                     className="no-underline"
                   >
-                    <h3 className="duration-250 m-0 text-lg font-semibold transition hover:tracking-wide hover:text-neutral-400 md:text-2xl">
+                    <h3 className="m-0 hover:text-neutral-400 md:text-2xl">
                       {name}
                     </h3>
                   </a>
@@ -54,7 +54,7 @@ const Employment = ({ companies }) => {
         <a
           href="https://linkedin.com/in/ruchernchong"
           target="_blank"
-          rel="noreferrer"
+          rel="nofollow noreferrer"
         >
           LinkedIn
         </a>

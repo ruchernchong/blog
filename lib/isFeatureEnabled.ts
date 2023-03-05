@@ -3,5 +3,10 @@
  *
  * @param feature - Usually used with process.env
  */
-export const isFeatureEnabled = (feature: string): boolean =>
-  JSON.parse(feature);
+export const isFeatureEnabled = (feature: string): boolean => {
+  if (!feature) {
+    return false;
+  }
+
+  return JSON.parse(feature);
+};
