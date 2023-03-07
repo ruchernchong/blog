@@ -10,16 +10,17 @@ const Projects = ({
 }: {
   pinnedRepositories: PinnedRepository[];
 }) => {
+  const pageDescription: string =
+    "Project showcase of past works and experimenting with different technologies";
   const structuredData: WithContext<WebPage> = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: "Projects - Ru Chern",
-    description:
-      "This page contains projects done and contributions to open-source",
+    description: pageDescription,
   };
 
   return (
-    <Layout title="Projects - Ru Chern">
+    <Layout title="Projects - Ru Chern" description={pageDescription}>
       <StructuredData data={structuredData} />
       <div className="mb-8 flex flex-col">
         <h1 className="mb-4 text-3xl font-bold md:text-4xl">Projects</h1>
