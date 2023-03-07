@@ -6,15 +6,14 @@ import { getGitHubPinnedRepositories, PinnedRepository } from "@/lib/github";
 const Projects = ({
   pinnedRepositories,
 }: {
-  pinnedRepositories: Partial<PinnedRepository>[];
+  pinnedRepositories: PinnedRepository[];
 }) => {
   return (
     <Layout title="Projects - Ru Chern">
       <div className="mb-8 flex flex-col">
-        <h2 className="mb-2 text-3xl font-bold md:text-4xl">Projects</h2>
-        <h2 className="mb-2 text-3xl font-bold md:text-4xl">Open Source</h2>
-        <h3 className="m-0 text-lg font-semibold md:text-2xl">GitHub</h3>
-        <p className="mb-4 text-sm italic text-neutral-600 dark:text-neutral-400">
+        <h1 className="mb-4 text-3xl font-bold md:text-4xl">Projects</h1>
+        <h2 className="mb-0 text-xl font-semibold md:text-2xl">GitHub</h2>
+        <p className="mb-8 text-sm italic text-neutral-600 dark:text-neutral-400">
           (Powered by GitHub GraphQL API)
         </p>
         <div className="grid gap-4 md:grid-cols-2">

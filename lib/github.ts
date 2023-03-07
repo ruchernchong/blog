@@ -48,7 +48,7 @@ const client = new ApolloClient({
 });
 
 export const getGitHubPinnedRepositories = async (): Promise<
-  Partial<PinnedRepository>[]
+  PinnedRepository[]
 > => {
   const { data } = await client.query({
     query: gql`
