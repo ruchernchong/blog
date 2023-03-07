@@ -1,22 +1,22 @@
 import { GetStaticProps } from "next";
 import Layout from "@/components/Layout";
-import { BookmarkIcon, StarIcon } from "@heroicons/react/24/outline";
-import { getGitHubPinnedRepositories } from "@/lib/github";
+import { StarIcon } from "@heroicons/react/24/outline";
+import { getGitHubPinnedRepositories, PinnedRepository } from "@/lib/github";
 
-const Projects = ({ pinnedRepositories }) => {
+const Projects = ({
+  pinnedRepositories,
+}: {
+  pinnedRepositories: Partial<PinnedRepository>[];
+}) => {
   return (
     <Layout title="Projects - Ru Chern">
       <div className="mb-8 flex flex-col">
+        <h2 className="mb-2 text-3xl font-bold md:text-4xl">Projects</h2>
+        <h2 className="mb-2 text-3xl font-bold md:text-4xl">Open Source</h2>
         <h3 className="m-0 text-lg font-semibold md:text-2xl">GitHub</h3>
-        <p className="text-sm italic text-neutral-600 dark:text-neutral-400">
+        <p className="mb-4 text-sm italic text-neutral-600 dark:text-neutral-400">
           (Powered by GitHub GraphQL API)
         </p>
-        <h4 className="m-0 mb-4 text-lg">
-          <div className="flex flex-row items-center">
-            <BookmarkIcon className="mr-2 h-6 w-6" />{" "}
-            <span>Pinned repositories</span>
-          </div>
-        </h4>
         <div className="grid gap-4 md:grid-cols-2">
           {pinnedRepositories.map(
             ({ id, name, description, stargazers, url }) => {

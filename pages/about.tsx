@@ -8,10 +8,8 @@ import companies from "@/data/companies";
 import { WebPage, WithContext } from "schema-dts";
 import { isFeatureEnabled } from "@/lib/isFeatureEnabled";
 import { getStackOverflowProfile } from "@/lib/stackoverflow";
-import { getGitHubPinnedRepositories } from "@/lib/github";
 
 const About = ({
-  pinnedRepositories,
   stackOverflowProfile,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const sortedCompanies = companies.sort(
@@ -43,10 +41,7 @@ const About = ({
       {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_CONTRIBUTIONS) && (
         <>
           <hr className="mb-8 dark:border-neutral-600" />
-          <Contributions
-            pinnedRepositories={pinnedRepositories}
-            stackOverflow={stackOverflowProfile}
-          />
+          <Contributions stackOverflow={stackOverflowProfile} />
         </>
       )}
     </Layout>
@@ -54,12 +49,10 @@ const About = ({
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const pinnedRepositories = await getGitHubPinnedRepositories();
   const stackOverflowProfile = await getStackOverflowProfile();
 
   return {
     props: {
-      pinnedRepositories,
       stackOverflowProfile,
     },
   };
