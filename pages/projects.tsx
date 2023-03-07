@@ -1,15 +1,26 @@
 import { GetStaticProps } from "next";
 import Layout from "@/components/Layout";
+import StructuredData from "@/components/StructuredData";
 import { StarIcon } from "@heroicons/react/24/outline";
 import { getGitHubPinnedRepositories, PinnedRepository } from "@/lib/github";
+import { WebPage, WithContext } from "schema-dts";
 
 const Projects = ({
   pinnedRepositories,
 }: {
   pinnedRepositories: PinnedRepository[];
 }) => {
+  const structuredData: WithContext<WebPage> = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Projects - Ru Chern",
+    description:
+      "This page contains projects done and contributions to open-source",
+  };
+
   return (
     <Layout title="Projects - Ru Chern">
+      <StructuredData data={structuredData} />
       <div className="mb-8 flex flex-col">
         <h1 className="mb-4 text-3xl font-bold md:text-4xl">Projects</h1>
         <h2 className="mb-0 text-xl font-semibold md:text-2xl">GitHub</h2>
