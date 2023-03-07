@@ -16,6 +16,19 @@ export type PinnedRepository = {
   };
 };
 
+export type GitHubProfile = {
+  contributionsCollection: {
+    totalCommitContributions: number;
+  };
+  pullRequests: {
+    totalCount: number;
+  };
+  followers: {
+    totalCount: number;
+  };
+  url: string;
+};
+
 const link = createHttpLink({
   uri: "https://api.github.com/graphql",
 });
@@ -64,4 +77,41 @@ export const getGitHubPinnedRepositories = async (): Promise<
 
   const { user } = data;
   return user.pinnedItems.edges.map((edge) => edge.node);
+};
+
+export const getGitHubContributions = async () => {
+  const { data } = await client.query({
+    query: gql`
+      {
+        user(login: "ruchernchong") {
+          contributionsCollection {
+            totalCommitContributions
+            restrictedContributionsCount
+          }
+          repositoriesContributedTo(
+            first: 1
+            contributionTypes: [COMMIT, ISSUE, PULL_REQUEST, REPOSITORY]
+          ) {
+            totalCount
+          }
+          pullRequests(first: 1) {
+            totalCount
+          }
+          openIssues: issues(states: OPEN) {
+            totalCount
+          }
+          closedIssues: issues(states: CLOSED) {
+            totalCount
+          }
+          followers {
+            totalCount
+          }
+          url
+        }
+      }
+    `,
+  });
+
+  const { user } = data;
+  return user;
 };

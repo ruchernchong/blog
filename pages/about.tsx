@@ -8,8 +8,10 @@ import companies from "@/data/companies";
 import { WebPage, WithContext } from "schema-dts";
 import { isFeatureEnabled } from "@/lib/isFeatureEnabled";
 import { getStackOverflowProfile } from "@/lib/stackoverflow";
+import { getGitHubContributions } from "@/lib/github";
 
 const About = ({
+  githubProfile,
   stackOverflowProfile,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const sortedCompanies = companies.sort(
@@ -41,7 +43,10 @@ const About = ({
       {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_CONTRIBUTIONS) && (
         <>
           <hr className="mb-8 dark:border-neutral-600" />
-          <Contributions stackOverflow={stackOverflowProfile} />
+          <Contributions
+            github={githubProfile}
+            stackOverflow={stackOverflowProfile}
+          />
         </>
       )}
     </Layout>
@@ -49,10 +54,12 @@ const About = ({
 };
 
 export const getStaticProps: GetStaticProps = async () => {
+  const githubProfile = await getGitHubContributions();
   const stackOverflowProfile = await getStackOverflowProfile();
 
   return {
     props: {
+      githubProfile,
       stackOverflowProfile,
     },
   };

@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import classNames from "classnames";
 import { StackOverflowProfile } from "@/lib/stackoverflow";
+import { GitHubProfile } from "@/lib/github";
 
 const STACK_OVERFLOW_BADGES = {
   bronze: "bg-[#D1A684]",
@@ -9,13 +10,38 @@ const STACK_OVERFLOW_BADGES = {
 };
 
 const Contributions = ({
+  github,
   stackOverflow,
 }: {
+  github: GitHubProfile;
   stackOverflow: StackOverflowProfile;
 }) => {
   return (
     <section className="prose prose-neutral mx-auto mb-8 max-w-4xl dark:prose-invert">
       <h2 className="text-2xl md:text-3xl">Contributions</h2>
+      <div className="mb-8 flex flex-col">
+        <h3 className="m-0 text-lg font-semibold md:text-2xl">GitHub</h3>
+        <p className="mb-2 text-sm italic text-neutral-600 dark:text-neutral-400">
+          (Powered by GitHub GraphQL API)
+        </p>
+        <div>
+          Total commits:{" "}
+          {github.contributionsCollection.totalCommitContributions}
+        </div>
+        <div>Pull requests: {github.pullRequests.totalCount}</div>
+        <div className="mb-2">Followers: {github.followers.totalCount}</div>
+        <div>
+          Profile:{" "}
+          <a
+            href={github.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className=""
+          >
+            {github.url}
+          </a>
+        </div>
+      </div>
       <div className="mb-8 flex flex-col text-neutral-600 dark:text-neutral-400">
         <h3 className="m-0 text-lg font-semibold md:text-2xl">
           Stack Overflow
