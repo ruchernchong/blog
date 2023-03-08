@@ -33,5 +33,5 @@ h1 .permalink::after {
 }
 
 .rehype-code-title + pre {
-  @apply m-0 rounded-t-none;
+  @apply mt-0 rounded-t-none;
 }
