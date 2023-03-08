@@ -28,7 +28,7 @@ const links: Link[] = [
   {
     title: "Projects",
     href: "/projects",
-    enabled: isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_PROJECTS_PAGE),
+    enabled: true,
   },
   {
     title: "Resume",
