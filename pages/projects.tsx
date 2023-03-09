@@ -28,7 +28,7 @@ const Projects = ({
         <h1 className="mb-4 text-3xl font-bold md:text-4xl">Projects</h1>
         <div className="mb-8">
           {projects.map(({ name, description, link }) => {
-            link = link.replace("https://", "");
+            const linkText = link.replace("https://", "");
 
             return (
               <div key={name} className="flex flex-col items-start">
@@ -45,7 +45,7 @@ const Projects = ({
                   className="flex items-center"
                 >
                   <LinkIcon className="mr-2 h-4 w-4" />
-                  <span>{link}</span>
+                  <span>{linkText}</span>
                 </a>
               </div>
             );
