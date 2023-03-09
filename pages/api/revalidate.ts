@@ -39,8 +39,8 @@ export default handler;
 // Next.js will by default parse the body, which can lead to invalid signatures
 export const config = {
   api: {
-    bodyParser: false
-  }
+    bodyParser: false,
+  },
 };
 
 const readBody = async (readable: NextApiRequest) => {
