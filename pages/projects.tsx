@@ -4,6 +4,8 @@ import StructuredData from "@/components/StructuredData";
 import { StarIcon } from "@heroicons/react/24/outline";
 import { getGitHubPinnedRepositories, PinnedRepository } from "@/lib/github";
 import { WebPage, WithContext } from "schema-dts";
+import { LinkIcon } from "@heroicons/react/24/outline";
+import projects from "@/data/projects";
 
 const Projects = ({
   pinnedRepositories,
@@ -24,6 +26,31 @@ const Projects = ({
       <StructuredData data={structuredData} />
       <div className="mb-8 flex flex-col">
         <h1 className="mb-4 text-3xl font-bold md:text-4xl">Projects</h1>
+        <div className="mb-8">
+          {projects.map(({ name, description, link }) => {
+            link = link.replace("https://", "");
+
+            return (
+              <div key={name} className="flex flex-col items-start">
+                <h3 className="mb-2 text-lg font-semibold md:text-2xl">
+                  {name}
+                </h3>
+                <div className="mb-4 text-neutral-600 dark:text-neutral-400">
+                  {description}
+                </div>
+                <a
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center"
+                >
+                  <LinkIcon className="mr-2 h-4 w-4" />
+                  <span>{link}</span>
+                </a>
+              </div>
+            );
+          })}
+        </div>
         <h2 className="mb-0 text-xl font-semibold md:text-2xl">GitHub</h2>
         <p className="mb-8 text-sm italic text-neutral-600 dark:text-neutral-400">
           (Powered by GitHub GraphQL API)
