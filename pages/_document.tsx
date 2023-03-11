@@ -2,7 +2,7 @@ import { Head, Html, Main, NextScript } from "next/document";
 import { HOST_URL } from "@/config";
 
 const Document = () => (
-  <Html lang="en">
+  <Html lang="en" className="scroll-smooth">
     <Head>
       <link
         rel="alternate"
