@@ -34,7 +34,9 @@ const Home = ({
           description="Developer | Investor | Author"
           hideTagline={true}
         />
-        <FeaturedPosts featuredPosts={featuredPosts} />
+        {featuredPosts.length > 0 && (
+          <FeaturedPosts featuredPosts={featuredPosts} />
+        )}
         <h2 className="mb-2 text-3xl font-bold md:text-4xl">
           All Posts{" "}
           <sup className="sups text-2xl text-neutral-600 dark:text-neutral-400">
