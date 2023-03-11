@@ -33,7 +33,7 @@ const About = ({
   return (
     <Layout title="About - Ru Chern" description={pageDescription}>
       <StructuredData data={structuredData} />
-      <div className="mx-auto mb-16 flex max-w-4xl flex-col items-start justify-center">
+      <div className="mx-auto mb-8 flex max-w-4xl flex-col items-start justify-center">
         {/*TODO: Upgrade description from a single source as variable*/}
         <Author
           tagline={currentPosition}

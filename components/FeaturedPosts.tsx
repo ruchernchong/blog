@@ -26,11 +26,11 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
                   <time
                     dateTime={formatISO(parseISO(publishedDate))}
                     title={formattedDate}
-                    className="italic text-neutral-600 dark:text-neutral-400 md:mb-2"
+                    className="mb-2 italic text-neutral-600 dark:text-neutral-400"
                   >
                     {formattedDate}
                   </time>
-                  <h3 className="text-2xl font-medium md:mb-2">{title}</h3>
+                  <h3 className="mb-2 text-2xl font-medium">{title}</h3>
                   <p className="flex-1 text-neutral-600 dark:text-neutral-400">
                     {excerpt}
                   </p>
