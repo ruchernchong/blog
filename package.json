@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.7.9",
+    "@code-hike/mdx": "^0.8.0",
     "@heroicons/react": "^2.0.13",
     "@sanity/webhook": "^2.0.0",
     "@types/node": "18.11.18",
@@ -31,13 +32,12 @@
     "react-dom": "18.2.0",
     "reading-time": "^1.5.0",
     "rehype-autolink-headings": "^6.1.1",
-    "rehype-code-titles": "^1.1.0",
-    "rehype-prism-plus": "^1.5.0",
     "rehype-slug": "^5.1.0",
     "remark-gfm": "^3.0.1",
     "rss": "^1.2.2",
     "schema-dts": "^1.1.2",
     "sharp": "^0.31.3",
+    "shiki": "^0.14.1",
     "typescript": "4.9.4"
   },
   "devDependencies": {

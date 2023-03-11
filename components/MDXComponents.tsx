@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { CH } from "@code-hike/mdx/components";
 
 const CustomLink = (props) => {
   const href = props.href;
@@ -28,6 +29,7 @@ const ImageComponent = (props) => (
 );
 
 const MDXComponents = {
+  CH,
   a: CustomLink,
   img: ImageComponent,
 };
