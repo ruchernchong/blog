@@ -12,7 +12,7 @@ Site: https://ruchern.xyz
 Portfolio site is now going into maintenance mode and will stop developing new features. Main goal is to clean up, optimise and prepare to migrate to use the `/app` directory.
 
 - [ ] Tidy up the components
-- [ ] Remove all the remaining feature flags that are currently disabled on production
+- [x] Remove all the remaining feature flags that are currently disabled on production
 - [ ] Complete writing the remaining drafts that are scheduled
 
 ## Overview
