@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
+import Card from "@/components/Card";
 import { Post } from "@/lib/types";
 
-type Props = {
+interface FeaturedPostsProps {
   featuredPosts: Post[];
-};
+}
 
-const FeaturedPosts = ({ featuredPosts }: Props) => {
+const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
   return (
     <>
       <h2 className="mb-6 text-3xl font-bold md:text-4xl">Featured Posts</h2>
-      <div className="mb-12 grid md:grid-cols-3 md:gap-4">
+      <div className="mb-12 grid gap-4 md:grid-cols-3">
         {featuredPosts
           .slice(0, 3)
           .map(({ title, slug, excerpt, publishedDate }) => {
@@ -20,27 +21,21 @@ const FeaturedPosts = ({ featuredPosts }: Props) => {
             );
 
             return (
-              <Link
-                key={title}
-                href={`/blog/${slug}`}
-                className="mb-6 rounded-2xl border p-4 md:mb-0 md:border-neutral-600 hover:md:border-neutral-400"
-              >
-                <div className="mb-8">
-                  <div className="flex flex-col-reverse md:flex-col">
-                    <h3 className="text-2xl font-medium md:mb-2">{title}</h3>
-                    <time
-                      dateTime={formatISO(parseISO(publishedDate))}
-                      title={formattedDate}
-                      className="italic text-neutral-600 dark:text-neutral-400 md:mb-2"
-                    >
-                      {formattedDate}
-                    </time>
-                  </div>
+              <Card key={title}>
+                <Link href={`/blog/${slug}`} className="mb-6 md:mb-0">
+                  <time
+                    dateTime={formatISO(parseISO(publishedDate))}
+                    title={formattedDate}
+                    className="italic text-neutral-600 dark:text-neutral-400 md:mb-2"
+                  >
+                    {formattedDate}
+                  </time>
+                  <h3 className="text-2xl font-medium md:mb-2">{title}</h3>
                   <p className="flex-1 text-neutral-600 dark:text-neutral-400">
                     {excerpt}
                   </p>
-                </div>
-              </Link>
+                </Link>
+              </Card>
             );
           })}
       </div>

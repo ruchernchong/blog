@@ -1,4 +1,5 @@
 import { GetStaticProps } from "next";
+import Card from "@/components/Card";
 import Layout from "@/components/Layout";
 import StructuredData from "@/components/StructuredData";
 import { StarIcon } from "@heroicons/react/24/outline";
@@ -59,22 +60,18 @@ const Projects = ({
           {pinnedRepositories.map(
             ({ id, name, description, stargazers, url }) => {
               return (
-                <a
-                  key={id}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex flex-col rounded-2xl border p-4 no-underline md:border-neutral-600 hover:md:border-neutral-400"
-                >
-                  <div className="text-xl">{name}</div>
-                  <div className="flex-1 text-neutral-600 dark:text-neutral-400">
-                    {description}
-                  </div>
-                  <div className="flex flex-row items-center">
-                    <StarIcon className="mr-2 h-4 w-4" />
-                    <div>{stargazers.totalCount}</div>
-                  </div>
-                </a>
+                <Card key={id}>
+                  <a href={url} target="_blank" rel="noopener noreferrer">
+                    <div className="text-xl">{name}</div>
+                    <div className="flex-1 text-neutral-600 dark:text-neutral-400">
+                      {description}
+                    </div>
+                    <div className="flex flex-row items-center">
+                      <StarIcon className="mr-2 h-4 w-4" />
+                      <div>{stargazers.totalCount}</div>
+                    </div>
+                  </a>
+                </Card>
               );
             }
           )}
