@@ -26,11 +26,7 @@ const NavItem = ({ href, title }) => {
   return (
     <NextLink
       href={href}
-      className={classNames(
-        isActive
-          ? "font-semibold underline underline-offset-8"
-          : "dark:text-neutral-50"
-      )}
+      className={classNames(isActive && "underline underline-offset-8")}
     >
       {title}
     </NextLink>
