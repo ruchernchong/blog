@@ -34,9 +34,7 @@ const Home = ({
           description="Developer | Investor | Author"
           hideTagline={true}
         />
-        {process.env.NEXT_PUBLIC_FEATURE_FEATURED_POST === "true" && (
-          <FeaturedPosts featuredPosts={featuredPosts} />
-        )}
+        <FeaturedPosts featuredPosts={featuredPosts} />
         <h2 className="mb-2 text-3xl font-bold md:text-4xl">
           All Posts{" "}
           <sup className="sups text-2xl text-neutral-600 dark:text-neutral-400">
