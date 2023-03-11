@@ -3,38 +3,20 @@ import { useRouter } from "next/router";
 import NextLink from "next/link";
 import classNames from "classnames";
 import ThemeToggle from "@/components/ThemeToggle";
-import { isFeatureEnabled } from "@/lib/isFeatureEnabled";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 
-type Link = {
+type NavLink = {
   title: string;
   href: string;
-  enabled?: boolean;
 };
 
-const links: Link[] = [
-  {
-    title: "Home",
-    href: "/",
-    enabled: true,
-  },
-  {
-    title: "Blog",
-    href: "/blog",
-    enabled: isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_BLOG_PAGE),
-  },
-  { title: "About", href: "/about", enabled: true },
-  { title: "Random Musings", href: "/random-musings", enabled: true },
-  {
-    title: "Projects",
-    href: "/projects",
-    enabled: true,
-  },
-  {
-    title: "Resume",
-    href: "/resume",
-    enabled: isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_RESUME_PAGE),
-  },
+const navLinks: NavLink[] = [
+  { title: "Home", href: "/" },
+  // { title: "Blog", href: "/blog" },
+  { title: "About", href: "/about" },
+  { title: "Random Musings", href: "/random-musings" },
+  { title: "Projects", href: "/projects" },
+  // { title: "Resume", href: "/resume" },
 ];
 
 const NavItem = ({ href, title }) => {
@@ -90,11 +72,7 @@ const Navbar = () => {
           )}
         >
           <ul className="flex flex-col bg-neutral-50 text-center dark:border-neutral-700 dark:bg-neutral-900">
-            {links.map(({ title, href, enabled }) => {
-              if (!enabled) {
-                return;
-              }
-
+            {navLinks.map(({ title, href }) => {
               return (
                 <li key={title} className="border-b border-neutral-600 py-4">
                   <NavItem key={title} href={href} title={title} />
@@ -110,11 +88,7 @@ const Navbar = () => {
       <div className="mx-auto hidden max-w-4xl px-4 py-8 md:mb-8 md:block">
         <nav className="flex items-center justify-between">
           <div className="space-x-6">
-            {links.map(({ title, href, enabled }) => {
-              if (!enabled) {
-                return;
-              }
-
+            {navLinks.map(({ title, href }) => {
               return <NavItem key={title} href={href} title={title} />;
             })}
           </div>
