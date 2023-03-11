@@ -23,14 +23,11 @@ const FeaturedPosts = ({ featuredPosts }: Props) => {
               <Link
                 key={title}
                 href={`/blog/${slug}`}
-                className="mb-6 rounded-2xl border p-4 md:mb-0 md:border-neutral-700 hover:md:border-neutral-500"
+                className="mb-6 rounded-2xl border p-4 md:mb-0 md:border-neutral-600 hover:md:border-neutral-400"
               >
                 <div className="mb-8">
                   <div className="flex flex-col-reverse md:flex-col">
-                    <h3 className="text-2xl font-medium hover:opacity-50 md:mb-2">
-                      {title}
-                    </h3>
-
+                    <h3 className="text-2xl font-medium md:mb-2">{title}</h3>
                     <time
                       dateTime={formatISO(parseISO(publishedDate))}
                       title={formattedDate}
