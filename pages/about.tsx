@@ -42,15 +42,11 @@ const About = ({
         />
       </div>
       <Employment companies={sortedCompanies} />
-      {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_CONTRIBUTIONS) && (
-        <>
-          <hr className="mb-8 dark:border-neutral-600" />
-          <Contributions
-            github={githubProfile}
-            stackOverflow={stackOverflowProfile}
-          />
-        </>
-      )}
+      <hr className="mb-8 dark:border-neutral-600" />
+      <Contributions
+        github={githubProfile}
+        stackOverflow={stackOverflowProfile}
+      />
     </Layout>
   );
 };
