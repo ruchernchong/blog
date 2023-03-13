@@ -50,20 +50,22 @@ const Contributions = ({
           (Powered by Stack Exchange API)
         </p>
         <div>Reputation: {stackOverflow.reputation}</div>
-        {Object.entries(stackOverflow.badge_counts).map(([tier, count]) => {
-          return (
-            <Fragment key={tier}>
-              <div className="flex items-center">
-                <div
-                  className={classNames(
-                    `mr-4 h-4 w-4 rounded-full ${STACK_OVERFLOW_BADGES[tier]}`
-                  )}
-                />
-                <div>{count}</div>
-              </div>
-            </Fragment>
-          );
-        })}
+        <div className="flex items-center gap-2">
+          {Object.entries(stackOverflow.badge_counts)
+            .reverse()
+            .map(([tier, count]) => {
+              return (
+                <Fragment key={tier}>
+                  <span
+                    className={classNames(
+                      `h-4 w-4 rounded-full ${STACK_OVERFLOW_BADGES[tier]}`
+                    )}
+                  />
+                  <div>{count}</div>
+                </Fragment>
+              );
+            })}
+        </div>
       </div>
     </section>
   );
