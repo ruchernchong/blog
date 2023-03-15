@@ -18,15 +18,6 @@ const companies: Company[] = [
     url: "https://dbs.com.sg",
   },
   {
-    name: "Avanade",
-    title: "Analyst, Frontend Development",
-    logo: "/companies/logo-avanade.svg",
-    dateStart: "Jan 2021",
-    dateEnd: "Apr 2021",
-    location: "Singapore",
-    url: "https://www.avanade.com/zh-sg",
-  },
-  {
     name: "Singtel",
     title: "Software Engineer",
     logo: "/companies/logo-singtel.svg",
