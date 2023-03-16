@@ -4,20 +4,7 @@ import NextLink from "next/link";
 import classNames from "classnames";
 import ThemeToggle from "@/components/ThemeToggle";
 import { Bars3Icon } from "@heroicons/react/24/outline";
-
-type NavLink = {
-  title: string;
-  href: string;
-};
-
-const navLinks: NavLink[] = [
-  { title: "Home", href: "/" },
-  // { title: "Blog", href: "/blog" },
-  { title: "About", href: "/about" },
-  { title: "Random Musings", href: "/random-musings" },
-  { title: "Projects", href: "/projects" },
-  // { title: "Resume", href: "/resume" },
-];
+import { navLinks } from "@/config/navLinks";
 
 const NavItem = ({ href, title }) => {
   const router = useRouter();
