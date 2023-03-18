@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
-import Image from "next/image";
 import { format, formatISO, parseISO } from "date-fns";
 import Layout from "@/components/Layout";
 import MDXComponents from "@/components/MDXComponents";
@@ -10,9 +9,10 @@ import { postQuery, postSlugsQuery } from "@/lib/queries";
 import { sanityClient } from "@/lib/sanity-server";
 import { MDXRemote } from "next-mdx-remote";
 import readingTime from "reading-time";
-import avatar from "public/avatar.jpg";
 import { HOST_URL } from "@/config";
 import { BlogPosting, WithContext } from "schema-dts";
+import { CalendarDaysIcon } from "@heroicons/react/24/outline";
+import { BookOpenIcon } from "@heroicons/react/24/outline";
 
 const PostPage = ({ post }) => {
   const publishedDate = post.publishedDate;
@@ -58,28 +58,21 @@ const PostPage = ({ post }) => {
     >
       <StructuredData data={structuredData} />
       <article className="prose mx-auto mb-6 max-w-4xl prose-img:rounded-2xl dark:prose-invert">
-        <h1>{post.title}</h1>
-        <div className="flex w-full flex-col items-start justify-between text-neutral-600 dark:text-neutral-400 md:flex-row md:items-center">
+        <div className="flex w-full flex-col items-center justify-center text-neutral-600 dark:text-neutral-400 md:flex-row md:items-center">
           <div className="mb-2 flex items-center">
-            <Image
-              src={avatar}
-              width={24}
-              className="not-prose m-0 mr-2"
-              alt="Ru Chern Chong"
-              priority
-            />
-            <p className="not-prose m-0">
-              Ru Chern Chong &middot;{" "}
-              <time
-                dateTime={formatISO(parseISO(publishedDate))}
-                title={formattedDate}
-              >
-                {formattedDate}
-              </time>
-            </p>
+            <CalendarDaysIcon className="mr-2 h-6 w-6" />
+            <time
+              dateTime={formatISO(parseISO(publishedDate))}
+              title={formattedDate}
+            >
+              {formattedDate}
+            </time>
+            <div className="mx-2">&middot;</div>
+            <BookOpenIcon className="mr-2 h-6 w-6" />
+            <div>{post.readingTime}</div>
           </div>
-          <p className="not-prose m-0 mb-2">{post.readingTime}</p>
         </div>
+        <h1 className="text-center">{post.title}</h1>
         <Suspense fallback={null}>
           <MDXRemote {...post.mdxSource} components={MDXComponents} />
         </Suspense>
