@@ -8,7 +8,7 @@ import { navLinks } from "@/config/navLinks";
 
 const LinkHeader = ({ children }) => {
   return (
-    <div className="mb-4 text-lg font-medium text-neutral-900 dark:text-neutral-50">
+    <div className="text-lg font-medium text-neutral-900 dark:text-neutral-50">
       {children}
     </div>
   );
@@ -16,7 +16,7 @@ const LinkHeader = ({ children }) => {
 
 const ExternalLink = ({ href, children }) => {
   return (
-    <div className="flex items-center dark:text-neutral-400">
+    <div className="flex items-center hover:text-neutral-400 dark:text-neutral-400 dark:hover:text-neutral-50">
       <a
         href={href}
         target="_blank"
@@ -31,13 +31,25 @@ const ExternalLink = ({ href, children }) => {
 };
 
 const Footer = () => (
-  <footer className="border-t border-neutral-600 py-8 px-4">
-    <div className="mx-auto grid max-w-4xl grid-cols-2">
-      <div className="flex flex-col items-start gap-4 dark:text-neutral-400">
+  <footer className="bg-neutral-100 py-8 dark:bg-neutral-800 md:py-16">
+    <div className="mx-auto max-w-4xl gap-4 px-4 md:grid md:grid-cols-3">
+      <div className="mb-8 flex flex-col items-start md:mb-0">
+        <div className="mb-4 text-xl font-medium text-neutral-900 dark:text-neutral-50">
+          Ru Chern CHONG
+        </div>
+        <div className="text-xl text-neutral-900 dark:text-neutral-400">
+          Developer | Investor | Author
+        </div>
+      </div>
+      <div className="mb-8 flex flex-col items-start gap-4 md:mb-0">
         <LinkHeader>Sitemap</LinkHeader>
         {navLinks.map(({ href, title }) => {
           return (
-            <Link key={title} href={href}>
+            <Link
+              key={title}
+              href={href}
+              className="hover:text-neutral-400 dark:text-neutral-400 dark:hover:text-neutral-50"
+            >
               {title}
             </Link>
           );
