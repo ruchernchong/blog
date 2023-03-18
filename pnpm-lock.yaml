@@ -4,6 +4,7 @@ specifiers:
   '@apollo/client': ^3.7.9
   '@code-hike/mdx': ^0.8.0
   '@heroicons/react': ^2.0.13
+  '@sanity/image-url': ^1.0.2
   '@sanity/webhook': ^2.0.0
   '@svgr/webpack': ^6.5.1
   '@tailwindcss/typography': ^0.5.8
@@ -45,6 +46,7 @@ dependencies:
   '@apollo/client': 3.7.9_gdcq4dv6opitr3wbfwyjmanyra
   '@code-hike/mdx': 0.8.0_react@18.2.0
   '@heroicons/react': 2.0.13_react@18.2.0
+  '@sanity/image-url': 1.0.2
   '@sanity/webhook': 2.0.0
   '@types/node': 18.11.18
   '@types/react': 18.0.26
@@ -1730,6 +1732,11 @@ packages:
       throttle-debounce: 5.0.0
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /@sanity/image-url/1.0.2:
+    resolution: {integrity: sha512-C4+jb2ny3ZbMgEkLd7Z3C75DsxcTEoE+axXQJsQ75ou0AKWGdVsP351hqK6mJUUxn5HCSlu3vznoh7Yljye4cQ==}
+    engines: {node: '>=10.0.0'}
     dev: false
 
   /@sanity/preview-kit/1.3.1_react@18.2.0:
