@@ -1,8 +1,8 @@
 import { Fragment } from "react";
 import classNames from "classnames";
+import LinkWithIcon from "@/components/LinkWithIcon";
 import { StackOverflowProfile } from "@/lib/stackoverflow";
 import { GitHubProfile } from "@/lib/github";
-import { LinkIcon } from "@heroicons/react/24/outline";
 
 const STACK_OVERFLOW_BADGES = {
   bronze: "bg-[#D1A684]",
@@ -32,17 +32,7 @@ const Contributions = ({
         <div>Pull requests: {github.pullRequests.totalCount}</div>
         <div className="mb-2">Followers: {github.followers.totalCount}</div>
         <div className="flex flex-col items-start">
-          <a
-            href={github.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="no-underline"
-          >
-            <div className="flex items-center">
-              <LinkIcon className="mr-2 h-4 w-4" />
-              <span>{github.url.replace("https://", "")}</span>
-            </div>
-          </a>
+          <LinkWithIcon url={github.url} />
         </div>
       </div>
       <div className="mb-8 flex flex-col text-neutral-600 dark:text-neutral-400">

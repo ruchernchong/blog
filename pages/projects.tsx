@@ -1,11 +1,11 @@
 import { GetStaticProps } from "next";
 import Card from "@/components/Card";
 import Layout from "@/components/Layout";
+import LinkWithIcon from "@/components/LinkWithIcon";
 import StructuredData from "@/components/StructuredData";
 import { StarIcon } from "@heroicons/react/24/outline";
 import { getGitHubPinnedRepositories, PinnedRepository } from "@/lib/github";
 import { WebPage, WithContext } from "schema-dts";
-import { LinkIcon } from "@heroicons/react/24/outline";
 import projects from "@/data/projects";
 
 const Projects = ({
@@ -39,15 +39,7 @@ const Projects = ({
                 <div className="mb-4 text-neutral-600 dark:text-neutral-400">
                   {description}
                 </div>
-                <a
-                  href={link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center"
-                >
-                  <LinkIcon className="mr-2 h-4 w-4" />
-                  <span>{linkText}</span>
-                </a>
+                <LinkWithIcon url={link} />
               </div>
             );
           })}
