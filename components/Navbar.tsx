@@ -68,7 +68,7 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-      <div className="mx-auto hidden max-w-4xl px-4 py-8 md:mb-8 md:block">
+      <div className="mx-auto hidden w-screen max-w-4xl px-4 py-8 md:mb-8 md:block">
         <nav className="flex items-center justify-between">
           <div className="space-x-6">
             {navLinks.map(({ title, href }) => {

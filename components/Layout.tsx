@@ -19,7 +19,7 @@ const Layout = (props) => {
   };
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       <Head>
         <title>{meta.title}</title>
         <meta name="robots" content="follow, index" />
@@ -42,9 +42,9 @@ const Layout = (props) => {
         <link rel="canonical" href={`${HOST_URL}${router.asPath}`} />
       </Head>
       <Navbar />
-      <main className="mx-auto max-w-4xl px-4">{children}</main>
+      <main className="mx-auto w-screen max-w-4xl grow px-4">{children}</main>
       <Footer />
-    </>
+    </div>
   );
 };
 
