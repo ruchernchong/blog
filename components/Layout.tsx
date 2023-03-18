@@ -10,7 +10,8 @@ const Layout = (props) => {
   const router = useRouter();
   const meta = {
     title: "Ru Chern",
-    description: "Developer | Investor | Author",
+    description:
+      "Frontend Developer Singapore. Interested in automating workflows and building in React, Node, and Typescript.",
     author: "Ru Chern Chong",
     image: `${HOST_URL}/cover-image.png`,
     type: "website",
