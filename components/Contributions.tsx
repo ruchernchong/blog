@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import classNames from "classnames";
 import { StackOverflowProfile } from "@/lib/stackoverflow";
 import { GitHubProfile } from "@/lib/github";
+import { LinkIcon } from "@heroicons/react/24/outline";
 
 const STACK_OVERFLOW_BADGES = {
   bronze: "bg-[#D1A684]",
@@ -30,15 +31,17 @@ const Contributions = ({
         </div>
         <div>Pull requests: {github.pullRequests.totalCount}</div>
         <div className="mb-2">Followers: {github.followers.totalCount}</div>
-        <div>
-          Profile:{" "}
+        <div className="flex flex-col items-start">
           <a
             href={github.url}
             target="_blank"
             rel="noopener noreferrer"
-            className=""
+            className="no-underline"
           >
-            {github.url}
+            <div className="flex items-center">
+              <LinkIcon className="mr-2 h-4 w-4" />
+              <span>{github.url.replace("https://", "")}</span>
+            </div>
           </a>
         </div>
       </div>
