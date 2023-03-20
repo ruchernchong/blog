@@ -11,7 +11,7 @@ const Layout = (props) => {
   const meta = {
     title: "Ru Chern",
     description:
-      "Frontend Developer Singapore. Interested in automating workflows and building in React, Node, and Typescript.",
+      "Frontend Developer from Singapore. Interested in automating workflows and building in React, Node, and Typescript.",
     author: "Ru Chern Chong",
     image: `${HOST_URL}/cover-image.png`,
     type: "website",
