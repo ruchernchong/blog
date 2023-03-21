@@ -30,7 +30,7 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <ThemeProvider attribute="class">
-      <Component {...pageProps} key={router.asPath} />
+      <Component {...pageProps} />
       <Analytics />
     </ThemeProvider>
   );
