@@ -48,7 +48,7 @@ const RandomMusingsPage = ({ item }) => {
       type="article"
     >
       <StructuredData data={structuredData} />
-      <article className="prose mx-auto mb-8 max-w-4xl prose-img:rounded-2xl dark:prose-invert">
+      <article className="prose mx-auto mb-16 max-w-4xl prose-img:rounded-2xl dark:prose-invert">
         <Suspense fallback={null}>
           <MDXRemote {...item.content} components={MDXComponents} />
         </Suspense>
