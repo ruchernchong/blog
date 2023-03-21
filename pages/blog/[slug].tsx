@@ -57,7 +57,7 @@ const PostPage = ({ post }) => {
       type="article"
     >
       <StructuredData data={structuredData} />
-      <article className="prose mx-auto mb-6 max-w-4xl prose-img:rounded-2xl dark:prose-invert">
+      <article className="prose mx-auto mb-16 max-w-4xl prose-img:rounded-2xl dark:prose-invert">
         <div className="flex w-full flex-col items-center justify-center text-neutral-600 dark:text-neutral-400 md:flex-row md:items-center">
           <div className="mb-2 flex items-center">
             <CalendarDaysIcon className="mr-2 h-6 w-6" />
