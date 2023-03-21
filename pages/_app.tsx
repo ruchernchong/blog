@@ -3,7 +3,7 @@ import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { ThemeProvider } from "next-themes";
 import { Analytics } from "@vercel/analytics/react";
-import "styles/globals.css";
+import "@/styles/globals.css";
 import "@code-hike/mdx/dist/index.css";
 import "nprogress/nprogress.css";
 import NProgress from "nprogress";

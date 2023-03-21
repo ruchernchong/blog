@@ -1,8 +1,8 @@
 import Link from "next/link";
-import IconGithub from "public/icon-github.svg";
-import IconLinkedIn from "public/icon-linkedin.svg";
-import IconStackOverflow from "public/icon-stackoverflow.svg";
-import IconRss from "public/icon-rss.svg";
+import IconGithub from "@/public/icon-github.svg";
+import IconLinkedIn from "@/public/icon-linkedin.svg";
+import IconStackOverflow from "@/public/icon-stackoverflow.svg";
+import IconRss from "@/public/icon-rss.svg";
 import { HOST_URL } from "@/config";
 import { navLinks } from "@/config/navLinks";
 
