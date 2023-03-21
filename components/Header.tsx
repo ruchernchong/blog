@@ -35,7 +35,7 @@ const Header = () => {
   return (
     <>
       <div className="mb-8 w-screen md:hidden">
-        <div className="mb-2 flex items-center justify-end px-4 py-4">
+        <div className="flex items-center justify-end px-4 py-4">
           <button
             className="flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-200 ring-2 ring-neutral-600 transition-all hover:ring-2 dark:bg-neutral-900"
             onClick={() => setExpand(!expand)}
@@ -68,15 +68,17 @@ const Header = () => {
           </div>
         </div>
       </div>
-      <div className="mx-auto hidden w-screen max-w-4xl px-4 py-8 md:mb-8 md:block">
-        <nav className="flex items-center justify-between">
-          <div className="space-x-6">
-            {navLinks.map(({ title, href }) => {
-              return <NavItem key={title} href={href} title={title} />;
-            })}
-          </div>
-          <ThemeToggle />
-        </nav>
+      <div className="hidden w-screen md:block">
+        <div className="mx-auto max-w-4xl px-4 py-8 md:mb-8">
+          <nav className="flex items-center justify-between">
+            <div className="space-x-6">
+              {navLinks.map(({ title, href }) => {
+                return <NavItem key={title} href={href} title={title} />;
+              })}
+            </div>
+            <ThemeToggle />
+          </nav>
+        </div>
       </div>
     </>
   );
