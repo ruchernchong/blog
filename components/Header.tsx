@@ -20,7 +20,7 @@ const NavItem = ({ href, title }) => {
   );
 };
 
-const Navbar = () => {
+const Header = () => {
   const [expand, setExpand] = useState<boolean>(false);
 
   // TODO: Will find a better way to update this with context and _document.tsx
@@ -82,4 +82,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Header;

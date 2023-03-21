@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import Navbar from "@/components/Navbar";
+import Header from "@/components/Header";
 import Footer from "./Footer";
 
 import { HOST_URL } from "@/config";
@@ -41,7 +41,7 @@ const Layout = (props) => {
         )}
         <link rel="canonical" href={`${HOST_URL}${router.asPath}`} />
       </Head>
-      <Navbar />
+      <Header />
       <main className="mx-auto w-screen max-w-4xl grow px-4">{children}</main>
       <Footer />
     </div>
