@@ -25,14 +25,12 @@ const Projects = ({
   return (
     <Layout title="Projects - Ru Chern" description={pageDescription}>
       <StructuredData data={structuredData} />
-      <div className="mb-8 flex flex-col">
+      <div className="mb-16 flex flex-col">
         <h1 className="mb-4 text-3xl font-bold md:text-4xl">Projects</h1>
         <div className="mb-8">
           {projects.map(({ name, description, link }) => {
-            const linkText = link.replace("https://", "");
-
             return (
-              <div key={name} className="flex flex-col items-start">
+              <div key={name} className="mb-8 flex flex-col items-start">
                 <h3 className="mb-2 text-lg font-semibold md:text-2xl">
                   {name}
                 </h3>
