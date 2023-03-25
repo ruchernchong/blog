@@ -4,8 +4,10 @@ import Author from "@/components/Author";
 import BlogPost from "@/components/BlogPost";
 import FeaturedPosts from "@/components/FeaturedPosts";
 import StructuredData from "@/components/StructuredData";
+import Tag from "@/components/Tag";
 import { featuredPostsQuery, postsQuery } from "@/lib/queries";
 import { sanityClient } from "@/lib/sanity-server";
+import { isFeatureEnabled } from "@/lib/isFeatureEnabled";
 import { Post } from "@/lib/types";
 import { WebSite, WithContext } from "schema-dts";
 import { HOST_URL } from "@/config";
@@ -46,6 +48,15 @@ const Home = ({
         <div className="mb-6 text-lg text-neutral-600 dark:text-neutral-400">
           Blog posts on mostly front-end development.
         </div>
+        {/* TODO: THIS IS JUST FOR DEMO ON DEVELOPMENT ONLY */}
+        {isFeatureEnabled(process.env.NEXT_PUBLIC_FEATURE_TAGS) && (
+          <div className="mb-4 flex flex-row space-x-4">
+            <Tag>React</Tag>
+            <Tag isSelected={true}>Next.js</Tag>
+            <Tag>JavaScript</Tag>
+            <Tag>TypeScript</Tag>
+          </div>
+        )}
         {posts.length === 0 && (
           <h3 className="text-center italic">
             There are no posts to display. Get started and write your first one!
