@@ -40,6 +40,8 @@ const Projects = ({
                 </div>
                 <div className="mb-4 flex flex-wrap gap-2">
                   {stacks?.map((stack) => {
+                    stack = stack.toLowerCase();
+
                     return (
                       <Chip key={stack} size="small">
                         {stack}
