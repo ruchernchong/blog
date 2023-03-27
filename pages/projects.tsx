@@ -2,7 +2,7 @@ import { GetStaticProps } from "next";
 import Card from "@/components/Card";
 import Layout from "@/components/Layout";
 import LinkWithIcon from "@/components/LinkWithIcon";
-import Tag from "@/components/Tag";
+import Chip from "@/components/Chip";
 import StructuredData from "@/components/StructuredData";
 import { StarIcon } from "@heroicons/react/24/outline";
 import { getGitHubPinnedRepositories, PinnedRepository } from "@/lib/github";
@@ -41,9 +41,9 @@ const Projects = ({
                 <div className="mb-4 flex flex-wrap gap-2">
                   {stacks?.map((stack) => {
                     return (
-                      <Tag key={stack} size="small">
+                      <Chip key={stack} size="small">
                         {stack}
-                      </Tag>
+                      </Chip>
                     );
                   })}
                 </div>

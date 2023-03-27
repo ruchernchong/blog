@@ -9,7 +9,11 @@ interface TagProps extends PropsWithChildren {
   size?: Size;
 }
 
-const Tag = ({ variant = "outlined", size = "medium", ...props }: TagProps) => {
+const Chip = ({
+  variant = "outlined",
+  size = "medium",
+  ...props
+}: TagProps) => {
   return (
     <button
       type="button"
@@ -28,4 +32,4 @@ const Tag = ({ variant = "outlined", size = "medium", ...props }: TagProps) => {
   );
 };
 
-export default Tag;
+export default Chip;
