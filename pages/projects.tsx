@@ -2,6 +2,7 @@ import { GetStaticProps } from "next";
 import Card from "@/components/Card";
 import Layout from "@/components/Layout";
 import LinkWithIcon from "@/components/LinkWithIcon";
+import Tag from "@/components/Tag";
 import StructuredData from "@/components/StructuredData";
 import { StarIcon } from "@heroicons/react/24/outline";
 import { getGitHubPinnedRepositories, PinnedRepository } from "@/lib/github";
@@ -28,7 +29,7 @@ const Projects = ({
       <div className="mb-16 flex flex-col">
         <h1 className="mb-4 text-3xl font-bold md:text-4xl">Projects</h1>
         <div className="mb-8">
-          {projects.map(({ name, description, link }) => {
+          {projects.map(({ name, description, stacks, link }) => {
             return (
               <div key={name} className="mb-8 flex flex-col items-start">
                 <h3 className="mb-2 text-lg font-semibold md:text-2xl">
@@ -36,6 +37,15 @@ const Projects = ({
                 </h3>
                 <div className="mb-4 text-neutral-600 dark:text-neutral-400">
                   {description}
+                </div>
+                <div className="mb-4 flex flex-wrap gap-2">
+                  {stacks?.map((stack) => {
+                    return (
+                      <Tag key={stack} size="small">
+                        {stack}
+                      </Tag>
+                    );
+                  })}
                 </div>
                 <LinkWithIcon url={link} />
               </div>
