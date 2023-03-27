@@ -29,7 +29,7 @@ const Projects = ({
       <div className="mb-16 flex flex-col">
         <h1 className="mb-4 text-3xl font-bold md:text-4xl">Projects</h1>
         <div className="mb-8">
-          {projects.map(({ name, description, stacks, link }) => {
+          {projects.map(({ name, description, skills, link }) => {
             return (
               <div key={name} className="mb-8 flex flex-col items-start">
                 <h3 className="mb-2 text-lg font-semibold md:text-2xl">
@@ -39,12 +39,12 @@ const Projects = ({
                   {description}
                 </div>
                 <div className="mb-4 flex flex-wrap gap-2">
-                  {stacks?.map((stack) => {
-                    stack = stack.toLowerCase();
+                  {skills?.map((skill) => {
+                    skill = skill.toLowerCase();
 
                     return (
-                      <Chip key={stack} size="small">
-                        {stack}
+                      <Chip key={skill} size="small">
+                        {skill}
                       </Chip>
                     );
                   })}

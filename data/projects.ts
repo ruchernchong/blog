@@ -1,7 +1,7 @@
 type Project = {
   name: string;
   description: string;
-  stacks?: string[];
+  skills?: string[];
   link: string;
 };
 
@@ -10,7 +10,7 @@ const projects: Project[] = [
     name: "Singtel eShop",
     description:
       "Online e-commerce shop for mobile phones and mobile plans for Singapore's largest telecommunication company. Built with React and Gatsby. Hosted on AWS.",
-    stacks: [
+    skills: [
       "gatsby",
       "react",
       "javascript",
@@ -25,7 +25,7 @@ const projects: Project[] = [
     name: "CPF Calculator",
     description:
       "An income estimator with CPF contribution following the new changes to the income ceiling announced at the Singapore Budget 2023",
-    stacks: ["vite", "vitest", "react", "typescript", "tailwind css", "vercel"],
+    skills: ["vite", "vitest", "react", "typescript", "tailwind css", "vercel"],
     link: "https://cpf-calculator.vercel.app",
   },
 ];
