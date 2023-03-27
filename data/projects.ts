@@ -17,6 +17,7 @@ const projects: Project[] = [
     name: "CPF Calculator",
     description:
       "An income estimator with CPF contribution following the new changes to the income ceiling announced at the Singapore Budget 2023",
+    stacks: ["vite", "vitest", "react", "typescript", "tailwind css", "vercel"],
     link: "https://cpf-calculator.vercel.app",
   },
 ];
