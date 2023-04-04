@@ -2,6 +2,21 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { isValidSignature, SIGNATURE_HEADER_NAME } from "@sanity/webhook";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const pageFromQuery = req.query.page as string;
+
+  if (pageFromQuery) {
+    if (req.query.secret !== process.env.NEXT_REVALIDATE_TOKEN) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
+    try {
+      await res.revalidate(`/${pageFromQuery}`);
+      return res.json({ revalidated: true });
+    } catch (e) {
+      return res.status(500).send("Error revalidating");
+    }
+  }
+
   const signature = req.headers[SIGNATURE_HEADER_NAME] as string;
   const body = await readBody(req);
 
