@@ -22,11 +22,11 @@ const projects: Project[] = [
     link: "https://shop.singtel.com",
   },
   {
-    name: "CPF Calculator",
+    name: "CPF Contribution Calculator",
     description:
       "An income estimator with CPF contribution following the new changes to the income ceiling announced at the Singapore Budget 2023",
     skills: ["vite", "vitest", "react", "typescript", "tailwind css", "vercel"],
-    link: "https://cpf-calculator.vercel.app",
+    link: "https://cpf-contribution-calculator.vercel.app",
   },
 ];
 
