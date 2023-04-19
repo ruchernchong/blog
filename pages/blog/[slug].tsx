@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
+import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
+import Card from "@/components/Card";
 import Layout from "@/components/Layout";
 import MDXComponents from "@/components/MDXComponents";
 import StructuredData from "@/components/StructuredData";
@@ -11,8 +13,7 @@ import { MDXRemote } from "next-mdx-remote";
 import readingTime from "reading-time";
 import { HOST_URL } from "@/config";
 import { BlogPosting, WithContext } from "schema-dts";
-import { CalendarDaysIcon } from "@heroicons/react/24/outline";
-import { BookOpenIcon } from "@heroicons/react/24/outline";
+import { BookOpenIcon, CalendarDaysIcon } from "@heroicons/react/24/outline";
 
 const PostPage = ({ post }) => {
   const publishedDate = post.publishedDate;
@@ -77,6 +78,28 @@ const PostPage = ({ post }) => {
           <MDXRemote {...post.mdxSource} components={MDXComponents} />
         </Suspense>
       </article>
+      <div className="mb-16 grid gap-y-4 md:grid-cols-2 md:gap-x-4">
+        {post.previous && (
+          <Link href={post.previous.slug}>
+            <Card>
+              <div className="text-neutral-900 dark:text-neutral-400">
+                Previous:
+              </div>
+              <div>{post.previous.title}</div>
+            </Card>
+          </Link>
+        )}
+        {post.next && (
+          <Link href={post.next.slug}>
+            <Card className="flex flex-col items-end">
+              <div className="text-neutral-900 dark:text-neutral-400">
+                Next:
+              </div>
+              <div>{post.next.title}</div>
+            </Card>
+          </Link>
+        )}
+      </div>
     </Layout>
   );
 };
@@ -91,7 +114,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { post } = await sanityClient.fetch(postQuery, {
+  const { post, previous, next } = await sanityClient.fetch(postQuery, {
     slug: params.slug,
   });
 
@@ -107,6 +130,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     props: {
       post: {
         ...post,
+        previous,
+        next,
         mdxSource,
         readingTime: readingTime(post.content).text,
       },

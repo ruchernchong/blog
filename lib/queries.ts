@@ -8,9 +8,19 @@ export const featuredPostsQuery = `*[_type == "post" && featured == true] | orde
     "slug": slug.current
 }`;
 
-export const postQuery = `{
-    "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0]
-}`;
+export const postQuery = `*[_type == "post" && slug.current == $slug] {
+    "post": {
+        ...
+    },
+    "previous": *[^.publishedDate > publishedDate] | order(publishedDate desc) [0] {
+        title,
+        "slug": slug.current
+    },
+    "next": *[^.publishedDate < publishedDate] | order(publishedDate asc) [0] {
+        title,
+        "slug": slug.current
+    }
+} | order(publishedDate desc) [0]`;
 
 export const postSlugsQuery = `*[_type == "post" && defined(slug.current)][].slug.current`;
 
