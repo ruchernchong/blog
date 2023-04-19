@@ -84,10 +84,13 @@ const PostPage = ({ post }) => {
       </article>
       <div className="mb-16 grid gap-y-4 md:grid-cols-2 md:gap-x-4">
         <Card
-          className={classNames("flex cursor-pointer flex-col items-start", {
-            "pointer-events-none opacity-0": !previousPost,
-            "opacity-100": previousPost,
-          })}
+          className={classNames(
+            "flex cursor-pointer flex-col items-start text-left",
+            {
+              "pointer-events-none opacity-0": !previousPost,
+              "opacity-100": previousPost,
+            }
+          )}
           onClick={() => router.push(previousPost?.slug)}
         >
           <div className="text-neutral-900 dark:text-neutral-400">
@@ -96,10 +99,13 @@ const PostPage = ({ post }) => {
           <div>{previousPost?.title}</div>
         </Card>
         <Card
-          className={classNames("flex cursor-pointer flex-col items-end", {
-            "pointer-events-none opacity-0": !nextPost,
-            "opacity-100": nextPost,
-          })}
+          className={classNames(
+            "flex cursor-pointer flex-col items-end text-right",
+            {
+              "pointer-events-none opacity-0": !nextPost,
+              "opacity-100": nextPost,
+            }
+          )}
           onClick={() => router.push(nextPost?.slug)}
         >
           <div className="text-neutral-900 dark:text-neutral-400">Next:</div>
