@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
-import Link from "next/link";
+import { useRouter } from "next/router";
+import classNames from "classnames";
 import { format, formatISO, parseISO } from "date-fns";
 import Card from "@/components/Card";
 import Layout from "@/components/Layout";
@@ -16,7 +17,10 @@ import { BlogPosting, WithContext } from "schema-dts";
 import { BookOpenIcon, CalendarDaysIcon } from "@heroicons/react/24/outline";
 
 const PostPage = ({ post }) => {
+  const router = useRouter();
   const publishedDate = post.publishedDate;
+  const previousPost = post.previous;
+  const nextPost = post.next;
 
   const formattedDate = format(parseISO(publishedDate), "dd MMMM yyyy");
   const ogImageUrlParams = {
@@ -79,26 +83,28 @@ const PostPage = ({ post }) => {
         </Suspense>
       </article>
       <div className="mb-16 grid gap-y-4 md:grid-cols-2 md:gap-x-4">
-        {post.previous && (
-          <Link href={post.previous.slug}>
-            <Card>
-              <div className="text-neutral-900 dark:text-neutral-400">
-                Previous:
-              </div>
-              <div>{post.previous.title}</div>
-            </Card>
-          </Link>
-        )}
-        {post.next && (
-          <Link href={post.next.slug}>
-            <Card className="flex flex-col items-end">
-              <div className="text-neutral-900 dark:text-neutral-400">
-                Next:
-              </div>
-              <div>{post.next.title}</div>
-            </Card>
-          </Link>
-        )}
+        <Card
+          className={classNames("flex cursor-pointer flex-col items-start", {
+            "pointer-events-none opacity-0": !previousPost,
+            "opacity-100": previousPost,
+          })}
+          onClick={() => router.push(previousPost?.slug)}
+        >
+          <div className="text-neutral-900 dark:text-neutral-400">
+            Previous:
+          </div>
+          <div>{previousPost?.title}</div>
+        </Card>
+        <Card
+          className={classNames("flex cursor-pointer flex-col items-end", {
+            "pointer-events-none opacity-0": !nextPost,
+            "opacity-100": nextPost,
+          })}
+          onClick={() => router.push(nextPost?.slug)}
+        >
+          <div className="text-neutral-900 dark:text-neutral-400">Next:</div>
+          <div>{nextPost?.title}</div>
+        </Card>
       </div>
     </Layout>
   );
