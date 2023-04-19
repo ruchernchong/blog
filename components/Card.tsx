@@ -3,7 +3,7 @@ import classNames from "classnames/dedupe";
 
 interface CardProps extends PropsWithChildren {
   className?: string;
-  onClick: MouseEventHandler<HTMLDivElement>;
+  onClick?: MouseEventHandler<HTMLDivElement>;
 }
 
 const Card = (props: CardProps) => {
