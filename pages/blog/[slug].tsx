@@ -1,6 +1,9 @@
 import { Suspense } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
+import { useRouter } from "next/router";
+import classNames from "classnames";
 import { format, formatISO, parseISO } from "date-fns";
+import Card from "@/components/Card";
 import Layout from "@/components/Layout";
 import MDXComponents from "@/components/MDXComponents";
 import StructuredData from "@/components/StructuredData";
@@ -11,11 +14,13 @@ import { MDXRemote } from "next-mdx-remote";
 import readingTime from "reading-time";
 import { HOST_URL } from "@/config";
 import { BlogPosting, WithContext } from "schema-dts";
-import { CalendarDaysIcon } from "@heroicons/react/24/outline";
-import { BookOpenIcon } from "@heroicons/react/24/outline";
+import { BookOpenIcon, CalendarDaysIcon } from "@heroicons/react/24/outline";
 
 const PostPage = ({ post }) => {
+  const router = useRouter();
   const publishedDate = post.publishedDate;
+  const previousPost = post.previous;
+  const nextPost = post.next;
 
   const formattedDate = format(parseISO(publishedDate), "dd MMMM yyyy");
   const ogImageUrlParams = {
@@ -77,6 +82,30 @@ const PostPage = ({ post }) => {
           <MDXRemote {...post.mdxSource} components={MDXComponents} />
         </Suspense>
       </article>
+      <div className="mb-16 grid gap-y-4 md:grid-cols-2 md:gap-x-4">
+        <Card
+          className={classNames("flex cursor-pointer flex-col items-start", {
+            "pointer-events-none opacity-0": !previousPost,
+            "opacity-100": previousPost,
+          })}
+          onClick={() => router.push(previousPost?.slug)}
+        >
+          <div className="text-neutral-900 dark:text-neutral-400">
+            Previous:
+          </div>
+          <div>{previousPost?.title}</div>
+        </Card>
+        <Card
+          className={classNames("flex cursor-pointer flex-col items-end", {
+            "pointer-events-none opacity-0": !nextPost,
+            "opacity-100": nextPost,
+          })}
+          onClick={() => router.push(nextPost?.slug)}
+        >
+          <div className="text-neutral-900 dark:text-neutral-400">Next:</div>
+          <div>{nextPost?.title}</div>
+        </Card>
+      </div>
     </Layout>
   );
 };
@@ -91,7 +120,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { post } = await sanityClient.fetch(postQuery, {
+  const { post, previous, next } = await sanityClient.fetch(postQuery, {
     slug: params.slug,
   });
 
@@ -107,6 +136,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     props: {
       post: {
         ...post,
+        previous,
+        next,
         mdxSource,
         readingTime: readingTime(post.content).text,
       },
