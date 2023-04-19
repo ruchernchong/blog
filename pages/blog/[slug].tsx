@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import classNames from "classnames";
 import { format, formatISO, parseISO } from "date-fns";
 import Card from "@/components/Card";
@@ -10,13 +10,22 @@ import StructuredData from "@/components/StructuredData";
 import { mdxToHtml } from "@/lib/mdxToHtml";
 import { postQuery, postSlugsQuery } from "@/lib/queries";
 import { sanityClient } from "@/lib/sanity-server";
+import { Post } from "@/lib/types";
 import { MDXRemote } from "next-mdx-remote";
 import readingTime from "reading-time";
 import { HOST_URL } from "@/config";
 import { BlogPosting, WithContext } from "schema-dts";
 import { BookOpenIcon, CalendarDaysIcon } from "@heroicons/react/24/outline";
 
-const PostPage = ({ post }) => {
+interface WithRouterProps {
+  router: NextRouter;
+}
+
+interface PostPageProps extends WithRouterProps {
+  post: Post;
+}
+
+const PostPage = ({ post }: PostPageProps) => {
   const router = useRouter();
   const publishedDate = post.publishedDate;
   const previousPost = post.previous;
@@ -37,7 +46,7 @@ const PostPage = ({ post }) => {
     headline: post.title,
     image: ogImageUrl,
     description: post.excerpt,
-    url: `${HOST_URL}/blog/${post.slug.current}`,
+    url: `${HOST_URL}/blog/${post.slug}`,
     author: [
       {
         "@type": "Person",

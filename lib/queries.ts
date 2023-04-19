@@ -10,7 +10,8 @@ export const featuredPostsQuery = `*[_type == "post" && featured == true] | orde
 
 export const postQuery = `*[_type == "post" && slug.current == $slug] {
     "post": {
-        ...
+        ...,
+        "slug": slug.current
     },
     "previous": *[^.publishedDate > publishedDate] | order(publishedDate desc) [0] {
         title,
