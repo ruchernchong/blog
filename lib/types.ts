@@ -8,8 +8,8 @@ export type Post = {
   publishedDate: string;
   mdxSource?: MDXRemoteSerializeResult;
   readingTime?: string;
-  previous: Pick<Post, "title" | "slug">;
-  next: Pick<Post, "title" | "slug">;
+  previous?: Pick<Post, "title" | "slug">;
+  next?: Pick<Post, "title" | "slug">;
 };
 
 export type RandomMusing = {
