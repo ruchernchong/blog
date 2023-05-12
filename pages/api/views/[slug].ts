@@ -5,16 +5,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { method, query } = req;
     const slug = query?.slug as string;
-    console.log(`Slug`, slug);
 
     if (!slug) {
       return res.status(400).json({ message: "Invalid slug" });
     }
 
-    const data = await prisma.views.findMany();
-    console.log(`Data`, data);
-    const views = data.length === 0 ? 0 : Number(data[0].count);
-    console.log(`Views`, views);
+    const data = await prisma.views.findMany({
+      where: {
+        slug: { equals: slug },
+      },
+    });
+    const views = data.length === 0 ? 0 : data.at(0).count;
 
     switch (method) {
       case "POST":
