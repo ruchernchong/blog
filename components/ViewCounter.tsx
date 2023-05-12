@@ -16,7 +16,7 @@ const ViewCounter = ({ slug }: ViewCounterProps) => {
   useEffect(() => {
     fetch(`/api/views/${slug}`, {
       method: "POST",
-    }).then((res) => console.log(res.json()));
+    });
   }, [slug]);
 
   return <div className="">{viewCount} views</div>;

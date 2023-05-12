@@ -11,11 +11,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       return res.status(400).json({ message: "Invalid slug" });
     }
 
-    const data = await prisma.views.findFirst({
-      where: { slug },
-    });
+    const data = await prisma.views.findMany();
     console.log(`Data`, data);
-    const views = data.count;
+    const views = data.length === 0 ? 0 : Number(data[0].count);
     console.log(`Views`, views);
 
     switch (method) {
