@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
+import Script from "next/script";
 import { ThemeProvider } from "next-themes";
 import { Analytics } from "@vercel/analytics/react";
 import "@/styles/globals.css";
@@ -10,6 +11,8 @@ import NProgress from "nprogress";
 
 const App = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
+
+  const gaMeasurementId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS;
 
   useEffect(() => {
     NProgress.configure({ showSpinner: false });
@@ -29,10 +32,25 @@ const App = ({ Component, pageProps }: AppProps) => {
   }, [router.events]);
 
   return (
-    <ThemeProvider attribute="class">
-      <Component {...pageProps} />
-      <Analytics />
-    </ThemeProvider>
+    <>
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+        strategy="lazyOnload"
+      />
+      <Script id="google-analytics" strategy="lazyOnload">
+        {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            
+            gtag('config', '${gaMeasurementId}');
+        `}
+      </Script>
+      <ThemeProvider attribute="class">
+        <Component {...pageProps} />
+        <Analytics />
+      </ThemeProvider>
+    </>
   );
 };
 
