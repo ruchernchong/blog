@@ -7,6 +7,7 @@ import Card from "@/components/Card";
 import Layout from "@/components/Layout";
 import MDXComponents from "@/components/MDXComponents";
 import StructuredData from "@/components/StructuredData";
+import ViewCounter from "@/components/ViewCounter";
 import { mdxToHtml } from "@/lib/mdxToHtml";
 import { postQuery, postSlugsQuery } from "@/lib/queries";
 import { sanityClient } from "@/lib/sanity-server";
@@ -84,6 +85,8 @@ const PostPage = ({ post }: PostPageProps) => {
             <div className="mx-2">&middot;</div>
             <BookOpenIcon className="mr-2 h-6 w-6" />
             <div>{post.readingTime}</div>
+            <div className="mx-2">&middot;</div>
+            <ViewCounter slug={post.slug} />
           </div>
         </div>
         <h1 className="text-center">{post.title}</h1>
