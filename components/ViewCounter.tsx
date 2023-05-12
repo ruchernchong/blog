@@ -5,7 +5,7 @@ type ViewCounterProps = {
   slug: string;
 };
 
-const ViewCounter = (slug: ViewCounterProps) => {
+const ViewCounter = ({ slug }: ViewCounterProps) => {
   // @ts-ignore
   const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
