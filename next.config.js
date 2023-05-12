@@ -21,7 +21,7 @@ module.exports = {
 // Recommended configuration: https://nextjs.org/docs/advanced-features/security-headers
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline';
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' *.googletagmanager.com *.vercel.live *.vercel-insights.com;
   style-src 'self' 'unsafe-inline';
   connect-src *;
   font-src 'self';
