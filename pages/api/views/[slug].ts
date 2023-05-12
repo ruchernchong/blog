@@ -5,6 +5,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { method, query } = req;
     const slug = query?.slug as string;
+    console.log(`Slug`, slug);
 
     if (!slug) {
       return res.status(400).json({ message: "Invalid slug" });
@@ -13,7 +14,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const data = await prisma.views.findFirst({
       where: { slug },
     });
+    console.log(`Data`, data);
     const views = data.count;
+    console.log(`Views`, views);
 
     switch (method) {
       case "POST":
