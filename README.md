@@ -6,13 +6,14 @@ Site: https://ruchern.xyz
 - Deployment: [Vercel](https://vercel.com)
 - CMS: [Sanity](https://sanity.io)
 - Styling: [Tailwind CSS](https://tailwindcss.com)
+- Database: [Planetscale](https://planetscale.com)
+- ORM: [Prisma](https://prisma.io)
 
 ## TODO
 
 Portfolio site is now going into maintenance mode and will stop developing new features. Main goal is to clean up, optimise and prepare to migrate to use the `/app` directory.
 
 - [ ] Tidy up the components
-- [x] Remove all the remaining feature flags that are currently disabled on production
 - [ ] Complete writing the remaining drafts that are scheduled
 
 ## Overview
