@@ -16,7 +16,11 @@ import { MDXRemote } from "next-mdx-remote";
 import readingTime from "reading-time";
 import { HOST_URL } from "@/config";
 import { BlogPosting, WithContext } from "schema-dts";
-import { BookOpenIcon, CalendarDaysIcon } from "@heroicons/react/24/outline";
+import {
+  BookOpenIcon,
+  CalendarDaysIcon,
+  EyeIcon,
+} from "@heroicons/react/24/outline";
 
 interface WithRouterProps {
   router: NextRouter;
@@ -73,20 +77,25 @@ const PostPage = ({ post }: PostPageProps) => {
     >
       <StructuredData data={structuredData} />
       <article className="prose mx-auto mb-16 max-w-4xl prose-img:rounded-2xl dark:prose-invert">
-        <div className="flex w-full flex-col items-center justify-center text-neutral-600 dark:text-neutral-400 md:flex-row md:items-center">
-          <div className="mb-2 flex items-center">
-            <CalendarDaysIcon className="mr-2 h-6 w-6" />
-            <time
-              dateTime={formatISO(parseISO(publishedDate))}
-              title={formattedDate}
-            >
-              {formattedDate}
-            </time>
-            <div className="mx-2">&middot;</div>
-            <BookOpenIcon className="mr-2 h-6 w-6" />
-            <div>{post.readingTime}</div>
-            <div className="mx-2">&middot;</div>
-            <ViewCounter slug={post.slug} />
+        <div className="flex flex-col items-center justify-center text-neutral-600 dark:text-neutral-400 md:flex-row">
+          <div className="mb-2 flex flex-col md:flex-row">
+            <div className="flex items-center justify-center">
+              <CalendarDaysIcon className="mr-2 h-6 w-6" />
+              <time
+                dateTime={formatISO(parseISO(publishedDate))}
+                title={formattedDate}
+              >
+                {formattedDate}
+              </time>
+            </div>
+            <div className="flex items-center justify-center">
+              <div className="mx-2 hidden md:block">&middot;</div>
+              <BookOpenIcon className="mr-2 h-6 w-6" />
+              <div>{post.readingTime}</div>
+              <div className="mx-2">&middot;</div>
+              <EyeIcon className="mr-2 h-6 w-6" />
+              <ViewCounter slug={post.slug} />
+            </div>
           </div>
         </div>
         <h1 className="text-center">{post.title}</h1>
