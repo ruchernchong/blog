@@ -37,6 +37,7 @@ const Header = () => {
       <div className="mb-8 w-screen md:hidden">
         <div className="flex items-center justify-end px-4 py-4">
           <button
+            aria-label="Mobile menu"
             className="flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-200 ring-2 ring-neutral-600 transition-all hover:ring-2 dark:bg-neutral-900"
             onClick={() => setExpand(!expand)}
           >
