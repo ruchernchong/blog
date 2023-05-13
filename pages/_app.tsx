@@ -35,9 +35,8 @@ const App = ({ Component, pageProps }: AppProps) => {
     <>
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
-        strategy="lazyOnload"
       />
-      <Script id="google-analytics" strategy="lazyOnload">
+      <Script id="google-analytics">
         {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
