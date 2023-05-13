@@ -1,5 +1,3 @@
-import { GetStaticProps, InferGetStaticPropsType } from "next";
-import Layout from "@/components/Layout";
 import Author from "@/components/Author";
 import BlogPost from "@/components/BlogPost";
 import FeaturedPosts from "@/components/FeaturedPosts";
@@ -10,10 +8,10 @@ import { Post } from "@/lib/types";
 import { WebSite, WithContext } from "schema-dts";
 import { HOST_URL } from "@/config";
 
-const Home = ({
-  posts,
-  featuredPosts,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+const HomePage = async () => {
+  const posts: Post[] = await sanityClient.fetch(postsQuery);
+  const featuredPosts: Post[] = await sanityClient.fetch(featuredPostsQuery);
+
   const structuredData: WithContext<WebSite> = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -27,7 +25,7 @@ const Home = ({
   };
 
   return (
-    <Layout title="Ru Chern">
+    <>
       <StructuredData data={structuredData} />
       <div className="mx-auto mb-8 flex max-w-4xl flex-col justify-center">
         <Author
@@ -66,20 +64,8 @@ const Home = ({
             })}
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 
-export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
-  const posts: Post[] = await sanityClient.fetch(postsQuery);
-  const featuredPosts: Post[] = await sanityClient.fetch(featuredPostsQuery);
-
-  return {
-    props: {
-      posts,
-      featuredPosts,
-    },
-  };
-};
-
-export default Home;
+export default HomePage;

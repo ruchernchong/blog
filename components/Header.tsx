@@ -1,5 +1,7 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import NextLink from "next/link";
 import classNames from "classnames";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -7,8 +9,8 @@ import { Bars3Icon } from "@heroicons/react/24/outline";
 import { navLinks } from "@/config/navLinks";
 
 const NavItem = ({ href, title }) => {
-  const router = useRouter();
-  const isActive = router.asPath === href;
+  const pathname = usePathname();
+  const isActive = pathname === href;
 
   return (
     <NextLink

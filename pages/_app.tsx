@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import Script from "next/script";
 import { ThemeProvider } from "next-themes";
 import { Analytics } from "@vercel/analytics/react";
-import "@/styles/globals.css";
+import "@/app/globals.css";
 import "@code-hike/mdx/dist/index.css";
 import "nprogress/nprogress.css";
 import NProgress from "nprogress";
