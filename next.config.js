@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-module.exports = {
+const nextConfig = {
   reactStrictMode: true,
   images: {
     domains: ["cdn.sanity.io"],
@@ -61,3 +61,9 @@ const securityHeaders = [
     value: ContentSecurityPolicy.replace(/\s{2,}/g, " ").trim(),
   },
 ];
+
+const withBundleAnalyser = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYSE === "true",
+});
+
+module.exports = withBundleAnalyser(nextConfig);
