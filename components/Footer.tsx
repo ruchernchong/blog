@@ -3,11 +3,11 @@ import { HOST_URL } from "@/config";
 import { navLinks } from "@/config/navLinks";
 
 import {
-  SiGithub,
-  SiLinkedin,
-  SiRss,
-  SiStackoverflow,
-  SiTwitter,
+  Github as SiGithub,
+  Linkedin as SiLinkedin,
+  Rss as SiRss,
+  Stackoverflow as SiStackoverflow,
+  Twitter as SiTwitter,
 } from "@icons-pack/react-simple-icons";
 
 const LinkHeader = ({ children }) => {
