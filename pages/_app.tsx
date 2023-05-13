@@ -45,7 +45,7 @@ const App = ({ Component, pageProps }: AppProps) => {
             gtag('config', '${gaMeasurementId}');
         `}
       </Script>
-      <ThemeProvider attribute="class">
+      <ThemeProvider attribute="class" defaultTheme="dark">
         <Component {...pageProps} />
         <Analytics />
       </ThemeProvider>
