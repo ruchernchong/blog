@@ -54,7 +54,7 @@ const Employment = ({ companies }) => {
         <a
           href="https://linkedin.com/in/ruchernchong"
           target="_blank"
-          rel="nofollow noreferrer"
+          rel="noopener noreferrer"
         >
           LinkedIn
         </a>

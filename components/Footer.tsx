@@ -20,7 +20,7 @@ const ExternalLink = ({ href, children }) => {
       <a
         href={href}
         target="_blank"
-        rel="me noopenner noreferrer nofollow"
+        rel="noopenner noreferrer"
         aria-label="Link to social media"
         className="flex items-center font-semibold"
       >
