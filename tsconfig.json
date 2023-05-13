@@ -16,8 +16,15 @@
     "incremental": true,
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    // TODO: Come back later to re-enable this as recommended
+    "strictNullChecks": false
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }

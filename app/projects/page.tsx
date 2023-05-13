@@ -1,19 +1,15 @@
-import { GetStaticProps } from "next";
 import Card from "@/components/Card";
-import Layout from "@/components/Layout";
 import LinkWithIcon from "@/components/LinkWithIcon";
 import Chip from "@/components/Chip";
 import StructuredData from "@/components/StructuredData";
 import { StarIcon } from "@heroicons/react/24/outline";
-import { getGitHubPinnedRepositories, PinnedRepository } from "@/lib/github";
+import { getGitHubPinnedRepositories } from "@/lib/github";
 import { WebPage, WithContext } from "schema-dts";
 import projects from "@/data/projects";
 
-const Projects = ({
-  pinnedRepositories,
-}: {
-  pinnedRepositories: PinnedRepository[];
-}) => {
+const ProjectsPage = async () => {
+  const pinnedRepositories = await getGitHubPinnedRepositories();
+
   const pageDescription: string =
     "Project showcase of past works and experimenting with different technologies";
   const structuredData: WithContext<WebPage> = {
@@ -24,7 +20,7 @@ const Projects = ({
   };
 
   return (
-    <Layout title="Projects - Ru Chern" description={pageDescription}>
+    <>
       <StructuredData data={structuredData} />
       <div className="mb-16 flex flex-col">
         <h1 className="mb-4 text-3xl font-bold md:text-4xl">Projects</h1>
@@ -79,18 +75,8 @@ const Projects = ({
           )}
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 
-export const getStaticProps: GetStaticProps = async () => {
-  const pinnedRepositories = await getGitHubPinnedRepositories();
-
-  return {
-    props: {
-      pinnedRepositories,
-    },
-  };
-};
-
-export default Projects;
+export default ProjectsPage;

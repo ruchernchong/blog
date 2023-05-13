@@ -1,16 +1,14 @@
-import { GetStaticProps, InferGetStaticPropsType } from "next";
 import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
-import Layout from "@/components/Layout";
 import { RandomMusing } from "@/lib/types";
 
-const RandomMusings = ({
-  items,
-}: {
-  items: RandomMusing[];
-}): InferGetStaticPropsType<typeof getStaticProps> => {
+const RandomMusingsPage = async () => {
+  const items: RandomMusing[] = await fetch(
+    "https://raw.githubusercontent.com/ruchernchong/random-musings/main/feed.json"
+  ).then((res) => res.json());
+
   return (
-    <Layout title="Random Musings - Ru Chern">
+    <>
       <div className="mx-auto mb-8 flex max-w-4xl flex-col items-start justify-center">
         <div className="mb-8">
           <h2 className="mb-4 text-3xl font-bold md:text-4xl">
@@ -45,20 +43,8 @@ const RandomMusings = ({
           );
         })}
       </div>
-    </Layout>
+    </>
   );
 };
 
-export const getStaticProps: GetStaticProps = async () => {
-  const items: RandomMusing[] = await fetch(
-    "https://raw.githubusercontent.com/ruchernchong/random-musings/main/feed.json"
-  ).then((res) => res.json());
-
-  return {
-    props: {
-      items,
-    },
-  };
-};
-
-export default RandomMusings;
+export default RandomMusingsPage;
