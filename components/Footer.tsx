@@ -1,10 +1,14 @@
 import Link from "next/link";
-import IconGithub from "@/public/icon-github.svg";
-import IconLinkedIn from "@/public/icon-linkedin.svg";
-import IconStackOverflow from "@/public/icon-stackoverflow.svg";
-import IconRss from "@/public/icon-rss.svg";
 import { HOST_URL } from "@/config";
 import { navLinks } from "@/config/navLinks";
+
+import {
+  SiGithub,
+  SiLinkedin,
+  SiRss,
+  SiStackoverflow,
+  SiTwitter,
+} from "@icons-pack/react-simple-icons";
 
 const LinkHeader = ({ children }) => {
   return (
@@ -58,7 +62,7 @@ const Footer = () => (
       <div className="flex flex-col items-start gap-4">
         <LinkHeader>Social</LinkHeader>
         <ExternalLink href="https://github.com/ruchernchong">
-          <IconGithub
+          <SiGithub
             width={24}
             height={24}
             className="mr-2 dark:fill-neutral-400"
@@ -66,7 +70,7 @@ const Footer = () => (
           <span>GitHub</span>
         </ExternalLink>
         <ExternalLink href="https://www.linkedin.com/in/ruchernchong">
-          <IconLinkedIn
+          <SiLinkedin
             width={24}
             height={24}
             className="mr-2 dark:fill-neutral-400"
@@ -74,15 +78,23 @@ const Footer = () => (
           <span>LinkedIn</span>
         </ExternalLink>
         <ExternalLink href="https://stackoverflow.com/users/4031163/ru-chern-chong">
-          <IconStackOverflow
+          <SiStackoverflow
             width={24}
             height={24}
             className="mr-2 dark:fill-neutral-400"
           />
           <span>Stack Overflow</span>
         </ExternalLink>
+        <ExternalLink href="https://twitter.com/ruchernchong">
+          <SiTwitter
+            width={24}
+            height={24}
+            className="mr-2 dark:fill-neutral-400"
+          />
+          <span>Twitter</span>
+        </ExternalLink>
         <ExternalLink href={`${HOST_URL}/feed.xml`}>
-          <IconRss
+          <SiRss
             width={24}
             height={24}
             className="mr-2 dark:fill-neutral-400"
