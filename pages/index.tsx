@@ -43,7 +43,7 @@ const Home = ({
             ({posts.length})
           </sup>
         </h2>
-        <div className="mb-6 text-lg text-neutral-600 dark:text-neutral-400">
+        <div className="mb-16 text-lg text-neutral-600 dark:text-neutral-400">
           Blog posts on mostly front-end development.
         </div>
         {posts.length === 0 && (
@@ -51,18 +51,20 @@ const Home = ({
             There are no posts to display. Get started and write your first one!
           </h3>
         )}
-        {posts.length > 0 &&
-          posts.map(({ title, slug, excerpt, publishedDate }) => {
-            return (
-              <BlogPost
-                key={title}
-                title={title}
-                slug={`/blog/${slug}`}
-                excerpt={excerpt}
-                publishedDate={publishedDate}
-              />
-            );
-          })}
+        <div className="mb-16 flex max-w-4xl flex-col space-y-16">
+          {posts.length > 0 &&
+            posts.map(({ title, slug, excerpt, publishedDate }) => {
+              return (
+                <BlogPost
+                  key={title}
+                  title={title}
+                  slug={`/blog/${slug}`}
+                  excerpt={excerpt}
+                  publishedDate={publishedDate}
+                />
+              );
+            })}
+        </div>
       </div>
     </Layout>
   );
