@@ -3,10 +3,13 @@ import Script from "next/script";
 import { Analytics } from "@vercel/analytics/react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import globalMetadata from "@/app/metadata";
 import { ThemeProvider } from "@/app/ThemeProvider";
 import { HOST_URL } from "@/config";
 
 import "@/app/globals.css";
+
+export const metadata = globalMetadata;
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   const gaMeasurementId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS;

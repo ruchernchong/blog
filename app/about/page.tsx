@@ -1,3 +1,5 @@
+import { Metadata } from "next";
+import globalMetadata from "@/app/metadata";
 import Author from "@/components/Author";
 import Contributions from "@/components/Contributions";
 import Employment from "@/components/Employment";
@@ -6,6 +8,26 @@ import companies from "@/data/companies";
 import { WebPage, WithContext } from "schema-dts";
 import { getStackOverflowProfile } from "@/lib/stackoverflow";
 import { getGitHubContributions } from "@/lib/github";
+
+const pageDescription: string =
+  "I am a frontend developer with focus on optimising performance and delivering good user experience. I believe with technology, we are able to change how the way we automate things to make living more efficient and smarter";
+
+export const metadata: Metadata = {
+  ...globalMetadata,
+  title: "About",
+  description: pageDescription,
+  openGraph: {
+    ...globalMetadata.openGraph,
+    title: "About | Ru Chern",
+    description: pageDescription,
+    url: "/about",
+  },
+  twitter: {
+    ...globalMetadata.twitter,
+    title: "About | Ru Chern",
+    description: pageDescription,
+  },
+};
 
 const AboutPage = async () => {
   const githubProfile = await getGitHubContributions();
@@ -20,13 +42,10 @@ const AboutPage = async () => {
     currentPosition = `${currentCompany.title} @ ${currentCompany.name}`;
   }
 
-  const pageDescription: string =
-    "I am a frontend developer with focus on optimising performance and delivering good user experience. I believe with technology, we are able to change how the way we automate things to make living more efficient and smarter";
-
   const structuredData: WithContext<WebPage> = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "About - Ru Chern",
+    name: "About | Ru Chern",
     // TODO: Upgrade description from a single source as variable
     description: pageDescription,
   };
