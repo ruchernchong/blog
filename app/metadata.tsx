@@ -36,9 +36,6 @@ const metadata: Metadata = {
     creator: "@ruchernchong",
     images: "/cover-image.jpg",
   },
-  alternates: {
-    canonical: "/",
-  },
 };
 
 export default metadata;
