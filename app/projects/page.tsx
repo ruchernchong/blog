@@ -1,3 +1,5 @@
+import { Metadata } from "next";
+import globalMetadata from "@/app/metadata";
 import Card from "@/components/Card";
 import LinkWithIcon from "@/components/LinkWithIcon";
 import Chip from "@/components/Chip";
@@ -7,15 +9,33 @@ import { getGitHubPinnedRepositories } from "@/lib/github";
 import { WebPage, WithContext } from "schema-dts";
 import projects from "@/data/projects";
 
+const pageDescription: string =
+  "Project showcase of past works and experimenting with different technologies";
+
+export const metadata: Metadata = {
+  ...globalMetadata,
+  title: "Projects",
+  description: pageDescription,
+  openGraph: {
+    ...globalMetadata.openGraph,
+    title: "Projects | Ru Chern",
+    description: pageDescription,
+    url: "/about",
+  },
+  twitter: {
+    ...globalMetadata.twitter,
+    title: "Projects | Ru Chern",
+    description: pageDescription,
+  },
+};
+
 const ProjectsPage = async () => {
   const pinnedRepositories = await getGitHubPinnedRepositories();
 
-  const pageDescription: string =
-    "Project showcase of past works and experimenting with different technologies";
   const structuredData: WithContext<WebPage> = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "Projects - Ru Chern",
+    name: "Projects | Ru Chern",
     description: pageDescription,
   };
 
@@ -24,6 +44,9 @@ const ProjectsPage = async () => {
       <StructuredData data={structuredData} />
       <div className="mb-16 flex flex-col">
         <h1 className="mb-4 text-3xl font-bold md:text-4xl">Projects</h1>
+        <p className="mb-4 text-neutral-600 dark:text-neutral-400">
+          {pageDescription}
+        </p>
         <div className="mb-8">
           {projects.map(({ name, description, skills, link }) => {
             return (
