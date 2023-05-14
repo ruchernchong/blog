@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /resume
-
-Sitemap: https://ruchern.xyz/sitemap.xml

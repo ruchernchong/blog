@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { HOST_URL } from "@/config";
 import { navLinks } from "@/config/navLinks";
