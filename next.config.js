@@ -15,7 +15,7 @@ const nextConfig = {
 // Recommended configuration: https://nextjs.org/docs/advanced-features/security-headers
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' *.googletagmanager.com *.vercel-insights.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' *.googletagmanager.com *.vercel-insights.com vercel.live;
   style-src 'self' 'unsafe-inline';
   connect-src *;
   font-src 'self';
