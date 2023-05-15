@@ -113,5 +113,6 @@ export const getGitHubContributions = async () => {
   });
 
   const { user } = data;
+
   return user;
 };
