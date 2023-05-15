@@ -36,7 +36,7 @@ const Header = () => {
 
   return (
     <>
-      <div className="mb-8 w-screen md:hidden">
+      <div className="w-screen md:hidden">
         <div className="flex items-center justify-end px-4 py-4">
           <button
             aria-label="Mobile menu"
@@ -72,7 +72,7 @@ const Header = () => {
         </div>
       </div>
       <div className="hidden w-screen md:block">
-        <div className="mx-auto max-w-4xl px-4 py-8 md:mb-8">
+        <div className="mx-auto max-w-4xl px-4 py-8">
           <nav className="flex items-center justify-between">
             <div className="space-x-6">
               {navLinks.map(({ title, href }) => {

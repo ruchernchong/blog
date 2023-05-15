@@ -38,7 +38,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
         <ThemeProvider attribute="class" defaultTheme="dark">
           <div className="flex min-h-screen flex-col">
             <Header />
-            <main className="mx-auto w-screen max-w-4xl grow px-4">
+            <main className="mx-auto my-8 w-screen max-w-4xl grow px-4 md:my-16">
               {children}
               <Analytics />
             </main>

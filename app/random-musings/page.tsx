@@ -44,15 +44,18 @@ const RandomMusingsPage = async () => {
       <StructuredData data={structuredData} />
       <div className="mx-auto mb-8 flex max-w-4xl flex-col items-start justify-center">
         <div className="mb-8">
-          <h2 className="mb-4 text-3xl font-bold md:text-4xl">
-            Random Musings{" "}
-            <sup className="sups text-2xl text-neutral-600 dark:text-neutral-400">
-              ({items.length})
-            </sup>
-          </h2>
-          <p className="text-neutral-600 dark:text-neutral-400 md:mb-0">
-            {pageDescription}
-          </p>
+          <h1 className="mb-4 text-3xl font-extrabold md:text-4xl">
+            Random Musings
+          </h1>
+          <div className="text-neutral-600 dark:text-neutral-400 md:mb-0">
+            <div>{pageDescription}</div>
+            <em>
+              <span className="text-xl font-extrabold text-purple-300">
+                {items.length}
+              </span>
+              &nbsp;random and interesting encounters so far...
+            </em>
+          </div>
         </div>
         {items.map(({ title, date, slug }) => {
           const formattedDate = format(parseISO(date), "dd MMM yyyy");
