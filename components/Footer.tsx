@@ -1,16 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { HOST_URL } from "@/config";
+import * as Icons from "@/components/Icons";
 import { navLinks } from "@/config/navLinks";
-
-import {
-  Github as SiGithub,
-  Linkedin as SiLinkedin,
-  Rss as SiRss,
-  Stackoverflow as SiStackoverflow,
-  Twitter as SiTwitter,
-} from "@icons-pack/react-simple-icons";
+import { socials } from "@/data/socials";
 
 const LinkHeader = ({ children }) => {
   return (
@@ -63,46 +56,14 @@ const Footer = () => (
       </div>
       <div className="flex flex-col items-start gap-4">
         <LinkHeader>Social</LinkHeader>
-        <ExternalLink href="https://github.com/ruchernchong">
-          <SiGithub
-            width={24}
-            height={24}
-            className="mr-2 dark:fill-neutral-400"
-          />
-          <span>GitHub</span>
-        </ExternalLink>
-        <ExternalLink href="https://www.linkedin.com/in/ruchernchong">
-          <SiLinkedin
-            width={24}
-            height={24}
-            className="mr-2 dark:fill-neutral-400"
-          />
-          <span>LinkedIn</span>
-        </ExternalLink>
-        <ExternalLink href="https://stackoverflow.com/users/4031163/ru-chern-chong">
-          <SiStackoverflow
-            width={24}
-            height={24}
-            className="mr-2 dark:fill-neutral-400"
-          />
-          <span>Stack Overflow</span>
-        </ExternalLink>
-        <ExternalLink href="https://twitter.com/ruchernchong">
-          <SiTwitter
-            width={24}
-            height={24}
-            className="mr-2 dark:fill-neutral-400"
-          />
-          <span>Twitter</span>
-        </ExternalLink>
-        <ExternalLink href={`${HOST_URL}/feed.xml`}>
-          <SiRss
-            width={24}
-            height={24}
-            className="mr-2 dark:fill-neutral-400"
-          />
-          <span>RSS</span>
-        </ExternalLink>
+        {socials.map(({ name, link }) => {
+          return (
+            <ExternalLink key={name} href={link}>
+              <Icons.Social name={name} />
+              <div>{name}</div>
+            </ExternalLink>
+          );
+        })}
       </div>
     </div>
   </footer>
