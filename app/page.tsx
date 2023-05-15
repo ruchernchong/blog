@@ -29,6 +29,11 @@ const HomePage = async () => {
       <StructuredData data={structuredData} />
       <div className="mx-auto flex max-w-4xl flex-col justify-center">
         <Author
+          title={
+            <>
+              Ru Chern <span className="uppercase underline">Chong</span>
+            </>
+          }
           description="Developer | Investor | Author"
           hideTagline={true}
         />
