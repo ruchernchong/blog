@@ -40,14 +40,16 @@ const HomePage = async () => {
         {featuredPosts.length > 0 && (
           <FeaturedPosts featuredPosts={featuredPosts} />
         )}
-        <h2 className="mb-2 text-3xl font-bold md:text-4xl">
-          All Posts{" "}
-          <sup className="sups text-2xl text-neutral-600 dark:text-neutral-400">
-            ({posts.length})
-          </sup>
-        </h2>
+        <h2 className="mb-2 text-3xl font-bold md:text-4xl">All Posts</h2>
         <div className="mb-16 text-lg text-neutral-600 dark:text-neutral-400">
-          Blog posts on mostly front-end development.
+          <span>Blog posts on mostly front-end development. </span>
+          <em>
+            To date, I have wrote&nbsp;
+            <span className="text-xl font-extrabold text-purple-300">
+              {posts.length}
+            </span>
+            &nbsp;posts and counting...
+          </em>
         </div>
         {posts.length === 0 && (
           <h3 className="text-center italic">
