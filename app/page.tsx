@@ -41,10 +41,12 @@ const HomePage = async () => {
           <FeaturedPosts featuredPosts={featuredPosts} />
         )}
         <h2 className="mb-2 text-3xl font-bold md:text-4xl">Recent Posts</h2>
-        <div className="mb-16 text-lg text-neutral-600 dark:text-neutral-400">
-          <span>Blog posts on mostly front-end development. </span>
+        <div className="mb-16 text-neutral-600 dark:text-neutral-400">
+          <div className="text-lg">
+            Blog posts on mostly front-end development.
+          </div>
           <em>
-            To date, I have wrote&nbsp;
+            To date, I have written&nbsp;
             <span className="text-xl font-extrabold text-purple-300">
               {posts.length}
             </span>
