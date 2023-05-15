@@ -18,7 +18,7 @@ const Contributions = ({
   stackOverflow: StackOverflowProfile;
 }) => {
   return (
-    <section className="prose prose-neutral mx-auto mb-8 max-w-4xl dark:prose-invert">
+    <section className="prose prose-neutral mx-auto max-w-4xl dark:prose-invert">
       <h2 className="text-2xl md:text-3xl">Contributions</h2>
       <div className="mb-8 flex flex-col">
         <h3 className="m-0 text-lg font-semibold md:text-2xl">GitHub</h3>
@@ -35,7 +35,7 @@ const Contributions = ({
           <LinkWithIcon url={github.url} />
         </div>
       </div>
-      <div className="mb-8 flex flex-col text-neutral-600 dark:text-neutral-400">
+      <div className="flex flex-col text-neutral-600 dark:text-neutral-400">
         <h3 className="m-0 text-lg font-semibold md:text-2xl">
           Stack Overflow
         </h3>

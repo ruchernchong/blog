@@ -27,7 +27,7 @@ const HomePage = async () => {
   return (
     <>
       <StructuredData data={structuredData} />
-      <div className="mx-auto mb-8 flex max-w-4xl flex-col justify-center">
+      <div className="mx-auto flex max-w-4xl flex-col justify-center">
         <Author
           description="Developer | Investor | Author"
           hideTagline={true}
@@ -49,7 +49,7 @@ const HomePage = async () => {
             There are no posts to display. Get started and write your first one!
           </h3>
         )}
-        <div className="mb-16 flex max-w-4xl flex-col space-y-16">
+        <div className="flex max-w-4xl flex-col space-y-16">
           {posts.length > 0 &&
             posts.map(({ title, slug, excerpt, publishedDate }) => {
               return (

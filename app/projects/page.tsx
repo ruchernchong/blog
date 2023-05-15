@@ -42,7 +42,7 @@ const ProjectsPage = async () => {
   return (
     <>
       <StructuredData data={structuredData} />
-      <div className="mb-16 flex flex-col">
+      <div className="flex flex-col">
         <h1 className="mb-4 text-3xl font-bold md:text-4xl">Projects</h1>
         <p className="mb-4 text-neutral-600 dark:text-neutral-400">
           {pageDescription}
