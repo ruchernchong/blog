@@ -56,7 +56,7 @@ const AboutPage = async () => {
       <div className="mx-auto mb-8 flex max-w-4xl flex-col items-start justify-center">
         {/*TODO: Upgrade description from a single source as variable*/}
         <Author
-          title="About me"
+          title="About Me"
           tagline={currentPosition}
           description="I am a frontend developer with focus on optimising performance, delivering good user experience and having worked in the telecommunications, banking and financial services industry. I believe with technology, we are able to change how the way we automate things to make living more efficient and smarter."
         />

@@ -40,7 +40,7 @@ const HomePage = async () => {
         {featuredPosts.length > 0 && (
           <FeaturedPosts featuredPosts={featuredPosts} />
         )}
-        <h2 className="mb-2 text-3xl font-bold md:text-4xl">All Posts</h2>
+        <h2 className="mb-2 text-3xl font-bold md:text-4xl">Recent Posts</h2>
         <div className="mb-16 text-lg text-neutral-600 dark:text-neutral-400">
           <span>Blog posts on mostly front-end development. </span>
           <em>

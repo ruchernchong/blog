@@ -4,7 +4,7 @@ import classNames from "classnames";
 const Employment = ({ companies }) => {
   return (
     <section className="prose prose-neutral mx-auto mb-8 max-w-4xl dark:prose-invert">
-      <h2 className="text-2xl font-bold md:text-3xl">Employment</h2>
+      <h2 className="text-2xl font-bold md:text-3xl">Work</h2>
       <div className="mb-8 space-y-4">
         {companies.map(
           ({ name, title, logo, dateStart, dateEnd, location, url }) => {
