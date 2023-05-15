@@ -1,5 +1,8 @@
 import classNames from "classnames";
 import Avatar from "@/components/Avatar";
+import ExternalLink from "@/components/ExternalLink";
+import * as Icons from "@/components/Icons";
+import { socials } from "@/data/socials";
 
 type Author = {
   tagline?: string;
@@ -28,9 +31,18 @@ const Author = ({
           </h1>
           {!hideTagline && <div className="text-md mb-4">{tagline}</div>}
           {!hideDescription && (
-            <p className="text-neutral-600 dark:text-neutral-400 md:mb-0">
-              {description}
-            </p>
+            <div className="text-neutral-600 dark:text-neutral-400 md:mb-0">
+              <div className="mb-4">{description}</div>
+              <div className="flex gap-x-2">
+                {socials.map(({ name, link }) => {
+                  return (
+                    <ExternalLink key={name} href={link}>
+                      <Icons.Social key={name} name={name} />
+                    </ExternalLink>
+                  );
+                })}
+              </div>
+            </div>
           )}
         </div>
         <Avatar />

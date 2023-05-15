@@ -14,8 +14,10 @@ const SOCIAL_MAP: Record<string, any> = {
   Twitter: <SiTwitter />,
 };
 
-export const Social = ({ name }) => {
-  return (
-    <div className="mr-2 h-6 w-6 dark:fill-neutral-400">{SOCIAL_MAP[name]}</div>
-  );
+type IconProps = {
+  name: string;
+};
+
+export const Social = ({ name }: IconProps) => {
+  return <div className="mr-2">{SOCIAL_MAP[name]}</div>;
 };

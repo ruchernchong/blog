@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import ExternalLink from "@/components/ExternalLink";
 import * as Icons from "@/components/Icons";
 import { navLinks } from "@/config/navLinks";
 import { socials } from "@/data/socials";
@@ -9,22 +10,6 @@ const LinkHeader = ({ children }) => {
   return (
     <div className="text-lg font-medium text-neutral-900 dark:text-neutral-50">
       {children}
-    </div>
-  );
-};
-
-const ExternalLink = ({ href, children }) => {
-  return (
-    <div className="flex items-center hover:text-neutral-400 dark:text-neutral-400 dark:hover:text-neutral-50">
-      <a
-        href={href}
-        target="_blank"
-        rel="noopenner noreferrer"
-        aria-label="Link to social media"
-        className="flex items-center font-semibold"
-      >
-        {children}
-      </a>
     </div>
   );
 };
