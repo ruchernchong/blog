@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { HOST_URL } from "@/config";
 
 const title: string = "Ru Chern";
 const description: string =
@@ -21,7 +22,7 @@ const metadata: Metadata = {
     siteName: title,
     images: [
       {
-        url: "/cover-image.jpg",
+        url: `${HOST_URL}/cover-image.jpg`,
         width: 1200,
         height: 630,
       },
@@ -34,7 +35,7 @@ const metadata: Metadata = {
     title: title,
     description: description,
     creator: "@ruchernchong",
-    images: "/cover-image.jpg",
+    images: `${HOST_URL}/cover-image.jpg`,
   },
 };
 
