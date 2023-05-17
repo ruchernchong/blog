@@ -50,7 +50,7 @@ const RandomMusingsPage = async () => {
           <div className="text-neutral-600 dark:text-neutral-400 md:mb-0">
             <div>{pageDescription}</div>
             <em>
-              <span className="text-xl font-extrabold text-purple-300">
+              <span className="text-xl font-extrabold text-indigo-300">
                 {items.length}
               </span>
               &nbsp;random and interesting encounters so far...

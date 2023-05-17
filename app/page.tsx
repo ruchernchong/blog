@@ -47,7 +47,7 @@ const HomePage = async () => {
           </div>
           <em>
             To date, I have written&nbsp;
-            <span className="text-xl font-extrabold text-purple-300">
+            <span className="text-xl font-extrabold text-indigo-300">
               {posts.length}
             </span>
             &nbsp;posts and counting...

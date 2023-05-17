@@ -25,7 +25,7 @@ const BlogPost = ({ title, slug, excerpt, publishedDate }: Post) => {
         </time>
       </div>
       <div className="flex items-center">
-        <div className="text-purple-300">Read more</div>
+        <div className="text-indigo-300">Read more</div>
         <ChevronRightIcon width={16} height={16} />
       </div>
     </div>
