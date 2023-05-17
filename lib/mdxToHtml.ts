@@ -20,6 +20,7 @@ export const mdxToHtml = async (content: string) => {
         [
           rehypeAutolinkHeadings,
           {
+            behavior: "append",
             properties: {
               className: ["permalink"],
             },

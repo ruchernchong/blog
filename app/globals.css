@@ -7,7 +7,7 @@
 }
 
 .permalink {
-  @apply invisible absolute w-4/5 max-w-4xl cursor-pointer pr-4;
+  @apply invisible cursor-pointer pr-4;
 }
 
 .permalink:hover {
@@ -15,11 +15,11 @@
 }
 
 .permalink::after {
-  @apply -ml-6 content-['#'];
+  @apply ml-2 content-['#'];
 }
 
 *:hover > .permalink {
-  @apply visible text-neutral-400;
+  @apply visible text-indigo-300;
 }
 
 h1 .permalink::after {
