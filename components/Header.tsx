@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import NextLink from "next/link";
 import classNames from "classnames";
 import ThemeToggle from "@/components/ThemeToggle";
-import { Bars3Icon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { navLinks } from "@/config/navLinks";
 
 const NavItem = ({ href, title }) => {
@@ -46,8 +46,9 @@ const Header = () => {
             className="flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-200 ring-2 ring-neutral-600 transition-all hover:ring-2 dark:bg-neutral-900"
             onClick={() => setExpand(!expand)}
           >
-            <div className="h-6 w-6">
-              <Bars3Icon />
+            <div className="h-6 w-6 transition-all">
+              {!expand && <Bars3Icon />}
+              {expand && <XMarkIcon />}
             </div>
           </button>
         </div>
@@ -63,7 +64,11 @@ const Header = () => {
           <ul className="flex flex-col bg-neutral-50 text-center dark:border-neutral-700 dark:bg-neutral-900">
             {navLinks.map(({ title, href }) => {
               return (
-                <li key={title} className="border-b border-neutral-600 py-4">
+                <li
+                  key={title}
+                  className="border-b border-neutral-600 py-4"
+                  onClick={() => setExpand((prevState) => !prevState)}
+                >
                   <NavItem key={title} href={href} title={title} />
                 </li>
               );
