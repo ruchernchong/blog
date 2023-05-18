@@ -1,15 +1,14 @@
+import { MetadataRoute } from "next";
 import { HOST_URL } from "@/config";
 import { Post, RandomMusing } from "@/lib/types";
 import { sanityClient } from "@/lib/sanity-server";
 import { postsQuery } from "@/lib/queries";
-import { MetadataRoute } from "next";
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
   const pages = ["", "about", "random-musings", "projects"];
   const posts: Post[] = await sanityClient.fetch(postsQuery);
   const randomMusings: RandomMusing[] = await fetch(
-    "https://raw.githubusercontent.com/ruchernchong/random-musings/main/feed.json",
-    { cache: "no-store" }
+    "https://raw.githubusercontent.com/ruchernchong/random-musings/main/feed.json"
   ).then((res) => res.json());
 
   return [
