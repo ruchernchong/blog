@@ -31,12 +31,16 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
   ];
 };
 
-const formatLastModified = (datetime?: string) => {
+const formatLastModified = (datetime?: string | Date) => {
+  if (typeof datetime === "string") {
+    datetime = new Date(datetime).toISOString();
+  }
+
   if (!datetime) {
     datetime = new Date().toISOString();
   }
 
-  return datetime.split("T")[0];
+  return datetime;
 };
 
 export default sitemap;
