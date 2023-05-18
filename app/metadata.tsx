@@ -18,7 +18,7 @@ const metadata: Metadata = {
   openGraph: {
     title: title,
     description: description,
-    url: "/",
+    url: HOST_URL,
     siteName: title,
     images: [
       {
