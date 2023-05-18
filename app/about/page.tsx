@@ -4,6 +4,7 @@ import Author from "@/components/Author";
 import Contributions from "@/components/Contributions";
 import Employment from "@/components/Employment";
 import StructuredData from "@/components/StructuredData";
+import { HOST_URL } from "@/config";
 import companies from "@/data/companies";
 import { WebPage, WithContext } from "schema-dts";
 import { getStackOverflowProfile } from "@/lib/stackoverflow";
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
     ...globalMetadata.openGraph,
     title: "About | Ru Chern",
     description: pageDescription,
-    url: "/about",
+    url: `${HOST_URL}/about`,
   },
   twitter: {
     ...globalMetadata.twitter,

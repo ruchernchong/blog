@@ -4,6 +4,7 @@ import Card from "@/components/Card";
 import LinkWithIcon from "@/components/LinkWithIcon";
 import Chip from "@/components/Chip";
 import StructuredData from "@/components/StructuredData";
+import { HOST_URL } from "@/config";
 import { StarIcon } from "@heroicons/react/24/outline";
 import { getGitHubPinnedRepositories } from "@/lib/github";
 import { WebPage, WithContext } from "schema-dts";
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
     ...globalMetadata.openGraph,
     title: "Projects | Ru Chern",
     description: pageDescription,
-    url: "/about",
+    url: `${HOST_URL}/projects`,
   },
   twitter: {
     ...globalMetadata.twitter,

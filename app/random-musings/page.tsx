@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import globalMetadata from "@/app/metadata";
 import StructuredData from "@/components/StructuredData";
+import { HOST_URL } from "@/config";
 import { format, formatISO, parseISO } from "date-fns";
 import { RandomMusing } from "@/lib/types";
 import { WebPage, WithContext } from "schema-dts";
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     ...globalMetadata.openGraph,
     title: "Random Musings | Ru Chern",
     description: pageDescription,
-    url: "/random-musings",
+    url: `${HOST_URL}/random-musings`,
   },
   twitter: {
     ...globalMetadata.twitter,
