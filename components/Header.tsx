@@ -15,9 +15,9 @@ const NavItem = ({ href, title }) => {
   return (
     <NextLink
       href={href}
-      className={classNames({
+      className={classNames("font-semibold", {
         "text-indigo-300 underline underline-offset-8": isActive,
-        "hover:text-purple-300": !isActive,
+        "hover:text-indigo-300": !isActive,
       })}
     >
       {title}
