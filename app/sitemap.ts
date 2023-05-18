@@ -14,20 +14,20 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
   return [
     {
       url: HOST_URL,
-      lastModified: formatLastModified(),
+      // lastModified: formatLastModified(),
     },
     ...pages.map((page) => ({
       url: `${HOST_URL}${page}`,
-      lastModified: formatLastModified(),
+      // lastModified: formatLastModified(),
     })),
-    ...posts.map(({ publishedDate, slug }) => ({
-      url: `${HOST_URL}/blog/${slug}`,
-      lastModified: formatLastModified(publishedDate),
-    })),
-    ...randomMusings.map(({ date, slug }) => ({
-      url: `${HOST_URL}/random-musings/${slug}`,
-      lastModified: formatLastModified(date),
-    })),
+    // ...posts.map(({ publishedDate, slug }) => ({
+    //   url: `${HOST_URL}/blog/${slug}`,
+    // lastModified: formatLastModified(publishedDate),
+    // })),
+    // ...randomMusings.map(({ date, slug }) => ({
+    //   url: `${HOST_URL}/random-musings/${slug}`,
+    // lastModified: formatLastModified(date),
+    // })),
   ];
 };
 
