@@ -18,8 +18,8 @@ module.exports = {
               content: "none",
             },
             code: {
-              color: theme("colors.neutral.500"),
-              backgroundColor: theme("colors.neutral.200"),
+              color: theme("colors.neutral.900"),
+              backgroundColor: theme("colors.indigo.300"),
               borderRadius: theme("borderRadius.DEFAULT"),
               paddingLeft: theme("spacing[1.5]"),
               paddingRight: theme("spacing[1.5]"),
