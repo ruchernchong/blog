@@ -1,18 +1,15 @@
-import { Suspense } from "react";
-import { GetStaticPaths, GetStaticProps } from "next";
-import { NextRouter, useRouter } from "next/router";
+import { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 import classNames from "classnames";
 import { format, formatISO, parseISO } from "date-fns";
 import Card from "@/components/Card";
-import Layout from "@/components/Layout";
 import MDXComponents from "@/components/MDXComponents";
+import MDXRemote from "@/components/MDXRemote";
 import StructuredData from "@/components/StructuredData";
 import ViewCounter from "@/components/ViewCounter";
-import { mdxToHtml } from "@/lib/mdxToHtml";
 import { postQuery, postSlugsQuery } from "@/lib/queries";
 import { sanityClient } from "@/lib/sanity-server";
-import { Post } from "@/lib/types";
-import { MDXRemote } from "next-mdx-remote";
 import readingTime from "reading-time";
 import { HOST_URL } from "@/config";
 import { BlogPosting, WithContext } from "schema-dts";
@@ -21,17 +18,70 @@ import {
   CalendarDaysIcon,
   EyeIcon,
 } from "@heroicons/react/24/outline";
+import type { Post } from "@/lib/types";
 
-interface WithRouterProps {
-  router: NextRouter;
-}
+export const generateMetadata = async ({ params }): Promise<Metadata> => {
+  const slug = params.slug;
 
-interface PostPageProps extends WithRouterProps {
-  post: Post;
-}
+  const { post }: { post: Post } = await sanityClient.fetch(postQuery, {
+    slug,
+  });
 
-const PostPage = ({ post }: PostPageProps) => {
-  const router = useRouter();
+  if (!post) {
+    return;
+  }
+
+  const title = post.title;
+  const description = post.excerpt;
+  const publishedTime = post.publishedDate;
+  const url = `${HOST_URL}/blog/${slug}`;
+
+  const ogImageUrlParams = { title };
+  const urlParams = Object.entries(ogImageUrlParams)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+  const ogImageUrl = encodeURI(`${HOST_URL}/api/og?${urlParams}`);
+  const images = [ogImageUrl];
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      publishedTime,
+      url,
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images,
+    },
+    alternates: {
+      canonical: url,
+    },
+  };
+};
+
+const PostPage = async ({ params }) => {
+  let { post, previous, next } = await sanityClient.fetch(postQuery, {
+    slug: params.slug,
+  });
+
+  if (!post) {
+    notFound();
+  }
+
+  post = {
+    ...post,
+    previous,
+    next,
+    readingTime: readingTime(post.content).text,
+  };
+
   const publishedDate = post.publishedDate;
   const previousPost = post.previous;
   const nextPost = post.next;
@@ -68,13 +118,7 @@ const PostPage = ({ post }: PostPageProps) => {
   };
 
   return (
-    <Layout
-      title={`${post.title} - Ru Chern`}
-      description={post.excerpt}
-      image={ogImageUrl}
-      date={publishedDate}
-      type="article"
-    >
+    <>
       <StructuredData data={structuredData} />
       <article className="prose mx-auto mb-16 max-w-4xl prose-img:rounded-2xl dark:prose-invert">
         <div className="mb-4 flex flex-col items-center justify-center text-neutral-600 dark:text-neutral-400 md:flex-row">
@@ -99,77 +143,48 @@ const PostPage = ({ post }: PostPageProps) => {
           </div>
         </div>
         <h1 className="text-center">{post.title}</h1>
-        <Suspense fallback={null}>
-          <MDXRemote {...post.mdxSource} components={MDXComponents} />
-        </Suspense>
+        <MDXRemote source={post.content} components={MDXComponents} />
       </article>
       <div className="mb-16 grid gap-y-4 md:grid-cols-2 md:gap-x-4">
-        <Card
-          className={classNames(
-            "flex cursor-pointer flex-col items-start text-left",
-            {
-              "pointer-events-none opacity-0": !previousPost,
-              "opacity-100": previousPost,
-            }
-          )}
-          onClick={() => router.push(previousPost?.slug)}
-        >
-          <div className="text-neutral-900 dark:text-neutral-400">
-            Previous:
-          </div>
-          <div>{previousPost?.title}</div>
-        </Card>
-        <Card
-          className={classNames(
-            "flex cursor-pointer flex-col items-end text-right",
-            {
-              "pointer-events-none opacity-0": !nextPost,
-              "opacity-100": nextPost,
-            }
-          )}
-          onClick={() => router.push(nextPost?.slug)}
-        >
-          <div className="text-neutral-900 dark:text-neutral-400">Next:</div>
-          <div>{nextPost?.title}</div>
-        </Card>
+        <Link href={`/blog/${previousPost?.slug}`}>
+          <Card
+            className={classNames(
+              "flex cursor-pointer flex-col items-start text-left",
+              {
+                "pointer-events-none opacity-0": !previousPost,
+                "opacity-100": previousPost,
+              }
+            )}
+          >
+            <div className="text-neutral-900 dark:text-neutral-400">
+              Previous:
+            </div>
+            <div>{previousPost?.title}</div>
+          </Card>
+        </Link>
+        <Link href={`/blog/${nextPost?.slug}`}>
+          <Card
+            className={classNames(
+              "flex cursor-pointer flex-col items-end text-right",
+              {
+                "pointer-events-none opacity-0": !nextPost,
+                "opacity-100": nextPost,
+              }
+            )}
+          >
+            <div className="text-neutral-900 dark:text-neutral-400">Next:</div>
+            <div>{nextPost?.title}</div>
+          </Card>
+        </Link>
       </div>
-    </Layout>
+    </>
   );
 };
 
-export const getStaticPaths: GetStaticPaths = async () => {
+export const generateStaticParams = async () => {
   const paths = await sanityClient.fetch(postSlugsQuery);
 
-  return {
-    paths: paths.map((slug) => ({ params: { slug } })),
-    fallback: "blocking",
-  };
-};
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { post, previous, next } = await sanityClient.fetch(postQuery, {
-    slug: params.slug,
-  });
-
-  if (!post) {
-    return {
-      notFound: true,
-    };
-  }
-
-  const mdxSource = await mdxToHtml(post.content);
-
-  return {
-    props: {
-      post: {
-        ...post,
-        previous,
-        next,
-        mdxSource,
-        readingTime: readingTime(post.content).text,
-      },
-    },
-  };
+  return paths.map((slug: string) => ({ params: { slug } }));
 };
 
 export default PostPage;
