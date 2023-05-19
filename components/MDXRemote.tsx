@@ -5,6 +5,7 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import theme from "shiki/themes/github-dark.json";
 import MDXComponents from "@/components/MDXComponents";
+import "@code-hike/mdx/dist/index.css";
 
 const MDXRemote = (props) => {
   return (
