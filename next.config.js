@@ -14,7 +14,7 @@ const nextConfig = {
 
 // Recommended configuration: https://nextjs.org/docs/advanced-features/security-headers
 const ContentSecurityPolicy = `
-  default-src 'self';
+  default-src 'self' cdn.sanity.io;
   script-src 'self' 'unsafe-eval' 'unsafe-inline' *.googletagmanager.com *.vercel-insights.com vercel.live;
   style-src 'self' 'unsafe-inline';
   connect-src *;
