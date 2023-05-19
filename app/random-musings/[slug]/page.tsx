@@ -1,11 +1,58 @@
 import MDXComponents from "@/components/MDXComponents";
 import MDXRemote from "@/components/MDXRemote";
 import StructuredData from "@/components/StructuredData";
-import { RandomMusing } from "@/lib/types";
+import type { RandomMusing } from "@/lib/types";
 import { HOST_URL } from "@/config";
 import { BlogPosting, WithContext } from "schema-dts";
+import { Metadata } from "next";
 
 const RANDOM_MUSINGS_API_URL: string = `https://raw.githubusercontent.com/ruchernchong/random-musings/main/feed.json`;
+
+export const generateMetadata = async ({ params }): Promise<Metadata> => {
+  const slug = params.slug;
+
+  const item: RandomMusing = await fetch(RANDOM_MUSINGS_API_URL)
+    .then((res) => res.json())
+    .then((res) => res.find(({ slug }) => slug === params.slug));
+
+  if (!item) {
+    return;
+  }
+
+  const title = item.title;
+  const description = item.excerpt;
+  const publishedTime = new Date(item.date).toISOString();
+  const url = `${HOST_URL}/random-musings/${slug}`;
+
+  const ogImageUrlParams = { title };
+  const urlParams = Object.entries(ogImageUrlParams)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+  const ogImageUrl = encodeURI(`${HOST_URL}/api/og?${urlParams}`);
+  const images = [ogImageUrl];
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      publishedTime,
+      url,
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images,
+    },
+    alternates: {
+      canonical: url,
+    },
+  };
+};
 
 const RandomMusingsPostsPage = async ({ params }) => {
   const items: RandomMusing[] = await fetch(RANDOM_MUSINGS_API_URL).then(

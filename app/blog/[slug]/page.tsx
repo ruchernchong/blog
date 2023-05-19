@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import classNames from "classnames";
@@ -17,6 +18,53 @@ import {
   CalendarDaysIcon,
   EyeIcon,
 } from "@heroicons/react/24/outline";
+import type { Post } from "@/lib/types";
+
+export const generateMetadata = async ({ params }): Promise<Metadata> => {
+  const slug = params.slug;
+
+  const { post }: { post: Post } = await sanityClient.fetch(postQuery, {
+    slug,
+  });
+
+  if (!post) {
+    return;
+  }
+
+  const title = post.title;
+  const description = post.excerpt;
+  const publishedTime = post.publishedDate;
+  const url = `${HOST_URL}/blog/${slug}`;
+
+  const ogImageUrlParams = { title };
+  const urlParams = Object.entries(ogImageUrlParams)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+  const ogImageUrl = encodeURI(`${HOST_URL}/api/og?${urlParams}`);
+  const images = [ogImageUrl];
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      publishedTime,
+      url,
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images,
+    },
+    alternates: {
+      canonical: url,
+    },
+  };
+};
 
 const PostPage = async ({ params }) => {
   let { post, previous, next } = await sanityClient.fetch(postQuery, {
