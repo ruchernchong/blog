@@ -36,11 +36,15 @@ const Author = ({
               {description}
             </p>
           )}
-          <div className="flex justify-center gap-x-2 md:justify-start">
+          <div className="flex justify-center gap-x-4 md:justify-start">
             {socials.map(({ name, link }) => {
               return (
                 <ExternalLink key={name} href={link}>
-                  <Icons.Social key={name} name={name} />
+                  <Icons.Social
+                    key={name}
+                    name={name}
+                    className="dark:hover:fill-indigo-300"
+                  />
                 </ExternalLink>
               );
             })}

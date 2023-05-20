@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import {
   Github as SiGithub,
   Linkedin as SiLinkedin,
@@ -6,18 +7,21 @@ import {
   Twitter as SiTwitter,
 } from "@icons-pack/react-simple-icons";
 
-const SOCIAL_MAP: Record<string, any> = {
-  Github: <SiGithub />,
-  Linkedin: <SiLinkedin />,
-  Rss: <SiRss />,
-  Stackoverflow: <SiStackoverflow />,
-  Twitter: <SiTwitter />,
+const SOCIAL_MAP = {
+  Github: SiGithub,
+  Linkedin: SiLinkedin,
+  Rss: SiRss,
+  Stackoverflow: SiStackoverflow,
+  Twitter: SiTwitter,
 };
 
 type IconProps = {
   name: string;
+  className?: string;
 };
 
-export const Social = ({ name }: IconProps) => {
-  return <div className="mr-2">{SOCIAL_MAP[name]}</div>;
+export const Social = ({ name, className }: IconProps) => {
+  const Icon = SOCIAL_MAP[name];
+
+  return <Icon className={classNames(className)} />;
 };

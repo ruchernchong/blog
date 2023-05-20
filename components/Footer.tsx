@@ -32,7 +32,7 @@ const Footer = () => (
             <Link
               key={title}
               href={href}
-              className="hover:text-neutral-400 dark:text-neutral-400 dark:hover:text-neutral-50"
+              className="hover:text-neutral-400 dark:text-neutral-400 dark:hover:text-indigo-300"
             >
               {title}
             </Link>
@@ -41,14 +41,18 @@ const Footer = () => (
       </div>
       <div className="flex flex-col items-start gap-4">
         <LinkHeader>Social</LinkHeader>
-        {socials.map(({ name, link }) => {
-          return (
-            <ExternalLink key={name} href={link}>
-              <Icons.Social name={name} />
-              <div>{name}</div>
-            </ExternalLink>
-          );
-        })}
+        <div className="flex gap-x-4">
+          {socials.map(({ name, link }) => {
+            return (
+              <ExternalLink key={name} href={link}>
+                <Icons.Social
+                  name={name}
+                  className="dark:hover:fill-indigo-300"
+                />
+              </ExternalLink>
+            );
+          })}
+        </div>
       </div>
     </div>
   </footer>
