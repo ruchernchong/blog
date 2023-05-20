@@ -1,21 +1,23 @@
 import { MouseEventHandler, PropsWithChildren } from "react";
-import classNames from "classnames/dedupe";
+import classNames from "classnames";
 
 interface CardProps extends PropsWithChildren {
   className?: string;
   onClick?: MouseEventHandler<HTMLDivElement>;
 }
 
-const Card = (props: CardProps) => {
+const Card = ({ children, className, onClick }: CardProps) => {
   return (
     <div
       className={classNames(
-        "flex flex-col rounded-2xl border p-4 md:border-neutral-600 hover:md:border-neutral-400",
-        props.className
+        "flex cursor-pointer flex-col rounded-xl border bg-gradient-to-r from-indigo-300 to-red-300 p-0.5 hover:border-indigo-300 hover:from-red-300 hover:to-indigo-300",
+        className
       )}
-      onClick={props.onClick}
+      onClick={onClick}
     >
-      {props.children}
+      <div className="w-full grow rounded-xl bg-neutral-900 p-4">
+        {children}
+      </div>
     </div>
   );
 };
