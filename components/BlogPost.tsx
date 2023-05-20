@@ -11,7 +11,7 @@ const BlogPost = ({ title, slug, excerpt, publishedDate }: Post) => {
       <div className="mb-4 flex flex-col-reverse md:flex-row md:justify-between">
         <div className="w-full basis-2/3">
           <Link href={slug}>
-            <div className="absolute -inset-y-6 -inset-x-4 z-0 scale-95 rounded-2xl border border-neutral-600 opacity-0 transition group-hover:scale-100 group-hover:bg-neutral-800/25 group-hover:opacity-100" />
+            <div className="absolute -inset-y-6 -inset-x-4 z-0 scale-95 rounded-2xl border border-indigo-300 opacity-0 transition group-hover:scale-100 group-hover:bg-neutral-800/25 group-hover:opacity-100" />
             <h3 className="text-2xl font-medium">{title}</h3>
           </Link>
           <p className="text-neutral-600 dark:text-neutral-400">{excerpt}</p>
