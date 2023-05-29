@@ -11,7 +11,7 @@ import { getStackOverflowProfile } from "@/lib/stackoverflow";
 import { getGitHubContributions } from "@/lib/github";
 
 const pageDescription: string =
-  "I am a frontend developer with focus on optimising performance and delivering good user experience. I believe with technology, we are able to change how the way we automate things to make living more efficient and smarter";
+  "My name is Ru Chern and I am a frontend developer with focus on optimising performance and delivering good user experience. I believe with technology, we are able to change how the way we automate things to make living more efficient and smarter.";
 
 export const metadata: Metadata = {
   ...globalMetadata,
@@ -59,7 +59,7 @@ const AboutPage = async () => {
         <Author
           title="About Me"
           tagline={currentPosition}
-          description="My name is Ru Chern and I am a frontend developer with focus on optimising performance, delivering good user experience and having worked in the telecommunications, banking and financial services industry. I believe with technology, we are able to change how the way we automate things to make living more efficient and smarter."
+          description={pageDescription}
         />
       </div>
       <Employment companies={sortedCompanies} />
