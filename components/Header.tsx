@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import NextLink from "next/link";
 import classNames from "classnames";
-import ThemeToggle from "@/components/ThemeToggle";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { navLinks } from "@/config/navLinks";
 
@@ -43,7 +42,7 @@ const Header = () => {
         <div className="flex items-center justify-end px-4 py-4">
           <button
             aria-label="Mobile menu"
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-200 ring-2 ring-neutral-600 transition-all hover:ring-2 dark:bg-neutral-900"
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-900 ring-2 ring-neutral-600 transition-all hover:ring-2"
             onClick={() => setExpand(!expand)}
           >
             <div className="h-6 w-6 transition-all">
@@ -54,14 +53,14 @@ const Header = () => {
         </div>
         <div
           className={classNames(
-            "absolute z-10 h-full w-screen bg-neutral-50 dark:bg-neutral-900",
+            "absolute z-10 h-full w-screen bg-neutral-900",
             {
               hidden: !expand,
               block: expand,
             }
           )}
         >
-          <ul className="flex flex-col bg-neutral-50 text-center dark:border-neutral-700 dark:bg-neutral-900">
+          <ul className="flex flex-col bg-neutral-900 text-center">
             {navLinks.map(({ title, href }) => {
               return (
                 <li
@@ -74,9 +73,6 @@ const Header = () => {
               );
             })}
           </ul>
-          <div className="flex flex-col items-center py-8">
-            <ThemeToggle />
-          </div>
         </div>
       </div>
       <div className="hidden w-screen md:block">
@@ -87,7 +83,6 @@ const Header = () => {
                 return <NavItem key={title} href={href} title={title} />;
               })}
             </div>
-            <ThemeToggle />
           </nav>
         </div>
       </div>

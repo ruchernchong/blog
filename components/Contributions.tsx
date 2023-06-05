@@ -24,14 +24,14 @@ const Contributions = ({
         <UsersIcon width={32} height={32} className="mr-2 fill-indigo-300" />
         <h2>Contributions</h2>
       </div>
-      <p className="mb-8 text-neutral-600 dark:text-neutral-400">
+      <p className="mb-8 text-neutral-400">
         My contributions to open-source platforms. I believe that by sharing my
         knowledge and expertise, I can help others to learn and grow too.
       </p>
       {github && (
         <div className="mb-8 flex flex-col">
           <h3 className="m-0 text-lg font-semibold md:text-2xl">GitHub</h3>
-          <p className="mb-2 text-sm italic text-neutral-600 dark:text-neutral-400">
+          <p className="mb-2 text-sm italic text-neutral-400">
             (Powered by GitHub GraphQL API)
           </p>
           <div>
@@ -50,7 +50,7 @@ const Contributions = ({
           <h3 className="m-0 text-lg font-semibold md:text-2xl">
             Stack Overflow
           </h3>
-          <p className="mb-2 text-sm italic text-neutral-600 dark:text-neutral-400">
+          <p className="mb-2 text-sm italic text-neutral-400">
             (Powered by Stack Exchange API)
           </p>
           <div>Reputation: {stackOverflow.reputation}</div>

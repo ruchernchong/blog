@@ -13,7 +13,7 @@ const Employment = ({ companies }) => {
         />
         <h2>Work</h2>
       </div>
-      <p className="mb-8 text-neutral-600 dark:text-neutral-400">
+      <p className="mb-8 text-neutral-400">
         Some cool companies I have worked with. Feel free to connect with me
         on&nbsp;
         <a
@@ -36,8 +36,8 @@ const Employment = ({ companies }) => {
               >
                 <div
                   className={classNames(
-                    "flex h-12 w-12 items-center rounded-2xl bg-transparent p-2 md:h-[72px] md:w-[72px]",
-                    logo && "dark:bg-neutral-50"
+                    "flex h-12 w-12 items-center rounded-2xl p-2 md:h-[72px] md:w-[72px]",
+                    logo ? "bg-neutral-50" : "bg-transparent"
                   )}
                 >
                   {logo && (
@@ -63,7 +63,7 @@ const Employment = ({ companies }) => {
                     <div className="text-xl font-bold">{name}</div>
                   </a>
                   <div>{title}</div>
-                  <div className="text-sm italic text-neutral-600 dark:text-neutral-400">
+                  <div className="text-sm italic text-neutral-400">
                     <div>
                       {dateStart} - {dateEnd ?? "Present"}
                     </div>

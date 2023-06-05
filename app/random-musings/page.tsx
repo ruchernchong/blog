@@ -48,7 +48,7 @@ const RandomMusingsPage = async () => {
           <h1 className="mb-4 text-3xl font-extrabold md:text-4xl">
             Random Musings
           </h1>
-          <div className="text-neutral-600 dark:text-neutral-400 md:mb-0">
+          <div className="text-neutral-400 md:mb-0">
             <div>{pageDescription}</div>
             <em>
               <span className="text-xl font-extrabold text-indigo-300">
@@ -62,11 +62,11 @@ const RandomMusingsPage = async () => {
           const formattedDate = format(parseISO(date), "dd MMM yyyy");
 
           return (
-            <div key={title} className="prose mb-2 flex dark:prose-invert">
+            <div key={title} className="prose prose-invert mb-2 flex">
               <time
                 dateTime={formatISO(parseISO(date))}
                 title={formattedDate}
-                className="mr-4 shrink-0 italic text-neutral-600 dark:text-neutral-400"
+                className="mr-4 shrink-0 italic text-neutral-400"
               >
                 {formattedDate}
               </time>

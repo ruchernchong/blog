@@ -45,9 +45,7 @@ const ProjectsPage = async () => {
       <StructuredData data={structuredData} />
       <div className="flex flex-col">
         <h1 className="mb-4 text-3xl font-bold md:text-4xl">Projects</h1>
-        <p className="mb-4 text-neutral-600 dark:text-neutral-400">
-          {pageDescription}
-        </p>
+        <p className="mb-4 text-neutral-400">{pageDescription}</p>
         <div className="mb-8">
           {projects.map(({ name, description, skills, link }) => {
             return (
@@ -55,9 +53,7 @@ const ProjectsPage = async () => {
                 <h3 className="mb-2 text-lg font-semibold md:text-2xl">
                   {name}
                 </h3>
-                <div className="mb-4 text-neutral-600 dark:text-neutral-400">
-                  {description}
-                </div>
+                <div className="mb-4 text-neutral-400">{description}</div>
                 <div className="mb-4 flex flex-wrap gap-2">
                   {skills?.map((skill) => {
                     skill = skill.toLowerCase();
@@ -75,7 +71,7 @@ const ProjectsPage = async () => {
           })}
         </div>
         <h2 className="mb-0 text-xl font-semibold md:text-2xl">GitHub</h2>
-        <p className="mb-8 text-sm italic text-neutral-600 dark:text-neutral-400">
+        <p className="mb-8 text-sm italic text-neutral-400">
           (Powered by GitHub GraphQL API)
         </p>
         <div className="grid gap-4 md:grid-cols-2">
@@ -85,9 +81,7 @@ const ProjectsPage = async () => {
                 <Card key={id}>
                   <a href={url} target="_blank" rel="noopener noreferrer">
                     <div className="text-xl">{name}</div>
-                    <div className="flex-1 text-neutral-600 dark:text-neutral-400">
-                      {description}
-                    </div>
+                    <div className="flex-1 text-neutral-400">{description}</div>
                     <div className="flex flex-row items-center">
                       <StarIcon className="mr-2 h-4 w-4" />
                       <div>{stargazers.totalCount}</div>
