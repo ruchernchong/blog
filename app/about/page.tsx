@@ -37,11 +37,10 @@ const AboutPage = async () => {
   const sortedCompanies = companies.sort(
     (a, b) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime()
   );
-  const currentCompany = sortedCompanies[0];
-  let currentPosition: string = "";
-  if (currentCompany) {
-    currentPosition = `${currentCompany.title} @ ${currentCompany.name}`;
-  }
+  const currentPosition = sortedCompanies
+    .filter(({ dateEnd }) => !dateEnd)
+    .map(({ title, name }) => `${title} @ ${name}`)
+    .join(" | ");
 
   const structuredData: WithContext<WebPage> = {
     "@context": "https://schema.org",
