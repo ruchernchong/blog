@@ -3,6 +3,7 @@ import classNames from "classnames";
 import LinkWithIcon from "@/components/LinkWithIcon";
 import { StackOverflowProfile } from "@/lib/stackoverflow";
 import { GitHubProfile } from "@/lib/github";
+import { UsersIcon } from "@heroicons/react/24/solid";
 
 const STACK_OVERFLOW_BADGES = {
   bronze: "bg-[#D1A684]",
@@ -18,8 +19,15 @@ const Contributions = ({
   stackOverflow: StackOverflowProfile;
 }) => {
   return (
-    <section className="prose prose-neutral mx-auto max-w-4xl dark:prose-invert">
-      <h2 className="text-2xl md:text-3xl">Contributions</h2>
+    <section className="mx-auto max-w-4xl">
+      <div className="mb-2 flex items-center text-2xl font-bold md:text-3xl">
+        <UsersIcon width={32} height={32} className="mr-2 fill-indigo-300" />
+        <h2>Contributions</h2>
+      </div>
+      <p className="mb-8 text-neutral-600 dark:text-neutral-400">
+        My contributions to open-source platforms. I believe that by sharing my
+        knowledge and expertise, I can help others to learn and grow too.
+      </p>
       {github && (
         <div className="mb-8 flex flex-col">
           <h3 className="m-0 text-lg font-semibold md:text-2xl">GitHub</h3>
@@ -38,15 +46,15 @@ const Contributions = ({
         </div>
       )}
       {stackOverflow && (
-        <div className="flex flex-col text-neutral-600 dark:text-neutral-400">
+        <div className="flex flex-col">
           <h3 className="m-0 text-lg font-semibold md:text-2xl">
             Stack Overflow
           </h3>
-          <p className="text-sm italic text-neutral-600 dark:text-neutral-400">
+          <p className="mb-2 text-sm italic text-neutral-600 dark:text-neutral-400">
             (Powered by Stack Exchange API)
           </p>
           <div>Reputation: {stackOverflow.reputation}</div>
-          <div className="flex items-center gap-2">
+          <div className="mb-2 flex items-center gap-2">
             {Object.entries(stackOverflow.badge_counts)
               .reverse()
               .map(([tier, count]) => {
@@ -61,6 +69,9 @@ const Contributions = ({
                   </Fragment>
                 );
               })}
+          </div>
+          <div className="flex flex-col items-start">
+            <LinkWithIcon url="https://stackoverflow.com/users/4031163/ru-chern-chong" />
           </div>
         </div>
       )}
