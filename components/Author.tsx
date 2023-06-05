@@ -32,19 +32,13 @@ const Author = ({
           </h1>
           {!hideTagline && <div className="text-md mb-4">{tagline}</div>}
           {!hideDescription && (
-            <p className="mb-4 text-neutral-600 dark:text-neutral-400">
-              {description}
-            </p>
+            <p className="mb-4 text-neutral-400">{description}</p>
           )}
           <div className="flex justify-center gap-x-4 md:justify-start">
             {socials.map(({ name, link }) => {
               return (
                 <ExternalLink key={name} href={link}>
-                  <Icons.Social
-                    key={name}
-                    name={name}
-                    className="dark:hover:fill-indigo-300"
-                  />
+                  <Icons.Social name={name} />
                 </ExternalLink>
               );
             })}

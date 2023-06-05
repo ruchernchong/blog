@@ -62,7 +62,7 @@ const AboutPage = async () => {
         />
       </div>
       <Employment companies={sortedCompanies} />
-      <hr className="mb-8 dark:border-neutral-600" />
+      <hr className="mb-8 border-neutral-600" />
       <Contributions
         github={githubProfile}
         stackOverflow={stackOverflowProfile}

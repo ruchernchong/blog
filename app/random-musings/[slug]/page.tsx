@@ -98,7 +98,7 @@ const RandomMusingsPostsPage = async ({ params }) => {
   return (
     <>
       <StructuredData data={structuredData} />
-      <article className="prose mx-auto mb-16 max-w-4xl prose-img:rounded-2xl dark:prose-invert">
+      <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-indigo-300 prose-img:rounded-2xl">
         <MDXRemote source={item.content} components={MDXComponents} />
       </article>
     </>

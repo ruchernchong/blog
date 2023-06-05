@@ -4,7 +4,6 @@ import { Analytics } from "@vercel/analytics/react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import globalMetadata from "@/app/metadata";
-import { ThemeProvider } from "@/app/ThemeProvider";
 import { HOST_URL } from "@/config";
 
 import "@/app/globals.css";
@@ -34,17 +33,15 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
             gtag('config', '${gaMeasurementId}');
         `}
       </Script>
-      <body className="bg-neutral-50 text-neutral-900 dark:bg-neutral-900 dark:text-neutral-50">
-        <ThemeProvider attribute="class" defaultTheme="dark">
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="mx-auto my-8 w-screen max-w-4xl grow px-4 md:my-16">
-              {children}
-              <Analytics />
-            </main>
-            <Footer />
-          </div>
-        </ThemeProvider>
+      <body className="bg-neutral-900 text-neutral-50">
+        <div className="flex min-h-screen flex-col">
+          <Header />
+          <main className="mx-auto my-8 w-screen max-w-4xl grow px-4 md:my-16">
+            {children}
+            <Analytics />
+          </main>
+          <Footer />
+        </div>
       </body>
     </html>
   );
