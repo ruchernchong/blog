@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import {
-  Github as SiGithub,
-  Linkedin as SiLinkedin,
-  Rss as SiRss,
-  Stackoverflow as SiStackoverflow,
-  Twitter as SiTwitter,
+  SiGithub,
+  SiLinkedin,
+  SiRss,
+  SiStackoverflow,
+  SiTwitter,
 } from "@icons-pack/react-simple-icons";
 
 const SOCIAL_MAP = {

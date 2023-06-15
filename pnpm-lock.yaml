@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -15,8 +15,8 @@ dependencies:
     specifier: ^2.0.13
     version: 2.0.13(react@18.2.0)
   '@icons-pack/react-simple-icons':
-    specifier: 5.11.0
-    version: 5.11.0(react@18.2.0)
+    specifier: ^8.0.1
+    version: 8.0.1(react@18.2.0)
   '@prisma/client':
     specifier: ^4.14.0
     version: 4.14.0(prisma@4.14.0)
@@ -1001,8 +1001,8 @@ packages:
     resolution: {integrity: sha512-FmuxfCuolpLl0AnQ2NHSzoUKWEJDFl63qXjzdoWBVyFCXzMGm1spBzk7LeHNoVCiWCF7mRVms9e6jEV9+MoPbg==}
     dev: false
 
-  /@icons-pack/react-simple-icons@5.11.0(react@18.2.0):
-    resolution: {integrity: sha512-hFJ4Q4JcYe/wQUab+gIug1BONjBUelaUVFYsZ1FKv5CEX/fP56qGet4CPmx18BqDhxrOehidYNlLyGppXL9/7w==}
+  /@icons-pack/react-simple-icons@8.0.1(react@18.2.0):
+    resolution: {integrity: sha512-lCdPSp+EFJKDabwQ16pQsTJKViwGa8naoYAnL0IpxQvl7E1CeQ7Z84BbJWhIustrrdNIZwcyuKg+ClPi7BXFWw==}
     peerDependencies:
       react: ^16.13 || ^17 || ^18
     dependencies:
