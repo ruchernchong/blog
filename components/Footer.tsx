@@ -17,9 +17,7 @@ const Footer = () => (
         <div className="mb-4 text-xl font-medium text-neutral-50">
           Ru Chern CHONG
         </div>
-        <div className="text-xl text-neutral-400">
-          Developer | Investor | Author
-        </div>
+        <div className="text-xl text-neutral-400">Developer</div>
       </div>
       <div className="mb-8 flex flex-col items-start gap-4 md:mb-0">
         <LinkHeader>Sitemap</LinkHeader>
