@@ -8,7 +8,10 @@ interface Typography extends PropsWithChildren {
 export const H1 = ({ className, ...props }: Typography) => {
   return (
     <h1
-      className={classNames("text-3xl font-extrabold md:text-4xl", className)}
+      className={classNames(
+        "bg-gradient-to-r from-indigo-300 to-red-300 bg-clip-text text-5xl font-extrabold text-transparent",
+        className
+      )}
       {...props}
     />
   );
