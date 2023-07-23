@@ -28,42 +28,47 @@ const HomePage = async () => {
   return (
     <>
       <StructuredData data={structuredData} />
-      <div className="mx-auto flex max-w-4xl flex-col justify-center">
-        <Author title="Ru Chern" description="Developer" hideTagline={true} />
+      <div className="flex flex-col justify-center gap-8">
+        <Author title="Ru Chern" />
         {featuredPosts.length > 0 && (
           <FeaturedPosts featuredPosts={featuredPosts} />
         )}
-        <H2>Recent Posts</H2>
-        <div className="mb-16">
-          <div className="text-lg">
-            Blog posts on mostly front-end development.
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-4">
+            <H2>Recent Posts</H2>
+            <div className="text-neutral-400">
+              <div>Blog posts on mostly front-end development.</div>
+              <em>
+                To date, I have written&nbsp;
+                <span className="text-xl font-extrabold text-indigo-300">
+                  {posts.length}
+                </span>
+                &nbsp;posts and counting...
+              </em>
+            </div>
           </div>
-          <em>
-            To date, I have written&nbsp;
-            <span className="text-xl font-extrabold text-indigo-300">
-              {posts.length}
-            </span>
-            &nbsp;posts and counting...
-          </em>
-        </div>
-        {posts.length === 0 && (
-          <p className="text-center italic">
-            There are no posts to display. Get started and write your first one!
-          </p>
-        )}
-        <div className="flex max-w-4xl flex-col space-y-16">
-          {posts.length > 0 &&
-            posts.map(({ title, slug, excerpt, publishedDate }) => {
-              return (
-                <BlogPost
-                  key={title}
-                  title={title}
-                  slug={`/blog/${slug}`}
-                  excerpt={excerpt}
-                  publishedDate={publishedDate}
-                />
-              );
-            })}
+          <div>
+            {posts.length === 0 && (
+              <p className="text-center italic">
+                There are no posts to display. Get started and write your first
+                one!
+              </p>
+            )}
+            <div className="flex flex-col gap-12">
+              {posts.length > 0 &&
+                posts.map(({ title, slug, excerpt, publishedDate }) => {
+                  return (
+                    <BlogPost
+                      key={title}
+                      title={title}
+                      slug={`/blog/${slug}`}
+                      excerpt={excerpt}
+                      publishedDate={publishedDate}
+                    />
+                  );
+                })}
+            </div>
+          </div>
         </div>
       </div>
     </>

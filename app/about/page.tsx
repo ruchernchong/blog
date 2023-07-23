@@ -53,20 +53,23 @@ const AboutPage = async () => {
   return (
     <>
       <StructuredData data={structuredData} />
-      <div className="mx-auto mb-8 flex max-w-4xl flex-col items-start justify-center">
-        {/*TODO: Upgrade description from a single source as variable*/}
-        <Author
-          title="About Me"
-          tagline={currentPosition}
-          description={pageDescription}
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-col">
+          {/*TODO: Upgrade description from a single source as variable*/}
+          <Author
+            title="About Me"
+            tagline={currentPosition}
+            description={pageDescription}
+          />
+        </div>
+        <hr className="border-neutral-600" />
+        <Employment companies={sortedCompanies} />
+        <hr className="border-neutral-600" />
+        <Contributions
+          github={githubProfile}
+          stackOverflow={stackOverflowProfile}
         />
       </div>
-      <Employment companies={sortedCompanies} />
-      <hr className="mb-8 border-neutral-600" />
-      <Contributions
-        github={githubProfile}
-        stackOverflow={stackOverflowProfile}
-      />
     </>
   );
 };

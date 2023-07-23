@@ -44,10 +44,10 @@ const RandomMusingsPage = async () => {
   return (
     <>
       <StructuredData data={structuredData} />
-      <div className="mx-auto mb-8 flex max-w-4xl flex-col items-start justify-center">
-        <div className="mb-8">
+      <div className="flex flex-col justify-center gap-8">
+        <div className="flex flex-col gap-4">
           <H1>Random Musings</H1>
-          <div className="text-neutral-400 md:mb-0">
+          <div className="text-neutral-400">
             <div>{pageDescription}</div>
             <em>
               <span className="text-xl font-extrabold text-indigo-300">
@@ -57,26 +57,28 @@ const RandomMusingsPage = async () => {
             </em>
           </div>
         </div>
-        {items.map(({ title, date, slug }) => {
-          const formattedDate = format(parseISO(date), "dd MMM yyyy");
+        <div className="flex flex-col gap-2">
+          {items.map(({ title, date, slug }) => {
+            const formattedDate = format(parseISO(date), "dd MMM yyyy");
 
-          return (
-            <div key={title} className="prose prose-invert mb-2 flex">
-              <time
-                dateTime={formatISO(parseISO(date))}
-                title={formattedDate}
-                className="mr-4 shrink-0 italic text-neutral-400"
-              >
-                {formattedDate}
-              </time>
-              <Link href={`/random-musings/${slug}`} className="no-underline">
-                <span className="text-xl font-medium transition hover:opacity-50">
-                  {title}
-                </span>
-              </Link>
-            </div>
-          );
-        })}
+            return (
+              <div key={title} className="flex items-center gap-4">
+                <time
+                  dateTime={formatISO(parseISO(date))}
+                  title={formattedDate}
+                  className="shrink-0 italic text-neutral-400"
+                >
+                  {formattedDate}
+                </time>
+                <Link href={`/random-musings/${slug}`} className="no-underline">
+                  <span className="text-xl font-medium transition hover:opacity-50">
+                    {title}
+                  </span>
+                </Link>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </>
   );

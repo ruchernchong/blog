@@ -20,60 +20,75 @@ const Contributions = ({
   stackOverflow: StackOverflowProfile;
 }) => {
   return (
-    <section className="mx-auto max-w-4xl">
-      <div className="mb-2 flex items-center text-2xl font-bold md:text-3xl">
-        <UsersIcon width={32} height={32} className="mr-2 fill-indigo-300" />
-        <H2>Contributions</H2>
+    <section className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center">
+          <UsersIcon width={32} height={32} className="mr-2 fill-indigo-300" />
+          <H2>Contributions</H2>
+        </div>
+        <p className="text-neutral-400">
+          My contributions to open-source platforms. I believe that by sharing
+          my knowledge and expertise, I can help others to learn and grow too.
+        </p>
       </div>
-      <p className="mb-8 text-neutral-400">
-        My contributions to open-source platforms. I believe that by sharing my
-        knowledge and expertise, I can help others to learn and grow too.
-      </p>
-      {github && (
-        <div className="mb-8 flex flex-col">
-          <H3>GitHub</H3>
-          <p className="mb-2 text-sm italic text-neutral-400">
-            (Powered by GitHub GraphQL API)
-          </p>
-          <div>
-            Total commits:{" "}
-            {github.contributionsCollection.totalCommitContributions}
+      <div className="flex flex-col gap-8">
+        {github && (
+          <div className="flex flex-col gap-2">
+            <div>
+              <H3>GitHub</H3>
+              <p className="text-sm italic text-neutral-400">
+                (Powered by GitHub GraphQL API)
+              </p>
+            </div>
+            <div>
+              <div>
+                Total commits:{" "}
+                {github.contributionsCollection.totalCommitContributions}
+              </div>
+              <div>Pull requests: {github.pullRequests.totalCount}</div>
+              <div className="mb-2">
+                Followers: {github.followers.totalCount}
+              </div>
+              <div className="flex flex-col items-start">
+                <LinkWithIcon url={github.url} />
+              </div>
+            </div>
           </div>
-          <div>Pull requests: {github.pullRequests.totalCount}</div>
-          <div className="mb-2">Followers: {github.followers.totalCount}</div>
-          <div className="flex flex-col items-start">
-            <LinkWithIcon url={github.url} />
+        )}
+        {stackOverflow && (
+          <div className="flex flex-col gap-2">
+            <div>
+              <H3>Stack Overflow</H3>
+              <p className="text-sm italic text-neutral-400">
+                (Powered by Stack Exchange API)
+              </p>
+            </div>
+            <div className="flex flex-col gap-2">
+              <div>Reputation: {stackOverflow.reputation}</div>
+              <div className="flex items-center gap-2">
+                {Object.entries(stackOverflow.badge_counts)
+                  .reverse()
+                  .map(([tier, count]) => {
+                    return (
+                      <Fragment key={tier}>
+                        <span
+                          className={classNames(
+                            `h-4 w-4 rounded-full ${STACK_OVERFLOW_BADGES[tier]}`
+                          )}
+                          title={tier}
+                        />
+                        <div>{count}</div>
+                      </Fragment>
+                    );
+                  })}
+              </div>
+              <div className="flex flex-col items-start">
+                <LinkWithIcon url="https://stackoverflow.com/users/4031163/ru-chern-chong" />
+              </div>
+            </div>
           </div>
-        </div>
-      )}
-      {stackOverflow && (
-        <div className="flex flex-col">
-          <H3>Stack Overflow</H3>
-          <p className="mb-2 text-sm italic text-neutral-400">
-            (Powered by Stack Exchange API)
-          </p>
-          <div>Reputation: {stackOverflow.reputation}</div>
-          <div className="mb-2 flex items-center gap-2">
-            {Object.entries(stackOverflow.badge_counts)
-              .reverse()
-              .map(([tier, count]) => {
-                return (
-                  <Fragment key={tier}>
-                    <span
-                      className={classNames(
-                        `h-4 w-4 rounded-full ${STACK_OVERFLOW_BADGES[tier]}`
-                      )}
-                    />
-                    <div>{count}</div>
-                  </Fragment>
-                );
-              })}
-          </div>
-          <div className="flex flex-col items-start">
-            <LinkWithIcon url="https://stackoverflow.com/users/4031163/ru-chern-chong" />
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </section>
   );
 };

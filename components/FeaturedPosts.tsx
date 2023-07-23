@@ -10,11 +10,9 @@ interface FeaturedPostsProps {
 
 const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
   return (
-    <>
-      <div className="mb-6">
-        <H2>Featured Posts</H2>
-      </div>
-      <div className="mb-12 grid gap-4 md:grid-cols-3">
+    <div className="flex flex-col gap-4">
+      <H2>Featured Posts</H2>
+      <div className="grid gap-4 md:grid-cols-3">
         {featuredPosts
           .slice(0, 3)
           .map(({ title, slug, excerpt, publishedDate }) => {
@@ -25,24 +23,22 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
 
             return (
               <Card key={title}>
-                <Link href={`/blog/${slug}`} className="mb-6 md:mb-0">
+                <Link href={`/blog/${slug}`} className="flex flex-col gap-2">
                   <time
                     dateTime={formatISO(parseISO(publishedDate))}
                     title={formattedDate}
-                    className="mb-2 italic text-neutral-400"
+                    className="italic text-neutral-400"
                   >
                     {formattedDate}
                   </time>
-                  <div className="mb-2">
-                    <H3>{title}</H3>
-                  </div>
+                  <H3>{title}</H3>
                   <p className="flex-1 text-neutral-400">{excerpt}</p>
                 </Link>
               </Card>
             );
           })}
       </div>
-    </>
+    </div>
   );
 };
 

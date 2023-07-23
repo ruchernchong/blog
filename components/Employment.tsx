@@ -5,35 +5,33 @@ import { H2 } from "@/components/Typography";
 
 const Employment = ({ companies }) => {
   return (
-    <section className="mx-auto mb-8 max-w-4xl">
-      <div className="mb-2 flex items-center text-2xl font-bold md:text-3xl">
-        <BriefcaseIcon
-          width={32}
-          height={32}
-          className="mr-2 fill-indigo-300"
-        />
-        <H2>Work</H2>
+    <section className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <BriefcaseIcon width={32} height={32} className="fill-indigo-300" />
+          <H2>Work</H2>
+        </div>
+        <p className="text-neutral-400">
+          Some cool companies I have worked with. Feel free to connect with me
+          on&nbsp;
+          <a
+            href="https://linkedin.com/in/ruchernchong"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-indigo-300 underline hover:text-red-300"
+          >
+            LinkedIn
+          </a>
+          .
+        </p>
       </div>
-      <p className="mb-8 text-neutral-400">
-        Some cool companies I have worked with. Feel free to connect with me
-        on&nbsp;
-        <a
-          href="https://linkedin.com/in/ruchernchong"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-indigo-300 underline hover:text-red-300"
-        >
-          LinkedIn
-        </a>
-        .
-      </p>
-      <div className="flex flex-col gap-y-8">
+      <div className="flex flex-col gap-8">
         {companies.map(
           ({ name, title, logo, dateStart, dateEnd, location, url }) => {
             return (
               <div
                 key={name}
-                className="group relative flex items-center gap-x-4"
+                className="group relative flex items-center gap-4"
               >
                 <div
                   className={classNames(
