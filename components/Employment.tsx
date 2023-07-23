@@ -1,6 +1,7 @@
 import Image from "next/image";
 import classNames from "classnames";
 import { BriefcaseIcon } from "@heroicons/react/24/solid";
+import { H2 } from "@/components/Typography";
 
 const Employment = ({ companies }) => {
   return (
@@ -11,7 +12,7 @@ const Employment = ({ companies }) => {
           height={32}
           className="mr-2 fill-indigo-300"
         />
-        <h2>Work</h2>
+        <H2>Work</H2>
       </div>
       <p className="mb-8 text-neutral-400">
         Some cool companies I have worked with. Feel free to connect with me

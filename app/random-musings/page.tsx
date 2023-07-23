@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import globalMetadata from "@/app/metadata";
 import StructuredData from "@/components/StructuredData";
+import { H1 } from "@/components/Typography";
 import { HOST_URL } from "@/config";
 import { format, formatISO, parseISO } from "date-fns";
 import { RandomMusing } from "@/lib/types";
@@ -45,9 +46,7 @@ const RandomMusingsPage = async () => {
       <StructuredData data={structuredData} />
       <div className="mx-auto mb-8 flex max-w-4xl flex-col items-start justify-center">
         <div className="mb-8">
-          <h1 className="mb-4 text-3xl font-extrabold md:text-4xl">
-            Random Musings
-          </h1>
+          <H1>Random Musings</H1>
           <div className="text-neutral-400 md:mb-0">
             <div>{pageDescription}</div>
             <em>

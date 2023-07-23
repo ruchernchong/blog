@@ -2,6 +2,7 @@ import Author from "@/components/Author";
 import BlogPost from "@/components/BlogPost";
 import FeaturedPosts from "@/components/FeaturedPosts";
 import StructuredData from "@/components/StructuredData";
+import { H2 } from "@/components/Typography";
 import { featuredPostsQuery, postsQuery } from "@/lib/queries";
 import { sanityClient } from "@/lib/sanity-server";
 import { Post } from "@/lib/types";
@@ -32,7 +33,7 @@ const HomePage = async () => {
         {featuredPosts.length > 0 && (
           <FeaturedPosts featuredPosts={featuredPosts} />
         )}
-        <h2 className="mb-2 text-3xl font-bold md:text-4xl">Recent Posts</h2>
+        <H2>Recent Posts</H2>
         <div className="mb-16">
           <div className="text-lg">
             Blog posts on mostly front-end development.
@@ -46,9 +47,9 @@ const HomePage = async () => {
           </em>
         </div>
         {posts.length === 0 && (
-          <h3 className="text-center italic">
+          <p className="text-center italic">
             There are no posts to display. Get started and write your first one!
-          </h3>
+          </p>
         )}
         <div className="flex max-w-4xl flex-col space-y-16">
           {posts.length > 0 &&

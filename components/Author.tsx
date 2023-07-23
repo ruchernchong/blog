@@ -2,6 +2,7 @@ import classNames from "classnames";
 import Avatar from "@/components/Avatar";
 import ExternalLink from "@/components/ExternalLink";
 import * as Icons from "@/components/Icons";
+import { H1 } from "@/components/Typography";
 import { socials } from "@/data/socials";
 
 type Author = {
@@ -23,13 +24,13 @@ const Author = ({
     <div className="mx-auto mb-8 w-full max-w-4xl">
       <div className="flex flex-col-reverse items-center md:flex-row md:items-start">
         <div className="flex grow basis-1/2 flex-col items-center md:items-start md:pr-8">
-          <h1
+          <H1
             className={classNames("text-3xl font-bold md:text-4xl", {
               "mb-4": hideTagline,
             })}
           >
             {title}
-          </h1>
+          </H1>
           {!hideTagline && <div className="text-md mb-4">{tagline}</div>}
           {!hideDescription && (
             <p className="mb-4 text-neutral-400">{description}</p>
