@@ -25,18 +25,6 @@ export const H2 = ({ className, ...props }: Typography) => {
 
 export const H3 = ({ className, ...props }: Typography) => {
   return (
-    <h3 className={classNames("text-3xl font-bold", className)} {...props} />
+    <h3 className={classNames("text-2xl font-bold", className)} {...props} />
   );
-};
-
-export const H4 = ({ className, ...props }: Typography) => {
-  return (
-    <h4 className={classNames("text-2xl font-bold", className)} {...props} />
-  );
-};
-
-export default {
-  H1,
-  H2,
-  H3,
 };
