@@ -1,4 +1,3 @@
-import MDXComponents from "@/components/MDXComponents";
 import MDXRemote from "@/components/MDXRemote";
 import StructuredData from "@/components/StructuredData";
 import type { RandomMusing } from "@/lib/types";
@@ -99,7 +98,7 @@ const RandomMusingsPostsPage = async ({ params }) => {
     <>
       <StructuredData data={structuredData} />
       <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-indigo-300 prose-img:rounded-2xl">
-        <MDXRemote source={item.content} components={MDXComponents} />
+        <MDXRemote source={item.content} />
       </article>
     </>
   );

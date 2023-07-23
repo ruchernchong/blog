@@ -121,7 +121,7 @@ const PostPage = async ({ params }) => {
   return (
     <>
       <StructuredData data={structuredData} />
-      <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-img:rounded-2xl">
+      <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-indigo-300 prose-img:rounded-2xl">
         <div className="mb-4 flex flex-col items-center justify-center text-neutral-400 md:flex-row">
           <div className="flex flex-col md:flex-row">
             <div className="flex items-center justify-center">
@@ -144,7 +144,7 @@ const PostPage = async ({ params }) => {
           </div>
         </div>
         <H1 className="text-center">{post.title}</H1>
-        <MDXRemote source={post.content} components={MDXComponents} />
+        <MDXRemote source={post.content} />
       </article>
       <div className="mb-16 grid gap-y-4 md:grid-cols-2 md:gap-x-4">
         <Link href={`/blog/${previousPost?.slug}`}>

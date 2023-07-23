@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { CH } from "@code-hike/mdx/components";
+import { H1, H2, H3 } from "@/components/Typography";
 
 const CustomLink = (props) => {
   const href = props.href;
@@ -10,7 +11,7 @@ const CustomLink = (props) => {
 
   if (isInternalLink) {
     return (
-      <Link href={href} scroll={false} {...props}>
+      <Link href={href} scroll={false} className="text-indigo-300" {...props}>
         {props.children}
       </Link>
     );
@@ -33,6 +34,9 @@ const ImageComponent = (props) => (
 const MDXComponents = {
   CH,
   a: CustomLink,
+  h1: H1,
+  h2: H2,
+  h3: H3,
   img: ImageComponent,
 };
 
