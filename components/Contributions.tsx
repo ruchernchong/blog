@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import classNames from "classnames";
 import LinkWithIcon from "@/components/LinkWithIcon";
+import { H2, H3 } from "@/components/Typography";
 import { StackOverflowProfile } from "@/lib/stackoverflow";
 import { GitHubProfile } from "@/lib/github";
 import { UsersIcon } from "@heroicons/react/24/solid";
@@ -22,7 +23,7 @@ const Contributions = ({
     <section className="mx-auto max-w-4xl">
       <div className="mb-2 flex items-center text-2xl font-bold md:text-3xl">
         <UsersIcon width={32} height={32} className="mr-2 fill-indigo-300" />
-        <h2>Contributions</h2>
+        <H2>Contributions</H2>
       </div>
       <p className="mb-8 text-neutral-400">
         My contributions to open-source platforms. I believe that by sharing my
@@ -30,7 +31,7 @@ const Contributions = ({
       </p>
       {github && (
         <div className="mb-8 flex flex-col">
-          <h3 className="m-0 text-lg font-semibold md:text-2xl">GitHub</h3>
+          <H3>GitHub</H3>
           <p className="mb-2 text-sm italic text-neutral-400">
             (Powered by GitHub GraphQL API)
           </p>
@@ -47,9 +48,7 @@ const Contributions = ({
       )}
       {stackOverflow && (
         <div className="flex flex-col">
-          <h3 className="m-0 text-lg font-semibold md:text-2xl">
-            Stack Overflow
-          </h3>
+          <H3>Stack Overflow</H3>
           <p className="mb-2 text-sm italic text-neutral-400">
             (Powered by Stack Exchange API)
           </p>

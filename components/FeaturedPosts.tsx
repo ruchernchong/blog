@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
 import Card from "@/components/Card";
+import { H2, H3 } from "@/components/Typography";
 import { Post } from "@/lib/types";
 
 interface FeaturedPostsProps {
@@ -10,7 +11,9 @@ interface FeaturedPostsProps {
 const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
   return (
     <>
-      <h2 className="mb-6 text-3xl font-bold md:text-4xl">Featured Posts</h2>
+      <div className="mb-6">
+        <H2>Featured Posts</H2>
+      </div>
       <div className="mb-12 grid gap-4 md:grid-cols-3">
         {featuredPosts
           .slice(0, 3)
@@ -30,7 +33,9 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
                   >
                     {formattedDate}
                   </time>
-                  <h3 className="mb-2 text-2xl font-medium">{title}</h3>
+                  <div className="mb-2">
+                    <H3>{title}</H3>
+                  </div>
                   <p className="flex-1 text-neutral-400">{excerpt}</p>
                 </Link>
               </Card>

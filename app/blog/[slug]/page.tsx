@@ -7,6 +7,7 @@ import Card from "@/components/Card";
 import MDXComponents from "@/components/MDXComponents";
 import MDXRemote from "@/components/MDXRemote";
 import StructuredData from "@/components/StructuredData";
+import { H1 } from "@/components/Typography";
 import ViewCounter from "@/components/ViewCounter";
 import { postQuery, postSlugsQuery } from "@/lib/queries";
 import { sanityClient } from "@/lib/sanity-server";
@@ -142,7 +143,7 @@ const PostPage = async ({ params }) => {
             </div>
           </div>
         </div>
-        <h1 className="text-center">{post.title}</h1>
+        <H1 className="text-center">{post.title}</H1>
         <MDXRemote source={post.content} components={MDXComponents} />
       </article>
       <div className="mb-16 grid gap-y-4 md:grid-cols-2 md:gap-x-4">

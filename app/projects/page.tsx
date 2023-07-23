@@ -4,6 +4,7 @@ import Card from "@/components/Card";
 import LinkWithIcon from "@/components/LinkWithIcon";
 import Chip from "@/components/Chip";
 import StructuredData from "@/components/StructuredData";
+import { H1, H3 } from "@/components/Typography";
 import { HOST_URL } from "@/config";
 import { StarIcon } from "@heroicons/react/24/outline";
 import { getGitHubPinnedRepositories } from "@/lib/github";
@@ -44,15 +45,13 @@ const ProjectsPage = async () => {
     <>
       <StructuredData data={structuredData} />
       <div className="flex flex-col">
-        <h1 className="mb-4 text-3xl font-bold md:text-4xl">Projects</h1>
+        <H1>Projects</H1>
         <p className="mb-4 text-neutral-400">{pageDescription}</p>
         <div className="mb-8">
           {projects.map(({ name, description, skills, link }) => {
             return (
               <div key={name} className="mb-8 flex flex-col items-start">
-                <h3 className="mb-2 text-lg font-semibold md:text-2xl">
-                  {name}
-                </h3>
+                <H3>{name}</H3>
                 <div className="mb-4 text-neutral-400">{description}</div>
                 <div className="mb-4 flex flex-wrap gap-2">
                   {skills?.map((skill) => {
