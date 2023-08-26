@@ -49,7 +49,13 @@ const Employment = ({ companies }) => {
                       priority
                     />
                   )}
-                  {!logo && <BriefcaseIcon className="fill-indigo-300" />}
+                  {!logo && (
+                    <BriefcaseIcon
+                      width="100%"
+                      height="100%"
+                      className="fill-indigo-300"
+                    />
+                  )}
                 </div>
                 <div>
                   <a
