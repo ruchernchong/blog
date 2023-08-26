@@ -15,7 +15,7 @@
     "@apollo/client": "^3.7.9",
     "@code-hike/mdx": "^0.8.3",
     "@heroicons/react": "^2.0.13",
-    "@icons-pack/react-simple-icons": "^8.0.1",
+    "@icons-pack/react-simple-icons": "^9.0.0",
     "@prisma/client": "^4.14.0",
     "@sanity/image-url": "^1.0.2",
     "@sanity/webhook": "^2.0.0",

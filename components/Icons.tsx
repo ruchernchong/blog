@@ -4,15 +4,15 @@ import {
   SiLinkedin,
   SiRss,
   SiStackoverflow,
-  SiTwitter,
+  SiX,
 } from "@icons-pack/react-simple-icons";
 
 const SOCIAL_MAP = {
   Github: SiGithub,
   Linkedin: SiLinkedin,
-  Rss: SiRss,
+  RSS: SiRss,
   Stackoverflow: SiStackoverflow,
-  Twitter: SiTwitter,
+  "𝕏": SiX,
 };
 
 type IconProps = {
@@ -22,6 +22,7 @@ type IconProps = {
 
 export const Social = ({ name, className }: IconProps) => {
   const Icon = SOCIAL_MAP[name];
+  const title = Object.keys(SOCIAL_MAP).find((item) => item === name);
 
-  return <Icon className={classNames(className)} />;
+  return <Icon title={title} className={classNames(className)} />;
 };

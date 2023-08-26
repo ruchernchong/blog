@@ -21,7 +21,7 @@ const HomePage = async () => {
     sameAs: [
       "https://github.com/ruchernchong",
       "https://www.linkedin.com/in/ruchernchong/",
-      "https://twitter.com/ruchernchong",
+      "https://x.com/ruchernchong",
     ],
   };
 
