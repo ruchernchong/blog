@@ -71,9 +71,9 @@ const RandomMusingsPage = async () => {
                   {formattedDate}
                 </time>
                 <Link href={`/random-musings/${slug}`} className="no-underline">
-                  <span className="text-xl font-medium transition hover:opacity-50">
+                  <h2 className="text-xl font-medium transition hover:opacity-50">
                     {title}
-                  </span>
+                  </h2>
                 </Link>
               </div>
             );

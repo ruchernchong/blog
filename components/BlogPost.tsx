@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
-import { H3 } from "@/components/Typography";
+import { H2 } from "@/components/Typography";
 import { Post } from "@/lib/types";
 
 const BlogPost = ({ title, slug, excerpt, publishedDate }: Post) => {
@@ -13,7 +13,7 @@ const BlogPost = ({ title, slug, excerpt, publishedDate }: Post) => {
         <div className="w-full basis-2/3">
           <Link href={slug}>
             <div className="absolute -inset-y-6 -inset-x-4 z-0 scale-95 rounded-2xl border border-indigo-300 opacity-0 transition group-hover:scale-100 group-hover:bg-neutral-800/25 group-hover:opacity-100" />
-            <H3>{title}</H3>
+            <H2>{title}</H2>
           </Link>
           <p className="text-neutral-400">{excerpt}</p>
         </div>

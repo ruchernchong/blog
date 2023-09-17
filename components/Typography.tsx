@@ -19,12 +19,12 @@ export const H1 = ({ className, ...props }: Typography) => {
 
 export const H2 = ({ className, ...props }: Typography) => {
   return (
-    <h2 className={classNames("text-4xl font-bold", className)} {...props} />
+    <h2 className={classNames("text-2xl font-bold", className)} {...props} />
   );
 };
 
 export const H3 = ({ className, ...props }: Typography) => {
   return (
-    <h3 className={classNames("text-2xl font-bold", className)} {...props} />
+    <h3 className={classNames("text-xl font-bold", className)} {...props} />
   );
 };

@@ -4,7 +4,7 @@ import Card from "@/components/Card";
 import LinkWithIcon from "@/components/LinkWithIcon";
 import Chip from "@/components/Chip";
 import StructuredData from "@/components/StructuredData";
-import { H1, H2, H3 } from "@/components/Typography";
+import { H1, H2 } from "@/components/Typography";
 import { HOST_URL } from "@/config";
 import { StarIcon } from "@heroicons/react/24/outline";
 import { getGitHubPinnedRepositories } from "@/lib/github";
@@ -53,7 +53,7 @@ const ProjectsPage = async () => {
           {projects.map(({ name, description, skills, link }) => {
             return (
               <div key={name} className="flex flex-col items-start gap-4">
-                <H3>{name}</H3>
+                <H2>{name}</H2>
                 <div className="text-neutral-400">{description}</div>
                 <div className="flex flex-wrap gap-2">
                   {skills?.map((skill) => {
@@ -73,7 +73,7 @@ const ProjectsPage = async () => {
         </div>
         <div className="flex flex-col gap-4">
           <div>
-            <H2>GitHub</H2>
+            <div className="text-4xl font-bold">GitHub</div>
             <p className="text-sm italic text-neutral-400">
               (Powered by GitHub GraphQL API)
             </p>

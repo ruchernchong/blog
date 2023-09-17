@@ -11,7 +11,7 @@ interface FeaturedPostsProps {
 const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
   return (
     <div className="flex flex-col gap-4">
-      <H2>Featured Posts</H2>
+      <div className="text-4xl font-bold">Featured Posts</div>
       <div className="grid gap-4 md:grid-cols-3">
         {featuredPosts
           .slice(0, 3)

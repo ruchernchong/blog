@@ -24,7 +24,7 @@ const Contributions = ({
       <div className="flex flex-col gap-4">
         <div className="flex items-center">
           <UsersIcon width={32} height={32} className="mr-2 fill-indigo-300" />
-          <H2>Contributions</H2>
+          <div className="text-4xl font-bold">Contributions</div>
         </div>
         <p className="text-neutral-400">
           My contributions to open-source platforms. I believe that by sharing

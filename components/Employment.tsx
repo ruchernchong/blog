@@ -9,7 +9,7 @@ const Employment = ({ companies }) => {
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
           <BriefcaseIcon width={32} height={32} className="fill-indigo-300" />
-          <H2>Work</H2>
+          <div className="text-4xl font-bold">Work</div>
         </div>
         <p className="text-neutral-400">
           Some cool companies I have worked with. Feel free to connect with me

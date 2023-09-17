@@ -2,7 +2,6 @@ import Author from "@/components/Author";
 import BlogPost from "@/components/BlogPost";
 import FeaturedPosts from "@/components/FeaturedPosts";
 import StructuredData from "@/components/StructuredData";
-import { H2 } from "@/components/Typography";
 import { featuredPostsQuery, postsQuery } from "@/lib/queries";
 import { sanityClient } from "@/lib/sanity-server";
 import { Post } from "@/lib/types";
@@ -35,7 +34,7 @@ const HomePage = async () => {
         )}
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-4">
-            <H2>Recent Posts</H2>
+            <div className="text-4xl font-bold">Recent Posts</div>
             <div className="text-neutral-400">
               <div>Blog posts on mostly front-end development.</div>
               <em>
