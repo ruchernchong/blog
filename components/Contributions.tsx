@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import classNames from "classnames";
 import LinkWithIcon from "@/components/LinkWithIcon";
-import { H2, H3 } from "@/components/Typography";
+import { H3 } from "@/components/Typography";
 import { StackOverflowProfile } from "@/lib/stackoverflow";
 import { GitHubProfile } from "@/lib/github";
 import { UsersIcon } from "@heroicons/react/24/solid";
@@ -24,7 +24,7 @@ const Contributions = ({
       <div className="flex flex-col gap-4">
         <div className="flex items-center">
           <UsersIcon width={32} height={32} className="mr-2 fill-indigo-300" />
-          <div className="text-4xl font-bold">Contributions</div>
+          <h2 className="text-4xl font-bold">Contributions</h2>
         </div>
         <p className="text-neutral-400">
           My contributions to open-source platforms. I believe that by sharing
