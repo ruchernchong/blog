@@ -7,6 +7,13 @@ type Project = {
 
 const projects: Project[] = [
   {
+    name: "Singapore EV Trends",
+    description:
+      "Using official data from LTA to create a chart visualising how the adoption trend of EVs are moving in Singapore.",
+    skills: ["next.js", "typescript", "react", "tailwind css", "sst", "aws"],
+    link: "https://singapore-ev-trends.ruchern.xyz",
+  },
+  {
     name: "Singtel eShop",
     description:
       "Online e-commerce shop for mobile phones and mobile plans for Singapore's largest telecommunication company. Built with React and Gatsby. Hosted on AWS.",
