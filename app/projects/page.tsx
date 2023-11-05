@@ -71,34 +71,34 @@ const ProjectsPage = async () => {
             );
           })}
         </div>
-        <div className="flex flex-col gap-4">
-          <div>
-            <div className="text-4xl font-bold">GitHub</div>
-            <p className="text-sm italic text-neutral-400">
-              (Powered by GitHub GraphQL API)
-            </p>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            {pinnedRepositories.map(
-              ({ id, name, description, stargazers, url }) => {
-                return (
-                  <Card key={id}>
-                    <a href={url} target="_blank" rel="noopener noreferrer">
-                      <div className="text-xl">{name}</div>
-                      <div className="flex-1 text-neutral-400">
-                        {description}
-                      </div>
-                      <div className="flex flex-row items-center">
-                        <StarIcon className="mr-2 h-4 w-4" />
-                        <div>{stargazers.totalCount}</div>
-                      </div>
-                    </a>
-                  </Card>
-                );
-              }
-            )}
-          </div>
-        </div>
+        {/*<div className="flex flex-col gap-4">*/}
+        {/*  <div>*/}
+        {/*    <div className="text-4xl font-bold">GitHub</div>*/}
+        {/*    <p className="text-sm italic text-neutral-400">*/}
+        {/*      (Powered by GitHub GraphQL API)*/}
+        {/*    </p>*/}
+        {/*  </div>*/}
+        {/*  <div className="grid gap-4 md:grid-cols-2">*/}
+        {/*    {pinnedRepositories.map(*/}
+        {/*      ({ id, name, description, stargazers, url }) => {*/}
+        {/*        return (*/}
+        {/*          <Card key={id}>*/}
+        {/*            <a href={url} target="_blank" rel="noopener noreferrer">*/}
+        {/*              <div className="text-xl">{name}</div>*/}
+        {/*              <div className="flex-1 text-neutral-400">*/}
+        {/*                {description}*/}
+        {/*              </div>*/}
+        {/*              <div className="flex flex-row items-center">*/}
+        {/*                <StarIcon className="mr-2 h-4 w-4" />*/}
+        {/*                <div>{stargazers.totalCount}</div>*/}
+        {/*              </div>*/}
+        {/*            </a>*/}
+        {/*          </Card>*/}
+        {/*        );*/}
+        {/*      }*/}
+        {/*    )}*/}
+        {/*  </div>*/}
+        {/*</div>*/}
       </div>
     </>
   );
