@@ -1,16 +1,14 @@
 import { allPosts } from "contentlayer/generated";
-import { compareDesc } from "date-fns";
+import { WebSite, WithContext } from "schema-dts";
 import Author from "@/components/Author";
 import BlogPost from "@/components/BlogPost";
 import FeaturedPosts from "@/components/FeaturedPosts";
 import { StructuredData } from "@/components/StructuredData";
-import { WebSite, WithContext } from "schema-dts";
+import { sortByLatest } from "@/lib/sortByLatest";
 import { HOST_URL } from "@/config";
 
 const HomePage = async () => {
-  const posts = allPosts.sort((a, b) =>
-    compareDesc(new Date(a.publishedAt), new Date(b.publishedAt))
-  );
+  const posts = allPosts.sort(sortByLatest);
   const featuredPosts = posts.filter(({ featured }) => featured);
 
   const structuredData: WithContext<WebSite> = {

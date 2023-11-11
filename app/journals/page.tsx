@@ -1,12 +1,13 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { allJournals } from "contentlayer/generated";
-import { compareDesc, format, formatISO, parseISO } from "date-fns";
+import { format, formatISO, parseISO } from "date-fns";
+import { WebPage, WithContext } from "schema-dts";
 import globalMetadata from "@/app/metadata";
 import { StructuredData } from "@/components/StructuredData";
 import { H1 } from "@/components/Typography";
+import { sortByLatest } from "@/lib/sortByLatest";
 import { HOST_URL } from "@/config";
-import { WebPage, WithContext } from "schema-dts";
 
 const title = `Journals`;
 const pageDescription =
@@ -56,9 +57,7 @@ const JournalsPage = () => {
         </div>
         <div className="flex flex-col gap-2">
           {allJournals
-            .sort((a, b) =>
-              compareDesc(new Date(a.publishedAt), new Date(b.publishedAt))
-            )
+            .sort(sortByLatest)
             .map(({ title, publishedAt, slug }) => {
               const formattedDate = format(
                 parseISO(publishedAt),
