@@ -3,9 +3,6 @@ const { withContentlayer } = require("next-contentlayer");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  experimental: {
-    appDir: true,
-  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
