@@ -70,7 +70,7 @@ const PostPage = ({ params }) => {
   );
 
   if (!post) {
-    notFound();
+    return notFound();
   }
 
   // post = {

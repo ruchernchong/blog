@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { allJournals } from "contentlayer/generated";
 import { Mdx } from "@/components/Mdx";
 import { StructuredData } from "@/components/StructuredData";
@@ -12,7 +13,7 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
   );
 
   if (!journal) {
-    return;
+    return notFound();
   }
 
   const title = journal.title;
