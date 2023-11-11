@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { allPosts, Post } from "contentlayer/generated";
+import { BlogPosting, WithContext } from "schema-dts";
 import classNames from "classnames";
 import { format, formatISO, parseISO } from "date-fns";
 import Card from "@/components/Card";
@@ -10,7 +11,6 @@ import { StructuredData } from "@/components/StructuredData";
 import { H1 } from "@/components/Typography";
 import ViewCounter from "@/components/ViewCounter";
 import { HOST_URL } from "@/config";
-import { BlogPosting, WithContext } from "schema-dts";
 import {
   BookOpenIcon,
   CalendarDaysIcon,
@@ -18,51 +18,42 @@ import {
 } from "@heroicons/react/24/outline";
 import "@code-hike/mdx/dist/index.css";
 
-// export const generateMetadata = async ({ params }): Promise<Metadata> => {
-//   const slug = params.slug;
-//
-//   const { post }: { post: Post } = await sanityClient.fetch(postQuery, {
-//     slug,
-//   });
-//
-//   if (!post) {
-//     return;
-//   }
-//
-//   const title = post.title;
-//   const description = post.excerpt;
-//   const publishedTime = post.publishedAt;
-//   const url = `${HOST_URL}/blog/${slug}`;
-//
-//   const ogImageUrlParams = { title };
-//   const urlParams = Object.entries(ogImageUrlParams)
-//     .map(([key, value]) => `${key}=${value}`)
-//     .join("&");
-//   const ogImageUrl = encodeURI(`${HOST_URL}/api/og?${urlParams}`);
-//   const images = [ogImageUrl];
-//
-//   return {
-//     title,
-//     description,
-//     openGraph: {
-//       title,
-//       description,
-//       type: "article",
-//       publishedTime,
-//       url,
-//       images,
-//     },
-//     twitter: {
-//       card: "summary_large_image",
-//       title,
-//       description,
-//       images,
-//     },
-//     alternates: {
-//       canonical: url,
-//     },
-//   };
-// };
+export const generateMetadata = async ({ params }): Promise<Metadata> => {
+  const post = allPosts.find((post) => post.slug === params.slug);
+
+  if (!post) {
+    return notFound();
+  }
+
+  const title = post.title;
+  const description = post.excerpt;
+  const publishedTime = post.publishedAt;
+  const url = `${HOST_URL}/${post.slug}`;
+  const ogImageUrl = `${HOST_URL}/api/og?title${post.title}`;
+  const images = [ogImageUrl];
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      publishedTime,
+      url,
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images,
+    },
+    alternates: {
+      canonical: url,
+    },
+  };
+};
 
 const PostPage = ({ params }) => {
   const post: Post = allPosts.find(
