@@ -1,11 +1,9 @@
 import { MetadataRoute } from "next";
+import { allPosts } from "contentlayer/generated";
 import { HOST_URL } from "@/config";
-import { sanityClient } from "@/lib/sanity-server";
-import { postsQuery } from "@/lib/queries";
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
-  const pages = ["/about", "/random-musings", "/projects"];
-  const posts = await sanityClient.fetch(postsQuery);
+  const pages: string[] = ["/about", "/random-musings", "/projects"];
   const randomMusings = await fetch(
     "https://raw.githubusercontent.com/ruchernchong/random-musings/main/feed.json"
   ).then((res) => res.json());
@@ -23,9 +21,9 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
       changeFrequency: "monthly",
       priority: 0.8,
     })),
-    ...posts.map(({ publishedDate, slug }) => ({
-      url: `${HOST_URL}/blog/${slug}`,
-      lastModified: formatLastModified(publishedDate),
+    ...allPosts.map(({ publishedAt, slug }) => ({
+      url: `${HOST_URL}/${slug}`,
+      lastModified: formatLastModified(publishedAt),
       changeFrequency: "daily",
       priority: 0.5,
     })),

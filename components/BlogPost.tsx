@@ -2,10 +2,9 @@ import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { H2 } from "@/components/Typography";
-import { Post } from "@/lib/types";
 
-const BlogPost = ({ title, slug, excerpt, publishedDate }: Post) => {
-  const formattedDate = format(parseISO(publishedDate), "iiii, dd MMMM yyyy");
+const BlogPost = ({ title, slug, excerpt, publishedAt }) => {
+  const formattedDate = format(parseISO(publishedAt), "iiii, dd MMMM yyyy");
 
   return (
     <div className="group relative">
@@ -18,7 +17,7 @@ const BlogPost = ({ title, slug, excerpt, publishedDate }: Post) => {
           <p className="text-neutral-400">{excerpt}</p>
         </div>
         <time
-          dateTime={formatISO(parseISO(publishedDate))}
+          dateTime={formatISO(parseISO(publishedAt))}
           title={formattedDate}
           className="italic text-neutral-400"
         >

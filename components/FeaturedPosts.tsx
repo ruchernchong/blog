@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
 import Card from "@/components/Card";
-import { H2, H3 } from "@/components/Typography";
-import { Post } from "@/lib/types";
+import { H3 } from "@/components/Typography";
+import { Post } from "contentlayer/generated";
 
 interface FeaturedPostsProps {
   featuredPosts: Post[];
@@ -15,17 +15,17 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
       <div className="grid gap-4 md:grid-cols-3">
         {featuredPosts
           .slice(0, 3)
-          .map(({ title, slug, excerpt, publishedDate }) => {
+          .map(({ title, slug, excerpt, publishedAt }) => {
             const formattedDate = format(
-              parseISO(publishedDate),
+              parseISO(publishedAt),
               "iiii, dd MMMM yyyy"
             );
 
             return (
               <Card key={title}>
-                <Link href={`/blog/${slug}`} className="flex flex-col gap-2">
+                <Link href={slug} className="flex flex-col gap-2">
                   <time
-                    dateTime={formatISO(parseISO(publishedDate))}
+                    dateTime={formatISO(parseISO(publishedAt))}
                     title={formattedDate}
                     className="italic text-neutral-400"
                   >

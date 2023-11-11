@@ -1,11 +1,10 @@
+const { withContentlayer } = require("next-contentlayer");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
     appDir: true,
-  },
-  images: {
-    domains: ["cdn.sanity.io"],
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
@@ -14,7 +13,7 @@ const nextConfig = {
 
 // Recommended configuration: https://nextjs.org/docs/advanced-features/security-headers
 const ContentSecurityPolicy = `
-  default-src 'self' cdn.sanity.io;
+  default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline' *.googletagmanager.com *.vercel-insights.com vercel.live;
   style-src 'self' 'unsafe-inline';
   connect-src *;
@@ -60,4 +59,4 @@ const withBundleAnalyser = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYSE === "true",
 });
 
-module.exports = withBundleAnalyser(nextConfig);
+module.exports = withContentlayer(nextConfig);

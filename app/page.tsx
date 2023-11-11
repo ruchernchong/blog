@@ -1,16 +1,17 @@
+import { allPosts } from "contentlayer/generated";
+import { compareDesc } from "date-fns";
 import Author from "@/components/Author";
 import BlogPost from "@/components/BlogPost";
 import FeaturedPosts from "@/components/FeaturedPosts";
-import StructuredData from "@/components/StructuredData";
-import { featuredPostsQuery, postsQuery } from "@/lib/queries";
-import { sanityClient } from "@/lib/sanity-server";
-import { Post } from "@/lib/types";
+import { StructuredData } from "@/components/StructuredData";
 import { WebSite, WithContext } from "schema-dts";
 import { HOST_URL } from "@/config";
 
 const HomePage = async () => {
-  const posts: Post[] = await sanityClient.fetch(postsQuery);
-  const featuredPosts: Post[] = await sanityClient.fetch(featuredPostsQuery);
+  const posts = allPosts.sort((a, b) =>
+    compareDesc(new Date(a.publishedAt), new Date(b.publishedAt))
+  );
+  const featuredPosts = posts.filter(({ featured }) => featured);
 
   const structuredData: WithContext<WebSite> = {
     "@context": "https://schema.org",
@@ -55,14 +56,14 @@ const HomePage = async () => {
             )}
             <div className="flex flex-col gap-12">
               {posts.length > 0 &&
-                posts.map(({ title, slug, excerpt, publishedDate }) => {
+                posts.map(({ title, slug, excerpt, publishedAt }) => {
                   return (
                     <BlogPost
                       key={title}
                       title={title}
-                      slug={`/blog/${slug}`}
+                      slug={slug}
                       excerpt={excerpt}
-                      publishedDate={publishedDate}
+                      publishedAt={publishedAt}
                     />
                   );
                 })}

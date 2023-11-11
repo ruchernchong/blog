@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import globalMetadata from "@/app/metadata";
-import StructuredData from "@/components/StructuredData";
+import { StructuredData } from "@/components/StructuredData";
 import { H1 } from "@/components/Typography";
 import { HOST_URL } from "@/config";
 import { format, formatISO, parseISO } from "date-fns";

@@ -1,8 +1,6 @@
 import { GetServerSideProps } from "next";
+import { allPosts, Post } from "contentlayer/generated";
 import RSS from "rss";
-import { Post } from "@/lib/types";
-import { sanityClient } from "@/lib/sanity-server";
-import { postsQuery } from "@/lib/queries";
 import { HOST_URL } from "@/config";
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
@@ -12,14 +10,12 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     feed_url: `${HOST_URL}/feed.xml`,
   });
 
-  const posts: Post[] = await sanityClient.fetch(postsQuery);
-
-  posts.map(async (post) =>
+  allPosts.map(({ title, slug, publishedAt, excerpt }) =>
     feed.item({
-      title: post.title,
-      url: `${HOST_URL}/blog/${post.slug}`,
-      date: post.publishedDate,
-      description: post.excerpt,
+      title,
+      url: `${HOST_URL}/${slug}`,
+      date: publishedAt,
+      description: excerpt,
     })
   );
 
