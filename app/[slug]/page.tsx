@@ -99,7 +99,7 @@ const PostPage = ({ params }) => {
     headline: post.title,
     image: ogImageUrl,
     description: post.excerpt,
-    url: `${HOST_URL}/blog/${post.slug}`,
+    url: `${HOST_URL}/${post.slug}`,
     author: [
       {
         "@type": "Person",

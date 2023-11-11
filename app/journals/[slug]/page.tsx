@@ -21,6 +21,7 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
   const publishedTime = new Date(journal.publishedAt).toISOString();
   const ogImageUrl = `${HOST_URL}/api/og?title${journal.title}`;
   const images = [ogImageUrl];
+  const url = `${HOST_URL}/${journal.slug}`;
 
   return {
     title,
@@ -30,7 +31,7 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
       description,
       type: "article",
       publishedTime,
-      url: journal.url,
+      url,
       images,
     },
     twitter: {
@@ -40,7 +41,7 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
       images,
     },
     alternates: {
-      canonical: journal.url,
+      canonical: url,
     },
   };
 };
