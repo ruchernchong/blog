@@ -3,7 +3,7 @@ import globalMetadata from "@/app/metadata";
 import Card from "@/components/Card";
 import LinkWithIcon from "@/components/LinkWithIcon";
 import Chip from "@/components/Chip";
-import StructuredData from "@/components/StructuredData";
+import { StructuredData } from "@/components/StructuredData";
 import { H1, H2 } from "@/components/Typography";
 import { HOST_URL } from "@/config";
 import { StarIcon } from "@heroicons/react/24/outline";

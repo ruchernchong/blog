@@ -4,7 +4,6 @@ Site: https://ruchern.xyz
 
 - Framework: [Next.js](https://nextjs.org)
 - Deployment: [Vercel](https://vercel.com)
-- CMS: [Sanity](https://sanity.io)
 - Styling: [Tailwind CSS](https://tailwindcss.com)
 - Database: [Planetscale](https://planetscale.com)
 - ORM: [Prisma](https://prisma.io)

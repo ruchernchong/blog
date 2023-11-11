@@ -1,9 +1,8 @@
-import MDXRemote from "@/components/MDXRemote";
-import StructuredData from "@/components/StructuredData";
-import type { RandomMusing } from "@/lib/types";
-import { HOST_URL } from "@/config";
-import { BlogPosting, WithContext } from "schema-dts";
 import { Metadata } from "next";
+import { BlogPosting, WithContext } from "schema-dts";
+import { StructuredData } from "@/components/StructuredData";
+import { HOST_URL } from "@/config";
+import type { RandomMusing } from "@/lib/types";
 
 const RANDOM_MUSINGS_API_URL: string = `https://raw.githubusercontent.com/ruchernchong/random-musings/main/feed.json`;
 
@@ -98,7 +97,7 @@ const RandomMusingsPostsPage = async ({ params }) => {
     <>
       <StructuredData data={structuredData} />
       <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-indigo-300 prose-img:rounded-2xl">
-        <MDXRemote source={item.content} />
+        {/*<MDXRemote source={item.content} />*/}
       </article>
     </>
   );

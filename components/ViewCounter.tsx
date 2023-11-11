@@ -1,7 +1,7 @@
 "use client";
 
-import useSWR from "swr";
 import { useEffect } from "react";
+import useSWR from "swr";
 
 type ViewCounterProps = {
   slug: string;
@@ -21,7 +21,7 @@ const ViewCounter = ({ slug }: ViewCounterProps) => {
     });
   }, [slug]);
 
-  return <div className="">{viewCount} views</div>;
+  return <div>{viewCount} views</div>;
 };
 
 export default ViewCounter;
