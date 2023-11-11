@@ -1,5 +1,5 @@
 import { GetServerSideProps } from "next";
-import { allPosts, Post } from "contentlayer/generated";
+import { allDocuments } from "contentlayer/generated";
 import RSS from "rss";
 import { HOST_URL } from "@/config";
 
@@ -10,12 +10,12 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     feed_url: `${HOST_URL}/feed.xml`,
   });
 
-  allPosts.map(({ title, slug, publishedAt, excerpt }) =>
+  allDocuments.map(({ title, slug, publishedAt, excerpt }) =>
     feed.item({
       title,
       url: `${HOST_URL}/${slug}`,
       date: publishedAt,
-      description: excerpt,
+      description: excerpt || title,
     })
   );
 
