@@ -1,0 +1,45 @@
+---
+title: Feature flags are useful to control how the way we enable and disable features
+publishedAt: 2023-03-29
+excerpt: Using feature flags allow us to control new or different feature during release in a modular way
+---
+
+## What are feature flags?
+
+Feature flags allow developers to have more granular control of the features being released. It can be in a form of toggling a certain feature, enabling or disabling them. This is usually done with developers wrapping code around a particular feature.
+
+Feature flags also help to reduce the risk of complicating the code base with potential conflicts.
+
+An example would be a feature branch being worked on for a long time while the main branch was constantly updated with other features simultaneously. This could cause a possibility of a merge conflict when the stale branch gets merged.
+
+As such, the feature flag allows us to frequently merge the changes while the feature is disabled when deployment into production is done.
+
+### Conducting experiments
+
+Since feature flags can act as an "on/off" switch, A/B testing can be done easily to divide the traffic into different variants of the feature. [Google Optimize](https://optimize.google.com) offers A/B testing features to help with this.
+
+## How to create a feature flag?
+
+Based on different requirements, there are many ways to create a feature flag. The following code is one example of how we can easily implement JavaScript.
+
+```text .env.development
+FEATURE_FLAG_NEW_FEATURE=true
+```
+
+```text .env.production
+FEATURE_FLAG_NEW_FEATURE=false
+```
+
+```js new-feature.js
+if (process.env.FEATURE_FLAG_NEW_FEATURE === "true") {
+	// Some cool features here
+} else {
+    // Some alternate features here
+}
+```
+
+From the above example, we used the `process.env` environment variables to control a particular feature.
+
+## Conclusion
+
+Feature flags are very powerful to give teams and especially developers more control of the features being released and in turn more control over the UX of a product.
