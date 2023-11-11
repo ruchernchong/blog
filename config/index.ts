@@ -1,4 +1,15 @@
-export const HOST_URL: string = "https://ruchern.xyz";
+export type NavLink = {
+  title: string;
+  href: string;
+};
 
-// Global config of the Sanity API version to use
-export const SANITY_API_VERSION: string = "2021-03-25";
+export const HOST_URL = "https://ruchern.xyz";
+
+export const navLinks: NavLink[] = [
+  { title: "Home", href: "/" },
+  // { title: "Blog", href: "/blog" },
+  { title: "About", href: "/about" },
+  { title: "Journals", href: "/journals" },
+  { title: "Projects", href: "/projects" },
+  // { title: "Resume", href: "/resume" },
+];

@@ -16,7 +16,7 @@ const handler = (req: NextRequest) => {
       (
         <div
           style={{
-            background: `url("${HOST_URL}/post-cover-image.png")`,
+            background: `url("${HOST_URL}/images/post-cover-image.png")`,
             width: "100%",
             height: "100%",
             display: "flex",

@@ -1,0 +1,73 @@
+---
+title: Making SEO better for blog posts with Structured Data
+publishedAt: 2023-01-23
+excerpt: How to use Structured Data to assist us with describing the content of a particular page
+---
+
+Search engines like Google use structured data to understand the contents of our page better. [JSON-LD](https://json-ld.org) is a format that most use to describe the data.
+
+## Structured Data
+
+Below is an example of a piece of structured data.
+
+```json
+{
+  "@context": "https://json-ld.org/contexts/person.jsonld",
+  "@id": "http://dbpedia.org/resource/John_Lennon",
+  "name": "John Lennon",
+  "born": "1940-10-09",
+  "spouse": "http://dbpedia.org/resource/Cynthia_Lennon"
+}
+```
+Source: [JSON-LD](https://json-ld.org)
+
+## Adding Structured Data in Next.js
+
+1. Create the following component `StructuredData.jsx`. Here we use the built-in component from `next/head` to append elements to the `head` of the page.
+
+```jsx StructuredData.jsx
+import Head from "next/head";
+
+export const StructuredData = ({ data }) => {
+    return (
+        <Head>
+            <script type="application/ld+json">{JSON.stringify(data)}</script>
+        </Head>
+    );
+};
+```
+
+2. Use the `StructuredData` component in your respective component containing the UI for your post.
+
+```jsx BlogPost.jsx
+export const BlogPost = ({ post }) => {
+    const structuredData = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: post.title,
+        description: post.description,
+        author: [
+            {
+            "@type": "Person",
+            name: post.author,
+            },
+        ],
+        image: post.imageUrl,
+        datePublished: post.publishedAt,
+    };
+};
+
+return (
+    <>
+        <Structured data={structuredData} />
+        {/* ... the rest of your blog post */}
+    </>
+);
+```
+
+
+## Validate Structured Data
+
+Before deploying the changes to production, we can inspect the HTML elements on a browser to see if the changes are reflected in the `<head>` section of the page.
+
+Upon successful deployment, we can use the [Schema Markup Validator](https://validator.schema.org/) to validate.

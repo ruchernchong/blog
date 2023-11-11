@@ -1,6 +1,6 @@
 "use client";
 
-const StructuredData = ({ data }) => {
+export const StructuredData = ({ data }) => {
   return (
     <script
       type="application/ld+json"
@@ -8,5 +8,3 @@ const StructuredData = ({ data }) => {
     />
   );
 };
-
-export default StructuredData;

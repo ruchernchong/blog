@@ -1,39 +1,21 @@
 import { MetadataRoute } from "next";
-import { HOST_URL } from "@/config";
-import { sanityClient } from "@/lib/sanity-server";
-import { postsQuery } from "@/lib/queries";
+import { allDocuments } from "contentlayer/generated";
+import { HOST_URL, navLinks } from "@/config";
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
-  const pages = ["/about", "/random-musings", "/projects"];
-  const posts = await sanityClient.fetch(postsQuery);
-  const randomMusings = await fetch(
-    "https://raw.githubusercontent.com/ruchernchong/random-musings/main/feed.json"
-  ).then((res) => res.json());
+  const pages = navLinks
+    .filter(({ href }) => href !== "/")
+    .map(({ href }) => href);
 
   return [
-    {
-      url: HOST_URL,
+    { url: HOST_URL, lastModified: formatLastModified() },
+    ...pages.map((url) => ({
+      url: `${HOST_URL}${url}`,
       lastModified: formatLastModified(),
-      changeFrequency: "monthly",
-      priority: 1,
-    },
-    ...pages.map((page) => ({
-      url: `${HOST_URL}${page}`,
-      lastModified: formatLastModified(),
-      changeFrequency: "monthly",
-      priority: 0.8,
     })),
-    ...posts.map(({ publishedDate, slug }) => ({
-      url: `${HOST_URL}/blog/${slug}`,
-      lastModified: formatLastModified(publishedDate),
-      changeFrequency: "daily",
-      priority: 0.5,
-    })),
-    ...randomMusings.map(({ date, slug }) => ({
-      url: `${HOST_URL}/random-musings/${slug}`,
-      lastModified: formatLastModified(date),
-      changeFrequency: "daily",
-      priority: 0.5,
+    ...allDocuments.map(({ publishedAt, slug }) => ({
+      url: `${HOST_URL}/${slug}`,
+      lastModified: formatLastModified(publishedAt),
     })),
   ];
 };

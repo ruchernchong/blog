@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useMDXComponent } from "next-contentlayer/hooks";
+import type { MDXComponents } from "mdx/types";
 import { CH } from "@code-hike/mdx/components";
 import { H1, H2, H3 } from "@/components/Typography";
 
@@ -31,7 +33,7 @@ const ImageComponent = (props) => (
   />
 );
 
-const MDXComponents = {
+const components: MDXComponents = {
   CH,
   a: CustomLink,
   h1: H1,
@@ -40,4 +42,8 @@ const MDXComponents = {
   img: ImageComponent,
 };
 
-export default MDXComponents;
+export const Mdx = ({ code }: { code: string }) => {
+  const Component = useMDXComponent(code);
+
+  return <Component components={components} />;
+};
