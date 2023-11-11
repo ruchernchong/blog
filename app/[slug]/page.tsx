@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { allPosts, Post } from "contentlayer/generated";
-import { BlogPosting, WithContext } from "schema-dts";
 import classNames from "classnames";
 import { format, formatISO, parseISO } from "date-fns";
 import Card from "@/components/Card";
@@ -76,39 +75,10 @@ const PostPage = ({ params }) => {
   // const nextPost = post.next;
 
   const formattedDate = format(parseISO(post.publishedAt), "dd MMMM yyyy");
-  const ogImageUrlParams = {
-    title: post.title,
-  };
-  const urlParams = Object.entries(ogImageUrlParams)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-  const ogImageUrl = encodeURI(`${HOST_URL}/api/og?${urlParams}`);
-
-  const structuredData: WithContext<BlogPosting> = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    image: ogImageUrl,
-    description: post.excerpt,
-    url: `${HOST_URL}/${post.slug}`,
-    author: [
-      {
-        "@type": "Person",
-        name: "Ru Chern Chong",
-        url: "https://ruchern.xyz",
-      },
-    ],
-    datePublished: post.publishedAt,
-    // TODO: Coming soon
-    // mainEntityOfPage: {
-    //   "@type": "WebPage",
-    //   "@id": `${HOST_URL}/blog`,
-    // },
-  };
 
   return (
     <>
-      <StructuredData data={structuredData} />
+      <StructuredData data={post.structuredData} />
       <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-indigo-300 prose-img:rounded-2xl">
         <div className="mb-4 flex flex-col items-center justify-center text-neutral-400 md:flex-row">
           <div className="flex flex-col md:flex-row">
