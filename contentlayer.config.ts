@@ -61,6 +61,7 @@ export const Journal = defineDocumentType(() => ({
   fields: {
     title: { type: "string", required: true },
     publishedAt: { type: "date", require: true },
+    excerpt: { type: "string" },
     image: { type: "string" },
   },
   computedFields: {
