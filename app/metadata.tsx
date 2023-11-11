@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { HOST_URL } from "@/config";
 
-const title: string = "Ru Chern";
-const description: string =
+const title = "Ru Chern";
+const description =
   "Frontend Developer from Singapore. Interested in automating workflows and building in React, Node, and Typescript.";
 
 const metadata: Metadata = {
@@ -10,14 +10,14 @@ const metadata: Metadata = {
     default: "Ru Chern",
     template: "%s | Ru Chern",
   },
-  description: description,
+  description,
   robots: {
     index: true,
     follow: true,
   },
   openGraph: {
-    title: title,
-    description: description,
+    title: { default: "Ru Chern", template: "%s | Ru Chern" },
+    description,
     url: HOST_URL,
     siteName: title,
     images: [
@@ -32,8 +32,8 @@ const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: title,
-    description: description,
+    title: { default: "Ru Chern", template: "%s | Ru Chern" },
+    description,
     creator: "@ruchernchong",
     images: `${HOST_URL}/cover-image.png`,
   },

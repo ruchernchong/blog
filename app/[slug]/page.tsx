@@ -64,8 +64,10 @@ import "@code-hike/mdx/dist/index.css";
 //   };
 // };
 
-const PostPage = async ({ params }) => {
-  const post: Post = allPosts.find((post) => post.slug === params.slug);
+const PostPage = ({ params }) => {
+  const post: Post = allPosts.find(
+    (post) => post._raw.flattenedPath === params.slug
+  );
 
   if (!post) {
     notFound();
