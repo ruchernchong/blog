@@ -1,6 +1,6 @@
 import Image from "next/image";
-import avatar from "@/public/avatar.jpg";
-import avatarHover from "@/public/avatar-hover.jpg";
+import avatar from "@/public/images/avatar.jpg";
+import avatarHover from "@/public/images/avatar-hover.jpg";
 
 const Avatar = () => {
   return (
@@ -18,7 +18,7 @@ const Avatar = () => {
         sizes="100vw"
         width={176}
         alt="Ru Chern Chong"
-        className="absolute top-0 left-0 rounded-full opacity-0 hover:opacity-100"
+        className="absolute left-0 top-0 rounded-full opacity-0 hover:opacity-100"
         priority
       />
     </div>
