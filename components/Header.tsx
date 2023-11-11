@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import NextLink from "next/link";
 import classNames from "classnames";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { navLinks } from "@/config/navLinks";
+
+import { navLinks } from "@/config";
 
 const NavItem = ({ href, title }) => {
   const pathname = usePathname();

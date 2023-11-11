@@ -3,8 +3,8 @@
 import Link from "next/link";
 import ExternalLink from "@/components/ExternalLink";
 import * as Icons from "@/components/Icons";
-import { navLinks } from "@/config/navLinks";
 import { socials } from "@/data/socials";
+import { navLinks } from "@/config";
 
 const LinkHeader = ({ children }) => {
   return <div className="text-lg font-medium text-neutral-50">{children}</div>;

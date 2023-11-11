@@ -1,0 +1,31 @@
+---
+title: console.table()
+publishedAt: 2023-02-24
+---
+
+We are all familiar with things like:
+
+1. `console.log()`
+2. `console.error()`
+3. `console.warn()`
+4. `console.info()`
+
+But, `console.table()` is a really interesting one.
+
+It basically displays the data that one would log to the console in a table form, as per what the method suggests so.
+
+## Example
+
+```js
+const items = ["foo", "bar", "baz"];
+
+console.table(items);
+```
+
+| Index | Value |
+| ----- | ----- |
+| 0     | foo   |
+| 1     | bar   |
+| 2     | baz   |
+
+`console.table()` definitely formats the data nicely and makes things easier to read.
