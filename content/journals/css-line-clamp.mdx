@@ -1,0 +1,39 @@
+---
+title: "CSS: line-clamp"
+publishedAt: 2023-02-23
+---
+
+A very useful CSS trick to truncate long text to the number of lines specified. Using this CSS tricks do help in performance as JavaScript is generally heavy and expensive in resource.
+
+## CSS
+
+```css
+.long-text {
+  width: 300px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+```
+
+## HTML
+
+```html
+<p class="long-text">
+  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid architecto
+  asperiores distinctio dolore, dolores eaque error esse eum hic id inventore
+  magni maxime minus modi molestiae quasi quod tempora voluptates?
+</p>
+```
+
+## Result
+
+And the result? Just a simple 3 lines of text ending with an ellipsis.
+
+```html
+Lorem ipsum dolor sit amet,
+<br />
+consectetur adipisicing elit.
+<br />
+Autem consectetur esse in quos reprehenderit voluptas...
+```
