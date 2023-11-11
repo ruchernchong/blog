@@ -107,6 +107,7 @@ export default makeSource({
           autoImport: false,
           lineNumbers: true,
           showCopyButton: true,
+          theme: "github-dark-dimmed",
         },
       ],
     ],
