@@ -1,42 +1,39 @@
-import Link from "next/link";
 import { Metadata } from "next";
+import Link from "next/link";
+import { allJournals } from "contentlayer/generated";
+import { compareDesc, format, formatISO, parseISO } from "date-fns";
 import globalMetadata from "@/app/metadata";
 import { StructuredData } from "@/components/StructuredData";
 import { H1 } from "@/components/Typography";
 import { HOST_URL } from "@/config";
-import { format, formatISO, parseISO } from "date-fns";
-import { RandomMusing } from "@/lib/types";
 import { WebPage, WithContext } from "schema-dts";
 
-const pageDescription: string =
+const title = `Journals`;
+const pageDescription =
   "A collection containing fun and interesting things I came across randomly.";
 
 export const metadata: Metadata = {
   ...globalMetadata,
-  title: "Random Musings",
+  title: "Journals",
   description: pageDescription,
   openGraph: {
     ...globalMetadata.openGraph,
-    title: "Random Musings | Ru Chern",
+    title,
     description: pageDescription,
-    url: `${HOST_URL}/random-musings`,
+    url: `${HOST_URL}/journals`,
   },
   twitter: {
     ...globalMetadata.twitter,
-    title: "Random Musings | Ru Chern",
+    title,
     description: pageDescription,
   },
 };
 
-const RandomMusingsPage = async () => {
-  const items: RandomMusing[] = await fetch(
-    "https://raw.githubusercontent.com/ruchernchong/random-musings/main/feed.json"
-  ).then((res) => res.json());
-
+const JournalsPage = () => {
   const structuredData: WithContext<WebPage> = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "Random Musings | Ru Chern",
+    name: title,
     // TODO: Upgrade description from a single source as variable
     description: pageDescription,
   };
@@ -46,42 +43,49 @@ const RandomMusingsPage = async () => {
       <StructuredData data={structuredData} />
       <div className="flex flex-col justify-center gap-8">
         <div className="flex flex-col gap-4">
-          <H1>Random Musings</H1>
+          <H1>Journal</H1>
           <div className="text-neutral-400">
             <div>{pageDescription}</div>
             <em>
               <span className="text-xl font-extrabold text-indigo-300">
-                {items.length}
+                {allJournals.length}
               </span>
               &nbsp;random and interesting encounters so far...
             </em>
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          {items.map(({ title, date, slug }) => {
-            const formattedDate = format(parseISO(date), "dd MMM yyyy");
+          {allJournals
+            .sort((a, b) =>
+              compareDesc(new Date(a.publishedAt), new Date(b.publishedAt))
+            )
+            .map(({ title, publishedAt, slug }) => {
+              const formattedDate = format(
+                parseISO(publishedAt),
+                "dd MMM yyyy"
+              );
 
-            return (
-              <div key={title} className="flex items-center gap-4">
-                <time
-                  dateTime={formatISO(parseISO(date))}
-                  title={formattedDate}
-                  className="shrink-0 italic text-neutral-400"
-                >
-                  {formattedDate}
-                </time>
-                <Link href={`/random-musings/${slug}`} className="no-underline">
-                  <h2 className="text-xl font-medium transition hover:opacity-50">
-                    {title}
-                  </h2>
-                </Link>
-              </div>
-            );
-          })}
+              return (
+                <div key={title} className="flex items-center gap-4">
+                  <time
+                    dateTime={formatISO(parseISO(publishedAt))}
+                    title={formattedDate}
+                    className="shrink-0 italic text-neutral-400"
+                  >
+                    {formattedDate}
+                  </time>
+                  <Link href={slug} className="no-underline">
+                    <h2 className="text-xl font-medium transition hover:opacity-50">
+                      {title}
+                    </h2>
+                  </Link>
+                </div>
+              );
+            })}
         </div>
       </div>
     </>
   );
 };
 
-export default RandomMusingsPage;
+export default JournalsPage;

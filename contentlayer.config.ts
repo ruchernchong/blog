@@ -47,12 +47,57 @@ export const Post = defineDocumentType(() => ({
         },
       }),
     },
+    url: {
+      type: "string",
+      resolve: (post) => `/posts/${post._raw.flattenedPath}`,
+    },
+  },
+}));
+
+export const Journal = defineDocumentType(() => ({
+  name: "Journal",
+  filePathPattern: `journals/**/*.mdx`,
+  contentType: "mdx",
+  fields: {
+    title: { type: "string", required: true },
+    publishedAt: { type: "date", require: true },
+    excerpt: { type: "string" },
+    image: { type: "string" },
+  },
+  computedFields: {
+    slug: {
+      type: "string",
+      resolve: (journal) => journal._raw.flattenedPath,
+    },
+    structuredData: {
+      type: "json",
+      resolve: (journal) => ({
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        headline: journal.title,
+        datePublished: journal.publishedAt,
+        description: journal.title,
+        image: journal.image
+          ? `${HOST_URL}/${journal.image}`
+          : `${HOST_URL}/api/og?title=${journal.title}`,
+        url: `${HOST_URL}/${journal._raw.flattenedPath}`,
+        author: {
+          "@type": "Person",
+          name: "Ru Chern Chong",
+          url: HOST_URL,
+        },
+      }),
+    },
+    url: {
+      type: "string",
+      resolve: (journal) => `/journals/${journal._raw.flattenedPath}`,
+    },
   },
 }));
 
 export default makeSource({
   contentDirPath: "content",
-  documentTypes: [Post],
+  documentTypes: [Journal, Post],
   mdx: {
     remarkPlugins: [
       remarkGfm,
