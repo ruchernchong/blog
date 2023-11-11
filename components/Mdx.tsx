@@ -3,9 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useMDXComponent } from "next-contentlayer/hooks";
+import type { MDXComponents } from "mdx/types";
 import { CH } from "@code-hike/mdx/components";
 import { H1, H2, H3 } from "@/components/Typography";
-import type { MDXComponents as MDXComponentsType } from "mdx/types";
 
 const CustomLink = (props) => {
   const href = props.href;
@@ -33,7 +33,7 @@ const ImageComponent = (props) => (
   />
 );
 
-const components: MDXComponentsType = {
+const components: MDXComponents = {
   CH,
   a: CustomLink,
   h1: H1,
