@@ -30,7 +30,6 @@
     "graphql": "^16.6.0",
     "next": "13.4.19",
     "next-contentlayer": "^0.3.4",
-    "next-mdx-remote": "^4.4.1",
     "nprogress": "^0.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
