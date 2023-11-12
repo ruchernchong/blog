@@ -18,7 +18,7 @@ permissions:
 jobs:
   DeployProdEnv:
     runs-on: ubuntu-latest
-    environment: production
+    environment: Production
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}

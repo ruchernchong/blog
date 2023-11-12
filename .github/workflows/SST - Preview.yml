@@ -14,7 +14,7 @@ permissions:
 jobs:
   DeployPreviewEnv:
     runs-on: ubuntu-latest
-    environment: preview
+    environment: Preview
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
