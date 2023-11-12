@@ -1,8 +1,6 @@
 name: SST workflow
 on:
   push:
-    branches:
-      - '*'
     branches-ignore:
       - main
   pull_request:
