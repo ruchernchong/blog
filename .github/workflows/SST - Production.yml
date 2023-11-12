@@ -3,6 +3,8 @@ on:
   push:
     tags:
       - '*'
+    branches-ignore:
+      - '*'
 
 concurrency:
   group: merge-${{ github.ref }}
