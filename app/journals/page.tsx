@@ -44,7 +44,7 @@ const JournalsPage = () => {
       <StructuredData data={structuredData} />
       <div className="flex flex-col justify-center gap-8">
         <div className="flex flex-col gap-4">
-          <H1>Journal</H1>
+          <H1>Journals</H1>
           <div className="text-neutral-400">
             <div>{pageDescription}</div>
             <em>
