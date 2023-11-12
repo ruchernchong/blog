@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import Script from "next/script";
-import { Analytics } from "@vercel/analytics/react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import globalMetadata from "@/app/metadata";
@@ -38,7 +37,6 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           <Header />
           <main className="mx-auto my-8 w-screen max-w-4xl grow px-4 md:my-16">
             {children}
-            <Analytics />
           </main>
           <Footer />
         </div>
