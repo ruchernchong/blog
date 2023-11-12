@@ -22,11 +22,11 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
 
 const formatLastModified = (datetime?: string | Date) => {
   if (typeof datetime === "string") {
-    datetime = new Date(datetime).toISOString();
+    datetime = new Date(datetime).toISOString().split("T")[0];
   }
 
   if (!datetime) {
-    datetime = new Date().toISOString();
+    datetime = new Date().toISOString().split("T")[0];
   }
 
   return datetime;
