@@ -35,10 +35,10 @@ git clone https://github.com/ruchernchong/portfolio.git
 cd portfolio
 
 # Installing npm packages
-bun install
+pnpm install
 
 # Run the development server
-bun dev
+pnpm dev
 
 # Setting environment variables
 cp .env.local.example .env.local
