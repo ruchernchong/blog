@@ -1,16 +1,8 @@
 name: SST workflow
-#on:
-#  push:
-#    branches:
-#      - '*'
-#    tags-ignore:
-#      - '*'
 on:
   push:
-    branches-ignore:
-      - '*'
-    tags-ignore:
-      - '*'
+    branches:
+      - preview
 
 concurrency:
   group: merge-${{ github.ref }}
