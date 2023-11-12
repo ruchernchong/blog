@@ -12,20 +12,11 @@ Site: https://ruchern.xyz
 
 Portfolio site is now going into maintenance mode and will stop developing new features. Main goal is to clean up, optimise and prepare to migrate to use the `/app` directory.
 
-- [ ] Tidy up the components
 - [ ] Complete writing the remaining drafts that are scheduled
 
-## Overview
+## Running locally
 
-- `lib/*` - Collection of utilities and helpers
-- `pages/api` - [API Routes](https://nextjs.org/docs/api-routes/introduction)
-- `pages/` - Static pages
-- `pages/sitemap.xml.tsx` - Sitemap
-- `pages/feed.xml.tsx` - RSS feed
-- `public/` - Static assets such as fonts, images, and icons
-- `styles/` - Basically global style from Tailwind CSS and Prism language highlighting
-
-## Installation
+Node.js v18.8 and above is required.
 
 ```bash
 # Cloning the repository
@@ -39,7 +30,12 @@ pnpm install
 
 # Run the development server
 pnpm dev
+```
 
-# Setting environment variables
-cp .env.local.example .env.local
+### Setting environment variables
+
+Create a `.env` file or equivalent manually or use the follow command to quickly help you to do so
+
+```bash
+cp .env.example .env
 ```
