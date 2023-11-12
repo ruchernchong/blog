@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - preview
+  pull_request:
+  release:
+    types:
+      - created
 
 concurrency:
   group: merge-${{ github.ref }}
