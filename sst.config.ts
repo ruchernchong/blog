@@ -1,5 +1,10 @@
 import { SSTConfig } from "sst";
-import { NextjsSite } from "sst/constructs";
+import { Config, NextjsSite } from "sst/constructs";
+
+const CUSTOM_DOMAINS = {
+  preview: { domainName: "preview.ruchern.xyz", hostedZone: "ruchern.xyz" },
+  prod: "ruchern.xyz",
+};
 
 export default {
   config(_input) {
@@ -10,12 +15,15 @@ export default {
   },
   stacks(app) {
     app.stack(function site({ stack }) {
-      const site = new NextjsSite(stack, "site", {
-        customDomain: "ruchern.xyz",
+      const DATABASE_URL = new Config.Secret(stack, "DATABASE_URL");
+
+      const nextjsSite = new NextjsSite(stack, "site", {
+        bind: [DATABASE_URL],
+        customDomain: CUSTOM_DOMAINS[stack.stage],
       });
 
       stack.addOutputs({
-        SiteUrl: site.url,
+        SiteUrl: nextjsSite.url,
       });
     });
   },
