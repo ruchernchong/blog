@@ -17,7 +17,11 @@ import {
 } from "@heroicons/react/24/outline";
 import "@code-hike/mdx/dist/index.css";
 
-export const generateMetadata = async ({ params }): Promise<Metadata> => {
+export const generateMetadata = async ({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> => {
   const post = allPosts.find((post) => post.slug === params.slug);
 
   if (!post) {
@@ -54,10 +58,8 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
   };
 };
 
-const PostPage = ({ params }) => {
-  const post: Post = allPosts.find(
-    (post) => post._raw.flattenedPath === params.slug
-  );
+const PostPage = ({ params }: { params: { slug: string } }) => {
+  const post = allPosts.find((post) => post._raw.flattenedPath === params.slug);
 
   if (!post) {
     return notFound();

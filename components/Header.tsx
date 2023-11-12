@@ -8,7 +8,12 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { navLinks } from "@/config";
 
-const NavItem = ({ href, title }) => {
+type NavItem = {
+  href: string;
+  title: string;
+};
+
+const NavItem = ({ href, title }: NavItem) => {
   const pathname = usePathname();
   const isActive = pathname === href;
 

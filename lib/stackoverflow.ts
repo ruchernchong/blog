@@ -20,9 +20,5 @@ export const getStackOverflowProfile =
       `${STACK_OVERFLOW_API_URL}/users/${USER_ID}?${params}`
     ).then((res) => res.json());
 
-    if (!items) {
-      return;
-    }
-
     return items[0];
   };

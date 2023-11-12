@@ -47,10 +47,20 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+type GetPinnedRepositoriesResult = {
+  user: {
+    pinnedItems: {
+      edges: {
+        node: PinnedRepository;
+      }[];
+    };
+  };
+};
+
 export const getGitHubPinnedRepositories = async (): Promise<
   PinnedRepository[]
 > => {
-  const { data } = await client.query({
+  const { data } = await client.query<GetPinnedRepositoriesResult>({
     query: gql`
       {
         user(login: "ruchernchong") {
@@ -74,7 +84,6 @@ export const getGitHubPinnedRepositories = async (): Promise<
       }
     `,
   });
-
   const { user } = data;
   return user.pinnedItems.edges.map((edge) => edge.node);
 };

@@ -7,7 +7,7 @@ import {
   SiX,
 } from "@icons-pack/react-simple-icons";
 
-const SOCIAL_MAP = {
+const SOCIAL_MAP: Record<string, any> = {
   Github: SiGithub,
   Linkedin: SiLinkedin,
   RSS: SiRss,
