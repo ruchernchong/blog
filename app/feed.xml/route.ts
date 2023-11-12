@@ -14,7 +14,7 @@ export const GET = () => {
     feed.item({
       title,
       url: `${HOST_URL}/${slug}`,
-      date: publishedAt,
+      date: publishedAt as string,
       description: excerpt || title,
     })
   );

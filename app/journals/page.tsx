@@ -60,14 +60,14 @@ const JournalsPage = () => {
             .sort(sortByLatest)
             .map(({ title, publishedAt, slug }) => {
               const formattedDate = format(
-                parseISO(publishedAt),
+                parseISO(publishedAt as string),
                 "dd MMM yyyy"
               );
 
               return (
                 <div key={title} className="flex items-center gap-4">
                   <time
-                    dateTime={formatISO(parseISO(publishedAt))}
+                    dateTime={formatISO(parseISO(publishedAt as string))}
                     title={formattedDate}
                     className="shrink-0 italic text-neutral-400"
                   >

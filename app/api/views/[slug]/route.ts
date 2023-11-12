@@ -1,7 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export const POST = async (req, { params }) => {
+export const POST = async (
+  req: NextRequest,
+  { params }: { params: { slug: string } }
+) => {
   const slug = params.slug;
 
   if (!slug) {
@@ -15,7 +18,10 @@ export const POST = async (req, { params }) => {
   return NextResponse.json({ views: views + 1 });
 };
 
-export const GET = async (req, { params }) => {
+export const GET = async (
+  req: NextRequest,
+  { params }: { params: { slug: string } }
+) => {
   const slug = params.slug;
 
   if (!slug) {
@@ -49,11 +55,4 @@ const updateViews = async (slug: string, count: number) => {
     create: { slug, count: 1 },
     update: { count: count + 1 },
   });
-};
-
-const Response = {
-  json: (data: any, options?: { status?: number }) => ({
-    body: JSON.stringify(data),
-    status: options?.status || 200,
-  }),
 };

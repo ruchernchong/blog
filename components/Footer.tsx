@@ -1,12 +1,15 @@
 "use client";
 
+import { PropsWithChildren } from "react";
 import Link from "next/link";
 import ExternalLink from "@/components/ExternalLink";
 import * as Icons from "@/components/Icons";
 import { socials } from "@/data/socials";
 import { navLinks } from "@/config";
 
-const LinkHeader = ({ children }) => {
+interface LinkHeaderProps extends PropsWithChildren {}
+
+const LinkHeader = ({ children }: LinkHeaderProps) => {
   return <div className="text-lg font-medium text-neutral-50">{children}</div>;
 };
 

@@ -1,7 +1,7 @@
 import { SSTConfig } from "sst";
 import { Config, NextjsSite } from "sst/constructs";
 
-const CUSTOM_DOMAINS = {
+const CUSTOM_DOMAINS: Record<string, any> = {
   preview: { domainName: "preview.ruchern.xyz", hostedZone: "ruchern.xyz" },
   prod: "ruchern.xyz",
 };
