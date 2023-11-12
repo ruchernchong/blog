@@ -18,6 +18,8 @@ type Result = Exclude<Fruit, "orange">; // 'apple' | 'banana'
 The first argument represents the full union. The second argument can be any type even if it does not exist.
 
 ```ts
+type Fruit = "apple" | "banana" | "orange";
+
 type Result = Exclude<Fruit, "pear">; // 'apple' | 'banana' | 'orange'
 ```
 

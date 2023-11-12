@@ -19,6 +19,7 @@ Below is an example of a piece of structured data.
   "spouse": "http://dbpedia.org/resource/Cynthia_Lennon"
 }
 ```
+
 Source: [JSON-LD](https://json-ld.org)
 
 ## Adding Structured Data in Next.js
@@ -29,11 +30,11 @@ Source: [JSON-LD](https://json-ld.org)
 import Head from "next/head";
 
 export const StructuredData = ({ data }) => {
-    return (
-        <Head>
-            <script type="application/ld+json">{JSON.stringify(data)}</script>
-        </Head>
-    );
+  return (
+    <Head>
+      <script type="application/ld+json">{JSON.stringify(data)}</script>
+    </Head>
+  );
 };
 ```
 
@@ -41,30 +42,29 @@ export const StructuredData = ({ data }) => {
 
 ```jsx BlogPost.jsx
 export const BlogPost = ({ post }) => {
-    const structuredData = {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: post.title,
-        description: post.description,
-        author: [
-            {
-            "@type": "Person",
-            name: post.author,
-            },
-        ],
-        image: post.imageUrl,
-        datePublished: post.publishedAt,
-    };
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.description,
+    author: [
+      {
+        "@type": "Person",
+        name: post.author,
+      },
+    ],
+    image: post.imageUrl,
+    datePublished: post.publishedAt,
+  };
 };
 
 return (
-    <>
-        <Structured data={structuredData} />
-        {/* ... the rest of your blog post */}
-    </>
+  <>
+    <Structured data={structuredData} />
+    {/* ... the rest of your blog post */}
+  </>
 );
 ```
-
 
 ## Validate Structured Data
 
