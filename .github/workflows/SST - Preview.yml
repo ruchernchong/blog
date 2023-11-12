@@ -48,5 +48,5 @@ jobs:
       - name: Deploy app
         run: |
           pnpm install
-          pnpm run prisma generate && pnpm run prisma migrate deploy
+          pnpm prisma generate && pnpm prisma migrate deploy
           pnpm sst deploy --stage preview
