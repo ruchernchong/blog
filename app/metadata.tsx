@@ -22,7 +22,7 @@ const metadata: Metadata = {
     siteName: title,
     images: [
       {
-        url: `${HOST_URL}/cover-image.png`,
+        url: `${HOST_URL}/images/cover-image.png`,
         width: 1200,
         height: 630,
       },
@@ -35,7 +35,7 @@ const metadata: Metadata = {
     title: { default: "Ru Chern", template: "%s | Ru Chern" },
     description,
     creator: "@ruchernchong",
-    images: `${HOST_URL}/cover-image.png`,
+    images: `${HOST_URL}/images/cover-image.png`,
   },
 };
 
