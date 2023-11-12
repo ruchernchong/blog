@@ -1,5 +1,8 @@
 name: SST workflow
-on: [push]
+on:
+  push:
+    tags-ignore:
+      - '*'
 
 concurrency:
   group: merge-${{ github.ref }}
