@@ -38,6 +38,6 @@ jobs:
           bun i
           bun run prisma generate && bun run prisma migrate deploy
       - name: Deploy app
-        if: github.event_name === 'release' && contains(github.ref, 'refs/tags/')
+        if: github.event_name == 'release' && contains(github.ref, 'refs/tags/')
         run: |
           bunx sst deploy --stage prod
