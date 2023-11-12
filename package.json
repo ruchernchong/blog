@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "sst bind next dev",
-    "build": "NEXT_TELEMETRY_DISABLED=1 next build",
+    "build": "NEXT_TELEMETRY_DISABLED=1 sst bind next build",
     "start": "next start",
     "lint": "next lint",
     "prisma:db-push": "prisma db push",
