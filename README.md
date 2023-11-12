@@ -3,7 +3,7 @@
 Site: https://ruchern.xyz
 
 - Framework: [Next.js](https://nextjs.org)
-- Deployment: [Vercel](https://vercel.com)
+- Deployment: [AWS using SST](https://sst.dev)
 - Styling: [Tailwind CSS](https://tailwindcss.com)
 - Database: [Planetscale](https://planetscale.com)
 - ORM: [Prisma](https://prisma.io)

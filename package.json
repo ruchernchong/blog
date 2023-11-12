@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "prisma:db-push": "prisma db push",
-    "prisma:generate": "prisma generate",
-    "vercel-build": "prisma generate && prisma migrate deploy && bun run build"
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@apollo/client": "^3.7.9",
