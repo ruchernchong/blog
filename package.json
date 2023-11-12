@@ -3,20 +3,19 @@
   "version": "2.0.0-beta.4",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "sst bind next dev",
     "build": "NEXT_TELEMETRY_DISABLED=1 next build",
     "start": "next start",
     "lint": "next lint",
     "prisma:db-push": "prisma db push",
-    "prisma:generate": "prisma generate",
-    "vercel-build": "prisma generate && prisma migrate deploy && bun run build"
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@apollo/client": "^3.7.9",
     "@code-hike/mdx": "^0.8.3",
     "@heroicons/react": "^2.0.13",
     "@icons-pack/react-simple-icons": "^9.0.0",
-    "@prisma/client": "^4.14.0",
+    "@prisma/client": "^5.5.2",
     "@types/mdx": "^2.0.10",
     "@types/node": "18.11.18",
     "@types/react": "18.2.0",
@@ -45,12 +44,15 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.8",
     "autoprefixer": "^10.4.13",
+    "aws-cdk-lib": "2.101.1",
+    "constructs": "10.2.69",
     "husky": "^8.0.0",
     "lint-staged": "^13.1.2",
     "postcss": "^8.4.31",
     "prettier": "^2.8.3",
     "prettier-plugin-tailwindcss": "^0.2.1",
-    "prisma": "^4.14.0",
+    "prisma": "^5.5.2",
+    "sst": "^2.36.1",
     "tailwindcss": "^3.2.4"
   },
   "lint-staged": {

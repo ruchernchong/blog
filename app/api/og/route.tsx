@@ -1,15 +1,11 @@
-import { ImageResponse } from "@vercel/og";
-import { NextRequest } from "next/server";
+import { ImageResponse } from "next/og";
 import { HOST_URL } from "@/config";
 
-export const config = {
-  runtime: "edge",
-};
+export const runtime = "edge";
 
-const handler = (req: NextRequest) => {
+export const GET = async (req) => {
   try {
     const { searchParams } = new URL(req.url);
-
     const title = searchParams.get("title")?.slice(0, 100);
 
     return new ImageResponse(
@@ -41,5 +37,3 @@ const handler = (req: NextRequest) => {
     return new Response("Failed to generate the image", { status: 500 });
   }
 };
-
-export default handler;

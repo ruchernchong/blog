@@ -18,12 +18,15 @@
 # local env files
 .env
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
 # contentlayer
 .contentlayer
+
+# sst
+.sst
+
+# open-next
+.open-next
