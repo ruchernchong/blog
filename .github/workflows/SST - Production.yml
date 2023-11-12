@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   DeployProdEnv:
-    runs-on: upnpmtu-latest
+    runs-on: ubuntu-latest
     environment: production
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
