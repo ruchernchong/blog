@@ -28,7 +28,7 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
   const description = post.excerpt;
   const publishedTime = post.publishedAt;
   const url = `${HOST_URL}/${post.slug}`;
-  const ogImageUrl = `${HOST_URL}/api/og?title${post.title}`;
+  const ogImageUrl = `${HOST_URL}/api/og?title=${post.title}`;
   const images = [ogImageUrl];
 
   return {
