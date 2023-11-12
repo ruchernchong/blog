@@ -19,7 +19,7 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
   const title = journal.title;
   const description = journal.title;
   const publishedTime = new Date(journal.publishedAt).toISOString();
-  const ogImageUrl = `${HOST_URL}/api/og?title=${journal.title}`;
+  const ogImageUrl = `${HOST_URL}/og?title=${journal.title}`;
   const images = [ogImageUrl];
   const url = `${HOST_URL}/${journal.slug}`;
 

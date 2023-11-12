@@ -37,8 +37,7 @@ export const Post = defineDocumentType(() => ({
         datePublished: post.publishedAt,
         description: post.excerpt,
         image:
-          `${HOST_URL}/${post.image}` ||
-          `${HOST_URL}/api/og?title=${post.title}`,
+          `${HOST_URL}/${post.image}` || `${HOST_URL}/og?title=${post.title}`,
         url: `${HOST_URL}/${post._raw.flattenedPath}`,
         author: {
           "@type": "Person",
@@ -79,7 +78,7 @@ export const Journal = defineDocumentType(() => ({
         description: journal.title,
         image: journal.image
           ? `${HOST_URL}/${journal.image}`
-          : `${HOST_URL}/api/og?title=${journal.title}`,
+          : `${HOST_URL}/og?title=${journal.title}`,
         url: `${HOST_URL}/${journal._raw.flattenedPath}`,
         author: {
           "@type": "Person",
