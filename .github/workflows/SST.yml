@@ -1,5 +1,5 @@
 name: SST workflow
-on: push
+on: [push]
 
 # Concurrency group name ensures concurrent workflow runs wait for any in-progress job to finish
 concurrency:
@@ -12,9 +12,10 @@ permissions:
 jobs:
   DeployApp:
     runs-on: ubuntu-latest
+    environment: preview
     env:
-     DATABASE_URL: ${{ secrets.DATABASE_URL }}
-     NEXT_PUBLIC_GOOGLE_ANALYTICS: ${{ vars.NEXT_PUBLIC_GOOGLE_ANALYTICS }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      NEXT_PUBLIC_GOOGLE_ANALYTICS: ${{ vars.NEXT_PUBLIC_GOOGLE_ANALYTICS }}
     steps:
       - name: Git clone the repository
         uses: actions/checkout@v3
@@ -28,5 +29,5 @@ jobs:
         run: |
           bun i
           bun run prisma generate && bun run prisma migrate deploy
-          bunx sst deploy --stage prod
+          bunx sst deploy --stage preview
           
