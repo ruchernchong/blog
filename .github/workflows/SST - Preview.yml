@@ -1,7 +1,13 @@
 name: SST workflow
+#on:
+#  push:
+#    branches:
+#      - '*'
+#    tags-ignore:
+#      - '*'
 on:
   push:
-    branches:
+    branches-ignore:
       - '*'
     tags-ignore:
       - '*'
