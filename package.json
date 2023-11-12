@@ -1,6 +1,6 @@
 {
   "name": "@ruchernchong/portfolio",
-  "version": "2.0.0-beta.6",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "sst bind next dev",
