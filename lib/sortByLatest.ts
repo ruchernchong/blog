@@ -1,10 +1,14 @@
 import { compareDesc } from "date-fns";
 
-type config = {
+type Config = {
   sortingKey?: string;
 };
 
-export const sortByLatest = (a, b, config?: config) => {
+type Item = {
+  [key: string]: any;
+};
+
+export const sortByLatest = (a: Item, b: Item, config?: Config) => {
   const sortingKey = config?.sortingKey || "publishedAt";
 
   return compareDesc(new Date(a[sortingKey]), new Date(b[sortingKey]));

@@ -1,4 +1,6 @@
-const Notification = ({ children }) => {
+import { PropsWithChildren } from "react";
+
+const Notification = ({ children }: PropsWithChildren) => {
   if (!children) {
     return null;
   }

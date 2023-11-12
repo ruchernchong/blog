@@ -6,7 +6,7 @@ import { StackOverflowProfile } from "@/lib/stackoverflow";
 import { GitHubProfile } from "@/lib/github";
 import { UsersIcon } from "@heroicons/react/24/solid";
 
-const STACK_OVERFLOW_BADGES = {
+const STACK_OVERFLOW_BADGES: Record<string, string> = {
   bronze: "bg-[#D1A684]",
   silver: "bg-[#B4B8BC]",
   gold: "bg-[#FFCC01]",

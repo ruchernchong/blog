@@ -7,14 +7,13 @@ import type { MDXComponents } from "mdx/types";
 import { CH } from "@code-hike/mdx/components";
 import { H1, H2, H3 } from "@/components/Typography";
 
-const CustomLink = (props) => {
-  const href = props.href;
+const CustomLink = ({ href, children, ...props }: any) => {
   const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
 
   if (isInternalLink) {
     return (
-      <Link href={href} scroll={false} className="text-indigo-300" {...props}>
-        {props.children}
+      <Link scroll={false} className="text-indigo-300" {...props}>
+        {children}
       </Link>
     );
   }
@@ -22,9 +21,9 @@ const CustomLink = (props) => {
   return <a target="_blank" rel="noopener noreferrer" {...props} />;
 };
 
-const ImageComponent = (props) => (
+const ImageComponent = ({ alt, ...props }: any) => (
   <Image
-    alt={props.alt}
+    alt={alt}
     width={0}
     height={0}
     sizes="100vw"

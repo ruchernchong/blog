@@ -6,7 +6,7 @@ export const runtime = "edge";
 
 export const GET = async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
-  const title = searchParams.get("title").slice(0, 100);
+  const title = searchParams.get("title")?.slice(0, 100);
 
   return new ImageResponse(
     (

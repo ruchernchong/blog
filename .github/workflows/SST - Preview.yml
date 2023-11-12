@@ -1,12 +1,8 @@
 name: SST workflow
 on:
   push:
-    branches:
-      - preview
-  pull_request:
-  release:
-    types:
-      - created
+    branches-ignore:
+      - main
 
 concurrency:
   group: merge-${{ github.ref }}
@@ -48,5 +44,5 @@ jobs:
       - name: Deploy app
         run: |
           pnpm install
-          pnpm run prisma generate && pnpm run prisma migrate deploy
+          pnpm prisma generate && pnpm prisma migrate deploy
           pnpm sst deploy --stage preview

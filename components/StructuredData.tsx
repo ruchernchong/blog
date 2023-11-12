@@ -1,6 +1,10 @@
 "use client";
 
-export const StructuredData = ({ data }) => {
+type StructuredDataProps = {
+  data: object;
+};
+
+export const StructuredData = ({ data }: StructuredDataProps) => {
   return (
     <script
       type="application/ld+json"

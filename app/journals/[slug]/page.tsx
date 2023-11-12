@@ -7,7 +7,11 @@ import { H1 } from "@/components/Typography";
 import { HOST_URL } from "@/config";
 import "@code-hike/mdx/dist/index.css";
 
-export const generateMetadata = async ({ params }): Promise<Metadata> => {
+export const generateMetadata = async ({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> => {
   const journal = allJournals.find((journal) =>
     journal.slug.includes(params.slug)
   );
@@ -18,7 +22,7 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
 
   const title = journal.title;
   const description = journal.title;
-  const publishedTime = new Date(journal.publishedAt).toISOString();
+  const publishedTime = journal.publishedAt;
   const ogImageUrl = `${HOST_URL}/og?title=${journal.title}`;
   const images = [ogImageUrl];
   const url = `${HOST_URL}/${journal.slug}`;
@@ -46,10 +50,14 @@ export const generateMetadata = async ({ params }): Promise<Metadata> => {
   };
 };
 
-const JournalPage = async ({ params }) => {
+const JournalPage = async ({ params }: { params: { slug: string } }) => {
   const journal = allJournals.find((journal) =>
     journal.slug.includes(params.slug)
   );
+
+  if (!journal) {
+    return notFound();
+  }
 
   return (
     <>

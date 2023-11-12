@@ -1,8 +1,13 @@
 import Image from "next/image";
 import classNames from "classnames";
 import { BriefcaseIcon } from "@heroicons/react/24/solid";
+import type { Company } from "@/data/companies";
 
-const Employment = ({ companies }) => {
+type EmploymentProps = {
+  companies: Company[];
+};
+
+const Employment = ({ companies }: EmploymentProps) => {
   return (
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
@@ -63,7 +68,7 @@ const Employment = ({ companies }) => {
                     rel="nofollow noreferrer"
                     className="no-underline"
                   >
-                    <div className="absolute -inset-y-4 -inset-x-4 z-0 scale-95 rounded-2xl border border-indigo-300 opacity-0 transition group-hover:scale-100 group-hover:bg-neutral-800/25 group-hover:opacity-100" />
+                    <div className="absolute -inset-x-4 -inset-y-4 z-0 scale-95 rounded-2xl border border-indigo-300 opacity-0 transition group-hover:scale-100 group-hover:bg-neutral-800/25 group-hover:opacity-100" />
                     <div className="text-xl font-bold">{name}</div>
                   </a>
                   <div>{title}</div>
