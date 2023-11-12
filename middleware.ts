@@ -15,30 +15,51 @@ export const middleware = (request: NextRequest) => {
     block-all-mixed-content;
     upgrade-insecure-requests;
 `;
-  // Replace newline characters and spaces
+
   const contentSecurityPolicyHeaderValue = cspHeader
     .replace(/\s{2,}/g, " ")
     .trim();
 
+  const securityHeaders = [
+    {
+      key: "X-DNS-Prefetch-Control",
+      value: "on",
+    },
+    {
+      key: "Strict-Transport-Security",
+      value: "max-age=63072000; includeSubDomains; preload",
+    },
+    {
+      key: "X-XSS-Protection",
+      value: "1; mode=block",
+    },
+    {
+      key: "X-Frame-Options",
+      value: "SAMEORIGIN",
+    },
+    {
+      key: "Permissions-Policy",
+      value: "camera=(), microphone=(), geolocation=()",
+    },
+    {
+      key: "X-Content-Type-Options",
+      value: "nosniff",
+    },
+    {
+      key: "Referrer-Policy",
+      value: "origin-when-cross-origin",
+    },
+    {
+      key: "Content-Security-Policy",
+      value: contentSecurityPolicyHeaderValue,
+    },
+  ];
+
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);
-  requestHeaders.set("X-DNS-Prefetch-Control", "on");
-  requestHeaders.set(
-    "Strict-Transport-Security",
-    "max-age=63072000; includeSubDomains; preload"
-  );
-  requestHeaders.set("X-Frame-Options", "SAMEORIGIN");
-  requestHeaders.set(
-    "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=(), browsing-topics=()"
-  );
-  requestHeaders.set("X-Content-Type-Options", "nosniff");
-  requestHeaders.set("Referrer-Policy", "origin-when-cross-origin");
-
-  requestHeaders.set(
-    "Content-Security-Policy",
-    contentSecurityPolicyHeaderValue
-  );
+  securityHeaders.forEach(({ key, value }) => {
+    requestHeaders.set(key, value);
+  });
 
   const response = NextResponse.next({
     headers: requestHeaders,
