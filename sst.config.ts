@@ -3,7 +3,7 @@ import { Config, NextjsSite } from "sst/constructs";
 
 const CUSTOM_DOMAINS: Record<string, any> = {
   preview: { domainName: "preview.ruchern.xyz", hostedZone: "ruchern.xyz" },
-  prod: "ruchern.xyz",
+  prod: { domainName: "ruchern.xyz", domainAlias: "www.ruchern.xyz" },
 };
 
 export default {
