@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
-import { HOST_URL } from "@/config";
+import { BASE_URL } from "@/config";
 
 export const runtime = "edge";
 
@@ -12,7 +12,7 @@ export const GET = async (req: NextRequest) => {
     (
       <div
         style={{
-          background: `url("${HOST_URL}/images/post-cover-image.png")`,
+          background: `url("${BASE_URL}/images/post-cover-image.png")`,
           width: "100%",
           height: "100%",
           display: "flex",

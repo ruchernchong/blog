@@ -5,7 +5,7 @@ import { LinkWithIcon } from "@/components/LinkWithIcon";
 import { Chip } from "@/components/Chip";
 import { StructuredData } from "@/components/StructuredData";
 import { H1, H2 } from "@/components/Typography";
-import { HOST_URL } from "@/config";
+import { BASE_URL } from "@/config";
 import { StarIcon } from "@heroicons/react/24/outline";
 import { getGitHubPinnedRepositories } from "@/lib/github";
 import { WebPage, WithContext } from "schema-dts";
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     ...globalMetadata.openGraph,
     title: "Projects",
     description: pageDescription,
-    url: `${HOST_URL}/projects`,
+    url: `${BASE_URL}/projects`,
   },
   twitter: {
     ...globalMetadata.twitter,

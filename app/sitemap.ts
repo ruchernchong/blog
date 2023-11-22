@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 import { allDocuments } from "contentlayer/generated";
-import { HOST_URL, navLinks } from "@/config";
+import { BASE_URL, navLinks } from "@/config";
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
   const pages = navLinks
@@ -8,13 +8,13 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
     .map(({ href }) => href);
 
   return [
-    { url: HOST_URL, lastModified: formatLastModified() },
+    { url: BASE_URL, lastModified: formatLastModified() },
     ...pages.map((url) => ({
-      url: `${HOST_URL}${url}`,
+      url: `${BASE_URL}${url}`,
       lastModified: formatLastModified(),
     })),
     ...allDocuments.map(({ publishedAt, slug }) => ({
-      url: `${HOST_URL}/${slug}`,
+      url: `${BASE_URL}/${slug}`,
       lastModified: formatLastModified(publishedAt),
     })),
   ];

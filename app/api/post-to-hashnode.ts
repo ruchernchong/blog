@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import readBody from "@/lib/readBody";
-import { HOST_URL } from "@/config";
+import { BASE_URL } from "@/config";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // const body = await readBody(req);

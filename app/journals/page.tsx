@@ -7,7 +7,7 @@ import globalMetadata from "@/app/metadata";
 import { StructuredData } from "@/components/StructuredData";
 import { H1 } from "@/components/Typography";
 import { sortByLatest } from "@/lib/sortByLatest";
-import { HOST_URL } from "@/config";
+import { BASE_URL } from "@/config";
 
 const title = `Journals`;
 const pageDescription =
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     ...globalMetadata.openGraph,
     title,
     description: pageDescription,
-    url: `${HOST_URL}/journals`,
+    url: `${BASE_URL}/journals`,
   },
   twitter: {
     ...globalMetadata.twitter,

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { HOST_URL } from "@/config";
+import { BASE_URL } from "@/config";
 
 const title = "Ru Chern";
 const description =
@@ -18,11 +18,11 @@ const metadata: Metadata = {
   openGraph: {
     title: { default: "Ru Chern", template: "%s | Ru Chern" },
     description,
-    url: HOST_URL,
+    url: BASE_URL,
     siteName: title,
     images: [
       {
-        url: `${HOST_URL}/images/cover-image.png`,
+        url: `${BASE_URL}/images/cover-image.png`,
         width: 1200,
         height: 630,
       },
@@ -35,7 +35,7 @@ const metadata: Metadata = {
     title: { default: "Ru Chern", template: "%s | Ru Chern" },
     description,
     creator: "@ruchernchong",
-    images: `${HOST_URL}/images/cover-image.png`,
+    images: `${BASE_URL}/images/cover-image.png`,
   },
 };
 

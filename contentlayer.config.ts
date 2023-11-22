@@ -1,5 +1,5 @@
 import { defineDocumentType, makeSource } from "contentlayer/source-files";
-import { HOST_URL } from "./config";
+import { BASE_URL } from "./config";
 import readingTime from "reading-time";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
@@ -37,12 +37,12 @@ export const Post = defineDocumentType(() => ({
         datePublished: post.publishedAt,
         description: post.excerpt,
         image:
-          `${HOST_URL}/${post.image}` || `${HOST_URL}/og?title=${post.title}`,
-        url: `${HOST_URL}/${post._raw.flattenedPath}`,
+          `${BASE_URL}/${post.image}` || `${BASE_URL}/og?title=${post.title}`,
+        url: `${BASE_URL}/${post._raw.flattenedPath}`,
         author: {
           "@type": "Person",
           name: "Ru Chern Chong",
-          url: HOST_URL,
+          url: BASE_URL,
         },
       }),
     },
@@ -77,13 +77,13 @@ export const Journal = defineDocumentType(() => ({
         datePublished: journal.publishedAt,
         description: journal.title,
         image: journal.image
-          ? `${HOST_URL}/${journal.image}`
-          : `${HOST_URL}/og?title=${journal.title}`,
-        url: `${HOST_URL}/${journal._raw.flattenedPath}`,
+          ? `${BASE_URL}/${journal.image}`
+          : `${BASE_URL}/og?title=${journal.title}`,
+        url: `${BASE_URL}/${journal._raw.flattenedPath}`,
         author: {
           "@type": "Person",
           name: "Ru Chern Chong",
-          url: HOST_URL,
+          url: BASE_URL,
         },
       }),
     },

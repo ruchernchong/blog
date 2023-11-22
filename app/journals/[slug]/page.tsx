@@ -4,7 +4,7 @@ import { allJournals } from "contentlayer/generated";
 import { Mdx } from "@/components/Mdx";
 import { StructuredData } from "@/components/StructuredData";
 import { H1 } from "@/components/Typography";
-import { HOST_URL } from "@/config";
+import { BASE_URL } from "@/config";
 import "@code-hike/mdx/dist/index.css";
 
 export const generateMetadata = async ({
@@ -23,9 +23,9 @@ export const generateMetadata = async ({
   const title = journal.title;
   const description = journal.title;
   const publishedTime = journal.publishedAt;
-  const ogImageUrl = `${HOST_URL}/og?title=${journal.title}`;
+  const ogImageUrl = `${BASE_URL}/og?title=${journal.title}`;
   const images = [ogImageUrl];
-  const url = `${HOST_URL}/${journal.slug}`;
+  const url = `${BASE_URL}/${journal.slug}`;
 
   return {
     title,

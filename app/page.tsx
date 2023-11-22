@@ -5,7 +5,7 @@ import BlogPost from "@/components/BlogPost";
 import FeaturedPosts from "@/components/FeaturedPosts";
 import { StructuredData } from "@/components/StructuredData";
 import { sortByLatest } from "@/lib/sortByLatest";
-import { HOST_URL } from "@/config";
+import { BASE_URL } from "@/config";
 
 const HomePage = async () => {
   const posts = allPosts.sort(sortByLatest);
@@ -15,7 +15,7 @@ const HomePage = async () => {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Ru Chern",
-    url: `${HOST_URL}`,
+    url: `${BASE_URL}`,
     sameAs: [
       "https://github.com/ruchernchong",
       "https://www.linkedin.com/in/ruchernchong/",

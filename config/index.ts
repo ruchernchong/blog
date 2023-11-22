@@ -3,7 +3,8 @@ export type NavLink = {
   href: string;
 };
 
-export const HOST_URL = "https://ruchern.xyz";
+export const BASE_URL: string =
+  process.env.NEXT_PUBLIC_BASE_URL || "https://ruchern.xyz";
 
 export const navLinks: NavLink[] = [
   { title: "Home", href: "/" },

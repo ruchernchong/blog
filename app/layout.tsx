@@ -3,7 +3,7 @@ import Script from "next/script";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import globalMetadata from "@/app/metadata";
-import { HOST_URL } from "@/config";
+import { BASE_URL } from "@/config";
 
 import "@/app/globals.css";
 
@@ -18,7 +18,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
         rel="alternate"
         type="application/rss+xml"
         title="RSS feed for ruchern.xyz"
-        href={`${HOST_URL}/feed.xml`}
+        href={`${BASE_URL}/feed.xml`}
       />
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}

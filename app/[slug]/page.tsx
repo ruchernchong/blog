@@ -9,7 +9,7 @@ import { Mdx } from "@/components/Mdx";
 import { StructuredData } from "@/components/StructuredData";
 import { H1 } from "@/components/Typography";
 import ViewCounter from "@/components/ViewCounter";
-import { HOST_URL } from "@/config";
+import { BASE_URL } from "@/config";
 import {
   BookOpenIcon,
   CalendarDaysIcon,
@@ -31,8 +31,8 @@ export const generateMetadata = async ({
   const title = post.title;
   const description = post.excerpt;
   const publishedTime = post.publishedAt;
-  const url = `${HOST_URL}/${post.slug}`;
-  const ogImageUrl = `${HOST_URL}/og?title=${post.title}`;
+  const url = `${BASE_URL}/${post.slug}`;
+  const ogImageUrl = `${BASE_URL}/og?title=${post.title}`;
   const images = [ogImageUrl];
 
   return {

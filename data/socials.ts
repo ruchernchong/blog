@@ -1,4 +1,4 @@
-import { HOST_URL } from "@/config";
+import { BASE_URL } from "@/config";
 
 export type Social = {
   name: string;
@@ -24,6 +24,6 @@ export const socials: Social[] = [
   },
   {
     name: "RSS",
-    link: `${HOST_URL}/feed.xml`,
+    link: `${BASE_URL}/feed.xml`,
   },
 ];

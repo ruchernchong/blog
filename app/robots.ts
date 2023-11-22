@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { HOST_URL } from "@/config";
+import { BASE_URL } from "@/config";
 
 const robots = (): MetadataRoute.Robots => {
   return {
@@ -7,7 +7,7 @@ const robots = (): MetadataRoute.Robots => {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: `${HOST_URL}/sitemap.xml/`,
+    sitemap: `${BASE_URL}/sitemap.xml/`,
   };
 };
 
