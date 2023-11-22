@@ -11,22 +11,23 @@ import { getGitHubPinnedRepositories } from "@/lib/github";
 import { WebPage, WithContext } from "schema-dts";
 import projects from "@/data/projects";
 
+const title: string = `Projects`;
 const pageDescription: string =
   "Project showcase of past works and experimenting with different technologies";
 
 export const metadata: Metadata = {
   ...globalMetadata,
-  title: "Projects",
+  title,
   description: pageDescription,
   openGraph: {
     ...globalMetadata.openGraph,
-    title: "Projects | Ru Chern",
+    title: "Projects",
     description: pageDescription,
     url: `${HOST_URL}/projects`,
   },
   twitter: {
     ...globalMetadata.twitter,
-    title: "Projects | Ru Chern",
+    title: "Projects",
     description: pageDescription,
   },
 };

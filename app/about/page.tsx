@@ -10,22 +10,23 @@ import { WebPage, WithContext } from "schema-dts";
 import { getStackOverflowProfile } from "@/lib/stackoverflow";
 import { getGitHubContributions } from "@/lib/github";
 
+const title: string = `About`;
 const pageDescription: string =
   "My name is Ru Chern and I am a frontend developer with focus on optimising performance and delivering good user experience. I believe with technology, we are able to change how the way we automate things to make living more efficient and smarter.";
 
 export const metadata: Metadata = {
   ...globalMetadata,
-  title: "About",
+  title,
   description: pageDescription,
   openGraph: {
     ...globalMetadata.openGraph,
-    title: "About | Ru Chern",
+    title,
     description: pageDescription,
     url: `${HOST_URL}/about`,
   },
   twitter: {
     ...globalMetadata.twitter,
-    title: "About | Ru Chern",
+    title,
     description: pageDescription,
   },
 };
