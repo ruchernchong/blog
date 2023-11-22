@@ -19,8 +19,8 @@ export const socials: Social[] = [
     link: "https://stackoverflow.com/users/4031163/ru-chern-chong",
   },
   {
-    name: "𝕏",
-    link: "https://x.com/ruchernchong",
+    name: "Twitter",
+    link: "https://twitter.com/ruchernchong",
   },
   {
     name: "RSS",

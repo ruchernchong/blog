@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import Script from "next/script";
-import Footer from "@/components/Footer";
+import { Footer } from "@/components/Footer";
 import Header from "@/components/Header";
 import globalMetadata from "@/app/metadata";
 import { BASE_URL } from "@/config";
