@@ -1,0 +1,72 @@
+---
+title: Exclamation Mark in TypeScript
+publishedAt: 2023-11-23
+excerpt: Understanding what the exclamation market in TypeScript is for and how to actually use it
+---
+
+So what is the `!` in TypeScript?
+
+This is actually known as a non-null assertion operator.
+
+Take for example the following code:
+
+```typescript
+type Item = {
+  title: string;
+  value: string;
+};
+
+const items: Item[] = [
+  { title: "Foo", value: "Foo" },
+  { title: "Bar", value: "Bar" },
+  { title: "Alpha", value: "Alpha" },
+];
+
+const getAlpha = items.find((item) => item.title === "Alpha");
+```
+
+The following will return a type `Item | undefined`. In some scenarios, we are not allowed to parse an `undefined` value and therefore leading to further code needed to handle the `undefined` value.
+
+One of the most common way is to do the following.
+
+```js
+if (getAlpha) {
+  return <SomeComponent alpha={getAlpha} />;
+}
+```
+
+Or we could type cast it back to the Item type like the following.
+
+```js
+<SomeComponent alpha={getAlpha as Item} />
+```
+
+However, with the `!` in TypeScript. We are able to just do the following and return the type `Item` quickly.
+
+```typescript
+const getAlpha = items.find((item) => item.title === "Alpha")!;
+```
+
+The use of `!` however does not remove the fact that the `Array.find()` will not return a `null` or `undefined` at all.
+
+## Swift
+
+Since I have done before Swift Programming or an AR App in Swift - used as the programming language for iOS, iPadOS, macOS, watchOS, the `!` works very similarly and is very commonly used.
+
+The `!` in Swift is used to force unwrapping of optionals.
+
+Example:
+
+```swift
+let title: String? = "Foo"
+
+if title != nil {
+    var something = title!
+}
+```
+
+So as you have guessed it, the `!` actually forces the optional value in the variable `name` and gain access to the `String` value.
+
+## Summary
+
+And that is all for this post. Just wanted to share something regarding the `!` operator that I discovered while writing code in Swift and now being able to also use it in TypeScript.
