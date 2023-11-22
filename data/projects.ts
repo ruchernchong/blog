@@ -9,7 +9,7 @@ const projects: Project[] = [
   {
     name: "Singapore EV Trends",
     description:
-      "Using official data from LTA to create a chart visualising how the adoption trend of EVs are moving in Singapore.",
+      "Stay ahead of the shift to Electric Vehicle (EV) in Singapore with the latest Singapore EV trends. Data provided by Land Transport Authority (LTA)",
     skills: ["next.js", "typescript", "react", "tailwind css", "sst", "aws"],
     link: "https://singapore-ev-trends.ruchern.xyz",
   },
@@ -31,9 +31,9 @@ const projects: Project[] = [
   {
     name: "CPF Contribution Calculator",
     description:
-      "An income estimator with CPF contribution following the new changes to the income ceiling announced at the Singapore Budget 2023",
-    skills: ["vite", "vitest", "react", "typescript", "tailwind css", "vercel"],
-    link: "https://cpf-contribution-calculator.vercel.app",
+      "A calculator to compute CPF contributions after the 2023 income ceiling changes following Ministry of Finance announcement at the Singapore Budget 2023",
+    skills: ["vite", "vitest", "react", "typescript", "tailwind css"],
+    link: "https://cpf-contribution-calculator.ruchern.xyz",
   },
 ];
 
