@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import classNames from "classnames";
-import LinkWithIcon from "@/components/LinkWithIcon";
+import { LinkWithIcon } from "@/components/LinkWithIcon";
 import { H3 } from "@/components/Typography";
 import { StackOverflowProfile } from "@/lib/stackoverflow";
 import { GitHubProfile } from "@/lib/github";

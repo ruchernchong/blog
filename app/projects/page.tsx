@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import globalMetadata from "@/app/metadata";
 import Card from "@/components/Card";
-import LinkWithIcon from "@/components/LinkWithIcon";
-import Chip from "@/components/Chip";
+import { LinkWithIcon } from "@/components/LinkWithIcon";
+import { Chip } from "@/components/Chip";
 import { StructuredData } from "@/components/StructuredData";
 import { H1, H2 } from "@/components/Typography";
 import { HOST_URL } from "@/config";
@@ -55,18 +55,12 @@ const ProjectsPage = async () => {
             return (
               <div key={name} className="flex flex-col items-start gap-4">
                 <H2>{name}</H2>
-                <div className="text-neutral-400">{description}</div>
                 <div className="flex flex-wrap gap-2">
                   {skills?.map((skill) => {
-                    skill = skill.toLowerCase();
-
-                    return (
-                      <Chip key={skill} size="small">
-                        {skill}
-                      </Chip>
-                    );
+                    return <Chip key={skill}>{skill}</Chip>;
                   })}
                 </div>
+                <div className="text-neutral-400">{description}</div>
                 <LinkWithIcon url={link} />
               </div>
             );
