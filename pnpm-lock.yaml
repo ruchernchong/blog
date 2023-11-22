@@ -5737,8 +5737,8 @@ packages:
     resolution: {integrity: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==}
     dev: false
 
-  /fast-jwt@3.3.1:
-    resolution: {integrity: sha512-1YuuIJeh1hEvfcYDe89P2oGACWI5hd2GadRDKHalSxkc1Z0z8I6yzuVK6SF15sW09QZngTV6d7g4+TFL9bvs5A==}
+  /fast-jwt@3.3.2:
+    resolution: {integrity: sha512-H+JYxaFy2LepiC1AQWM/2hzKlQOWaWUkEnu/yebhYu4+ameb3qG77WiRZ1Ct6YBk6d/ESsNguBfTT5+q0XMtKg==}
     engines: {node: '>=16 <22'}
     dependencies:
       '@lukeed/ms': 2.0.1
@@ -9362,7 +9362,7 @@ packages:
       dotenv: 16.3.1
       esbuild: 0.18.13
       express: 4.18.2
-      fast-jwt: 3.3.1
+      fast-jwt: 3.3.2
       get-port: 6.1.2
       glob: 10.3.10
       graphql: 16.8.1
