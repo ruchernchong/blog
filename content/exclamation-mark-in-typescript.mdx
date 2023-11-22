@@ -25,7 +25,7 @@ const items: Item[] = [
 const getAlpha = items.find((item) => item.title === "Alpha");
 ```
 
-The following will return a type `Item | undefined`. In some scenarios, we are not allowed to parse an `undefined` value and therefore leading to further code needed to handle the `undefined` value.
+The following will return a type `Item | undefined`. In some scenarios, we are not allowed to parse an `undefined` value and therefore we need to write extra code just to handle the `undefined` value first.
 
 One of the most common way is to do the following.
 
@@ -51,7 +51,9 @@ The use of `!` however does not remove the fact that the `Array.find()` will not
 
 ## Swift
 
-Since I have done before Swift Programming or an AR App in Swift - used as the programming language for iOS, iPadOS, macOS, watchOS, the `!` works very similarly and is very commonly used.
+> Swift is used as the programming language for creating apps on iOS, macOS, watchOS.
+
+Since I have created an Augmented Reality(AR) App in Swift before, the `!` works very similarly and is very commonly used.
 
 The `!` in Swift is used to force unwrapping of optionals.
 
