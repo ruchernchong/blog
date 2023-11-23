@@ -23,7 +23,8 @@ const items: Item[] = [
   { title: "Alpha", value: "Alpha" },
 ];
 
-const getAlpha = items.find((item) => item.title === "Alpha");
+// Exclamation mark at the end of the Array.find() function
+const getAlpha = items.find((item) => item.title === "Alpha")!;
 ```
 
 The following will return a type `Item | undefined`. In some scenarios, we are not allowed to parse an `undefined` value and therefore we need to write extra code just to handle the `undefined` value first.
