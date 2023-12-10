@@ -3,7 +3,7 @@ import * as Icons from "@/components/Icons";
 import { socials } from "@/data/socials";
 
 export const Footer = () => (
-  <footer className="flex flex-col items-center gap-4 bg-gray-800 py-8 text-neutral-400">
+  <footer className="flex flex-col items-center gap-4 bg-gray-800 py-8 text-gray-400">
     <div className="flex items-center gap-x-4">
       {socials.map(({ name, link }) => {
         return (

@@ -85,8 +85,8 @@ const PostPage = ({ params }: { params: { slug: string } }) => {
   return (
     <>
       <StructuredData data={post.structuredData} />
-      <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-indigo-300 prose-img:rounded-2xl">
-        <div className="mb-4 flex flex-col items-center justify-center text-neutral-400 md:flex-row">
+      <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-pink-500 prose-img:rounded-2xl">
+        <div className="mb-4 flex flex-col items-center justify-center text-gray-400 md:flex-row">
           <div className="flex flex-col md:flex-row">
             <div className="flex items-center justify-center">
               <CalendarDaysIcon className="mr-2 h-6 w-6" />
@@ -121,7 +121,7 @@ const PostPage = ({ params }: { params: { slug: string } }) => {
       {/*        }*/}
       {/*      )}*/}
       {/*    >*/}
-      {/*      <div className="text-neutral-400">Previous:</div>*/}
+      {/*      <div className="text-gray-400">Previous:</div>*/}
       {/*      <div>{previousPost?.title}</div>*/}
       {/*    </Card>*/}
       {/*  </Link>*/}
@@ -135,7 +135,7 @@ const PostPage = ({ params }: { params: { slug: string } }) => {
       {/*        }*/}
       {/*      )}*/}
       {/*    >*/}
-      {/*      <div className="text-neutral-400">Next:</div>*/}
+      {/*      <div className="text-gray-400">Next:</div>*/}
       {/*      <div>{nextPost?.title}</div>*/}
       {/*    </Card>*/}
       {/*  </Link>*/}

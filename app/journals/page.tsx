@@ -5,7 +5,7 @@ import { format, formatISO, parseISO } from "date-fns";
 import { WebPage, WithContext } from "schema-dts";
 import globalMetadata from "@/app/metadata";
 import { StructuredData } from "@/components/StructuredData";
-import { H1 } from "@/components/Typography";
+import { H1, H2, H3 } from "@/components/Typography";
 import { sortByLatest } from "@/lib/sortByLatest";
 import { BASE_URL } from "@/config";
 
@@ -42,19 +42,9 @@ const JournalsPage = () => {
   return (
     <>
       <StructuredData data={structuredData} />
+      <H1 className="mb-8">Journals</H1>
+      <H2 className="mb-8">{pageDescription}</H2>
       <div className="flex flex-col justify-center gap-8">
-        <div className="flex flex-col gap-4">
-          <H1>Journals</H1>
-          <div className="text-neutral-400">
-            <div>{pageDescription}</div>
-            <em>
-              <span className="text-xl font-extrabold text-indigo-300">
-                {allJournals.length}
-              </span>
-              &nbsp;random and interesting encounters so far...
-            </em>
-          </div>
-        </div>
         <div className="flex flex-col gap-2">
           {allJournals
             .sort(sortByLatest)
@@ -65,18 +55,16 @@ const JournalsPage = () => {
               );
 
               return (
-                <div key={title} className="flex items-center gap-4">
+                <div key={title} className="flex gap-4 md:items-center">
                   <time
                     dateTime={formatISO(parseISO(publishedAt as string))}
                     title={formattedDate}
-                    className="shrink-0 italic text-neutral-400"
+                    className="shrink-0 italic text-gray-300"
                   >
                     {formattedDate}
                   </time>
                   <Link href={slug} className="no-underline">
-                    <h2 className="text-xl font-medium transition hover:opacity-50">
-                      {title}
-                    </h2>
+                    <H3 className="transition hover:text-pink-500">{title}</H3>
                   </Link>
                 </div>
               );

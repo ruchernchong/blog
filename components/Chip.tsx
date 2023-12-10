@@ -6,7 +6,7 @@ export const Chip = ({ ...props }: TagProps) => {
   return (
     <button
       type="button"
-      className="rounded-full text-center text-sm font-medium uppercase text-indigo-300 hover:text-indigo-100"
+      className="rounded-full text-center text-sm font-medium uppercase text-pink-500 hover:text-pink-300"
       {...props}
     />
   );

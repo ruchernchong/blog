@@ -12,7 +12,7 @@ const CustomLink = ({ href, children, ...props }: any) => {
 
   if (isInternalLink) {
     return (
-      <Link href={href} scroll={false} className="text-indigo-300" {...props}>
+      <Link href={href} scroll={false} className="text-pink-500" {...props}>
         {children}
       </Link>
     );
