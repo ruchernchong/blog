@@ -5,7 +5,7 @@ import Contributions from "@/components/Contributions";
 import Employment from "@/components/Employment";
 import { StructuredData } from "@/components/StructuredData";
 import { BASE_URL } from "@/config";
-import companies from "@/data/companies";
+import companies from "@/data/companies.json";
 import { WebPage, WithContext } from "schema-dts";
 import { getStackOverflowProfile } from "@/lib/stackoverflow";
 import { getGitHubContributions } from "@/lib/github";
