@@ -3,7 +3,7 @@
   "version": "2.0.2",
   "private": true,
   "scripts": {
-    "dev": "sst bind next dev",
+    "dev": "sst bind next dev --turbo",
     "build": "NEXT_TELEMETRY_DISABLED=1 sst bind next build",
     "start": "next start",
     "lint": "next lint",
