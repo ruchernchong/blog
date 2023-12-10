@@ -9,7 +9,7 @@ import { BASE_URL } from "@/config";
 import { StarIcon } from "@heroicons/react/24/outline";
 import { getGitHubPinnedRepositories } from "@/lib/github";
 import { WebPage, WithContext } from "schema-dts";
-import projects from "@/data/projects";
+import projects from "@/data/projects.json";
 
 const title: string = `Projects`;
 const pageDescription: string =
