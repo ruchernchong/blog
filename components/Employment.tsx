@@ -62,14 +62,14 @@ const Employment = ({ companies }: EmploymentProps) => {
                   )}
                 </div>
                 <div>
+                  <ItemOverlay />
                   <a
                     href={url}
                     target="_blank"
-                    rel="nofollow noreferrer"
-                    className="no-underline"
+                    rel="noopener nofollow"
+                    className="z-20 no-underline"
                   >
-                    <div className="absolute -inset-x-4 -inset-y-4 z-0 scale-95 rounded-2xl border border-pink-500 opacity-0 transition group-hover:scale-100 group-hover:bg-gray-800/25 group-hover:opacity-100" />
-                    <div className="text-xl font-bold">{name}</div>
+                    <div className="z-20 text-xl font-bold">{name}</div>
                   </a>
                   <div>{title}</div>
                   <div className="text-sm italic text-gray-400">

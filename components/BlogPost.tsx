@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
+import { ItemOverlay } from "@/components/ItemOverlay";
 import { H2 } from "@/components/Typography";
 
 type BlogPostProps = {
@@ -18,7 +19,7 @@ const BlogPost = ({ title, slug, excerpt, publishedAt }: BlogPostProps) => {
       <div className="mb-4 flex flex-col-reverse md:flex-row md:justify-between">
         <div className="w-full basis-2/3">
           <Link href={slug}>
-            <div className="absolute -inset-x-4 -inset-y-6 z-0 scale-95 rounded-2xl border border-pink-500 opacity-0 transition group-hover:scale-100 group-hover:bg-gray-800/25 group-hover:opacity-100" />
+            <ItemOverlay />
             <H2>{title}</H2>
           </Link>
           <p className="text-gray-400">{excerpt}</p>
