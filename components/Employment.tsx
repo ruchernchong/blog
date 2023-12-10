@@ -1,11 +1,22 @@
 import Image from "next/image";
 import classNames from "classnames";
+import ExternalLink from "@/components/ExternalLink";
+import { ItemOverlay } from "@/components/ItemOverlay";
 import { BriefcaseIcon } from "@heroicons/react/24/solid";
-import type { Company } from "@/data/companies";
 
-type EmploymentProps = {
-  companies: Company[];
+type Company = {
+  name: string;
+  title: string;
+  logo?: string;
+  dateStart: string;
+  dateEnd?: string;
+  location: string;
+  url: string;
 };
+
+interface EmploymentProps {
+  companies: Company[];
+}
 
 const Employment = ({ companies }: EmploymentProps) => {
   return (
@@ -15,17 +26,15 @@ const Employment = ({ companies }: EmploymentProps) => {
           <BriefcaseIcon width={32} height={32} className="fill-pink-500" />
           <h2 className="text-4xl font-bold">Work</h2>
         </div>
-        <p className="text-gray-400">
+        <p>
           Some cool companies I have worked with. Feel free to connect with me
           on&nbsp;
-          <a
+          <ExternalLink
             href="https://linkedin.com/in/ruchernchong"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-pink-500 underline hover:text-red-300"
+            className="text-pink-500 underline hover:text-pink-300"
           >
             LinkedIn
-          </a>
+          </ExternalLink>
           .
         </p>
       </div>
