@@ -36,8 +36,9 @@ export const Post = defineDocumentType(() => ({
         headline: post.title,
         datePublished: post.publishedAt,
         description: post.excerpt,
-        image:
-          `${BASE_URL}/${post.image}` || `${BASE_URL}/og?title=${post.title}`,
+        image: post.image
+          ? `${BASE_URL}/${post.image}`
+          : `${BASE_URL}/og?title=${post.title}`,
         url: `${BASE_URL}/${post._raw.flattenedPath}`,
         author: {
           "@type": "Person",
