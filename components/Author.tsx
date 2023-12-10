@@ -18,7 +18,7 @@ const Author = ({ title, tagline, description }: Author) => {
           <H1>{title}</H1>
           {tagline && <div className="text-md">{tagline}</div>}
         </div>
-        {description && <p className="text-neutral-400">{description}</p>}
+        {description && <p className="text-gray-400">{description}</p>}
         <div className="flex justify-center gap-4 md:justify-start">
           {socials.map(({ name, link }) => {
             return (

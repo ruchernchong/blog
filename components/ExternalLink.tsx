@@ -6,7 +6,7 @@ interface ExternalLinkProps extends PropsWithChildren {
 
 const ExternalLink = ({ href, children }: ExternalLinkProps) => {
   return (
-    <div className="flex items-center text-neutral-400 hover:text-indigo-300">
+    <div className="flex items-center text-gray-400 hover:text-pink-500">
       <a
         href={href}
         target="_blank"

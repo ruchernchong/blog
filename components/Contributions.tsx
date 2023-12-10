@@ -23,10 +23,10 @@ const Contributions = ({
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
         <div className="flex items-center">
-          <UsersIcon width={32} height={32} className="mr-2 fill-indigo-300" />
+          <UsersIcon width={32} height={32} className="mr-2 fill-pink-500" />
           <h2 className="text-4xl font-bold">Contributions</h2>
         </div>
-        <p className="text-neutral-400">
+        <p className="text-gray-400">
           My contributions to open-source platforms. I believe that by sharing
           my knowledge and expertise, I can help others to learn and grow too.
         </p>
@@ -36,7 +36,7 @@ const Contributions = ({
           <div className="flex flex-col gap-2">
             <div>
               <H3>GitHub</H3>
-              <p className="text-sm italic text-neutral-400">
+              <p className="text-sm italic text-gray-400">
                 (Powered by GitHub GraphQL API)
               </p>
             </div>
@@ -59,7 +59,7 @@ const Contributions = ({
           <div className="flex flex-col gap-2">
             <div>
               <H3>Stack Overflow</H3>
-              <p className="text-sm italic text-neutral-400">
+              <p className="text-sm italic text-gray-400">
                 (Powered by Stack Exchange API)
               </p>
             </div>

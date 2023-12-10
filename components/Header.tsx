@@ -21,8 +21,8 @@ const NavItem = ({ href, title }: NavItem) => {
     <NextLink
       href={href}
       className={classNames("font-semibold", {
-        "text-indigo-300 underline underline-offset-8": isActive,
-        "hover:text-indigo-300": !isActive,
+        "text-pink-500 underline underline-offset-8": isActive,
+        "hover:text-pink-500": !isActive,
       })}
     >
       {title}
@@ -48,7 +48,7 @@ const Header = () => {
         <div className="flex items-center justify-end px-4 py-4">
           <button
             aria-label="Mobile menu"
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-900 ring-2 ring-neutral-600 transition-all hover:ring-2"
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 ring-2 ring-gray-600 transition-all hover:ring-2"
             onClick={() => setExpand(!expand)}
           >
             <div className="h-6 w-6 transition-all">
@@ -58,20 +58,17 @@ const Header = () => {
           </button>
         </div>
         <div
-          className={classNames(
-            "absolute z-10 h-full w-screen bg-neutral-900",
-            {
-              hidden: !expand,
-              block: expand,
-            }
-          )}
+          className={classNames("absolute z-10 h-full w-screen bg-gray-900", {
+            hidden: !expand,
+            block: expand,
+          })}
         >
-          <ul className="flex flex-col bg-neutral-900 text-center">
+          <ul className="flex flex-col bg-gray-900 text-center">
             {navLinks.map(({ title, href }) => {
               return (
                 <li
                   key={title}
-                  className="border-b border-neutral-600 py-4"
+                  className="border-b border-gray-600 py-4"
                   onClick={() => setExpand((prevState) => !prevState)}
                 >
                   <NavItem key={title} href={href} title={title} />

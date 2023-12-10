@@ -10,14 +10,12 @@ const Card = ({ children, className, onClick }: CardProps) => {
   return (
     <div
       className={classNames(
-        "flex cursor-pointer flex-col rounded-xl border bg-gradient-to-r from-indigo-300 to-red-300 p-0.5 hover:border-indigo-300 hover:from-red-300 hover:to-indigo-300",
+        "flex cursor-pointer flex-col rounded-xl border border-pink-500 bg-gradient-to-r from-pink-500 via-rose-400 to-orange-300 p-0.5 hover:border-pink-500 hover:from-orange-300 hover:via-rose-400 hover:to-pink-500",
         className
       )}
       onClick={onClick}
     >
-      <div className="w-full grow rounded-xl bg-neutral-900 p-4">
-        {children}
-      </div>
+      <div className="w-full grow rounded-xl bg-gray-900 p-4">{children}</div>
     </div>
   );
 };
