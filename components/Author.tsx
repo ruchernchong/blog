@@ -3,7 +3,7 @@ import ExternalLink from "@/components/ExternalLink";
 import * as Icons from "@/components/Icons";
 import { H1, H2 } from "@/components/Typography";
 import { BASE_URL } from "@/config";
-import { socials } from "@/data/socials.json";
+import socials from "@/data/socials.json";
 
 interface AuthorProps {
   title: string | JSX.Element;
