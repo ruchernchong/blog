@@ -1,7 +1,7 @@
 import ExternalLink from "@/components/ExternalLink";
 import * as Icons from "@/components/Icons";
-import { socials } from "@/data/socials.json";
 import { BASE_URL } from "@/config";
+import socials from "@/data/socials.json";
 
 export const Footer = () => (
   <footer className="flex flex-col items-center gap-4 bg-gray-800 py-8">
