@@ -20,7 +20,7 @@ export const GET = async (req: NextRequest) => {
           justifyContent: "center",
           alignItems: "flex-start",
         }}
-        tw="text-neutral-50 border border-8 border-indigo-300"
+        tw="text-gray-50 border border-8 border-pink-500"
       >
         <div tw="flex ml-[64px]">
           <h1 tw="text-6xl">{title}</h1>

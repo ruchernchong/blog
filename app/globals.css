@@ -19,7 +19,7 @@
 }
 
 *:hover > .permalink {
-  @apply visible text-indigo-300;
+  @apply visible text-pink-500;
 }
 
 h1 .permalink::after {
@@ -27,7 +27,7 @@ h1 .permalink::after {
 }
 
 .rehype-code-title {
-  @apply rounded-t-md border-b border-neutral-600 bg-[#2d2d2d] p-4 text-neutral-400;
+  @apply rounded-t-md border-b border-gray-600 bg-[#2d2d2d] p-4 text-gray-400;
 }
 
 .rehype-code-title + pre {

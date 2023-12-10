@@ -12,17 +12,17 @@ const Employment = ({ companies }: EmploymentProps) => {
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
-          <BriefcaseIcon width={32} height={32} className="fill-indigo-300" />
+          <BriefcaseIcon width={32} height={32} className="fill-pink-500" />
           <h2 className="text-4xl font-bold">Work</h2>
         </div>
-        <p className="text-neutral-400">
+        <p className="text-gray-400">
           Some cool companies I have worked with. Feel free to connect with me
           on&nbsp;
           <a
             href="https://linkedin.com/in/ruchernchong"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-indigo-300 underline hover:text-red-300"
+            className="text-pink-500 underline hover:text-red-300"
           >
             LinkedIn
           </a>
@@ -40,7 +40,7 @@ const Employment = ({ companies }: EmploymentProps) => {
                 <div
                   className={classNames(
                     "flex h-12 w-12 items-center rounded-2xl p-2 md:h-[72px] md:w-[72px]",
-                    logo ? "bg-neutral-50" : "bg-transparent"
+                    logo ? "bg-gray-50" : "bg-transparent"
                   )}
                 >
                   {logo && (
@@ -57,7 +57,7 @@ const Employment = ({ companies }: EmploymentProps) => {
                     <BriefcaseIcon
                       width="100%"
                       height="100%"
-                      className="fill-indigo-300"
+                      className="fill-pink-500"
                     />
                   )}
                 </div>
@@ -68,11 +68,11 @@ const Employment = ({ companies }: EmploymentProps) => {
                     rel="nofollow noreferrer"
                     className="no-underline"
                   >
-                    <div className="absolute -inset-x-4 -inset-y-4 z-0 scale-95 rounded-2xl border border-indigo-300 opacity-0 transition group-hover:scale-100 group-hover:bg-neutral-800/25 group-hover:opacity-100" />
+                    <div className="absolute -inset-x-4 -inset-y-4 z-0 scale-95 rounded-2xl border border-pink-500 opacity-0 transition group-hover:scale-100 group-hover:bg-gray-800/25 group-hover:opacity-100" />
                     <div className="text-xl font-bold">{name}</div>
                   </a>
                   <div>{title}</div>
-                  <div className="text-sm italic text-neutral-400">
+                  <div className="text-sm italic text-gray-400">
                     <div>
                       {dateStart} - {dateEnd ?? "Present"}
                     </div>

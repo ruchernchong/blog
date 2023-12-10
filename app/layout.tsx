@@ -32,7 +32,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
             gtag('config', '${gaMeasurementId}');
         `}
       </Script>
-      <body className="bg-neutral-900 text-neutral-50">
+      <body className="bg-gray-900 text-gray-50">
         <div className="flex min-h-screen flex-col">
           <Header />
           <main className="mx-auto my-8 w-screen max-w-4xl grow px-4 md:my-16">

@@ -62,7 +62,7 @@ const JournalPage = async ({ params }: { params: { slug: string } }) => {
   return (
     <>
       <StructuredData data={journal.structuredData} />
-      <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-indigo-300 prose-img:rounded-2xl">
+      <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-pink-500 prose-img:rounded-2xl">
         <H1 className="text-center">{journal.title}</H1>
         <Mdx code={journal.body.code} />
       </article>

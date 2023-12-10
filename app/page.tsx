@@ -27,18 +27,18 @@ const HomePage = async () => {
     <>
       <StructuredData data={structuredData} />
       <div className="flex flex-col justify-center gap-8">
-        <Author title="Ru Chern" />
+        <Author title="Chong Ru Chern" />
         {featuredPosts.length > 0 && (
           <FeaturedPosts featuredPosts={featuredPosts} />
         )}
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-4">
             <div className="text-4xl font-bold">Recent Posts</div>
-            <div className="text-neutral-400">
+            <div className="text-gray-400">
               <div>Blog posts on mostly front-end development.</div>
               <em>
                 To date, I have written&nbsp;
-                <span className="text-xl font-extrabold text-indigo-300">
+                <span className="text-xl font-extrabold text-pink-500">
                   {posts.length}
                 </span>
                 &nbsp;posts and counting...

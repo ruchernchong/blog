@@ -9,7 +9,7 @@ export const H1 = ({ className, ...props }: Typography) => {
   return (
     <h1
       className={classNames(
-        "bg-gradient-to-r from-indigo-300 to-red-300 bg-clip-text text-5xl font-extrabold text-transparent",
+        "inline-block bg-gradient-to-r from-pink-500 via-rose-400 to-orange-300 bg-clip-text text-5xl font-extrabold uppercase text-transparent",
         className
       )}
       {...props}
