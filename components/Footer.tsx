@@ -1,11 +1,16 @@
 import ExternalLink from "@/components/ExternalLink";
 import * as Icons from "@/components/Icons";
-import { socials } from "@/data/socials";
+import { socials } from "@/data/socials.json";
+import { BASE_URL } from "@/config";
 
 export const Footer = () => (
   <footer className="flex flex-col items-center gap-4 bg-gray-800 py-8">
     <div className="flex items-center gap-x-4">
       {socials.map(({ name, link }) => {
+        if (/\$BASE_URL/.test(link)) {
+          link = link.replace("$BASE_URL", BASE_URL);
+        }
+
         return (
           <ExternalLink key={name} href={link} className="hover:text-pink-500">
             <Icons.Social name={name} />

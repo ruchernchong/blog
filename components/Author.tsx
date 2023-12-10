@@ -2,7 +2,8 @@ import Avatar from "@/components/Avatar";
 import ExternalLink from "@/components/ExternalLink";
 import * as Icons from "@/components/Icons";
 import { H1, H2 } from "@/components/Typography";
-import { socials } from "@/data/socials";
+import { BASE_URL } from "@/config";
+import { socials } from "@/data/socials.json";
 
 interface AuthorProps {
   title: string | JSX.Element;
@@ -21,6 +22,10 @@ const Author = ({ title, tagline, description }: AuthorProps) => {
         {description && <p className="text-gray-400">{description}</p>}
         <div className="flex justify-center gap-4 md:justify-start">
           {socials.map(({ name, link }) => {
+            if (/\$BASE_URL/.test(link)) {
+              link = link.replace("$BASE_URL", BASE_URL);
+            }
+
             return (
               <ExternalLink
                 key={name}
