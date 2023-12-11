@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
 import Card from "@/components/Card";
-import { H3 } from "@/components/Typography";
+import { H2 } from "@/components/Typography";
 import { Post } from "contentlayer/generated";
 
 interface FeaturedPostsProps {
@@ -31,7 +31,7 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
                   >
                     {formattedDate}
                   </time>
-                  <H3>{title}</H3>
+                  <H2>{title}</H2>
                   <p className="flex-1 text-gray-400">{excerpt}</p>
                 </Link>
               </Card>
