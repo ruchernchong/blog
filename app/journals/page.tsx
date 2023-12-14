@@ -5,7 +5,7 @@ import { format, formatISO, parseISO } from "date-fns";
 import { WebPage, WithContext } from "schema-dts";
 import globalMetadata from "@/app/metadata";
 import { StructuredData } from "@/components/StructuredData";
-import { H1, H2, H3 } from "@/components/Typography";
+import { Typography } from "@/components/Typography";
 import { sortByLatest } from "@/lib/sortByLatest";
 import { BASE_URL } from "@/config";
 
@@ -42,8 +42,12 @@ const JournalsPage = () => {
   return (
     <>
       <StructuredData data={structuredData} />
-      <H1 className="mb-8">Journals</H1>
-      <H2 className="mb-8">{pageDescription}</H2>
+      <Typography variant="h1" className="mb-8">
+        Journals
+      </Typography>
+      <Typography variant="h2" className="mb-8">
+        {pageDescription}
+      </Typography>
       <div className="flex flex-col justify-center gap-8">
         <div className="flex flex-col gap-2">
           {allJournals
@@ -64,7 +68,12 @@ const JournalsPage = () => {
                     {formattedDate}
                   </time>
                   <Link href={slug} className="no-underline">
-                    <H3 className="transition hover:text-pink-500">{title}</H3>
+                    <Typography
+                      variant="h3"
+                      className="transition hover:text-pink-500"
+                    >
+                      {title}
+                    </Typography>
                   </Link>
                 </div>
               );

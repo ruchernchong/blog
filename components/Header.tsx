@@ -24,11 +24,12 @@ const Header = () => {
 };
 
 const DesktopNavbar = () => {
+  const pathname = usePathname();
+
   return (
     <div className="hidden w-screen md:block">
       <nav className="mx-auto flex max-w-4xl gap-x-6 px-4 py-8">
         {navLinks.map(({ title, href }) => {
-          const pathname = usePathname();
           const isActive = pathname === href;
 
           return (
@@ -49,6 +50,7 @@ const DesktopNavbar = () => {
 };
 
 const MobileNavbar = () => {
+  const pathname = usePathname();
   const [expand, setExpand] = useState<boolean>(false);
 
   // TODO: Will find a better way to update this with context and _document.tsx
@@ -88,7 +90,6 @@ const MobileNavbar = () => {
       >
         <ul className="flex flex-col">
           {navLinks.map(({ title, href }) => {
-            const pathname = usePathname();
             const isActive = pathname === href;
 
             return (

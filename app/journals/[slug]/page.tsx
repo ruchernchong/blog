@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { allJournals } from "contentlayer/generated";
 import { Mdx } from "@/components/Mdx";
 import { StructuredData } from "@/components/StructuredData";
-import { H1 } from "@/components/Typography";
+import { Typography } from "@/components/Typography";
 import { BASE_URL } from "@/config";
 import "@code-hike/mdx/dist/index.css";
 
@@ -63,7 +63,9 @@ const JournalPage = async ({ params }: { params: { slug: string } }) => {
     <>
       <StructuredData data={journal.structuredData} />
       <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-pink-500 prose-img:rounded-2xl">
-        <H1 className="text-center">{journal.title}</H1>
+        <Typography variant="h1" className="text-center">
+          {journal.title}
+        </Typography>
         <Mdx code={journal.body.code} />
       </article>
     </>
