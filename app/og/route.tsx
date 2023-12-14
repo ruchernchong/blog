@@ -12,18 +12,12 @@ export const GET = async (req: NextRequest) => {
     (
       <div
         style={{
-          background: `url("${BASE_URL}/images/post-cover-image.png")`,
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "flex-start",
+          background: `url("${BASE_URL}/images/cover-image.png")`,
         }}
-        tw="text-gray-50 border border-8 border-pink-500"
+        tw="flex flex-col w-full h-full justify-center text-gray-50"
       >
-        <div tw="flex ml-[64px]">
-          <h1 tw="text-6xl">{title}</h1>
+        <div tw="flex w-full max-w-[75%] mx-16">
+          <h1 tw="text-6xl capitalize">{title}</h1>
         </div>
       </div>
     ),
