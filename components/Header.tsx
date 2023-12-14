@@ -8,29 +8,49 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import { navLinks } from "@/config";
 
-type NavItem = {
+interface NavItemProps {
   href: string;
   title: string;
-};
+  className?: string;
+}
 
-const NavItem = ({ href, title }: NavItem) => {
-  const pathname = usePathname();
-  const isActive = pathname === href;
-
+const Header = () => {
   return (
-    <NextLink
-      href={href}
-      className={classNames("font-semibold", {
-        "text-pink-500 underline underline-offset-8": isActive,
-        "hover:text-pink-500": !isActive,
-      })}
-    >
-      {title}
-    </NextLink>
+    <>
+      <MobileNavbar />
+      <DesktopNavbar />
+    </>
   );
 };
 
-const Header = () => {
+const DesktopNavbar = () => {
+  const pathname = usePathname();
+
+  return (
+    <div className="hidden w-screen md:block">
+      <nav className="mx-auto flex max-w-4xl gap-x-6 px-4 py-8">
+        {navLinks.map(({ title, href }) => {
+          const isActive = pathname === href;
+
+          return (
+            <NavItem
+              key={title}
+              href={href}
+              title={title}
+              className={classNames("font-semibold", {
+                "text-pink-500 underline underline-offset-8": isActive,
+                "hover:text-pink-500": !isActive,
+              })}
+            />
+          );
+        })}
+      </nav>
+    </div>
+  );
+};
+
+const MobileNavbar = () => {
+  const pathname = usePathname();
   const [expand, setExpand] = useState<boolean>(false);
 
   // TODO: Will find a better way to update this with context and _document.tsx
@@ -43,53 +63,63 @@ const Header = () => {
   }, [expand]);
 
   return (
-    <>
-      <div className="w-screen md:hidden">
-        <div className="flex items-center justify-end px-4 py-4">
-          <button
-            aria-label="Mobile menu"
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 ring-2 ring-gray-600 transition-all hover:ring-2"
-            onClick={() => setExpand(!expand)}
-          >
-            <div className="h-6 w-6 transition-all">
-              {!expand && <Bars3Icon />}
-              {expand && <XMarkIcon />}
-            </div>
-          </button>
-        </div>
-        <div
-          className={classNames("absolute z-10 h-full w-screen bg-gray-900", {
+    <div className="w-screen md:hidden">
+      <div className="flex items-center justify-end px-4 py-4">
+        <button
+          aria-label="Mobile menu"
+          className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 ring-2 ring-gray-600 transition-all hover:ring-2"
+          onClick={() => setExpand(!expand)}
+        >
+          <div className="h-6 w-6 transition-all">
+            {!expand && <Bars3Icon />}
+            {expand && <XMarkIcon />}
+          </div>
+        </button>
+      </div>
+      {expand && (
+        <div className="absolute z-50 h-full w-screen bg-transparent" />
+      )}
+      <div
+        className={classNames(
+          "absolute z-50 w-full rounded-lg border border-gray-600 bg-gray-800",
+          {
             hidden: !expand,
             block: expand,
+          }
+        )}
+      >
+        <ul className="flex flex-col">
+          {navLinks.map(({ title, href }) => {
+            const isActive = pathname === href;
+
+            return (
+              <li
+                key={title}
+                className="p-2"
+                onClick={() => setExpand((prevState) => !prevState)}
+              >
+                <NavItem
+                  href={href}
+                  title={title}
+                  className={classNames("block rounded-lg p-2 font-semibold", {
+                    "bg-pink-500 text-gray-50": isActive,
+                    "hover:bg-gray-600": !isActive,
+                  })}
+                />
+              </li>
+            );
           })}
-        >
-          <ul className="flex flex-col bg-gray-900 text-center">
-            {navLinks.map(({ title, href }) => {
-              return (
-                <li
-                  key={title}
-                  className="border-b border-gray-600 py-4"
-                  onClick={() => setExpand((prevState) => !prevState)}
-                >
-                  <NavItem key={title} href={href} title={title} />
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+        </ul>
       </div>
-      <div className="hidden w-screen md:block">
-        <div className="mx-auto max-w-4xl px-4 py-8">
-          <nav className="flex items-center justify-between">
-            <div className="space-x-6">
-              {navLinks.map(({ title, href }) => {
-                return <NavItem key={title} href={href} title={title} />;
-              })}
-            </div>
-          </nav>
-        </div>
-      </div>
-    </>
+    </div>
+  );
+};
+
+const NavItem = ({ href, title, className }: NavItemProps) => {
+  return (
+    <NextLink href={href} className={className}>
+      {title}
+    </NextLink>
   );
 };
 

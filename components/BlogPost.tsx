@@ -2,7 +2,7 @@ import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { ItemOverlay } from "@/components/ItemOverlay";
-import { H2 } from "@/components/Typography";
+import { Typography } from "@/components/Typography";
 
 type BlogPostProps = {
   title: string;
@@ -20,7 +20,7 @@ const BlogPost = ({ title, slug, excerpt, publishedAt }: BlogPostProps) => {
         <div className="w-full basis-2/3">
           <Link href={slug}>
             <ItemOverlay />
-            <H2>{title}</H2>
+            <Typography variant="h2">{title}</Typography>
           </Link>
           <p className="text-gray-400">{excerpt}</p>
         </div>

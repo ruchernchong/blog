@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import classNames from "classnames";
 import { LinkWithIcon } from "@/components/LinkWithIcon";
-import { H3 } from "@/components/Typography";
+import { Typography } from "@/components/Typography";
 import { StackOverflowProfile } from "@/lib/stackoverflow";
 import { GitHubProfile } from "@/lib/github";
 import { UsersIcon } from "@heroicons/react/24/solid";
@@ -35,7 +35,7 @@ const Contributions = ({
         {github && (
           <div className="flex flex-col gap-2">
             <div>
-              <H3>GitHub</H3>
+              <Typography variant="h3">GitHub</Typography>
               <p className="text-sm italic text-gray-400">
                 (Powered by GitHub GraphQL API)
               </p>
@@ -58,7 +58,7 @@ const Contributions = ({
         {stackOverflow && (
           <div className="flex flex-col gap-2">
             <div>
-              <H3>Stack Overflow</H3>
+              <Typography variant="h3">Stack Overflow</Typography>
               <p className="text-sm italic text-gray-400">
                 (Powered by Stack Exchange API)
               </p>

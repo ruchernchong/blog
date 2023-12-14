@@ -5,7 +5,7 @@ import { LinkWithIcon } from "@/components/LinkWithIcon";
 import { Chip } from "@/components/Chip";
 import { ItemOverlay } from "@/components/ItemOverlay";
 import { StructuredData } from "@/components/StructuredData";
-import { H1, H2, H3 } from "@/components/Typography";
+import { Typography } from "@/components/Typography";
 import { BASE_URL } from "@/config";
 import { StarIcon } from "@heroicons/react/24/outline";
 import { getGitHubPinnedRepositories } from "@/lib/github";
@@ -46,15 +46,21 @@ const ProjectsPage = async () => {
   return (
     <>
       <StructuredData data={structuredData} />
-      <H1 className="mb-8">Projects</H1>
-      <H2 className="mb-8">{pageDescription}</H2>
+      <Typography variant="h1" className="mb-8">
+        Projects
+      </Typography>
+      <Typography variant="h2" className="mb-8">
+        {pageDescription}
+      </Typography>
       <div className="flex flex-col gap-12">
         {projects.map(({ name, description, skills, link }) => {
           return (
             <div key={name} className="group relative">
               <div className="flex flex-col items-start gap-4">
                 <ItemOverlay />
-                <H3 className="z-20">{name}</H3>
+                <Typography variant="h3" className="z-20">
+                  {name}
+                </Typography>
                 <div className="flex flex-wrap gap-2">
                   {skills?.map((skill) => {
                     return <Chip key={skill}>{skill}</Chip>;

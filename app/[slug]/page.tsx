@@ -7,7 +7,7 @@ import { format, formatISO, parseISO } from "date-fns";
 import Card from "@/components/Card";
 import { Mdx } from "@/components/Mdx";
 import { StructuredData } from "@/components/StructuredData";
-import { H1 } from "@/components/Typography";
+import { Typography } from "@/components/Typography";
 import ViewCounter from "@/components/ViewCounter";
 import { BASE_URL } from "@/config";
 import {
@@ -107,7 +107,9 @@ const PostPage = ({ params }: { params: { slug: string } }) => {
             </div>
           </div>
         </div>
-        <H1 className="text-center">{post.title}</H1>
+        <Typography variant="h1" className="text-center">
+          {post.title}
+        </Typography>
         <Mdx code={post.body.code} />
       </article>
       {/*<div className="mb-16 grid gap-y-4 md:grid-cols-2 md:gap-x-4">*/}
