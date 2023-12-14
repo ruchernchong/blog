@@ -33,7 +33,7 @@ const HomePage = async () => {
         )}
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-4">
-            <div className="text-4xl font-bold">Recent Posts</div>
+            <div className="text-4xl font-bold">Recent</div>
             <div className="text-gray-400">
               <div>Blog posts on mostly front-end development.</div>
               <em>
