@@ -16,7 +16,8 @@
 *.pem
 
 # local env files
-.env
+.env.*
+!.env.example
 
 # typescript
 *.tsbuildinfo
