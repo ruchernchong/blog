@@ -1,33 +1,34 @@
 import { Metadata } from "next";
 import globalMetadata from "@/app/metadata";
+import { openGraphImage, twitterImage } from "@/app/shared-metadata";
 import Author from "@/components/Author";
 import Contributions from "@/components/Contributions";
 import Employment from "@/components/Employment";
 import { StructuredData } from "@/components/StructuredData";
-import { BASE_URL } from "@/config";
 import companies from "@/data/companies.json";
-import { WebPage, WithContext } from "schema-dts";
 import { getStackOverflowProfile } from "@/lib/stackoverflow";
 import { getGitHubContributions } from "@/lib/github";
+import { WebPage, WithContext } from "schema-dts";
 
 const title: string = `About`;
-const pageDescription: string =
+const description: string =
   "My name is Ru Chern and I am a frontend developer with focus on optimising performance and delivering good user experience. I believe with technology, we are able to change how the way we automate things to make living more efficient and smarter.";
 
 export const metadata: Metadata = {
-  ...globalMetadata,
   title,
-  description: pageDescription,
+  description,
   openGraph: {
     ...globalMetadata.openGraph,
     title,
-    description: pageDescription,
-    url: `${BASE_URL}/about`,
+    description,
+    url: "/about",
+    ...openGraphImage,
   },
   twitter: {
     ...globalMetadata.twitter,
     title,
-    description: pageDescription,
+    description,
+    ...twitterImage,
   },
 };
 
@@ -48,7 +49,7 @@ const AboutPage = async () => {
     "@type": "WebPage",
     name: "About | Ru Chern",
     // TODO: Upgrade description from a single source as variable
-    description: pageDescription,
+    description,
   };
 
   return (
@@ -60,7 +61,7 @@ const AboutPage = async () => {
           <Author
             title="About Me"
             tagline={currentPosition}
-            description={pageDescription}
+            description={description}
           />
         </div>
         <hr className="border-gray-600" />

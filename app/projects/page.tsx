@@ -1,35 +1,36 @@
 import { Metadata } from "next";
+import { StarIcon } from "@heroicons/react/24/outline";
 import globalMetadata from "@/app/metadata";
+import { openGraphImage, twitterImage } from "@/app/shared-metadata";
 import Card from "@/components/Card";
-import { LinkWithIcon } from "@/components/LinkWithIcon";
 import { Chip } from "@/components/Chip";
 import { ItemOverlay } from "@/components/ItemOverlay";
+import { LinkWithIcon } from "@/components/LinkWithIcon";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
-import { BASE_URL } from "@/config";
-import { StarIcon } from "@heroicons/react/24/outline";
+import projects from "@/data/projects.json";
 import { getGitHubPinnedRepositories } from "@/lib/github";
 import { WebPage, WithContext } from "schema-dts";
-import projects from "@/data/projects.json";
 
 const title: string = `Projects`;
-const pageDescription: string =
+const description: string =
   "A showcase of my past projects and/or experimenting with different technologies";
 
 export const metadata: Metadata = {
-  ...globalMetadata,
   title,
-  description: pageDescription,
+  description,
   openGraph: {
     ...globalMetadata.openGraph,
-    title: "Projects",
-    description: pageDescription,
-    url: `${BASE_URL}/projects`,
+    title,
+    description,
+    url: "/projects",
+    ...openGraphImage,
   },
   twitter: {
     ...globalMetadata.twitter,
-    title: "Projects",
-    description: pageDescription,
+    title,
+    description,
+    ...twitterImage,
   },
 };
 
@@ -40,7 +41,7 @@ const ProjectsPage = async () => {
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: "Projects | Ru Chern",
-    description: pageDescription,
+    description: description,
   };
 
   return (
@@ -50,7 +51,7 @@ const ProjectsPage = async () => {
         Projects
       </Typography>
       <Typography variant="h2" className="mb-8">
-        {pageDescription}
+        {description}
       </Typography>
       <div className="flex flex-col gap-12">
         {projects.map(({ name, description, skills, link }) => {

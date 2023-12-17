@@ -31,7 +31,7 @@ export const generateMetadata = async ({
   const title = post.title;
   const description = post.excerpt;
   const publishedTime = post.publishedAt;
-  const url = `${BASE_URL}/${post.slug}`;
+  const url = `/${post.slug}`;
   const ogImageUrl = `${BASE_URL}/og?title=${post.title}`;
   const images = [ogImageUrl];
 

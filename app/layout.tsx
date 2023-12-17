@@ -6,8 +6,39 @@ import globalMetadata from "@/app/metadata";
 import { BASE_URL } from "@/config";
 
 import "@/app/globals.css";
+import { Metadata } from "next";
 
-export const metadata = globalMetadata;
+const title = {
+  default: "Ru Chern",
+  template: "%s | Ru Chern",
+};
+const description =
+  "Frontend Developer from Singapore. Interested in automating workflows and building in React, Node, and Typescript.";
+const url = new URL(BASE_URL);
+
+export const metadata: Metadata = {
+  metadataBase: url,
+  title,
+  description,
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title,
+    description,
+    url,
+    siteName: title.default,
+    locale: "en_SG",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    creator: "@ruchernchong",
+  },
+};
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   const gaMeasurementId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS;

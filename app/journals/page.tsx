@@ -2,31 +2,32 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { allJournals } from "contentlayer/generated";
 import { format, formatISO, parseISO } from "date-fns";
-import { WebPage, WithContext } from "schema-dts";
 import globalMetadata from "@/app/metadata";
+import { openGraphImage, twitterImage } from "@/app/shared-metadata";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
 import { sortByLatest } from "@/lib/sortByLatest";
-import { BASE_URL } from "@/config";
+import { WebPage, WithContext } from "schema-dts";
 
 const title = `Journals`;
-const pageDescription =
+const description =
   "A collection containing fun and interesting things I came across randomly.";
 
 export const metadata: Metadata = {
-  ...globalMetadata,
   title: "Journals",
-  description: pageDescription,
+  description,
   openGraph: {
     ...globalMetadata.openGraph,
     title,
-    description: pageDescription,
-    url: `${BASE_URL}/journals`,
+    description,
+    url: "/journals",
+    ...openGraphImage,
   },
   twitter: {
     ...globalMetadata.twitter,
     title,
-    description: pageDescription,
+    description,
+    ...twitterImage,
   },
 };
 
@@ -36,7 +37,7 @@ const JournalsPage = () => {
     "@type": "WebPage",
     name: title,
     // TODO: Upgrade description from a single source as variable
-    description: pageDescription,
+    description: description,
   };
 
   return (
@@ -46,7 +47,7 @@ const JournalsPage = () => {
         Journals
       </Typography>
       <Typography variant="h2" className="mb-8">
-        {pageDescription}
+        {description}
       </Typography>
       <div className="flex flex-col justify-center gap-8">
         <div className="flex flex-col gap-2">
