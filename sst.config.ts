@@ -20,6 +20,9 @@ export default {
       const nextjsSite = new NextjsSite(stack, "site", {
         bind: [DATABASE_URL],
         customDomain: CUSTOM_DOMAINS[stack.stage],
+        experimental: {
+          disableIncrementalCache: true,
+        },
       });
 
       stack.addOutputs({
