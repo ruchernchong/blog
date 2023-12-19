@@ -1,4 +1,5 @@
 import { defineDocumentType, makeSource } from "contentlayer/source-files";
+import { BlogPosting, WithContext } from "schema-dts";
 import { BASE_URL } from "./config";
 import readingTime from "reading-time";
 import remarkGfm from "remark-gfm";
@@ -30,22 +31,38 @@ export const Post = defineDocumentType(() => ({
     },
     structuredData: {
       type: "json",
-      resolve: (post) => ({
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        headline: post.title,
-        datePublished: post.publishedAt,
-        description: post.excerpt,
-        image: post.image
-          ? `${BASE_URL}/${post.image}`
-          : `${BASE_URL}/og?title=${post.title}`,
-        url: `${BASE_URL}/${post._raw.flattenedPath}`,
-        author: {
-          "@type": "Person",
-          name: "Ru Chern Chong",
-          url: BASE_URL,
-        },
-      }),
+      resolve: (post) =>
+        ({
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: post.title,
+          dateModified: post.publishedAt,
+          datePublished: post.publishedAt,
+          description: post.excerpt,
+          image: [
+            {
+              "@type": "ImageObject",
+              url: post.image
+                ? encodeURI(`${BASE_URL}/${post.image}`)
+                : encodeURI(`${BASE_URL}/og?title=${post.title}`),
+            },
+          ],
+          mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": `/${post._raw.flattenedPath}`,
+          },
+          url: `${BASE_URL}/${post._raw.flattenedPath}`,
+          author: {
+            "@type": "Person",
+            name: "Ru Chern Chong",
+            url: BASE_URL,
+          },
+          publisher: {
+            "@type": "Person",
+            name: "Ru Chern Chong",
+            url: BASE_URL,
+          },
+        } satisfies WithContext<BlogPosting>),
     },
     url: {
       type: "string",
@@ -71,22 +88,36 @@ export const Journal = defineDocumentType(() => ({
     },
     structuredData: {
       type: "json",
-      resolve: (journal) => ({
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        headline: journal.title,
-        datePublished: journal.publishedAt,
-        description: journal.title,
-        image: journal.image
-          ? `${BASE_URL}/${journal.image}`
-          : `${BASE_URL}/og?title=${journal.title}`,
-        url: `${BASE_URL}/${journal._raw.flattenedPath}`,
-        author: {
-          "@type": "Person",
-          name: "Ru Chern Chong",
-          url: BASE_URL,
-        },
-      }),
+      resolve: (journal) =>
+        ({
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: journal.title,
+          dateModified: journal.publishedAt,
+          datePublished: journal.publishedAt,
+          description: journal.title,
+          image: {
+            "@type": "ImageObject",
+            url: journal.image
+              ? encodeURI(`${BASE_URL}/${journal.image}`)
+              : encodeURI(`${BASE_URL}/og?title=${journal.title}`),
+          },
+          mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": `/${journal._raw.flattenedPath}`,
+          },
+          url: `${BASE_URL}/${journal._raw.flattenedPath}`,
+          author: {
+            "@type": "Person",
+            name: "Ru Chern Chong",
+            url: BASE_URL,
+          },
+          publisher: {
+            "@type": "Person",
+            name: "Ru Chern Chong",
+            url: BASE_URL,
+          },
+        } satisfies WithContext<BlogPosting>),
     },
     url: {
       type: "string",

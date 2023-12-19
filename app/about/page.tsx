@@ -47,7 +47,7 @@ const AboutPage = async () => {
   const structuredData: WithContext<WebPage> = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "About | Ru Chern",
+    name: title,
     // TODO: Upgrade description from a single source as variable
     description,
   };

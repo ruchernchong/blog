@@ -15,11 +15,17 @@ const HomePage = async () => {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Ru Chern",
-    url: `${BASE_URL}`,
+    url: BASE_URL,
+    image: [
+      {
+        "@type": "ImageObject",
+        url: `${BASE_URL}/cover-image.png`,
+      },
+    ],
     sameAs: [
       "https://github.com/ruchernchong",
       "https://www.linkedin.com/in/ruchernchong/",
-      "https://x.com/ruchernchong",
+      "https://twitter.com/ruchernchong",
     ],
   };
 

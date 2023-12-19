@@ -37,7 +37,7 @@ const JournalsPage = () => {
     "@type": "WebPage",
     name: title,
     // TODO: Upgrade description from a single source as variable
-    description: description,
+    description,
   };
 
   return (

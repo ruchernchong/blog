@@ -11,6 +11,7 @@ import { Typography } from "@/components/Typography";
 import projects from "@/data/projects.json";
 import { getGitHubPinnedRepositories } from "@/lib/github";
 import { WebPage, WithContext } from "schema-dts";
+import { BASE_URL } from "@/config";
 
 const title: string = `Projects`;
 const description: string =
@@ -40,8 +41,12 @@ const ProjectsPage = async () => {
   const structuredData: WithContext<WebPage> = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "Projects | Ru Chern",
-    description: description,
+    name: title,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": "/projects",
+    },
+    description,
   };
 
   return (
