@@ -9,7 +9,7 @@ const Avatar = () => {
         src={avatar}
         sizes="100vw"
         width={176}
-        alt="Ru Chern Chong"
+        alt="Photo of Ru Chern Chong"
         className="rounded-full opacity-100 hover:opacity-0"
         priority
       />
@@ -17,7 +17,7 @@ const Avatar = () => {
         src={avatarHover}
         sizes="100vw"
         width={176}
-        alt="Ru Chern Chong"
+        alt="Photo of Ru Chern Chong"
         className="absolute left-0 top-0 rounded-full opacity-0 hover:opacity-100"
         priority
       />
