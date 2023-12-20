@@ -110,6 +110,9 @@ const PostPage = ({ params }: { params: { slug: string } }) => {
         <Typography variant="h1" className="text-center">
           {post.title}
         </Typography>
+        <Typography variant="h2">
+          <blockquote>{post.excerpt}</blockquote>
+        </Typography>
         <Mdx code={post.body.code} />
       </article>
       {/*<div className="mb-16 grid gap-y-4 md:grid-cols-2 md:gap-x-4">*/}
