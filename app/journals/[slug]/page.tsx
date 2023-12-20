@@ -5,7 +5,6 @@ import { Mdx } from "@/components/Mdx";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
 import { BASE_URL } from "@/config";
-import "@code-hike/mdx/dist/index.css";
 
 export const generateMetadata = async ({
   params,

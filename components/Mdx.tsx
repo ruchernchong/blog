@@ -6,19 +6,31 @@ import { useMDXComponent } from "next-contentlayer/hooks";
 import type { MDXComponents } from "mdx/types";
 import { CH } from "@code-hike/mdx/components";
 import { Typography } from "@/components/Typography";
+import "@code-hike/mdx/dist/index.css";
 
-const CustomLink = ({ href, children, ...props }: any) => {
+const CustomLink = ({ href, ...props }: any) => {
   const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
 
   if (isInternalLink) {
     return (
-      <Link href={href} scroll={false} className="text-pink-500" {...props}>
-        {children}
-      </Link>
+      <Link
+        href={href}
+        scroll={false}
+        className="text-pink-500 hover:text-pink-300"
+        {...props}
+      />
     );
   }
 
-  return <a target="_blank" rel="noopener noreferrer" {...props} />;
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-pink-500 hover:text-pink-300"
+      {...props}
+    />
+  );
 };
 
 const ImageComponent = ({ alt, ...props }: any) => (
