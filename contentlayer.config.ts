@@ -49,9 +49,9 @@ export const Post = defineDocumentType(() => ({
           ],
           mainEntityOfPage: {
             "@type": "WebPage",
-            "@id": `/${post._raw.flattenedPath}`,
+            "@id": `/posts/${post._raw.flattenedPath}`,
           },
-          url: `${BASE_URL}/${post._raw.flattenedPath}`,
+          url: `${BASE_URL}/posts/${post._raw.flattenedPath}`,
           author: {
             "@type": "Person",
             name: "Ru Chern Chong",
@@ -121,7 +121,7 @@ export const Journal = defineDocumentType(() => ({
     },
     url: {
       type: "string",
-      resolve: (journal) => `/journals/${journal._raw.flattenedPath}`,
+      resolve: (journal) => `/${journal._raw.flattenedPath}`,
     },
   },
 }));

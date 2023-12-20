@@ -13,8 +13,8 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
       url: `${BASE_URL}${url}`,
       lastModified: formatLastModified(),
     })),
-    ...allDocuments.map(({ publishedAt, slug }) => ({
-      url: `${BASE_URL}/${slug}`,
+    ...allDocuments.map(({ publishedAt, url }) => ({
+      url: `${BASE_URL}${url}`,
       lastModified: formatLastModified(publishedAt),
     })),
   ];

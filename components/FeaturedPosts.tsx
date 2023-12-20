@@ -15,7 +15,7 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
       <div className="grid grid-flow-col auto-rows-max gap-4 md:auto-cols-fr">
         {featuredPosts
           .slice(0, 3)
-          .map(({ title, slug, excerpt, publishedAt }) => {
+          .map(({ title, url, excerpt, publishedAt }) => {
             const formattedDate = format(
               parseISO(publishedAt),
               "iiii, dd MMMM yyyy"
@@ -23,7 +23,7 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
 
             return (
               <Card key={title}>
-                <Link href={slug} className="flex flex-col gap-2">
+                <Link href={url} className="flex flex-col gap-2">
                   <time
                     dateTime={formatISO(parseISO(publishedAt))}
                     title={formattedDate}

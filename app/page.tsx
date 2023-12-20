@@ -60,12 +60,12 @@ const HomePage = async () => {
             )}
             <div className="flex flex-col gap-12">
               {posts.length > 0 &&
-                posts.map(({ title, slug, excerpt, publishedAt }) => {
+                posts.map(({ title, url, excerpt, publishedAt }) => {
                   return (
                     <BlogPost
                       key={title}
                       title={title}
-                      slug={slug}
+                      url={url}
                       excerpt={excerpt}
                       publishedAt={publishedAt}
                     />

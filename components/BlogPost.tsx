@@ -6,19 +6,19 @@ import { Typography } from "@/components/Typography";
 
 type BlogPostProps = {
   title: string;
-  slug: string;
+  url: string;
   excerpt: string;
   publishedAt: string;
 };
 
-const BlogPost = ({ title, slug, excerpt, publishedAt }: BlogPostProps) => {
+const BlogPost = ({ title, url, excerpt, publishedAt }: BlogPostProps) => {
   const formattedDate = format(parseISO(publishedAt), "iiii, dd MMMM yyyy");
 
   return (
     <div className="group relative">
       <div className="mb-4 flex flex-col-reverse md:flex-row md:justify-between">
         <div className="w-full basis-2/3">
-          <Link href={slug}>
+          <Link href={url}>
             <ItemOverlay />
             <Typography variant="h2">{title}</Typography>
           </Link>
