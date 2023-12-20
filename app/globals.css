@@ -33,3 +33,7 @@ h1 .permalink::after {
 .rehype-code-title + pre {
   @apply mt-0 rounded-t-none;
 }
+
+::selection {
+  @apply bg-pink-500 text-neutral-50;
+}
