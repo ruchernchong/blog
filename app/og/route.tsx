@@ -12,7 +12,7 @@ export const GET = async (req: NextRequest) => {
     (
       <div
         style={{
-          background: `url("${BASE_URL}/images/cover-image.png")`,
+          background: `url("${BASE_URL}/cover-image.png")`,
         }}
         tw="flex flex-col w-full h-full justify-center text-gray-50"
       >
