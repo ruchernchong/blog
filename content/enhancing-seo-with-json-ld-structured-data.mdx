@@ -1,7 +1,7 @@
 ---
-title: Making SEO better for blog posts with Structured Data
+title: Enhancing SEO with JSON-LD Structured Data
 publishedAt: 2023-01-23
-excerpt: How to use Structured Data to assist us with describing the content of a particular page
+excerpt: Learn how to use JSON-LD for structured data to boost SEO, featuring practical examples and validation techniques.
 ---
 
 Search engines like Google use structured data to understand the contents of our page better. [JSON-LD](https://json-ld.org) is a format that most use to describe the data.
@@ -22,19 +22,13 @@ Below is an example of a piece of structured data.
 
 Source: [JSON-LD](https://json-ld.org)
 
-## Adding Structured Data in Next.js
+## Adding Structured Data
 
-1. Create the following component `StructuredData.jsx`. Here we use the built-in component from `next/head` to append elements to the `head` of the page.
+1. Create the following component `StructuredData.jsx`.
 
 ```jsx StructuredData.jsx
-import Head from "next/head";
-
 export const StructuredData = ({ data }) => {
-  return (
-    <Head>
-      <script type="application/ld+json">{JSON.stringify(data)}</script>
-    </Head>
-  );
+  return <script type="application/ld+json">{JSON.stringify(data)}</script>;
 };
 ```
 
