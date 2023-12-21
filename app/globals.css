@@ -26,14 +26,6 @@ h1 .permalink::after {
   @apply content-none;
 }
 
-.rehype-code-title {
-  @apply rounded-t-md border-b border-gray-600 bg-[#2d2d2d] p-4 text-gray-400;
-}
-
-.rehype-code-title + pre {
-  @apply mt-0 rounded-t-none;
-}
-
 ::selection {
   @apply bg-pink-500 text-neutral-50;
 }
