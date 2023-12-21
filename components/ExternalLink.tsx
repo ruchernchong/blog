@@ -10,7 +10,7 @@ const ExternalLink = ({ href, className, children }: ExternalLinkProps) => {
     <a
       href={href}
       target="_blank"
-      rel="noopenner nofollow me"
+      rel="noopenner noreferrer nofollow me"
       aria-label="Link to social media"
       className={className}
     >
