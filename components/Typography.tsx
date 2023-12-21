@@ -16,7 +16,7 @@ export const Typography = ({
   switch (variant) {
     case "h1":
       headingClassName =
-        "inline-block bg-gradient-to-r from-pink-500 via-rose-400 to-orange-300 bg-clip-text text-4xl font-extrabold uppercase text-transparent md:text-5xl";
+        "inline-block w-full bg-gradient-to-r from-pink-500 via-rose-400 to-orange-300 bg-clip-text text-4xl font-extrabold uppercase text-transparent md:text-5xl";
       break;
     case "h2":
       headingClassName = "text-2xl font-bold";
