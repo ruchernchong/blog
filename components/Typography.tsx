@@ -1,7 +1,9 @@
 import { createElement, PropsWithChildren } from "react";
 
+export type Variant = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span";
+
 interface TypographyProps extends PropsWithChildren {
-  variant?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span";
+  variant?: Variant;
   className?: string;
 }
 

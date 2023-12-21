@@ -1,14 +1,16 @@
 "use client";
 
+import { ComponentProps } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import type { MDXComponents } from "mdx/types";
 import { CH } from "@code-hike/mdx/components";
-import { Typography } from "@/components/Typography";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/16/solid";
+import { Typography, Variant } from "@/components/Typography";
 import "@code-hike/mdx/dist/index.css";
 
-const CustomLink = ({ href, ...props }: any) => {
+const CustomLink = ({ href, children, ...props }: any) => {
   const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
 
   if (isInternalLink) {
@@ -18,7 +20,9 @@ const CustomLink = ({ href, ...props }: any) => {
         scroll={false}
         className="text-pink-500 hover:text-pink-300"
         {...props}
-      />
+      >
+        {children}
+      </Link>
     );
   }
 
@@ -27,9 +31,12 @@ const CustomLink = ({ href, ...props }: any) => {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-pink-500 hover:text-pink-300"
+      className="inline-flex text-pink-500 hover:text-pink-300"
       {...props}
-    />
+    >
+      <span>{children}</span>
+      <ArrowTopRightOnSquareIcon width={16} height={16} />
+    </a>
   );
 };
 
@@ -47,9 +54,9 @@ const ImageComponent = ({ alt, ...props }: any) => (
 const components: MDXComponents = {
   CH,
   a: CustomLink,
-  h1: () => <Typography variant="h1" />,
-  h2: () => <Typography variant="h2" />,
-  h3: () => <Typography variant="h3" />,
+  h1: (props) => <Typography variant="h1" {...props} />,
+  h2: (props) => <Typography variant="h1" {...props} />,
+  h3: (props) => <Typography variant="h1" {...props} />,
   img: ImageComponent,
 };
 
