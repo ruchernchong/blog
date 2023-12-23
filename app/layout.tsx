@@ -1,12 +1,10 @@
 import { ReactNode } from "react";
+import { Metadata } from "next";
 import Script from "next/script";
 import { Footer } from "@/components/Footer";
 import Header from "@/components/Header";
-import globalMetadata from "@/app/metadata";
 import { BASE_URL } from "@/config";
-
 import "@/app/globals.css";
-import { Metadata } from "next";
 
 const title = {
   default: "Ru Chern",
