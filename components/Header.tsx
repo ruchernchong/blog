@@ -26,7 +26,7 @@ const DesktopNavbar = () => {
   const pathname = usePathname();
 
   return (
-    <div className="hidden w-screen md:block">
+    <div className="hidden shadow shadow-gray-800 md:block">
       <nav className="mx-auto flex max-w-4xl gap-x-6 px-4 py-8">
         {navLinks.map(({ title, href }) => {
           const isActive = pathname === href;
