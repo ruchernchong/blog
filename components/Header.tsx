@@ -29,7 +29,7 @@ const DesktopNavbar = () => {
     <div className="hidden shadow shadow-gray-800 md:block">
       <nav className="mx-auto flex max-w-4xl gap-x-6 px-4 py-8">
         {navLinks.map(({ title, href }) => {
-          const isActive = pathname === href;
+          const isActive = pathname.startsWith(href) && href !== "/";
 
           return (
             <NavItem
@@ -62,7 +62,7 @@ const MobileNavbar = () => {
   }, [expand]);
 
   return (
-    <div className="w-screen md:hidden">
+    <div className="sticky top-0 z-50 w-screen bg-gray-900 shadow shadow-gray-800 md:hidden">
       <div className="flex items-center justify-between px-4 py-4">
         <Link href="/" className="font-semibold">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg ring-2 ring-gray-600 focus:ring-gray-400">
@@ -94,7 +94,7 @@ const MobileNavbar = () => {
       >
         <ul className="flex flex-col">
           {navLinks.map(({ title, href }) => {
-            const isActive = pathname === href;
+            const isActive = pathname.startsWith(href) && href !== "/";
 
             return (
               <li
