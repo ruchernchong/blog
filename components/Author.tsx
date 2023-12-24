@@ -17,11 +17,7 @@ const Author = ({ title, tagline, description }: AuthorProps) => {
       <div className="flex grow basis-1/2 flex-col gap-4">
         <div className="flex flex-col items-center md:items-start">
           <Typography variant="h1">{title}</Typography>
-          {tagline && (
-            <Typography variant="h2" className="text-md">
-              {tagline}
-            </Typography>
-          )}
+          {tagline && <Typography variant="h2">{tagline}</Typography>}
         </div>
         {description && <p className="text-gray-400">{description}</p>}
         <div className="flex justify-center gap-4 md:justify-start">
