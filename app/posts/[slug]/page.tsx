@@ -80,16 +80,16 @@ const PostPage = ({ params }: { params: { slug: string } }) => {
   // const previousPost = post.previous;
   // const nextPost = post.next;
 
-  const formattedDate = format(parseISO(post.publishedAt), "dd MMMM yyyy");
+  const formattedDate = format(parseISO(post.publishedAt), "dd MMM yyyy");
 
   return (
     <>
       <StructuredData data={post.structuredData} />
       <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-pink-500 prose-img:rounded-2xl">
-        <div className="mb-4 flex flex-col items-center justify-center text-gray-400 md:flex-row">
-          <div className="flex flex-col md:flex-row">
-            <div className="flex items-center justify-center">
-              <CalendarDaysIcon className="mr-2 h-6 w-6" />
+        <div className="flex flex-col items-center gap-y-4 text-center">
+          <div className="flex flex-col gap-x-2 text-gray-400 md:flex-row">
+            <div className="flex items-center justify-center gap-x-2">
+              <CalendarDaysIcon className="h-6 w-6" />
               <time
                 dateTime={formatISO(parseISO(post.publishedAt))}
                 title={formattedDate}
@@ -97,22 +97,18 @@ const PostPage = ({ params }: { params: { slug: string } }) => {
                 {formattedDate}
               </time>
             </div>
-            <div className="flex items-center justify-center">
-              <div className="mx-2 hidden md:block">&middot;</div>
-              <BookOpenIcon className="mr-2 h-6 w-6" />
+            <div className="flex items-center justify-center gap-x-2">
+              <div className="hidden md:block">&middot;</div>
+              <BookOpenIcon className="h-6 w-6" />
               <div>{post.readingTime}</div>
-              <div className="mx-2">&middot;</div>
-              <EyeIcon className="mr-2 h-6 w-6" />
+              <div>&middot;</div>
+              <EyeIcon className="h-6 w-6" />
               <ViewCounter slug={post.slug} />
             </div>
           </div>
+          <Typography variant="h1">{post.title}</Typography>
         </div>
-        <Typography variant="h1" className="text-center">
-          {post.title}
-        </Typography>
-        <Typography variant="h2">
-          <blockquote>{post.excerpt}</blockquote>
-        </Typography>
+        <blockquote>{post.excerpt}</blockquote>
         <Mdx code={post.body.code} />
       </article>
       {/*<div className="mb-16 grid gap-y-4 md:grid-cols-2 md:gap-x-4">*/}
