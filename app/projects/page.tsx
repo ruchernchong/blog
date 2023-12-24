@@ -1,17 +1,13 @@
 import { Metadata } from "next";
-import { StarIcon } from "@heroicons/react/24/outline";
 import globalMetadata from "@/app/metadata";
 import { openGraphImage, twitterImage } from "@/app/shared-metadata";
-import Card from "@/components/Card";
 import { Chip } from "@/components/Chip";
 import { ItemOverlay } from "@/components/ItemOverlay";
 import { LinkWithIcon } from "@/components/LinkWithIcon";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
 import projects from "@/data/projects.json";
-import { getGitHubPinnedRepositories } from "@/lib/github";
 import { WebPage, WithContext } from "schema-dts";
-import { BASE_URL } from "@/config";
 
 const title: string = `Projects`;
 const description: string =
@@ -36,8 +32,6 @@ export const metadata: Metadata = {
 };
 
 const ProjectsPage = async () => {
-  const pinnedRepositories = await getGitHubPinnedRepositories();
-
   const structuredData: WithContext<WebPage> = {
     "@context": "https://schema.org",
     "@type": "WebPage",
@@ -58,8 +52,8 @@ const ProjectsPage = async () => {
       <Typography variant="h2" className="mb-8">
         {description}
       </Typography>
-      <div className="flex flex-col gap-12">
-        {projects.map(({ name, description, skills, link }) => {
+      <div className="flex flex-col gap-y-12">
+        {projects.map(({ name, description, skills, links }) => {
           return (
             <div key={name} className="group relative">
               <div className="flex flex-col items-start gap-4">
@@ -73,40 +67,14 @@ const ProjectsPage = async () => {
                   })}
                 </div>
                 <div className="z-20 text-gray-400">{description}</div>
-                <LinkWithIcon url={link} />
+                {links.map((link) => (
+                  <LinkWithIcon key={link} url={link} />
+                ))}
               </div>
             </div>
           );
         })}
       </div>
-      {/*<div className="flex gap-4">*/}
-      {/*  <div>*/}
-      {/*    <div className="text-4xl font-bold">GitHub</div>*/}
-      {/*    <p className="text-sm italic text-gray-400">*/}
-      {/*      (Powered by GitHub GraphQL API)*/}
-      {/*    </p>*/}
-      {/*  </div>*/}
-      {/*  <div className="grid gap-4 md:grid-cols-2">*/}
-      {/*    {pinnedRepositories.map(*/}
-      {/*      ({ id, name, description, stargazers, url }) => {*/}
-      {/*        return (*/}
-      {/*          <Card key={id}>*/}
-      {/*            <a href={url} target="_blank" rel="noopener noreferrer">*/}
-      {/*              <div className="text-xl">{name}</div>*/}
-      {/*              <div className="flex-1 text-gray-400">*/}
-      {/*                {description}*/}
-      {/*              </div>*/}
-      {/*              <div className="flex flex-row items-center">*/}
-      {/*                <StarIcon className="mr-2 h-4 w-4" />*/}
-      {/*                <div>{stargazers.totalCount}</div>*/}
-      {/*              </div>*/}
-      {/*            </a>*/}
-      {/*          </Card>*/}
-      {/*        );*/}
-      {/*      }*/}
-      {/*    )}*/}
-      {/*  </div>*/}
-      {/*</div>*/}
     </>
   );
 };
