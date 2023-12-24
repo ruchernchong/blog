@@ -32,7 +32,7 @@ const Author = ({ title, tagline, description }: AuthorProps) => {
                 href={link}
                 className="hover:text-pink-500"
               >
-                <Icons.Social name={name} />
+                <Icons.Social name={name} className="h-4 w-4" />
               </ExternalLink>
             );
           })}
