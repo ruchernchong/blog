@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import NextLink from "next/link";
 import classNames from "classnames";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-
+import { Bars3Icon, HomeIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { navLinks } from "@/config";
 
 interface NavItemProps {
@@ -64,13 +63,18 @@ const MobileNavbar = () => {
 
   return (
     <div className="w-screen md:hidden">
-      <div className="flex items-center justify-end px-4 py-4">
+      <div className="flex items-center justify-between px-4 py-4">
+        <Link href="/" className="font-semibold">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg ring-2 ring-gray-600 focus:ring-gray-400">
+            <HomeIcon className="h-6 w-6" />
+          </span>
+        </Link>
         <button
           aria-label="Mobile menu"
-          className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 ring-2 ring-gray-600 transition-all hover:ring-2"
+          className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 ring-2 ring-gray-600 focus:ring-gray-400"
           onClick={() => setExpand(!expand)}
         >
-          <div className="h-6 w-6 transition-all">
+          <div className="h-6 w-6">
             {!expand && <Bars3Icon />}
             {expand && <XMarkIcon />}
           </div>
@@ -117,9 +121,9 @@ const MobileNavbar = () => {
 
 const NavItem = ({ href, title, className }: NavItemProps) => {
   return (
-    <NextLink href={href} className={className}>
+    <Link href={href} className={className}>
       {title}
-    </NextLink>
+    </Link>
   );
 };
 
