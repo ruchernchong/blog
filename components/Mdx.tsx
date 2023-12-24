@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import type { MDXComponents } from "mdx/types";
 import { CH } from "@code-hike/mdx/components";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/16/solid";
+import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
 import { Typography } from "@/components/Typography";
 import "@code-hike/mdx/dist/index.css";
 
@@ -30,11 +30,13 @@ const CustomLink = ({ href, children, ...props }: any) => {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex text-pink-500 hover:text-pink-300"
+      className="text-pink-500 hover:text-pink-300"
       {...props}
     >
-      <span>{children}</span>
-      <ArrowTopRightOnSquareIcon width={16} height={16} />
+      <span>
+        {children}
+        <ArrowUpRightIcon className="inline-flex h-4 w-4 align-super" />
+      </span>
     </a>
   );
 };
