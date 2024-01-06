@@ -52,7 +52,7 @@ const ImageComponent = ({ alt, ...props }: any) => (
     />
     {alt && (
       <figcaption className="text-center text-xs font-bold italic text-gray-50">
-        {alt}
+        <p>{alt}</p>
       </figcaption>
     )}
   </figure>
