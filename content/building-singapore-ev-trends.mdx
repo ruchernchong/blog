@@ -216,6 +216,10 @@ LTA Datamall does not upload the COE results immediately after the end of each b
 1. Scrape the publicly published information from [OneMotoring site](https://onemotoring.lta.gov.sg/content/onemotoring/home/buying/coe-open-bidding.html)
 2. Manually update the COE results into the table
 
+### 4. Improving Serverless Cold Boot
+
+Since the APIs and frontend is deployed to AWS Lambda in a serverless way, this can cause cold starts which lead to slow loading times and creating an unpleasant user experience. Performance optimisation on the cold starts will be a priority.
+
 ## Closing
 
 Lastly, I would like to thank you for your time reading my journey building the data visuals. I look forward to exploring new tools and skills to experiment with in my personal journey towards personal development.
