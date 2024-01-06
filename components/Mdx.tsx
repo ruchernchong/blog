@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { useMDXComponent } from "next-contentlayer/hooks";
@@ -42,14 +41,21 @@ const CustomLink = ({ href, children, ...props }: any) => {
 };
 
 const ImageComponent = ({ alt, ...props }: any) => (
-  <Image
-    alt={alt}
-    width={0}
-    height={0}
-    sizes="100vw"
-    className="h-auto w-auto rounded-2xl"
-    {...props}
-  />
+  <figure>
+    <Image
+      alt={alt}
+      width={0}
+      height={0}
+      sizes="100vw"
+      className="h-auto w-auto rounded-2xl"
+      {...props}
+    />
+    {alt && (
+      <figcaption className="text-center text-xs font-bold italic text-gray-50">
+        {alt}
+      </figcaption>
+    )}
+  </figure>
 );
 
 const components: MDXComponents = {
