@@ -28,7 +28,7 @@ const CustomLink = ({ href, children, ...props }: any) => {
     <a
       href={href}
       target="_blank"
-      rel="noopener noreferrer"
+      rel="noopener noreferrer nofollow"
       className="text-pink-500 hover:text-pink-300"
       {...props}
     >
