@@ -12,7 +12,7 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
   return (
     <div className="flex flex-col gap-4">
       <div className="text-4xl font-bold">Featured</div>
-      <div className="grid grid-flow-col auto-rows-max gap-4 md:auto-cols-fr">
+      <div className="grid auto-rows-max gap-4 md:auto-cols-fr md:grid-flow-col">
         {featuredPosts
           .slice(0, 3)
           .map(({ title, url, excerpt, publishedAt }) => {
