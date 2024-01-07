@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { remarkCodeHike } from "@code-hike/mdx";
+import remarkUnwrapImages from "remark-unwrap-images";
 
 export const Post = defineDocumentType(() => ({
   name: "Post",
@@ -141,6 +142,7 @@ export default makeSource({
           theme: "github-dark-dimmed",
         },
       ],
+      remarkUnwrapImages,
     ],
     rehypePlugins: [
       rehypeSlug,

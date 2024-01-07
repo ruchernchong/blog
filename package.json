@@ -36,6 +36,7 @@
     "rehype-autolink-headings": "^6.1.1",
     "rehype-slug": "^5.1.0",
     "remark-gfm": "^3.0.1",
+    "remark-unwrap-images": "^4.0.0",
     "rss": "^1.2.2",
     "schema-dts": "^1.1.2",
     "sharp": "^0.32.6",
