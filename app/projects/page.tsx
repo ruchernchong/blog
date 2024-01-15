@@ -29,6 +29,9 @@ export const metadata: Metadata = {
     description,
     ...twitterImage,
   },
+  alternates: {
+    canonical: "/projects",
+  },
 };
 
 const ProjectsPage = async () => {

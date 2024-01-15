@@ -38,10 +38,12 @@ export const generateMetadata = async ({
   return {
     title,
     description,
-    authors: {
-      name: "Ru Chern Chong",
-      url: BASE_URL,
-    },
+    authors: [
+      {
+        name: "Ru Chern Chong",
+        url: BASE_URL,
+      },
+    ],
     openGraph: {
       title,
       description,

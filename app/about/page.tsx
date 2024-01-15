@@ -30,6 +30,9 @@ export const metadata: Metadata = {
     description,
     ...twitterImage,
   },
+  alternates: {
+    canonical: "/about",
+  },
 };
 
 const AboutPage = async () => {

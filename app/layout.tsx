@@ -36,6 +36,11 @@ export const metadata: Metadata = {
     description,
     creator: "@ruchernchong",
   },
+  alternates: {
+    types: {
+      "application/rss+xml": "/feed.xml",
+    },
+  },
 };
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
@@ -43,12 +48,6 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
-      <link
-        rel="alternate"
-        type="application/rss+xml"
-        title="RSS feed for ruchern.xyz"
-        href={`${BASE_URL}/feed.xml`}
-      />
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
       />
