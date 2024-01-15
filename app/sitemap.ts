@@ -10,20 +10,14 @@ const sitemap = async () => {
     {
       url: BASE_URL,
       lastModified: formatLastModified(),
-      changeFrequency: "yearly",
-      priority: 1.0,
     },
     ...pages.map((url) => ({
       url: `${BASE_URL}${url}`,
       lastModified: formatLastModified(),
-      changeFrequency: "yearly",
-      priority: 1.0,
     })),
     ...allDocuments.map(({ publishedAt, url }) => ({
       url: `${BASE_URL}${url}`,
       lastModified: formatLastModified(publishedAt),
-      changeFrequency: "weekly",
-      priority: 0.7,
     })),
   ];
 };
