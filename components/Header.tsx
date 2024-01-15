@@ -1,11 +1,12 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import classNames from "classnames";
-import { Bars3Icon, HomeIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { navLinks } from "@/config";
+import HomeIcon from "../app/icon.png";
 
 interface NavItemProps {
   href: string;
@@ -13,7 +14,7 @@ interface NavItemProps {
   className?: string;
 }
 
-const Header = () => {
+export const Header = () => {
   return (
     <>
       <MobileNavbar />
@@ -65,13 +66,11 @@ const MobileNavbar = () => {
     <div className="sticky top-0 z-50 w-screen bg-gray-900 shadow shadow-gray-800 md:hidden">
       <div className="flex items-center justify-between px-4 py-4">
         <Link href="/" className="font-semibold">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg ring-2 ring-gray-600 focus:ring-gray-400">
-            <HomeIcon className="h-6 w-6" />
-          </span>
+          <Image src={HomeIcon} alt="Home Icon" className="h-8 w-8" />
         </Link>
         <button
           aria-label="Mobile menu"
-          className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 ring-2 ring-gray-600 focus:ring-gray-400"
+          className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900"
           onClick={() => setExpand(!expand)}
         >
           <div className="h-6 w-6">
@@ -126,5 +125,3 @@ const NavItem = ({ href, title, className }: NavItemProps) => {
     </Link>
   );
 };
-
-export default Header;
