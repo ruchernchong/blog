@@ -37,6 +37,7 @@ export const metadata: Metadata = {
     creator: "@ruchernchong",
   },
   alternates: {
+    canonical: "/",
     types: {
       "application/rss+xml": "/feed.xml",
     },
