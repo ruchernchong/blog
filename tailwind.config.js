@@ -11,17 +11,18 @@ module.exports = {
         DEFAULT: {
           css: {
             "code::before": {
-              color: theme("colors.gray.50"),
+              content: "",
             },
             "code::after": {
-              color: theme("colors.gray.50"),
+              content: "",
             },
             code: {
-              color: theme("colors.orange.300"),
-              paddingLeft: theme("spacing[1.5]"),
-              paddingRight: theme("spacing[1.5]"),
-              paddingTop: theme("spacing.1"),
-              paddingBottom: theme("spacing.1"),
+              backgroundColor: theme("colors.gray.800"),
+              borderWidth: theme("borderWidth.2"),
+              borderColor: theme("colors.gray.600"),
+              borderRadius: theme("borderRadius.lg"),
+              padding: theme("spacing.1"),
+              margin: theme("spacing.1"),
             },
           },
         },
