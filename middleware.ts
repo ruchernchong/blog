@@ -63,12 +63,7 @@ export const middleware = (request: NextRequest) => {
 
   const response = NextResponse.next({
     headers: requestHeaders,
-    request: {
-      headers: requestHeaders,
-    },
   });
-
-  console.log(response);
 
   response.headers.set(
     "Content-Security-Policy",
