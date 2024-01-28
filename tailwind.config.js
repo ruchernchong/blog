@@ -11,15 +11,13 @@ module.exports = {
         DEFAULT: {
           css: {
             "code::before": {
-              content: "none",
+              color: theme("colors.gray.50"),
             },
             "code::after": {
-              content: "none",
+              color: theme("colors.gray.50"),
             },
             code: {
-              color: theme("colors.gray.50"),
-              backgroundColor: theme("colors.pink.500"),
-              borderRadius: theme("borderRadius.DEFAULT"),
+              color: theme("colors.orange.300"),
               paddingLeft: theme("spacing[1.5]"),
               paddingRight: theme("spacing[1.5]"),
               paddingTop: theme("spacing.1"),
