@@ -12,7 +12,7 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
   return (
     <div className="flex flex-col gap-4">
       <div className="text-4xl font-bold">Featured</div>
-      <div className="grid auto-rows-max gap-4 md:auto-cols-fr md:grid-flow-col">
+      <div className="grid gap-4 md:auto-cols-fr md:grid-flow-col">
         {featuredPosts
           .slice(0, 3)
           .map(({ title, url, excerpt, publishedAt }) => {
@@ -23,7 +23,7 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
 
             return (
               <Card key={title}>
-                <Link href={url} className="flex flex-col gap-2">
+                <Link href={url} className="flex h-full flex-col gap-2">
                   <time
                     dateTime={formatISO(parseISO(publishedAt))}
                     title={formattedDate}
@@ -32,7 +32,9 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
                     {formattedDate}
                   </time>
                   <Typography variant="h2">{title}</Typography>
-                  <p className="flex-1 text-gray-400">{excerpt}</p>
+                  <p className="flex grow flex-col justify-end text-gray-400">
+                    {excerpt}
+                  </p>
                 </Link>
               </Card>
             );
