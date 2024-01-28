@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import readBody from "@/lib/readBody";
 import { BASE_URL } from "@/config";
 

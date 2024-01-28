@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import globalMetadata from "@/app/metadata";
 import { openGraphImage, twitterImage } from "@/app/shared-metadata";
 import { Chip } from "@/components/Chip";
@@ -7,7 +7,7 @@ import { LinkWithIcon } from "@/components/LinkWithIcon";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
 import projects from "@/data/projects.json";
-import { WebPage, WithContext } from "schema-dts";
+import type { WebPage, WithContext } from "schema-dts";
 
 const title: string = `Projects`;
 const description: string =

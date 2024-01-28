@@ -1,4 +1,4 @@
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 import { allDocuments } from "contentlayer/generated";
 import { BASE_URL, navLinks } from "@/config";
 

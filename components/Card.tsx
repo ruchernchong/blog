@@ -1,4 +1,4 @@
-import { MouseEventHandler, PropsWithChildren } from "react";
+import type { MouseEventHandler, PropsWithChildren } from "react";
 import classNames from "classnames";
 
 interface CardProps extends PropsWithChildren {

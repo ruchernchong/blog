@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { allJournals } from "contentlayer/generated";
 import { format, formatISO, parseISO } from "date-fns";
@@ -7,7 +7,7 @@ import { openGraphImage, twitterImage } from "@/app/shared-metadata";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
 import { sortByLatest } from "@/lib/sortByLatest";
-import { WebPage, WithContext } from "schema-dts";
+import type { WebPage, WithContext } from "schema-dts";
 
 const title = `Journals`;
 const description =

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { format, formatISO, parseISO } from "date-fns";
 import Card from "@/components/Card";
 import { Typography } from "@/components/Typography";
-import { Post } from "contentlayer/generated";
+import type { Post } from "contentlayer/generated";
 
 interface FeaturedPostsProps {
   featuredPosts: Post[];

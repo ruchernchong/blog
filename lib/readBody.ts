@@ -1,4 +1,4 @@
-import { NextApiRequest } from "next";
+import type { NextApiRequest } from "next";
 
 const readBody = async (readable: NextApiRequest) => {
   const chunks = [];

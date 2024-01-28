@@ -1,4 +1,5 @@
-import { createElement, PropsWithChildren } from "react";
+import { createElement } from "react";
+import type { PropsWithChildren } from "react";
 
 export type Variant = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span";
 

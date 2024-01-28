@@ -1,4 +1,4 @@
-import { SSTConfig } from "sst";
+import type { SSTConfig } from "sst";
 import { Config, NextjsSite } from "sst/constructs";
 
 const CUSTOM_DOMAINS: Record<string, any> = {

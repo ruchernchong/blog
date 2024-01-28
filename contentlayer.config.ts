@@ -1,5 +1,5 @@
 import { defineDocumentType, makeSource } from "contentlayer/source-files";
-import { BlogPosting, WithContext } from "schema-dts";
+import type { BlogPosting, WithContext } from "schema-dts";
 import { BASE_URL } from "./config";
 import readingTime from "reading-time";
 import remarkGfm from "remark-gfm";

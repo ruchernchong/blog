@@ -1,5 +1,5 @@
 import { allPosts } from "contentlayer/generated";
-import { WebSite, WithContext } from "schema-dts";
+import type { WebSite, WithContext } from "schema-dts";
 import Author from "@/components/Author";
 import BlogPost from "@/components/BlogPost";
 import FeaturedPosts from "@/components/FeaturedPosts";

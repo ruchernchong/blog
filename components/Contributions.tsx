@@ -3,8 +3,8 @@ import classNames from "classnames";
 import Card from "@/components/Card";
 import { LinkWithIcon } from "@/components/LinkWithIcon";
 import { Typography } from "@/components/Typography";
-import { StackOverflowProfile } from "@/lib/stackoverflow";
-import { GitHubProfile } from "@/lib/github";
+import type { StackOverflowProfile } from "@/lib/stackoverflow";
+import type { GitHubProfile } from "@/lib/github";
 import { UsersIcon } from "@heroicons/react/24/solid";
 
 const STACK_OVERFLOW_BADGES: Record<string, string> = {
