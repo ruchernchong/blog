@@ -22,16 +22,7 @@ const sitemap = async () => {
   ];
 };
 
-const formatLastModified = (datetime?: Date | string) => {
-  if (typeof datetime === "string") {
-    datetime = new Date(datetime).toISOString().split("T")[0];
-  }
-
-  if (!datetime) {
-    datetime = new Date().toISOString().split("T")[0];
-  }
-
-  return datetime;
-};
+const formatLastModified = (datetime: Date | string = new Date()): string =>
+  new Date(datetime).toISOString().split("T")[0];
 
 export default sitemap;
