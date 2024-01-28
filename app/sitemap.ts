@@ -1,7 +1,8 @@
+import { MetadataRoute } from "next";
 import { allDocuments } from "contentlayer/generated";
 import { BASE_URL, navLinks } from "@/config";
 
-const sitemap = async () => {
+const sitemap = (): MetadataRoute.Sitemap => {
   const pages = navLinks
     .filter(({ href }) => href !== "/")
     .map(({ href }) => href);
