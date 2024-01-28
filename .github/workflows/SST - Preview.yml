@@ -24,7 +24,7 @@ jobs:
       NEXT_PUBLIC_GOOGLE_ANALYTICS: ${{ vars.NEXT_PUBLIC_GOOGLE_ANALYTICS }}
     steps:
       - name: Git clone the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
