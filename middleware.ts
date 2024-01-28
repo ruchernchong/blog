@@ -68,8 +68,6 @@ export const middleware = (request: NextRequest) => {
     },
   });
 
-  console.log(response);
-
   response.headers.set(
     "Content-Security-Policy",
     contentSecurityPolicyHeaderValue
