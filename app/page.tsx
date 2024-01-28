@@ -38,40 +38,26 @@ const HomePage = async () => {
           <FeaturedPosts featuredPosts={featuredPosts} />
         )}
         <div className="flex flex-col gap-8">
-          <div className="flex flex-col gap-4">
-            <div className="text-4xl font-bold">Recent</div>
-            <div className="text-gray-400">
-              <div>Blog posts on mostly front-end development.</div>
-              <em>
-                To date, I have written&nbsp;
-                <span className="text-xl font-extrabold text-pink-500">
-                  {posts.length}
-                </span>
-                &nbsp;posts and counting...
-              </em>
-            </div>
-          </div>
-          <div>
-            {posts.length === 0 && (
-              <p className="text-center italic">
-                There are no posts to display. Get started and write your first
-                one!
-              </p>
-            )}
-            <div className="flex flex-col gap-12">
-              {posts.length > 0 &&
-                posts.map(({ title, url, excerpt, publishedAt }) => {
-                  return (
-                    <BlogPost
-                      key={title}
-                      title={title}
-                      url={url}
-                      excerpt={excerpt}
-                      publishedAt={publishedAt}
-                    />
-                  );
-                })}
-            </div>
+          <div className="text-4xl font-bold">Recent</div>
+          {posts.length === 0 && (
+            <p className="text-center italic">
+              There are no posts to display. Get started and write your first
+              one!
+            </p>
+          )}
+          <div className="flex flex-col gap-12">
+            {posts.length > 0 &&
+              posts.map(({ title, url, excerpt, publishedAt }) => {
+                return (
+                  <BlogPost
+                    key={title}
+                    title={title}
+                    url={url}
+                    excerpt={excerpt}
+                    publishedAt={publishedAt}
+                  />
+                );
+              })}
           </div>
         </div>
       </div>

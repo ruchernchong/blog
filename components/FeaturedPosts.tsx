@@ -10,7 +10,7 @@ interface FeaturedPostsProps {
 
 const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-8">
       <div className="text-4xl font-bold">Featured</div>
       <div className="grid gap-4 md:auto-cols-fr md:grid-flow-col">
         {featuredPosts
