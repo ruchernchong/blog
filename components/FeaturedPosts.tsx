@@ -31,10 +31,13 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
                   >
                     {formattedDate}
                   </time>
-                  <Typography variant="h2">{title}</Typography>
-                  <p className="flex grow flex-col justify-end text-gray-400">
-                    {excerpt}
-                  </p>
+                  <Typography
+                    variant="h2"
+                    className="flex grow flex-col justify-center"
+                  >
+                    {title}
+                  </Typography>
+                  <p className="text-gray-400">{excerpt}</p>
                 </Link>
               </Card>
             );
