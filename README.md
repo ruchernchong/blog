@@ -1,6 +1,6 @@
 # Portfolio
 
-Site: https://ruchern.xyz
+Portfolio Blog: https://ruchern.xyz
 
 - Framework: [Next.js](https://nextjs.org)
 - Deployment: [AWS using SST](https://sst.dev)
@@ -8,17 +8,11 @@ Site: https://ruchern.xyz
 - Database: [Planetscale](https://planetscale.com)
 - ORM: [Prisma](https://prisma.io)
 
-## TODO
-
-Portfolio site is now going into maintenance mode and will stop developing new features. Main goal is to clean up, optimise and prepare to migrate to use the `/app` directory.
-
-- [ ] Complete writing the remaining drafts that are scheduled
-
 ## Running locally
 
-Node.js v18.8 and above is required.
+Node.js v18 and above is required.
 
-```bash
+```shell
 # Cloning the repository
 git clone https://github.com/ruchernchong/portfolio.git
 
@@ -36,6 +30,6 @@ pnpm dev
 
 Create a `.env` file or equivalent manually or use the follow command to quickly help you to do so
 
-```bash
+```shell
 cp .env.example .env
 ```
