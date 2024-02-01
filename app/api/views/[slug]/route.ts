@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -5,6 +6,7 @@ export const POST = async (
   req: NextRequest,
   { params }: { params: { slug: string } }
 ) => {
+  noStore();
   const slug = params.slug;
 
   if (!slug) {
