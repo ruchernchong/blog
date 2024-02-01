@@ -17,11 +17,11 @@ import {
 } from "@heroicons/react/24/outline";
 import "@code-hike/mdx/dist/index.css";
 
-export const generateMetadata = async ({
+export const generateMetadata = ({
   params,
 }: {
   params: { slug: string };
-}): Promise<Metadata> => {
+}): Metadata => {
   const post = allPosts.find((post) => post.slug === params.slug);
 
   if (!post) {
