@@ -1,15 +1,14 @@
 "use client";
-
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import useSWR from "swr";
 
-type ViewCounterProps = {
+interface ViewCounterProps {
   slug: string;
-};
+}
 
 const ViewCounter = ({ slug }: ViewCounterProps) => {
-  // @ts-ignore
-  const fetcher = (...args) => fetch(...args).then((res) => res.json());
+  const fetcher = (...args: [RequestInfo, RequestInit?]) =>
+    fetch(...args).then((res) => res.json());
 
   const { data } = useSWR("/api/views", fetcher);
   const viewCountFromSlug = data?.find(
@@ -23,7 +22,7 @@ const ViewCounter = ({ slug }: ViewCounterProps) => {
     });
   }, [slug]);
 
-  return <div>{viewCount} views</div>;
+  return <Suspense fallback={null}>{viewCount} views</Suspense>;
 };
 
 export default ViewCounter;
