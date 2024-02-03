@@ -22,7 +22,7 @@ const BlogPost = ({ title, url, excerpt, publishedAt }: BlogPostProps) => {
             <ItemOverlay />
             <Typography variant="h2">{title}</Typography>
           </Link>
-          <p className="text-gray-400">{excerpt}</p>
+          <p className="line-clamp-2 text-gray-400">{excerpt}</p>
         </div>
         <time
           dateTime={formatISO(parseISO(publishedAt))}
