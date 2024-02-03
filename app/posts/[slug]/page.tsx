@@ -22,7 +22,7 @@ export const generateMetadata = ({
 }: {
   params: { slug: string };
 }): Metadata => {
-  const post = allPosts.find((post) => post.slug === params.slug);
+  const post = allPosts.find((post) => post._raw.flattenedPath === params.slug);
 
   if (!post) {
     return notFound();
@@ -31,9 +31,8 @@ export const generateMetadata = ({
   const title = post.title;
   const description = post.excerpt;
   const publishedTime = post.publishedAt;
-  const url = `/posts/${post.slug}`;
-  const ogImageUrl = `${BASE_URL}/og?title=${post.title}`;
-  const images = [ogImageUrl];
+  const url = post.url;
+  const images = `/og?title=${title}`;
 
   return {
     title,
