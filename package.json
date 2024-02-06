@@ -21,6 +21,7 @@
     "@types/react-dom": "18.2.0",
     "@types/rss": "^0.0.32",
     "@vercel/og": "^0.0.27",
+    "@vercel/speed-insights": "^1.0.9",
     "classnames": "^2.3.2",
     "contentlayer": "^0.3.4",
     "date-fns": "^2.29.3",

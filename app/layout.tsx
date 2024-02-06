@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import Script from "next/script";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { BASE_URL } from "@/config";
@@ -69,6 +70,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           </main>
           <Footer />
         </div>
+        <SpeedInsights />
       </body>
     </html>
   );
