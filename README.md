@@ -5,7 +5,7 @@ Portfolio Blog: https://ruchern.xyz
 - Framework: [Next.js](https://nextjs.org)
 - Deployment: [Vercel](https://vercel.com)
 - Styling: [Tailwind CSS](https://tailwindcss.com)
-- Database: [Planetscale](https://planetscale.com)
+- Database: [Vercel Postgres](https://vercel.com/storage/postgres)
 - ORM: [Prisma](https://prisma.io)
 
 ## Running locally

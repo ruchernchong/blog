@@ -1,11 +1,15 @@
 import { unstable_noStore as noStore } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import type { ViewCount } from "@/types";
 
-export const POST = async (
-  req: NextRequest,
-  { params }: { params: { slug: string } }
-) => {
+interface RequestParams {
+  params: {
+    slug: string;
+  };
+}
+
+export const POST = async (req: NextRequest, { params }: RequestParams) => {
   noStore();
   const slug = params.slug;
 
@@ -14,16 +18,12 @@ export const POST = async (
   }
 
   const views = await getViewsBySlug(slug);
-
   await updateViews(slug, views);
 
   return NextResponse.json({ views: views + 1 });
 };
 
-export const GET = async (
-  req: NextRequest,
-  { params }: { params: { slug: string } }
-) => {
+export const GET = async (req: NextRequest, { params }: RequestParams) => {
   const slug = params.slug;
 
   if (!slug) {
@@ -41,7 +41,7 @@ const handleInvalidSlug = () => {
   };
 };
 
-const getViewsBySlug = async (slug: string) => {
+const getViewsBySlug = async (slug: string): Promise<number> => {
   const data = await prisma.views.findMany({
     where: {
       slug: { equals: slug },
@@ -51,7 +51,7 @@ const getViewsBySlug = async (slug: string) => {
   return data.length === 0 ? 0 : data[0].count;
 };
 
-const updateViews = async (slug: string, count: number) => {
+const updateViews = async (slug: string, count: number): Promise<ViewCount> => {
   return await prisma.views.upsert({
     where: { slug },
     create: { slug, count: 1 },
