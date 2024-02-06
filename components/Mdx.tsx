@@ -1,12 +1,9 @@
-"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { useMDXComponent } from "next-contentlayer/hooks";
 import type { MDXComponents } from "mdx/types";
-import { CH } from "@code-hike/mdx/components";
 import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
 import { Typography } from "@/components/Typography";
-import "@code-hike/mdx/dist/index.css";
 
 const CustomLink = ({ href, children, ...props }: any) => {
   const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
@@ -59,7 +56,6 @@ const ImageComponent = ({ alt, ...props }: any) => (
 );
 
 const components: MDXComponents = {
-  CH,
   a: CustomLink,
   h1: (props) => <Typography variant="h1" {...props} />,
   h2: (props) => <Typography variant="h2" {...props} />,

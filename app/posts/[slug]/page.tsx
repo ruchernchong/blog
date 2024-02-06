@@ -15,7 +15,6 @@ import {
   CalendarDaysIcon,
   EyeIcon,
 } from "@heroicons/react/24/outline";
-import "@code-hike/mdx/dist/index.css";
 
 export const generateMetadata = ({
   params,

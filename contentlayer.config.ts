@@ -5,8 +5,10 @@ import readingTime from "reading-time";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import { remarkCodeHike } from "@code-hike/mdx";
 import remarkUnwrapImages from "remark-unwrap-images";
+import rehypePrettyCode, {
+  type Options as PrettyCodeOptions,
+} from "rehype-pretty-code";
 
 export const Post = defineDocumentType(() => ({
   name: "Post",
@@ -131,21 +133,15 @@ export default makeSource({
   contentDirPath: "content",
   documentTypes: [Journal, Post],
   mdx: {
-    remarkPlugins: [
-      remarkGfm,
-      [
-        remarkCodeHike,
-        {
-          autoImport: false,
-          lineNumbers: true,
-          showCopyButton: true,
-          theme: "github-dark-dimmed",
-        },
-      ],
-      remarkUnwrapImages,
-    ],
+    remarkPlugins: [remarkGfm, remarkUnwrapImages],
     rehypePlugins: [
       rehypeSlug,
+      [
+        rehypePrettyCode,
+        {
+          theme: "github-dark-dimmed",
+        } satisfies PrettyCodeOptions,
+      ],
       [
         rehypeAutolinkHeadings,
         {
