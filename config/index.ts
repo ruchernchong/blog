@@ -1,13 +1,12 @@
-export type NavLink = {
+export interface NavLink {
   title: string;
   href: string;
-};
+}
 
 export const BASE_URL: string =
   process.env.NEXT_PUBLIC_BASE_URL || "https://ruchern.xyz";
 
 export const navLinks: NavLink[] = [
-  { title: "Home", href: "/" },
   // { title: "Blog", href: "/blog" },
   { title: "About", href: "/about" },
   { title: "Journals", href: "/journals" },
