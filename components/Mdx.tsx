@@ -12,7 +12,6 @@ const CustomLink = ({ href, children, ...props }: any) => {
     return (
       <Link
         href={href}
-        scroll={false}
         className="text-pink-500 hover:text-pink-300"
         {...props}
       >
