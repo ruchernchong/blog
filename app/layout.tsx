@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
-import Script from "next/script";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Footer } from "@/components/Footer";
@@ -47,22 +47,10 @@ export const metadata: Metadata = {
 };
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
-  const gaMeasurementId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS;
+  const gaId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS;
 
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
-      />
-      <Script id="google-analytics">
-        {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            
-            gtag('config', '${gaMeasurementId}');
-        `}
-      </Script>
       <body className="bg-gray-900 text-gray-50">
         <div className="flex min-h-screen flex-col">
           <Header />
@@ -73,6 +61,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
         </div>
         <Analytics />
         <SpeedInsights />
+        <GoogleAnalytics gaId={gaId} />
       </body>
     </html>
   );
