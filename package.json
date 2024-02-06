@@ -7,8 +7,7 @@
     "build": "NEXT_TELEMETRY_DISABLED=1 next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma:db-push": "prisma db push",
-    "prisma:generate": "prisma generate"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@apollo/client": "^3.7.9",
