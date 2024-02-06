@@ -47,7 +47,7 @@ const ImageComponent = ({ alt, ...props }: any) => (
       width={0}
       height={0}
       sizes="100vw"
-      className="h-auto w-auto rounded-2xl"
+      className="h-auto w-full rounded-2xl"
       {...props}
     />
     {alt && (
