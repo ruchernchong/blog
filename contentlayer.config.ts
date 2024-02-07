@@ -43,24 +43,12 @@ export const Post = defineDocumentType(() => ({
           datePublished: post.publishedAt,
           description: post.excerpt,
           image: [
-            {
-              "@type": "ImageObject",
-              url: post.image
-                ? encodeURI(`${BASE_URL}/${post.image}`)
-                : encodeURI(`${BASE_URL}/og?title=${post.title}`),
-            },
+            post.image
+              ? encodeURI(`${BASE_URL}/${post.image}`)
+              : encodeURI(`${BASE_URL}/og?title=${post.title}`),
           ],
-          mainEntityOfPage: {
-            "@type": "WebPage",
-            "@id": `/posts/${post._raw.flattenedPath}`,
-          },
           url: `${BASE_URL}/posts/${post._raw.flattenedPath}`,
           author: {
-            "@type": "Person",
-            name: "Ru Chern Chong",
-            url: BASE_URL,
-          },
-          publisher: {
             "@type": "Person",
             name: "Ru Chern Chong",
             url: BASE_URL,
@@ -99,23 +87,13 @@ export const Journal = defineDocumentType(() => ({
           dateModified: journal.publishedAt,
           datePublished: journal.publishedAt,
           description: journal.title,
-          image: {
-            "@type": "ImageObject",
-            url: journal.image
+          image: [
+            journal.image
               ? encodeURI(`${BASE_URL}/${journal.image}`)
               : encodeURI(`${BASE_URL}/og?title=${journal.title}`),
-          },
-          mainEntityOfPage: {
-            "@type": "WebPage",
-            "@id": `/${journal._raw.flattenedPath}`,
-          },
+          ],
           url: `${BASE_URL}/${journal._raw.flattenedPath}`,
           author: {
-            "@type": "Person",
-            name: "Ru Chern Chong",
-            url: BASE_URL,
-          },
-          publisher: {
             "@type": "Person",
             name: "Ru Chern Chong",
             url: BASE_URL,
