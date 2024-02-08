@@ -22,9 +22,8 @@ export const generateMetadata = async ({
   const title = journal.title;
   const description = journal.title;
   const publishedTime = journal.publishedAt;
-  const ogImageUrl = `${BASE_URL}/og?title=${journal.title}`;
-  const images = [ogImageUrl];
-  const url = `/${journal.slug}`;
+  const images = `${BASE_URL}/og?title=${title}`;
+  const url = journal.url;
 
   return {
     title,

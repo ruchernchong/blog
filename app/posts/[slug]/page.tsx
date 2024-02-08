@@ -16,11 +16,13 @@ import {
   EyeIcon,
 } from "@heroicons/react/24/outline";
 
-export const generateMetadata = ({
-  params,
-}: {
+interface Props {
   params: { slug: string };
-}): Metadata => {
+}
+
+export const generateMetadata = async ({
+  params,
+}: Props): Promise<Metadata> => {
   const post = allPosts.find((post) => post._raw.flattenedPath === params.slug);
 
   if (!post) {
@@ -31,17 +33,11 @@ export const generateMetadata = ({
   const description = post.excerpt;
   const publishedTime = post.publishedAt;
   const url = post.url;
-  const images = `/og?title=${title}`;
+  const images = `${BASE_URL}/og?title=${title}`;
 
   return {
     title,
     description,
-    authors: [
-      {
-        name: "Ru Chern Chong",
-        url: BASE_URL,
-      },
-    ],
     openGraph: {
       title,
       description,
@@ -62,7 +58,7 @@ export const generateMetadata = ({
   };
 };
 
-const PostPage = ({ params }: { params: { slug: string } }) => {
+const PostPage = ({ params }: Props) => {
   const post = allPosts.find((post) => post._raw.flattenedPath === params.slug);
 
   if (!post) {
