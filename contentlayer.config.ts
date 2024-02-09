@@ -12,16 +12,14 @@ import rehypePrettyCode, {
 
 export const Post = defineDocumentType(() => ({
   name: "Post",
-  filePathPattern: "**/*.mdx",
+  filePathPattern: "posts/**/*.mdx",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
     publishedAt: { type: "date", required: true },
     excerpt: { type: "string", required: true },
     featured: { type: "boolean" },
-    image: {
-      type: "string",
-    },
+    image: { type: "string" },
   },
   computedFields: {
     readingTime: {
@@ -30,7 +28,10 @@ export const Post = defineDocumentType(() => ({
     },
     slug: {
       type: "string",
-      resolve: (post) => post._raw.flattenedPath,
+      resolve: (post) => {
+        const [_, slug] = post._raw.flattenedPath.split("/");
+        return slug;
+      },
     },
     structuredData: {
       type: "json",
@@ -47,7 +48,7 @@ export const Post = defineDocumentType(() => ({
               ? encodeURI(`${BASE_URL}/${post.image}`)
               : encodeURI(`${BASE_URL}/og?title=${post.title}`),
           ],
-          url: `${BASE_URL}/posts/${post._raw.flattenedPath}`,
+          url: `${BASE_URL}/${post._raw.flattenedPath}`,
           author: {
             "@type": "Person",
             name: "Ru Chern Chong",
@@ -57,25 +58,28 @@ export const Post = defineDocumentType(() => ({
     },
     url: {
       type: "string",
-      resolve: (post) => `/posts/${post._raw.flattenedPath}`,
+      resolve: (post) => `/${post._raw.flattenedPath}`,
     },
   },
 }));
 
 export const Journal = defineDocumentType(() => ({
   name: "Journal",
-  filePathPattern: `journals/**/*.mdx`,
+  filePathPattern: "journals/**/*.mdx",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
-    publishedAt: { type: "date", require: true },
+    publishedAt: { type: "date", required: true },
     excerpt: { type: "string" },
     image: { type: "string" },
   },
   computedFields: {
     slug: {
       type: "string",
-      resolve: (journal) => journal._raw.flattenedPath,
+      resolve: (journal) => {
+        const [_, slug] = journal._raw.flattenedPath.split("/");
+        return slug;
+      },
     },
     structuredData: {
       type: "json",
@@ -109,7 +113,7 @@ export const Journal = defineDocumentType(() => ({
 
 export default makeSource({
   contentDirPath: "content",
-  documentTypes: [Journal, Post],
+  documentTypes: [Post, Journal],
   mdx: {
     remarkPlugins: [remarkGfm, remarkUnwrapImages],
     rehypePlugins: [

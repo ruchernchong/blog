@@ -4,12 +4,12 @@ import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { ItemOverlay } from "@/components/ItemOverlay";
 import { Typography } from "@/components/Typography";
 
-type BlogPostProps = {
+interface BlogPostProps {
   title: string;
   url: string;
   excerpt: string;
   publishedAt: string;
-};
+}
 
 const BlogPost = ({ title, url, excerpt, publishedAt }: BlogPostProps) => {
   const formattedDate = format(parseISO(publishedAt), "iiii, dd MMMM yyyy");

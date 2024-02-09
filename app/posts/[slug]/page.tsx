@@ -16,18 +16,12 @@ import {
   EyeIcon,
 } from "@heroicons/react/24/outline";
 
-interface Props {
+interface Params {
   params: { slug: string };
 }
 
-export const generateMetadata = async ({
-  params,
-}: Props): Promise<Metadata> => {
-  const post = allPosts.find((post) => post._raw.flattenedPath === params.slug);
-
-  if (!post) {
-    return notFound();
-  }
+export const generateMetadata = ({ params }: Params): Metadata => {
+  const post = allPosts.find((post) => post.slug === params.slug)!;
 
   const title = post.title;
   const description = post.excerpt;
@@ -58,8 +52,11 @@ export const generateMetadata = async ({
   };
 };
 
-const PostPage = ({ params }: Props) => {
-  const post = allPosts.find((post) => post._raw.flattenedPath === params.slug);
+export const generateStaticParams = () =>
+  allPosts.map(({ slug }) => ({ slug }));
+
+const PostPage = ({ params }: Params) => {
+  const post = allPosts.find((post) => post.slug === params.slug);
 
   if (!post) {
     return notFound();

@@ -54,34 +54,29 @@ const JournalsPage = () => {
       </Typography>
       <div className="flex flex-col justify-center gap-8">
         <div className="flex flex-col gap-2">
-          {allJournals
-            .sort(sortByLatest)
-            .map(({ title, publishedAt, slug }) => {
-              const formattedDate = format(
-                parseISO(publishedAt as string),
-                "dd MMM yyyy"
-              );
+          {allJournals.sort(sortByLatest).map(({ title, publishedAt, url }) => {
+            const formattedDate = format(parseISO(publishedAt), "dd MMM yyyy");
 
-              return (
-                <div key={title} className="flex gap-4 md:items-center">
-                  <time
-                    dateTime={formatISO(parseISO(publishedAt as string))}
-                    title={formattedDate}
-                    className="shrink-0 italic text-gray-300"
+            return (
+              <div key={title} className="flex gap-4 md:items-center">
+                <time
+                  dateTime={formatISO(parseISO(publishedAt))}
+                  title={formattedDate}
+                  className="shrink-0 italic text-gray-300"
+                >
+                  {formattedDate}
+                </time>
+                <Link href={url} className="no-underline">
+                  <Typography
+                    variant="h3"
+                    className="transition hover:text-pink-500"
                   >
-                    {formattedDate}
-                  </time>
-                  <Link href={slug} className="no-underline">
-                    <Typography
-                      variant="h3"
-                      className="transition hover:text-pink-500"
-                    >
-                      {title}
-                    </Typography>
-                  </Link>
-                </div>
-              );
-            })}
+                    {title}
+                  </Typography>
+                </Link>
+              </div>
+            );
+          })}
         </div>
       </div>
     </>
