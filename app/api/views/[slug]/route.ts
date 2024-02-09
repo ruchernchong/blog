@@ -1,7 +1,7 @@
 import { unstable_noStore as noStore } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
+import type { Views } from "@prisma/client";
 import prisma from "@/lib/prisma";
-import type { ViewCount } from "@/types";
 
 interface RequestParams {
   params: {
@@ -17,44 +17,38 @@ export const POST = async (req: NextRequest, { params }: RequestParams) => {
     return NextResponse.json(handleInvalidSlug(), { status: 400 });
   }
 
-  const views = await getViewsBySlug(slug);
-  await updateViews(slug, views);
-
-  return NextResponse.json({ views: views + 1 });
+  const viewCount = await getViewCountBySlug(slug);
+  await updateViewCount(slug, viewCount);
+  return NextResponse.json({ count: viewCount + 1 });
 };
 
 export const GET = async (req: NextRequest, { params }: RequestParams) => {
+  noStore();
   const slug = params.slug;
 
   if (!slug) {
     return NextResponse.json(handleInvalidSlug(), { status: 400 });
   }
 
-  const views = await getViewsBySlug(slug);
-
-  return NextResponse.json({ views });
+  const viewCount = await getViewCountBySlug(slug);
+  return NextResponse.json({ count: viewCount });
 };
 
-const handleInvalidSlug = () => {
-  return {
-    error: "Invalid slug",
-  };
-};
+const handleInvalidSlug = () => ({
+  error: "Invalid slug",
+});
 
-const getViewsBySlug = async (slug: string): Promise<number> => {
-  const data = await prisma.views.findMany({
-    where: {
-      slug: { equals: slug },
-    },
+const getViewCountBySlug = async (slug: string): Promise<number> => {
+  const data: Views | null = await prisma.views.findUnique({
+    where: { slug },
   });
 
-  return data.length === 0 ? 0 : data[0].count;
+  return data?.count || 0;
 };
 
-const updateViews = async (slug: string, count: number): Promise<ViewCount> => {
-  return await prisma.views.upsert({
+const updateViewCount = (slug: string, count: number): Promise<Views> =>
+  prisma.views.upsert({
     where: { slug },
     create: { slug, count: 1 },
     update: { count: count + 1 },
   });
-};

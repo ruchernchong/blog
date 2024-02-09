@@ -1,27 +1,25 @@
 "use client";
-import { Suspense, useEffect } from "react";
+import { useEffect } from "react";
 import useSWR from "swr";
-import type { ViewCount } from "@/types";
+import type { Views } from "@prisma/client";
 
 interface ViewCounterProps {
   slug: string;
 }
 
-const ViewCounter = ({ slug }: ViewCounterProps) => {
-  const fetcher = (...args: [RequestInfo, RequestInit?]) =>
-    fetch(...args).then((res) => res.json());
+const fetcher = (...args: [RequestInfo, RequestInit?]) =>
+  fetch(...args).then((res) => res.json());
 
-  const { data } = useSWR<ViewCount[]>("/api/views", fetcher);
-  const viewCountFromSlug = data?.find((view) => view.slug === slug);
-  const viewCount = viewCountFromSlug?.count || 0;
+const ViewCounter = ({ slug }: ViewCounterProps) => {
+  const { data, error } = useSWR<Views>(`/api/views/${slug}`, fetcher);
 
   useEffect(() => {
-    fetch(`/api/views/${slug}`, {
-      method: "POST",
-    });
+    fetch(`/api/views/${slug}`, { method: "POST" });
   }, [slug]);
 
-  return <Suspense fallback={null}>{viewCount} views</Suspense>;
+  const viewCount = data?.count || 0;
+
+  return <div>{viewCount} views</div>;
 };
 
 export default ViewCounter;
