@@ -1,5 +1,5 @@
-namespace NodeJS {
-  interface ProcessEnv {
-    [key: string]: string;
+declare namespace NodeJS {
+  export interface ProcessEnv {
+    NEXT_PUBLIC_BASE_URL: string;
   }
 }
