@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Footer } from "@/components/Footer";
@@ -47,8 +46,6 @@ export const metadata: Metadata = {
 };
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
-  const gaId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS;
-
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body className="bg-gray-900 text-gray-50">
@@ -61,7 +58,6 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
         </div>
         <Analytics />
         <SpeedInsights />
-        <GoogleAnalytics gaId={gaId} />
       </body>
     </html>
   );
