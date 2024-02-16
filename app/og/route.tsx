@@ -5,18 +5,16 @@ import { BASE_URL } from "@/config";
 export const runtime = "edge";
 
 export const GET = async (req: NextRequest) => {
-  const { searchParams } = new URL(req.url);
-  const title = searchParams.get("title")?.slice(0, 100);
+  const { searchParams } = req.nextUrl;
+  const title = searchParams.get("title");
 
   return new ImageResponse(
     (
       <div
-        style={{
-          background: `url("${BASE_URL}/cover-image.png")`,
-        }}
-        tw="flex flex-col w-full h-full justify-center text-gray-50"
+        style={{ background: `url("${BASE_URL}/opengraph-bg.png")` }}
+        tw="flex flex-col w-full h-full items-center justify-center text-gray-50"
       >
-        <div tw="flex w-full max-w-[75%] mx-16">
+        <div tw="flex text-center mx-12">
           <h1 tw="text-6xl capitalize">{title}</h1>
         </div>
       </div>
