@@ -15,7 +15,7 @@
   },
   {
     "name": "Singapore EV Trends",
-    "description": "Stay ahead of the shift to Electric Vehicle (EV) in Singapore with the latest Singapore EV trends. Data provided by Land Transport Authority (LTA)",
+    "description": "Statistics for car trends in Singapore. Data provided by Land Transport Authority (LTA)",
     "skills": ["next.js", "typescript", "react", "tailwind css", "sst", "aws"],
     "links": ["https://sgmotortrends.com", "https://api.sgmotortrends.com"]
   },
