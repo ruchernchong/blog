@@ -7,7 +7,7 @@
     "build": "NEXT_TELEMETRY_DISABLED=1 next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "prisma generate && prisma migrate deploy && pnpm build"
+    "vercel-build": "prisma generate --no-engine && prisma migrate deploy && pnpm build"
   },
   "dependencies": {
     "@apollo/client": "^3.7.9",
