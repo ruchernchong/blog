@@ -9,6 +9,8 @@ interface RequestParams {
   };
 }
 
+export const runtime = "edge";
+
 export const POST = async (req: NextRequest, { params }: RequestParams) => {
   noStore();
   const slug = params.slug;
