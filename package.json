@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
-    "build": "NEXT_TELEMETRY_DISABLED=1 next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "vercel-build": "prisma generate --no-engine && prisma migrate deploy && pnpm build"
