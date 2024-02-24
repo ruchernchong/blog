@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+// import Link from "next/link";
 import { notFound } from "next/navigation";
 import { allPosts } from "contentlayer/generated";
-import classNames from "classnames";
+// import classNames from "classnames";
 import { format, formatISO, parseISO } from "date-fns";
-import Card from "@/components/Card";
+// import Card from "@/components/Card";
 import { Mdx } from "@/components/Mdx";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";

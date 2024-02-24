@@ -6,7 +6,7 @@ import { BASE_URL } from "@/config";
 import socials from "@/data/socials.json";
 
 interface AuthorProps {
-  title: string | JSX.Element;
+  title: string;
   tagline?: string;
   description?: string;
 }

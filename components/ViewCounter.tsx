@@ -11,7 +11,7 @@ const fetcher = (...args: [RequestInfo, RequestInit?]) =>
   fetch(...args).then((res) => res.json());
 
 const ViewCounter = ({ slug }: ViewCounterProps) => {
-  const { data, error } = useSWR<Views>(`/api/views/${slug}`, fetcher);
+  const { data } = useSWR<Views>(`/api/views/${slug}`, fetcher);
 
   useEffect(() => {
     fetch(`/api/views/${slug}`, { method: "POST" });
