@@ -19,7 +19,7 @@
 }
 
 *:hover > .permalink {
-  @apply visible text-pink-500;
+  @apply visible text-inherit;
 }
 
 h1 .permalink::after {
@@ -27,5 +27,5 @@ h1 .permalink::after {
 }
 
 ::selection {
-  @apply bg-pink-500 text-neutral-50;
+  @apply bg-pink-500 text-gray-50;
 }
