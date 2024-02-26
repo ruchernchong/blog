@@ -1,5 +1,6 @@
 import { createElement } from "react";
 import type { PropsWithChildren } from "react";
+import { cn } from "@/lib/utils";
 
 export type Variant = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span";
 
@@ -31,7 +32,7 @@ export const Typography = ({
       break;
   }
 
-  const combinedClassName = [headingClassName, className].join(" ");
+  const combinedClassName = cn([headingClassName, className].join(" "));
 
   return createElement(
     variant || "p",
