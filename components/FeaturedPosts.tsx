@@ -11,7 +11,9 @@ interface FeaturedPostsProps {
 const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
   return (
     <div className="flex flex-col gap-8">
-      <div className="text-4xl font-bold">Featured</div>
+      <div className="text-xl font-bold uppercase text-pink-500">
+        Featured Posts
+      </div>
       <div className="grid gap-4 md:auto-cols-fr md:grid-flow-col">
         {featuredPosts
           .slice(0, 3)
@@ -32,8 +34,8 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
                     {formattedDate}
                   </time>
                   <Typography
-                    variant="h2"
-                    className="flex grow flex-col justify-center"
+                    variant="h3"
+                    className="flex grow flex-col justify-center capitalize"
                   >
                     {title}
                   </Typography>

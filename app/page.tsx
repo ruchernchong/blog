@@ -38,7 +38,9 @@ const HomePage = async () => {
           <FeaturedPosts featuredPosts={featuredPosts} />
         )}
         <div className="flex flex-col gap-8">
-          <div className="text-4xl font-bold">Recent</div>
+          <h2 className="text-xl font-bold uppercase text-pink-500">
+            Recently Published
+          </h2>
           {posts.length === 0 && (
             <p className="text-center italic">
               There are no posts to display. Get started and write your first
