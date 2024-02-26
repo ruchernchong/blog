@@ -1,11 +1,15 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import classNames from "classnames";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { BASE_URL } from "@/config";
 import "@/app/globals.css";
+
+const inter = Inter({ subsets: ["latin"] });
 
 const title = {
   default: "Ru Chern",
@@ -47,7 +51,7 @@ export const metadata: Metadata = {
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className={classNames("scroll-smooth", inter.className)}>
       <body className="bg-gray-900 text-gray-50">
         <div className="flex min-h-screen flex-col">
           <Header />
