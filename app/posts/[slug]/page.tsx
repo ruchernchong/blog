@@ -14,6 +14,7 @@ import {
   BookOpenIcon,
   CalendarDaysIcon,
   EyeIcon,
+  InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 
 interface Params {
@@ -101,7 +102,12 @@ const PostPage = ({ params }: Params) => {
           </div>
           <Typography variant="h1">{post.title}</Typography>
         </div>
-        <blockquote>{post.excerpt}</blockquote>
+        <aside className="relative rounded-md border-l-4 border-l-pink-500 bg-gray-800 p-6">
+          <div className="absolute left-0 top-0 -translate-x-[50%] -translate-y-[50%] rounded-full bg-gray-900 p-2 text-pink-500">
+            <InformationCircleIcon width={32} height={32} />
+          </div>
+          {post.excerpt}
+        </aside>
         <Mdx code={post.body.code} />
       </article>
       {/*<div className="mb-16 grid gap-y-4 md:grid-cols-2 md:gap-x-4">*/}
