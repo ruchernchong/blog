@@ -10,35 +10,35 @@ interface Props {
 const { title } = Astro.props;
 ---
 
-<html class="scroll-smooth">
+<html class="dark scroll-smooth">
   <BaseHead title={title} />
   <body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-50">
     <main class="mx-auto max-w-6xl p-4 py-8">
-      <Header />
+      <!--<Header />-->
       <slot />
       <Footer />
     </main>
-    <script is:inline>
-      const theme = (() => {
-        if (
-          typeof localStorage !== "undefined" &&
-          localStorage.getItem("theme")
-        ) {
-          return localStorage.getItem("theme");
-        }
-        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-          return "dark";
-        }
-        return "light";
-      })();
+    <!--<script is:inline>-->
+    <!--  const theme = (() => {-->
+    <!--    if (-->
+    <!--      typeof localStorage !== "undefined" &&-->
+    <!--      localStorage.getItem("theme")-->
+    <!--    ) {-->
+    <!--      return localStorage.getItem("theme");-->
+    <!--    }-->
+    <!--    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {-->
+    <!--      return "dark";-->
+    <!--    }-->
+    <!--    return "light";-->
+    <!--  })();-->
 
-      if (theme === "light") {
-        document.documentElement.classList.remove("dark");
-      } else {
-        document.documentElement.classList.add("dark");
-      }
+    <!--  if (theme === "light") {-->
+    <!--    document.documentElement.classList.remove("dark");-->
+    <!--  } else {-->
+    <!--    document.documentElement.classList.add("dark");-->
+    <!--  }-->
 
-      window.localStorage.setItem("theme", theme);
-    </script>
+    <!--  window.localStorage.setItem("theme", theme);-->
+    <!--</script>-->
   </body>
 </html>
