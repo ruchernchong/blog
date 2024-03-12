@@ -1,7 +1,7 @@
 import { DOMAIN_NAME } from "../config";
 import type { Resume } from "../types";
 
-export const resume = {
+export const resume: Resume = {
   baseUrl: `https://resume.${DOMAIN_NAME}`,
   name: "Chong Ru Chern",
   jobDescription: "Frontend Developer",
@@ -79,4 +79,4 @@ export const resume = {
     twitter: "https://twitter.com/ruchernchong",
   },
   projects: [],
-} satisfies Resume;
+};
