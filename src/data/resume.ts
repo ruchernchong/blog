@@ -1,45 +1,60 @@
 import { DOMAIN_NAME } from "../config";
+import type { Resume } from "../types";
 
-export default {
+export const resume = {
   baseUrl: `https://resume.${DOMAIN_NAME}`,
   name: "Chong Ru Chern",
-  jobDescription: "Web Developer",
-  about: ``,
+  jobDescription: "Frontend Developer",
+  about: "Lorem ipsum dolor si ah met",
   experience: [
     {
       name: "DBS Bank",
       location: "Singapore",
       startDate: "Apr 2021",
-      endDate: "Present",
-      description: [],
+      description: [
+        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab deserunt dignissimos dolorem doloribus eius eos error, facere facilis molestias nisi perferendis porro quas quo sit suscipit totam velit veniam voluptates.",
+        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab deserunt dignissimos dolorem doloribus eius eos error, facere facilis molestias nisi perferendis porro quas quo sit suscipit totam velit veniam voluptates.",
+      ],
     },
     {
       name: "Avanade",
       location: "Singapore",
       startDate: "Jan 2021",
       endDate: "Apr 2021",
-      description: [],
+      description: [
+        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab deserunt dignissimos dolorem doloribus eius eos error, facere facilis molestias nisi perferendis porro quas quo sit suscipit totam velit veniam voluptates.",
+        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab deserunt dignissimos dolorem doloribus eius eos error, facere facilis molestias nisi perferendis porro quas quo sit suscipit totam velit veniam voluptates.",
+      ],
     },
     {
       name: "Singtel",
       location: "Singapore",
       startDate: "Aug 2018",
       endDate: "Dec 2020",
-      description: [],
+      description: [
+        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab deserunt dignissimos dolorem doloribus eius eos error, facere facilis molestias nisi perferendis porro quas quo sit suscipit totam velit veniam voluptates.",
+        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab deserunt dignissimos dolorem doloribus eius eos error, facere facilis molestias nisi perferendis porro quas quo sit suscipit totam velit veniam voluptates.",
+      ],
     },
     {
       name: "Sproud",
       location: "Singapore",
       startDate: "Feb 2017",
       endDate: "Aug 2018",
-      description: [],
+      description: [
+        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab deserunt dignissimos dolorem doloribus eius eos error, facere facilis molestias nisi perferendis porro quas quo sit suscipit totam velit veniam voluptates.",
+        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab deserunt dignissimos dolorem doloribus eius eos error, facere facilis molestias nisi perferendis porro quas quo sit suscipit totam velit veniam voluptates.",
+      ],
     },
     {
       name: "The University of Queensland",
       location: "Brisbane, Queensland, Australia",
       startDate: "Feb 2016",
       endDate: "Jun 2016",
-      description: [],
+      description: [
+        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab deserunt dignissimos dolorem doloribus eius eos error, facere facilis molestias nisi perferendis porro quas quo sit suscipit totam velit veniam voluptates.",
+        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab deserunt dignissimos dolorem doloribus eius eos error, facere facilis molestias nisi perferendis porro quas quo sit suscipit totam velit veniam voluptates.",
+      ],
     },
   ],
   education: [
@@ -48,22 +63,20 @@ export default {
       location: "Brisbane, Queensland, Australia",
       startDate: "Feb 2015",
       endDate: "Aug 2016",
-      description: ["Bachelor"],
-      course: "Information Technology",
+      courseOfStudy: "Bachelor of Information Technology",
     },
     {
       name: "Singapore Polytechnic",
       location: "Singapore",
       startDate: "Apr 2009",
       endDate: "May 2012",
-      description: ["Diploma"],
-      course: "Information Communication Technology",
+      courseOfStudy: "Diploma in Information Communication Technology",
     },
   ],
   socialMedia: {
     github: "https://github.com/ruchernchong",
-    linkedin: "https://www.linkedin.com/in/ruchernchong/",
+    linkedin: "https://linkedin.com/in/ruchernchong/",
     twitter: "https://twitter.com/ruchernchong",
   },
   projects: [],
-};
+} satisfies Resume;

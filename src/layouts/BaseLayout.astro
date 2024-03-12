@@ -1,7 +1,7 @@
 ---
 import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
-import "../styles/global.css";
+import Footer from "../components/Footer.astro";
 
 interface Props {
   title: string | undefined;
@@ -10,10 +10,35 @@ interface Props {
 const { title } = Astro.props;
 ---
 
-<html>
+<html class="scroll-smooth">
   <BaseHead title={title} />
-  <Header />
-  <main>
-    <slot />
-  </main>
+  <body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-50">
+    <main class="mx-auto max-w-6xl p-4 py-8">
+      <Header />
+      <slot />
+      <Footer />
+    </main>
+    <script is:inline>
+      const theme = (() => {
+        if (
+          typeof localStorage !== "undefined" &&
+          localStorage.getItem("theme")
+        ) {
+          return localStorage.getItem("theme");
+        }
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          return "dark";
+        }
+        return "light";
+      })();
+
+      if (theme === "light") {
+        document.documentElement.classList.remove("dark");
+      } else {
+        document.documentElement.classList.add("dark");
+      }
+
+      window.localStorage.setItem("theme", theme);
+    </script>
+  </body>
 </html>
