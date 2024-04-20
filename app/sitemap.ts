@@ -1,11 +1,8 @@
 import type { MetadataRoute } from "next";
-import { unstable_noStore as noStore } from "next/cache";
 import { allDocuments } from "contentlayer/generated";
 import { BASE_URL, navLinks } from "@/config";
 
 const sitemap = (): MetadataRoute.Sitemap => {
-  noStore();
-
   return [
     {
       url: BASE_URL,
