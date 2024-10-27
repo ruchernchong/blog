@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "prisma generate --no-engine && prisma migrate deploy && pnpm build"
+    "vercel-build": "prisma generate --no-engine && prisma migrate deploy && pnpm build",
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "@apollo/client": "^3.7.9",
@@ -42,6 +43,11 @@
     "typescript": "^5.2.2"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.0",
+    "@semantic-release/release-notes-generator": "^14.0.1",
     "@tailwindcss/typography": "^0.5.8",
     "@types/mdx": "^2.0.11",
     "@types/node": "^20.17.0",
@@ -55,6 +61,7 @@
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "prisma": "^5.21.1",
+    "semantic-release": "^24.2.0",
     "tailwindcss": "^3.2.4"
   },
   "lint-staged": {
