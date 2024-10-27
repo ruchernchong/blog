@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/ruchernchong/portfolio/compare/v1.1.0...v1.1.1) (2024-10-27)
+
+### Bug Fixes
+
+- semantic-release not updating package.json version ([6493a69](https://github.com/ruchernchong/portfolio/commit/6493a69b79e3cee57c4dedb19c12937f877efa79))
+
 # [1.1.0](https://github.com/ruchernchong/portfolio/compare/v1.0.0...v1.1.0) (2024-10-27)
 
 ### Bug Fixes
