@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "vercel-build": "prisma generate --no-engine && prisma migrate deploy && pnpm build",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "prepare": "husky"
   },
   "dependencies": {
     "@apollo/client": "^3.7.9",
@@ -46,6 +47,8 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.0",
     "@semantic-release/git": "^10.0.1",
@@ -59,7 +62,7 @@
     "@types/rss": "^0.0.32",
     "@types/ws": "^8.5.12",
     "autoprefixer": "^10.4.13",
-    "husky": "^8.0.0",
+    "husky": "^9.1.6",
     "lint-staged": "^13.1.2",
     "postcss": "^8.4.31",
     "prettier": "^3.3.3",
