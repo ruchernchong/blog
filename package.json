@@ -71,5 +71,10 @@
   "lint-staged": {
     "*.{js,ts,jsx,tsx,md,mdx,css}": "prettier --write",
     "*.prisma": "prisma format"
+  },
+  "pnpm": {
+    "overrides": {
+      "micromatch@<4.0.8": ">=4.0.8"
+    }
   }
 }
