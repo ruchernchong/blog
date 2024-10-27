@@ -19,6 +19,7 @@
     "@prisma/adapter-neon": "^5.21.1",
     "@prisma/client": "^5.21.1",
     "@prisma/extension-accelerate": "^1.2.1",
+    "@sentry/nextjs": "^8",
     "@vercel/analytics": "^1.1.3",
     "@vercel/og": "^0.0.27",
     "@vercel/speed-insights": "^1.0.9",
