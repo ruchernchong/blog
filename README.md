@@ -1,6 +1,6 @@
 # Portfolio
 
-Portfolio Blog: https://ruchern.xyz
+Portfolio Blog: https://ruchern.dev
 
 - Framework: [Next.js](https://nextjs.org)
 - Deployment: [Vercel](https://vercel.com)

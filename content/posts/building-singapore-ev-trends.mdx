@@ -15,7 +15,7 @@ You can check out the websites in two parts; the frontend and API.
 
 | Frontend                                                                                                                                                | API                                                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Singapore EV Trends Frontend](https://singapore-ev-trends.ruchern.xyz) <br/> [GitHub Source Code](https://github.com/ruchernchong/singapore-ev-trends) | [Singapore EV Trends API](https://api.singapore-ev-trends.ruchern.xyz) <br/> [GitHub Source Code](https://github.com/ruchernchong/lta-cars-dataset) |
+| [Singapore EV Trends Frontend](https://singapore-ev-trends.ruchern.dev) <br/> [GitHub Source Code](https://github.com/ruchernchong/singapore-ev-trends) | [Singapore EV Trends API](https://api.singapore-ev-trends.ruchern.dev) <br/> [GitHub Source Code](https://github.com/ruchernchong/lta-cars-dataset) |
 
 ![Screenshot of the Electric Car page](/images/building-singapore-ev-trends/electric-car-page.png)
 ![Screenshot of the COE page](/images/building-singapore-ev-trends/coe-page.png)
@@ -89,7 +89,7 @@ const existingData: WithId<Document>[] = await collection.find().toArray();
 // Function to match the important keys for filtering
 const createUniqueKey = <T extends object>(
   item: T,
-  keyFields: Array<keyof T>
+  keyFields: Array<keyof T>,
 ): string =>
   keyFields
     .filter((field) => item[field])
@@ -98,12 +98,12 @@ const createUniqueKey = <T extends object>(
 
 // Map the existing data to something like [ { key: value } ]
 const existingDataMap: Map<string, WithId<Document>> = new Map(
-  existingData.map((item) => [createUniqueKey(item, keyFields), item])
+  existingData.map((item) => [createUniqueKey(item, keyFields), item]),
 );
 
 // Extract the data which does not match the existing data
 const newDataToInsert = parsedData.filter(
-  (newItem) => !existingDataMap.has(createUniqueKey(newItem, keyFields))
+  (newItem) => !existingDataMap.has(createUniqueKey(newItem, keyFields)),
 );
 
 // Write to the database based on the conditions met
@@ -132,7 +132,7 @@ AWS support cron syntax is very different from the usual syntax of a typical cro
 
 #### 2. Cross Origin Resource Sharing (CORS)
 
-While creating the API, I have added the header `Access-Control-Allow-Origin` to only allow the domain `singapore-ev-trends.ruchern.xyz`. This quickly became a problem when I started to build the frontend and calling the API. With the whitelisting, I have effectively now denied myself from using my own API on my frontend. Since my development server is `localhost:3000`, I was denied because I do not match the origin from `singapore-ev-trends.ruchern.xyz`. The first approach I did was to update my `/etc/hosts`file to map the localhost address to the origin address. However, this quickly became a tedious problem because I need to setup a HTTPS server instead of a HTTP one. By default, Next.js development server uses the HTTP protocol. I was able to use the flag`--experimental-https`on my`next dev`, but this is also causing a problem. Since I was using SST and the Parameters Store to store my secrets, the script to launch my dev server is now `sst bind next dev --experimental-https`. This actually did not work because of the `sst bind`. As such, I had to drop this implementation and try another way.
+While creating the API, I have added the header `Access-Control-Allow-Origin` to only allow the domain `singapore-ev-trends.ruchern.dev`. This quickly became a problem when I started to build the frontend and calling the API. With the whitelisting, I have effectively now denied myself from using my own API on my frontend. Since my development server is `localhost:3000`, I was denied because I do not match the origin from `singapore-ev-trends.ruchern.dev`. The first approach I did was to update my `/etc/hosts`file to map the localhost address to the origin address. However, this quickly became a tedious problem because I need to setup a HTTPS server instead of a HTTP one. By default, Next.js development server uses the HTTP protocol. I was able to use the flag`--experimental-https`on my`next dev`, but this is also causing a problem. Since I was using SST and the Parameters Store to store my secrets, the script to launch my dev server is now `sst bind next dev --experimental-https`. This actually did not work because of the `sst bind`. As such, I had to drop this implementation and try another way.
 
 The second way I used was creating different environments. With SST, I was able to set `--stage dev` for development and `--stage prod` for production.
 
@@ -145,7 +145,7 @@ const CORS_SETTINGS: Record<string, any> = {
   },
   prod: {
     allowMethods: ["GET"],
-    allowOrigins: ["https://singapore-ev-trends.ruchern.xyz"],
+    allowOrigins: ["https://singapore-ev-trends.ruchern.dev"],
   },
 };
 

@@ -4,7 +4,7 @@ export interface NavLink {
 }
 
 export const BASE_URL: string =
-  process.env.NEXT_PUBLIC_BASE_URL || "https://ruchern.xyz";
+  process.env.NEXT_PUBLIC_BASE_URL || "https://ruchern.dev";
 
 export const navLinks: NavLink[] = [
   // { title: "Blog", href: "/blog" },
