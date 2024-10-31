@@ -17,6 +17,7 @@ const sitemap = (): MetadataRoute.Sitemap => {
     ...allDocuments.map(({ publishedAt, url }) => ({
       url: `${BASE_URL}${url}`,
       lastModified: formatLastModified(publishedAt),
+      changeFrequency: "daily",
     })),
   ];
 };

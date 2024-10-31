@@ -16,7 +16,7 @@ export const GET = () => {
       url: `${BASE_URL}${url}`,
       date: publishedAt as string,
       description: excerpt || title,
-    })
+    }),
   );
 
   return new NextResponse(feed.xml({ indent: true }), {
