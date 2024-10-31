@@ -26,6 +26,3 @@ next-env.d.ts
 # contentlayer
 .contentlayer
 .vercel
-
-# Sentry Config File
-.env.sentry-build-plugin
