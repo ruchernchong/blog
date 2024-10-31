@@ -17,11 +17,12 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 
-interface Params {
-  params: { slug: string };
-}
+type Params = Promise<{ slug: string }>;
 
-export const generateMetadata = ({ params }: Params): Metadata => {
+export const generateMetadata = async (props: {
+  params: Params;
+}): Promise<Metadata> => {
+  const params = await props.params;
   const post = allPosts.find((post) => post.slug === params.slug)!;
 
   const title = post.title;
@@ -56,7 +57,8 @@ export const generateMetadata = ({ params }: Params): Metadata => {
 export const generateStaticParams = () =>
   allPosts.map(({ slug }) => ({ slug }));
 
-const PostPage = ({ params }: Params) => {
+const PostPage = async (props: { params: Params }) => {
+  const params = await props.params;
   const post = allPosts.find((post) => post.slug === params.slug);
 
   if (!post) {

@@ -6,13 +6,12 @@ import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
 import { BASE_URL } from "@/config";
 
-interface Params {
-  params: {
-    slug: string;
-  };
-}
+type Params = Promise<{ slug: string }>;
 
-export const generateMetadata = ({ params }: Params): Metadata => {
+export const generateMetadata = async (props: {
+  params: Params;
+}): Promise<Metadata> => {
+  const params = await props.params;
   const journal = allJournals.find((journal) => journal.slug === params.slug)!;
 
   const title = journal.title;
@@ -47,7 +46,8 @@ export const generateMetadata = ({ params }: Params): Metadata => {
 export const generateStaticParams = () =>
   allJournals.map(({ slug }) => ({ slug }));
 
-const JournalPage = ({ params }: Params) => {
+const JournalPage = async (props: { params: Params }) => {
+  const params = await props.params;
   const journal = allJournals.find((journal) => journal.slug === params.slug);
 
   if (!journal) {

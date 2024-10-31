@@ -1,7 +1,7 @@
-const { withContentlayer } = require("next-contentlayer");
+import type { NextConfig } from "next";
+import { withContentlayer } from "next-contentlayer";
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
   async headers() {
     return [
