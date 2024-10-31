@@ -12,7 +12,6 @@ This portfolio is built with modern web technologies:
 - **Framework**: [Next.js](https://nextjs.org) - React framework for production
 - **Styling**: [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework
 - **Database**: [Neon](https://neon.tech) - Serverless Postgres database
-- **ORM**: [Prisma](https://prisma.io) - Next-generation Node.js and TypeScript ORM
 - **Deployment**: [Vercel](https://vercel.com) - Platform for frontend frameworks and static sites
 
 ## 🛠️ Getting Started
@@ -51,9 +50,9 @@ cp .env.example .env
 5. Update the `.env` file with your own values
 
 ```env
-# Database
-DATABASE_URL="prisma://accelerate-endpoint"
-DIRECT_URL="postgres://user:password@host:port/database"
+# Upstash Redis
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
 ```
 
 6. Start the development server
@@ -70,10 +69,10 @@ Your site should now be running at `http://localhost:3000`!
 
 The following environment variables are required to run the application:
 
-| Variable       | Description                                                   | Required |
-| -------------- | ------------------------------------------------------------- | -------- |
-| `DATABASE_URL` | Prisma Accelerate connection string (starts with `prisma://`) | Yes      |
-| `DIRECT_URL`   | Direct Neon PostgreSQL connection string                      | Yes      |
+| Variable                   | Description                                                                                                                                | Required |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| `UPSTASH_REDIS_REST_URL`   | The REST API endpoint URL for your Upstash Redis database. Found in your Upstash Redis console under "REST API" details.                   | Yes      |
+| `UPSTASH_REDIS_REST_TOKEN` | Authentication token for accessing your Upstash Redis database via REST API. Found in your Upstash Redis console under "REST API" details. | Yes      |
 
 ## 📝 Project Structure
 
@@ -82,7 +81,6 @@ portfolio/
 ├── app/              # Next.js app directory
 ├── components/       # React components
 ├── lib/             # Utility functions
-├── prisma/          # Database schema and migrations
 └── public/          # Static assets
 ```
 

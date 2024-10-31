@@ -8,7 +8,7 @@ import { format, formatISO, parseISO } from "date-fns";
 import { Mdx } from "@/components/Mdx";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
-import ViewCounter from "@/components/ViewCounter";
+import { ViewCounter } from "@/components/ViewCounter";
 import { BASE_URL } from "@/config";
 import {
   BookOpenIcon,
