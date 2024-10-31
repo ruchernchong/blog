@@ -1,3 +1,9 @@
+# [1.4.0](https://github.com/ruchernchong/portfolio/compare/v1.3.1...v1.4.0) (2024-10-31)
+
+### Features
+
+- Upgrade to Next 15 and React 19 ([a260127](https://github.com/ruchernchong/portfolio/commit/a2601270b25bac20376009aa693879b233822daf))
+
 ## [1.3.1](https://github.com/ruchernchong/portfolio/compare/v1.3.0...v1.3.1) (2024-10-31)
 
 ### Reverts
