@@ -1,3 +1,11 @@
+# [1.3.0](https://github.com/ruchernchong/portfolio/compare/v1.2.0...v1.3.0) (2024-10-31)
+
+### Features
+
+- Add Upstash Redis ([30f618a](https://github.com/ruchernchong/portfolio/commit/30f618ad5cbc2f71877f30852db6c38d09a0eb6a))
+- Remove Prisma ([e4762cd](https://github.com/ruchernchong/portfolio/commit/e4762cdbb17e5e0279d4de0548a214eedbb3288e))
+- Update ViewCounter component to use Redis ([f8419e8](https://github.com/ruchernchong/portfolio/commit/f8419e8586ea90f59ae13e4ef757f2ed19fd0721))
+
 # [1.2.0](https://github.com/ruchernchong/portfolio/compare/v1.1.1...v1.2.0) (2024-10-31)
 
 ### Features
