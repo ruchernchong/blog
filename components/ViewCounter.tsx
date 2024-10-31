@@ -1,25 +1,19 @@
-"use client";
-import { useEffect } from "react";
-import useSWR from "swr";
-import type { Views } from "@prisma/client";
+import { Redis } from "@upstash/redis";
 
-interface ViewCounterProps {
+interface Props {
   slug: string;
 }
 
-const fetcher = (...args: [RequestInfo, RequestInit?]) =>
-  fetch(...args).then((res) => res.json());
+const redis = Redis.fromEnv();
 
-const ViewCounter = ({ slug }: ViewCounterProps) => {
-  const { data } = useSWR<Views>(`/api/views/${slug}`, fetcher);
+const view = async (slug: string) => await redis.incr(`pageviews:${slug}`);
 
-  useEffect(() => {
-    fetch(`/api/views/${slug}`, { method: "POST" });
-  }, [slug]);
+const ViewCounter = async ({ slug }: Props) => {
+  await view(slug);
 
-  const viewCount = data?.count || 0;
+  const views = (await redis.get<number>(`pageviews:${slug}`)) || 0;
 
-  return <div>{viewCount} views</div>;
+  return <p className="text-sm text-neutral-400">{views} views</p>;
 };
 
 export default ViewCounter;
