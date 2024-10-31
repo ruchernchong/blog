@@ -38,7 +38,6 @@
     "rss": "^1.2.2",
     "schema-dts": "^1.1.2",
     "sharp": "^0.32.6",
-    "swr": "^2.1.5",
     "tailwind-merge": "^2.2.1",
     "typescript": "^5.2.2",
     "ws": "^8.18.0"
