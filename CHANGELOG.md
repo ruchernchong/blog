@@ -1,3 +1,9 @@
+## [1.3.1](https://github.com/ruchernchong/portfolio/compare/v1.3.0...v1.3.1) (2024-10-31)
+
+### Reverts
+
+- Revert "feat: add Sentry" ([2a19be8](https://github.com/ruchernchong/portfolio/commit/2a19be81d6267b44c84ed76c7cecba9b3cac0757))
+
 # [1.3.0](https://github.com/ruchernchong/portfolio/compare/v1.2.0...v1.3.0) (2024-10-31)
 
 ### Features
