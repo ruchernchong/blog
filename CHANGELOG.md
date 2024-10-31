@@ -1,3 +1,9 @@
+## [1.4.1](https://github.com/ruchernchong/portfolio/compare/v1.4.0...v1.4.1) (2024-10-31)
+
+### Bug Fixes
+
+- Set posts and journals change frequency in sitemap ([769519f](https://github.com/ruchernchong/portfolio/commit/769519f27cfaebaf6cc99886b7fef97466ae1ec4))
+
 # [1.4.0](https://github.com/ruchernchong/portfolio/compare/v1.3.1...v1.4.0) (2024-10-31)
 
 ### Features
