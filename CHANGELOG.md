@@ -1,3 +1,9 @@
+# [1.2.0](https://github.com/ruchernchong/portfolio/compare/v1.1.1...v1.2.0) (2024-10-31)
+
+### Features
+
+- Add Umami Analytics ([c03dae0](https://github.com/ruchernchong/portfolio/commit/c03dae089ac16d984b3f94aeef86786b948c25bc))
+
 ## [1.1.1](https://github.com/ruchernchong/portfolio/compare/v1.1.0...v1.1.1) (2024-10-27)
 
 ### Bug Fixes
