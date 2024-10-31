@@ -12,7 +12,6 @@ This portfolio is built with modern web technologies:
 - **Framework**: [Next.js](https://nextjs.org) - React framework for production
 - **Styling**: [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework
 - **Database**: [Neon](https://neon.tech) - Serverless Postgres database
-- **ORM**: [Prisma](https://prisma.io) - Next-generation Node.js and TypeScript ORM
 - **Deployment**: [Vercel](https://vercel.com) - Platform for frontend frameworks and static sites
 
 ## 🛠️ Getting Started
@@ -82,7 +81,6 @@ portfolio/
 ├── app/              # Next.js app directory
 ├── components/       # React components
 ├── lib/             # Utility functions
-├── prisma/          # Database schema and migrations
 └── public/          # Static assets
 ```
 
