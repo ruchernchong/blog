@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import classNames from "classnames";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -62,6 +63,11 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
         </div>
         <Analytics />
         <SpeedInsights />
+        <Script
+          defer
+          src="https://analytics.ruchern.dev/script.js"
+          data-website-id="23a07b6c-093c-4831-840e-9d2998eba9e9"
+        />
       </body>
     </html>
   );
