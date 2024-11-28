@@ -1,3 +1,9 @@
+## [1.4.2](https://github.com/ruchernchong/portfolio/compare/v1.4.1...v1.4.2) (2024-11-28)
+
+### Bug Fixes
+
+- update umami tracker domains ([843ac78](https://github.com/ruchernchong/portfolio/commit/843ac782cc9b84bfbe821d486ddf3996d4906f6e))
+
 ## [1.4.1](https://github.com/ruchernchong/portfolio/compare/v1.4.0...v1.4.1) (2024-10-31)
 
 ### Bug Fixes
