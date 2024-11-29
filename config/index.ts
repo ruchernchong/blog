@@ -9,7 +9,7 @@ export const BASE_URL: string =
 export const navLinks: NavLink[] = [
   // { title: "Blog", href: "/blog" },
   { title: "About", href: "/about" },
-  { title: "Journals", href: "/journals" },
+  { title: "Notes", href: "/notes" },
   { title: "Projects", href: "/projects" },
   // { title: "Resume", href: "/resume" },
 ];

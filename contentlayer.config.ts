@@ -63,9 +63,9 @@ export const Post = defineDocumentType(() => ({
   },
 }));
 
-export const Journal = defineDocumentType(() => ({
-  name: "Journal",
-  filePathPattern: "journals/**/*.mdx",
+export const Note = defineDocumentType(() => ({
+  name: "Note",
+  filePathPattern: "notes/**/*.mdx",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
@@ -76,27 +76,27 @@ export const Journal = defineDocumentType(() => ({
   computedFields: {
     slug: {
       type: "string",
-      resolve: (journal) => {
-        const [_, slug] = journal._raw.flattenedPath.split("/");
+      resolve: (note) => {
+        const [_, slug] = note._raw.flattenedPath.split("/");
         return slug;
       },
     },
     structuredData: {
       type: "json",
-      resolve: (journal) =>
+      resolve: (note) =>
         ({
           "@context": "https://schema.org",
           "@type": "BlogPosting",
-          headline: journal.title,
-          dateModified: journal.publishedAt,
-          datePublished: journal.publishedAt,
-          description: journal.title,
+          headline: note.title,
+          dateModified: note.publishedAt,
+          datePublished: note.publishedAt,
+          description: note.title,
           image: [
-            journal.image
-              ? encodeURI(`${BASE_URL}/${journal.image}`)
-              : encodeURI(`${BASE_URL}/og?title=${journal.title}`),
+            note.image
+              ? encodeURI(`${BASE_URL}/${note.image}`)
+              : encodeURI(`${BASE_URL}/og?title=${note.title}`),
           ],
-          url: `${BASE_URL}/${journal._raw.flattenedPath}`,
+          url: `${BASE_URL}/${note._raw.flattenedPath}`,
           author: {
             "@type": "Person",
             name: "Ru Chern Chong",
@@ -106,14 +106,14 @@ export const Journal = defineDocumentType(() => ({
     },
     url: {
       type: "string",
-      resolve: (journal) => `/${journal._raw.flattenedPath}`,
+      resolve: (note) => `/${note._raw.flattenedPath}`,
     },
   },
 }));
 
 export default makeSource({
   contentDirPath: "content",
-  documentTypes: [Post, Journal],
+  documentTypes: [Post, Note],
   mdx: {
     remarkPlugins: [remarkGfm, remarkUnwrapImages],
     rehypePlugins: [
