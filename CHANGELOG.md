@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/ruchernchong/portfolio/compare/v1.4.2...v1.4.3) (2024-11-29)
+
+### Bug Fixes
+
+- contentlayer build errors ([9fac2a4](https://github.com/ruchernchong/portfolio/commit/9fac2a4294432d046eaef5d523e7a26f99fc18fc))
+- Refactor Journals to Notes ([1d1e9f8](https://github.com/ruchernchong/portfolio/commit/1d1e9f82c934fcd2e375ef2dbe67c7866925d5bc))
+
 ## [1.4.2](https://github.com/ruchernchong/portfolio/compare/v1.4.1...v1.4.2) (2024-11-28)
 
 ### Bug Fixes
