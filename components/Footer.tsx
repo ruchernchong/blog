@@ -3,7 +3,7 @@ import Link from "next/link";
 import ExternalLink from "@/components/ExternalLink";
 import * as Icons from "@/components/Icons";
 import { BASE_URL, navLinks } from "@/config";
-import socials from "@/data/socials.json";
+import socials from "@/data/socials";
 import Icon from "@/app/icon.png";
 
 export const Footer = () => {
@@ -11,7 +11,7 @@ export const Footer = () => {
   const EXCLUDED_LINKS = ["RSS", "Stackoverflow"];
 
   const filteredLinks = socials.filter(
-    ({ name }) => !EXCLUDED_LINKS.includes(name)
+    ({ name }) => !EXCLUDED_LINKS.includes(name),
   );
 
   return (

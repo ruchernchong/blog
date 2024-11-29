@@ -3,16 +3,7 @@ import classNames from "classnames";
 import ExternalLink from "@/components/ExternalLink";
 import { ItemOverlay } from "@/components/ItemOverlay";
 import { BriefcaseIcon } from "@heroicons/react/24/solid";
-
-type Company = {
-  name: string;
-  title: string;
-  logo?: string;
-  dateStart: string;
-  dateEnd?: string;
-  location: string;
-  url: string;
-};
+import type { Company } from "@/types";
 
 interface EmploymentProps {
   companies: Company[];
@@ -49,7 +40,7 @@ const Employment = ({ companies }: EmploymentProps) => {
                 <div
                   className={classNames(
                     "flex h-12 w-12 items-center rounded-2xl p-2 md:h-[72px] md:w-[72px]",
-                    logo ? "bg-gray-50" : "bg-transparent"
+                    logo ? "bg-gray-50" : "bg-transparent",
                   )}
                 >
                   {logo && (
@@ -92,7 +83,7 @@ const Employment = ({ companies }: EmploymentProps) => {
                 </div>
               </div>
             );
-          }
+          },
         )}
       </div>
     </section>

@@ -3,7 +3,7 @@ import ExternalLink from "@/components/ExternalLink";
 import * as Icons from "@/components/Icons";
 import { Typography } from "@/components/Typography";
 import { BASE_URL } from "@/config";
-import socials from "@/data/socials.json";
+import socials from "@/data/socials";
 
 interface AuthorProps {
   title: string;

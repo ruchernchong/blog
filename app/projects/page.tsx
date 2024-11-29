@@ -6,7 +6,7 @@ import { ItemOverlay } from "@/components/ItemOverlay";
 import { LinkWithIcon } from "@/components/LinkWithIcon";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
-import projects from "@/data/projects.json";
+import projects from "@/data/projects";
 import type { WebPage, WithContext } from "schema-dts";
 import { BASE_URL } from "@/config";
 
