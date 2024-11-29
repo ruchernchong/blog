@@ -1,3 +1,9 @@
+## [1.4.4](https://github.com/ruchernchong/portfolio/compare/v1.4.3...v1.4.4) (2024-11-29)
+
+### Bug Fixes
+
+- add hreflang to blog ([a154714](https://github.com/ruchernchong/portfolio/commit/a154714a233af432d7d2206e6b51ecb894231207))
+
 ## [1.4.3](https://github.com/ruchernchong/portfolio/compare/v1.4.2...v1.4.3) (2024-11-29)
 
 ### Bug Fixes
