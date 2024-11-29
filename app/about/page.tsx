@@ -9,9 +9,10 @@ import companies from "@/data/companies.json";
 import { getStackOverflowProfile } from "@/lib/stackoverflow";
 import { getGitHubContributions } from "@/lib/github";
 import type { WebPage, WithContext } from "schema-dts";
+import { BASE_URL } from "@/config";
 
-const title: string = `About`;
-const description: string =
+const title = "About";
+const description =
   "My name is Ru Chern and I am a frontend developer with focus on optimising performance and delivering good user experience. I believe with technology, we are able to change how the way we automate things to make living more efficient and smarter.";
 
 export const metadata: Metadata = {
@@ -40,7 +41,7 @@ const AboutPage = async () => {
   const stackOverflowProfile = await getStackOverflowProfile();
 
   const sortedCompanies = companies.sort(
-    (a, b) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime()
+    (a, b) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime(),
   );
   const currentPosition = sortedCompanies
     .filter(({ dateEnd }) => !dateEnd)
@@ -51,8 +52,8 @@ const AboutPage = async () => {
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: title,
-    // TODO: Upgrade description from a single source as variable
     description,
+    url: `${BASE_URL}/about`,
   };
 
   return (

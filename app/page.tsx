@@ -16,15 +16,19 @@ const HomePage = async () => {
     "@type": "WebSite",
     name: "Ru Chern",
     url: BASE_URL,
+    description:
+      "Personal blog and portfolio of Ru Chern, featuring posts on software development, technology and personal projects.",
     image: [
       {
         "@type": "ImageObject",
         url: `${BASE_URL}/cover-image.png`,
+        width: "1200",
+        height: "630",
       },
     ],
     sameAs: [
       "https://github.com/ruchernchong",
-      "https://www.linkedin.com/in/ruchernchong/",
+      "https://www.linkedin.com/in/ruchernchong",
       "https://twitter.com/ruchernchong",
     ],
   };

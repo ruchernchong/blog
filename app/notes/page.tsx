@@ -8,6 +8,7 @@ import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
 import { sortByLatest } from "@/lib/sortByLatest";
 import type { WebPage, WithContext } from "schema-dts";
+import { BASE_URL } from "@/config";
 
 const title = "Notes";
 const description =
@@ -39,8 +40,8 @@ const NotesPage = () => {
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: title,
-    // TODO: Upgrade description from a single source as variable
     description,
+    url: `${BASE_URL}/notes`,
   };
 
   return (

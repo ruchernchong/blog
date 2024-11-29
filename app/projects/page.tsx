@@ -8,9 +8,10 @@ import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
 import projects from "@/data/projects.json";
 import type { WebPage, WithContext } from "schema-dts";
+import { BASE_URL } from "@/config";
 
-const title: string = `Projects`;
-const description: string =
+const title = "Projects";
+const description =
   "A showcase of my past projects and/or experimenting with different technologies";
 
 export const metadata: Metadata = {
@@ -44,6 +45,7 @@ const ProjectsPage = async () => {
       "@id": "/projects",
     },
     description,
+    url: `${BASE_URL}/projects`,
   };
 
   return (
