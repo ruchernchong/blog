@@ -6,9 +6,9 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import remarkUnwrapImages from "remark-unwrap-images";
-import rehypePrettyCode, {
-  type Options as PrettyCodeOptions,
-} from "rehype-pretty-code";
+// import rehypePrettyCode, {
+//   type Options as PrettyCodeOptions,
+// } from "rehype-pretty-code";
 
 export const Post = defineDocumentType(() => ({
   name: "Post",
