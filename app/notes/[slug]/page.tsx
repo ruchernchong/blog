@@ -15,7 +15,7 @@ export const generateMetadata = async (props: {
   const note = allNotes.find((note) => note.slug === params.slug)!;
 
   const title = note.title;
-  const description = note.title;
+  const description = `Notes on ${note.title}`;
   const publishedTime = note.publishedAt;
   const images = `${BASE_URL}/og?title=${title}`;
   const url = note.url;

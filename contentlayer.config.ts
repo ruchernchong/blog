@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import remarkUnwrapImages from "remark-unwrap-images";
+import { truncate } from "@/utils/truncate";
 // import rehypePrettyCode, {
 //   type Options as PrettyCodeOptions,
 // } from "rehype-pretty-code";
@@ -42,7 +43,7 @@ export const Post = defineDocumentType(() => ({
           headline: post.title,
           dateModified: post.publishedAt,
           datePublished: post.publishedAt,
-          description: post.excerpt,
+          description: truncate(post.excerpt),
           image: [
             post.image
               ? encodeURI(`${BASE_URL}/${post.image}`)

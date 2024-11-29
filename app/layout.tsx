@@ -13,8 +13,8 @@ import "@/app/globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 const title = {
-  default: "Ru Chern",
-  template: "%s | Ru Chern",
+  default: "Home - Ru Chern",
+  template: "%s - Ru Chern",
 };
 const description =
   "Frontend Developer from Singapore. Interested in automating workflows and building in React, Node, and Typescript.";

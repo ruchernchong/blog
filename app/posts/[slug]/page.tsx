@@ -16,6 +16,7 @@ import {
   EyeIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
+import { truncate } from "@/utils/truncate";
 
 type Params = Promise<{ slug: string }>;
 
@@ -26,7 +27,7 @@ export const generateMetadata = async (props: {
   const post = allPosts.find((post) => post.slug === params.slug)!;
 
   const title = post.title;
-  const description = post.excerpt;
+  const description = truncate(post.excerpt);
   const publishedTime = post.publishedAt;
   const url = post.url;
   const images = `${BASE_URL}/og?title=${title}`;
