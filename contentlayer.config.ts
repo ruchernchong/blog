@@ -1,4 +1,4 @@
-import { defineDocumentType, makeSource } from "contentlayer/source-files";
+import { defineDocumentType, makeSource } from "contentlayer2/source-files";
 import type { BlogPosting, WithContext } from "schema-dts";
 import { BASE_URL } from "./config";
 import readingTime from "reading-time";
@@ -54,7 +54,7 @@ export const Post = defineDocumentType(() => ({
             name: "Ru Chern Chong",
             url: BASE_URL,
           },
-        } satisfies WithContext<BlogPosting>),
+        }) satisfies WithContext<BlogPosting>,
     },
     url: {
       type: "string",
@@ -102,7 +102,7 @@ export const Journal = defineDocumentType(() => ({
             name: "Ru Chern Chong",
             url: BASE_URL,
           },
-        } satisfies WithContext<BlogPosting>),
+        }) satisfies WithContext<BlogPosting>,
     },
     url: {
       type: "string",
@@ -118,12 +118,12 @@ export default makeSource({
     remarkPlugins: [remarkGfm, remarkUnwrapImages],
     rehypePlugins: [
       rehypeSlug,
-      [
-        rehypePrettyCode,
-        {
-          theme: "github-dark-dimmed",
-        } satisfies PrettyCodeOptions,
-      ],
+      // [
+      //   rehypePrettyCode,
+      //   {
+      //     theme: "github-dark-dimmed",
+      //   } satisfies PrettyCodeOptions,
+      // ],
       [
         rehypeAutolinkHeadings,
         {
