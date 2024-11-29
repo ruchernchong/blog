@@ -5,7 +5,7 @@ import Author from "@/components/Author";
 import Contributions from "@/components/Contributions";
 import Employment from "@/components/Employment";
 import { StructuredData } from "@/components/StructuredData";
-import companies from "@/data/companies.json";
+import companies from "@/data/companies";
 import { getStackOverflowProfile } from "@/lib/stackoverflow";
 import { getGitHubContributions } from "@/lib/github";
 import type { WebPage, WithContext } from "schema-dts";
@@ -40,7 +40,7 @@ const AboutPage = async () => {
   const githubProfile = await getGitHubContributions();
   const stackOverflowProfile = await getStackOverflowProfile();
 
-  const sortedCompanies = companies.sort(
+  const sortedCompanies = companies.toSorted(
     (a, b) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime(),
   );
   const currentPosition = sortedCompanies
@@ -61,7 +61,6 @@ const AboutPage = async () => {
       <StructuredData data={structuredData} />
       <div className="flex flex-col gap-8">
         <div className="flex flex-col">
-          {/*TODO: Upgrade description from a single source as variable*/}
           <Author
             title="About Me"
             tagline={currentPosition}

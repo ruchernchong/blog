@@ -35,8 +35,8 @@ export const Typography = ({
   const combinedClassName = cn([headingClassName, className].join(" "));
 
   return createElement(
-    variant || "p",
+    variant ?? "p",
     { className: combinedClassName, ...props },
-    children
+    children,
   );
 };

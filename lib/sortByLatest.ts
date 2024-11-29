@@ -11,9 +11,9 @@ interface Item {
 export const sortByLatest = <T extends Item>(
   a: T,
   b: T,
-  config?: Config<T>
+  config?: Config<T>,
 ) => {
-  const sortingKey = config?.sortingKey || "publishedAt";
+  const sortingKey = config?.sortingKey ?? "publishedAt";
 
   return compareDesc(new Date(a[sortingKey]), new Date(b[sortingKey]));
 };
