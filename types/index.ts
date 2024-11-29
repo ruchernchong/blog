@@ -1,24 +1,21 @@
-export type Link = string;
-
 export interface Company {
   name: string;
   title: string;
   logo: string;
-  dateStart: `${string} ${number}` | string;
-  dateEnd?: `${string} ${number}` | string;
+  dateStart: string;
+  dateEnd?: string;
   location: string;
-  url: Link;
+  url: string;
 }
 
-export type Skill = string;
 export interface Project {
   name: string;
   description?: string;
-  skills: Skill[];
-  links: Link[];
+  skills: string[];
+  links: string[];
 }
 
 export interface Social {
   name: string;
-  link: Link;
+  link: string;
 }
