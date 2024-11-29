@@ -1,3 +1,9 @@
+## [1.4.5](https://github.com/ruchernchong/portfolio/compare/v1.4.4...v1.4.5) (2024-11-29)
+
+### Bug Fixes
+
+- update SEO tags ([6bff119](https://github.com/ruchernchong/portfolio/commit/6bff119b2edaf742092563844e33040e7ed227da))
+
 ## [1.4.4](https://github.com/ruchernchong/portfolio/compare/v1.4.3...v1.4.4) (2024-11-29)
 
 ### Bug Fixes
