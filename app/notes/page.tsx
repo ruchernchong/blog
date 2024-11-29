@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { allJournals } from "contentlayer/generated";
+import { allNotes } from "contentlayer/generated";
 import { format, formatISO, parseISO } from "date-fns";
 import globalMetadata from "@/app/metadata";
 import { openGraphImage, twitterImage } from "@/app/shared-metadata";
@@ -9,18 +9,18 @@ import { Typography } from "@/components/Typography";
 import { sortByLatest } from "@/lib/sortByLatest";
 import type { WebPage, WithContext } from "schema-dts";
 
-const title = `Journals`;
+const title = "Notes";
 const description =
   "A collection containing fun and interesting things I came across randomly.";
 
 export const metadata: Metadata = {
-  title: "Journals",
+  title,
   description,
   openGraph: {
     ...globalMetadata.openGraph,
     title,
     description,
-    url: "/journals",
+    url: "/notes",
     ...openGraphImage,
   },
   twitter: {
@@ -30,11 +30,11 @@ export const metadata: Metadata = {
     ...twitterImage,
   },
   alternates: {
-    canonical: "/journals",
+    canonical: "/notes",
   },
 };
 
-const JournalsPage = () => {
+const NotesPage = () => {
   const structuredData: WithContext<WebPage> = {
     "@context": "https://schema.org",
     "@type": "WebPage",
@@ -47,14 +47,14 @@ const JournalsPage = () => {
     <>
       <StructuredData data={structuredData} />
       <Typography variant="h1" className="mb-8">
-        Journals
+        Notes
       </Typography>
       <Typography variant="h2" className="mb-8">
         {description}
       </Typography>
       <div className="flex flex-col justify-center gap-8">
         <div className="flex flex-col gap-2">
-          {allJournals.sort(sortByLatest).map(({ title, publishedAt, url }) => {
+          {allNotes.sort(sortByLatest).map(({ title, publishedAt, url }) => {
             const formattedDate = format(parseISO(publishedAt), "dd MMM yyyy");
 
             return (
@@ -83,4 +83,4 @@ const JournalsPage = () => {
   );
 };
 
-export default JournalsPage;
+export default NotesPage;

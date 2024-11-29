@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { useMDXComponent } from "next-contentlayer/hooks";
+import { useMDXComponent } from "next-contentlayer2/hooks";
 import type { MDXComponents } from "mdx/types";
 import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
 import { Typography } from "@/components/Typography";

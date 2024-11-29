@@ -1,4 +1,4 @@
-import { defineDocumentType, makeSource } from "contentlayer/source-files";
+import { defineDocumentType, makeSource } from "contentlayer2/source-files";
 import type { BlogPosting, WithContext } from "schema-dts";
 import { BASE_URL } from "./config";
 import readingTime from "reading-time";
@@ -54,7 +54,7 @@ export const Post = defineDocumentType(() => ({
             name: "Ru Chern Chong",
             url: BASE_URL,
           },
-        } satisfies WithContext<BlogPosting>),
+        }) satisfies WithContext<BlogPosting>,
     },
     url: {
       type: "string",
@@ -63,9 +63,9 @@ export const Post = defineDocumentType(() => ({
   },
 }));
 
-export const Journal = defineDocumentType(() => ({
-  name: "Journal",
-  filePathPattern: "journals/**/*.mdx",
+export const Note = defineDocumentType(() => ({
+  name: "Note",
+  filePathPattern: "notes/**/*.mdx",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
@@ -76,54 +76,54 @@ export const Journal = defineDocumentType(() => ({
   computedFields: {
     slug: {
       type: "string",
-      resolve: (journal) => {
-        const [_, slug] = journal._raw.flattenedPath.split("/");
+      resolve: (note) => {
+        const [_, slug] = note._raw.flattenedPath.split("/");
         return slug;
       },
     },
     structuredData: {
       type: "json",
-      resolve: (journal) =>
+      resolve: (note) =>
         ({
           "@context": "https://schema.org",
           "@type": "BlogPosting",
-          headline: journal.title,
-          dateModified: journal.publishedAt,
-          datePublished: journal.publishedAt,
-          description: journal.title,
+          headline: note.title,
+          dateModified: note.publishedAt,
+          datePublished: note.publishedAt,
+          description: note.title,
           image: [
-            journal.image
-              ? encodeURI(`${BASE_URL}/${journal.image}`)
-              : encodeURI(`${BASE_URL}/og?title=${journal.title}`),
+            note.image
+              ? encodeURI(`${BASE_URL}/${note.image}`)
+              : encodeURI(`${BASE_URL}/og?title=${note.title}`),
           ],
-          url: `${BASE_URL}/${journal._raw.flattenedPath}`,
+          url: `${BASE_URL}/${note._raw.flattenedPath}`,
           author: {
             "@type": "Person",
             name: "Ru Chern Chong",
             url: BASE_URL,
           },
-        } satisfies WithContext<BlogPosting>),
+        }) satisfies WithContext<BlogPosting>,
     },
     url: {
       type: "string",
-      resolve: (journal) => `/${journal._raw.flattenedPath}`,
+      resolve: (note) => `/${note._raw.flattenedPath}`,
     },
   },
 }));
 
 export default makeSource({
   contentDirPath: "content",
-  documentTypes: [Post, Journal],
+  documentTypes: [Post, Note],
   mdx: {
     remarkPlugins: [remarkGfm, remarkUnwrapImages],
     rehypePlugins: [
       rehypeSlug,
-      [
-        rehypePrettyCode,
-        {
-          theme: "github-dark-dimmed",
-        } satisfies PrettyCodeOptions,
-      ],
+      // [
+      //   rehypePrettyCode,
+      //   {
+      //     theme: "github-dark-dimmed",
+      //   } satisfies PrettyCodeOptions,
+      // ],
       [
         rehypeAutolinkHeadings,
         {

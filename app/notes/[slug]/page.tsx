@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { allJournals } from "contentlayer/generated";
+import { allNotes } from "contentlayer/generated";
 import { Mdx } from "@/components/Mdx";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
@@ -12,13 +12,13 @@ export const generateMetadata = async (props: {
   params: Params;
 }): Promise<Metadata> => {
   const params = await props.params;
-  const journal = allJournals.find((journal) => journal.slug === params.slug)!;
+  const note = allNotes.find((note) => note.slug === params.slug)!;
 
-  const title = journal.title;
-  const description = journal.title;
-  const publishedTime = journal.publishedAt;
+  const title = note.title;
+  const description = note.title;
+  const publishedTime = note.publishedAt;
   const images = `${BASE_URL}/og?title=${title}`;
-  const url = journal.url;
+  const url = note.url;
 
   return {
     title,
@@ -44,27 +44,27 @@ export const generateMetadata = async (props: {
 };
 
 export const generateStaticParams = () =>
-  allJournals.map(({ slug }) => ({ slug }));
+  allNotes.map(({ slug }) => ({ slug }));
 
-const JournalPage = async (props: { params: Params }) => {
+const NotePage = async (props: { params: Params }) => {
   const params = await props.params;
-  const journal = allJournals.find((journal) => journal.slug === params.slug);
+  const note = allNotes.find((note) => note.slug === params.slug);
 
-  if (!journal) {
+  if (!note) {
     return notFound();
   }
 
   return (
     <>
-      <StructuredData data={journal.structuredData} />
+      <StructuredData data={note.structuredData} />
       <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-pink-500 prose-img:rounded-2xl">
         <Typography variant="h1" className="text-center">
-          {journal.title}
+          {note.title}
         </Typography>
-        <Mdx code={journal.body.code} />
+        <Mdx code={note.body.code} />
       </article>
     </>
   );
 };
 
-export default JournalPage;
+export default NotePage;
