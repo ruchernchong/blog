@@ -18,6 +18,7 @@ export const middleware = (request: NextRequest) => {
     script-src 'self' 'unsafe-inline' *.${DOMAIN_NAME} *.vercel-scripts.com *.googletagmanager.com;
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data:;
+    connect-src *;
     font-src 'self';
     object-src 'none';
     base-uri 'self';
