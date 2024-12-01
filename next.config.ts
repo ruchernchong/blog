@@ -1,9 +1,17 @@
 import type { NextConfig } from "next";
 import { withContentlayer } from "next-contentlayer2";
+import { DOMAIN_NAME } from "@/config";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   async headers() {
+    const VERCEL_URL = process.env.VERCEL_URL;
+    const allowedOrigins = [
+      `https://${DOMAIN_NAME}`,
+      ...(VERCEL_URL ? [`https://${VERCEL_URL}`] : []),
+      process.env.NODE_ENV === "development" ? "http://localhost:3000" : "",
+    ].filter(Boolean);
+
     return [
       {
         source: "/(.*)",
@@ -34,7 +42,44 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Access-Control-Allow-Origin",
+            value: allowedOrigins.join(","),
+          },
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET,HEAD,POST,OPTIONS",
+          },
+          {
+            key: "Access-Control-Allow-Headers",
+            value: "X-Requested-With,Content-Type,Authorization",
+          },
+          {
+            key: "Access-Control-Allow-Credentials",
+            value: "true",
+          },
+        ],
+      },
+      {
+        source: "/api/(.*)",
+        headers: [
+          {
+            key: "Access-Control-Allow-Origin",
+            value: allowedOrigins.join(","),
+          },
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET,HEAD,POST,PUT,DELETE,OPTIONS",
+          },
+          {
+            key: "Access-Control-Allow-Headers",
+            value: "X-Requested-With,Content-Type,Authorization",
+          },
+          {
+            key: "Access-Control-Allow-Credentials",
+            value: "true",
           },
         ],
       },
