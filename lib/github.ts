@@ -84,8 +84,8 @@ export const getGitHubPinnedRepositories = async (): Promise<
       }
     `,
   });
-  const { user } = data;
-  return user.pinnedItems.edges.map((edge) => edge.node);
+
+  return data.user.pinnedItems.edges.map(({ node }) => node);
 };
 
 export const getGitHubContributions = async () => {
@@ -121,7 +121,5 @@ export const getGitHubContributions = async () => {
     `,
   });
 
-  const { user } = data;
-
-  return user;
+  return data.user;
 };
