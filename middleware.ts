@@ -8,6 +8,7 @@ export const middleware = (request: NextRequest) => {
   const VERCEL_URL = process.env.VERCEL_URL;
   const allowedOrigins = [
     `https://${DOMAIN_NAME}`,
+    ...(VERCEL_URL ? [`https://${VERCEL_URL}`] : []),
     process.env.NODE_ENV === "development" ? "http://localhost:3000" : "",
   ].filter(Boolean);
 
