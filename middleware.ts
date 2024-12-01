@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { DOMAIN_NAME } from "@/config";
 
 export const middleware = (request: NextRequest) => {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic';
-    style-src 'self' 'nonce-${nonce}';
+    script-src 'self' 'unsafe-inline' *.${DOMAIN_NAME} *.vercel-scripts.com *.googletagmanager.com;
+    style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data:;
     font-src 'self';
     object-src 'none';

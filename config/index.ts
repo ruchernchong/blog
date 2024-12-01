@@ -3,8 +3,9 @@ export interface NavLink {
   href: string;
 }
 
-export const BASE_URL: string =
-  process.env.NEXT_PUBLIC_BASE_URL || "https://ruchern.dev";
+export const DOMAIN_NAME = "ruchern.dev";
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_BASE_URL || `https://${DOMAIN_NAME}`;
 
 export const navLinks: NavLink[] = [
   // { title: "Blog", href: "/blog" },
