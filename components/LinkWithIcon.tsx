@@ -16,7 +16,7 @@ export const LinkWithIcon = ({ url, title }: SpecialLinkProps) => {
       className="z-20 no-underline"
       data-umami-event="icon-link-click"
       data-umami-event-url={url}
-      data-umami-event-title={title || newUrl}
+      data-umami-event-title={title ?? newUrl}
     >
       <div className="flex items-center">
         <LinkIcon

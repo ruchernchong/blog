@@ -22,7 +22,7 @@ const ExternalLink = ({
       data-umami-event="external-link-click"
       data-umami-event-url={href}
       data-umami-event-type="social"
-      data-umami-event-title={title || href}
+      data-umami-event-title={title ?? href}
     >
       {children}
     </a>
