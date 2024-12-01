@@ -83,6 +83,11 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
           data-website-id="23a07b6c-093c-4831-840e-9d2998eba9e9"
           data-domains="ruchern.dev"
         />
+        <Script
+          defer
+          data-site-id="ruchern.dev"
+          src="https://assets.onedollarstats.com/tracker.js"
+        />
       </body>
       <GoogleAnalytics gaId="G-RM5T37E098" />
     </html>
