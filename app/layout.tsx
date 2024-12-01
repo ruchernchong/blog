@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   },
 };
 
-const RootLayout = ({ children }: { children: ReactNode }) => {
+const RootLayout = async ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en" className={classNames("scroll-smooth", inter.className)}>
       <body className="bg-gray-900 text-gray-50">

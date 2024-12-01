@@ -2,8 +2,6 @@ import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import { BASE_URL } from "@/config";
 
-export const runtime = "edge";
-
 export const GET = async (req: NextRequest) => {
   const { searchParams } = req.nextUrl;
   const title = searchParams.get("title");
@@ -22,6 +20,6 @@ export const GET = async (req: NextRequest) => {
     {
       width: 1200,
       height: 630,
-    }
+    },
   );
 };
