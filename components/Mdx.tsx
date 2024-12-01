@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useMDXComponent } from "next-contentlayer2/hooks";
@@ -40,19 +41,20 @@ const CustomLink = ({ href, children, ...props }: any) => {
   );
 };
 
-const ImageComponent = ({ alt, src, ...props }: any) => (
+const ImageComponent = ({ alt, ...props }: any) => (
   <figure>
-    <Image
-      alt={alt}
-      width={0}
-      height={0}
-      sizes="100vw"
-      className="h-auto w-full rounded-2xl"
-      data-umami-event="image-view"
-      data-umami-event-image={src}
-      data-umami-event-alt={alt}
-      {...props}
-    />
+    <Suspense fallback={null}>
+      <Image
+        alt={alt}
+        width={0}
+        height={0}
+        sizes="100vw"
+        className="h-auto w-full rounded-2xl"
+        data-umami-event="image-view"
+        data-umami-event-alt={alt}
+        {...props}
+      />
+    </Suspense>
     {alt && (
       <figcaption className="text-center text-xs font-bold italic text-gray-50">
         {alt}
