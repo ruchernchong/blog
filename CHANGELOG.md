@@ -1,3 +1,9 @@
+## [1.4.7](https://github.com/ruchernchong/portfolio/compare/v1.4.6...v1.4.7) (2024-12-01)
+
+### Bug Fixes
+
+- fix CSP with connect-src ([7fbd8fb](https://github.com/ruchernchong/portfolio/commit/7fbd8fb23b70c4fcd5fa980f2c7af166f40218c1))
+
 ## [1.4.6](https://github.com/ruchernchong/portfolio/compare/v1.4.5...v1.4.6) (2024-12-01)
 
 ### Bug Fixes
