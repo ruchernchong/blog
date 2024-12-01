@@ -13,5 +13,14 @@ export const ViewCounter = async ({ slug }: Props) => {
 
   const views = (await redis.get<number>(`pageviews:${slug}`)) || 0;
 
-  return <p className="text-sm text-neutral-400">{views} views</p>;
+  return (
+    <p
+      className="text-sm text-neutral-400"
+      data-umami-event="view-counter-display"
+      data-umami-event-slug={slug}
+      data-umami-event-views={views}
+    >
+      {views} views
+    </p>
+  );
 };

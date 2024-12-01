@@ -11,8 +11,14 @@ interface EmploymentProps {
 
 const Employment = ({ companies }: EmploymentProps) => {
   return (
-    <section className="flex flex-col gap-8">
-      <div className="flex flex-col gap-4">
+    <section
+      className="flex flex-col gap-8"
+      data-umami-event="employment-section-view"
+    >
+      <div
+        className="flex flex-col gap-4"
+        data-umami-event="employment-header-view"
+      >
         <div className="flex items-center gap-2">
           <BriefcaseIcon width={32} height={32} className="fill-pink-500" />
           <h2 className="text-4xl font-bold">Work</h2>
@@ -23,6 +29,7 @@ const Employment = ({ companies }: EmploymentProps) => {
           <ExternalLink
             href="https://linkedin.com/in/ruchernchong"
             className="text-pink-500 underline hover:text-pink-300"
+            data-umami-event="linkedin-link-click"
           >
             LinkedIn
           </ExternalLink>
@@ -36,6 +43,9 @@ const Employment = ({ companies }: EmploymentProps) => {
               <div
                 key={name}
                 className="group relative flex items-center gap-4"
+                data-umami-event="company-card-view"
+                data-umami-event-company={name}
+                data-umami-event-title={title}
               >
                 <div
                   className={classNames(
@@ -51,6 +61,8 @@ const Employment = ({ companies }: EmploymentProps) => {
                       sizes="100vw"
                       alt={`${name} logo`}
                       priority
+                      data-umami-event="company-logo-view"
+                      data-umami-event-company={name}
                     />
                   )}
                   {!logo && (
@@ -67,6 +79,9 @@ const Employment = ({ companies }: EmploymentProps) => {
                     target="_blank"
                     rel="noopener nofollow"
                     className="z-20 no-underline"
+                    data-umami-event="company-link-click"
+                    data-umami-event-company={name}
+                    data-umami-event-url={url}
                   >
                     <ItemOverlay />
                     <div className="text-xl font-bold group-hover:text-pink-500">

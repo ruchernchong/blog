@@ -36,13 +36,32 @@ const HomePage = async () => {
   return (
     <>
       <StructuredData data={structuredData} />
-      <div className="flex flex-col justify-center gap-8">
-        <Author title="Chong Ru Chern" />
+      <div
+        className="flex flex-col justify-center gap-8"
+        data-umami-event="page-view"
+        data-umami-event-type="home"
+      >
+        <div data-umami-event="author-section-view">
+          <Author title="Chong Ru Chern" />
+        </div>
         {featuredPosts.length > 0 && (
-          <FeaturedPosts featuredPosts={featuredPosts} />
+          <div
+            data-umami-event="featured-posts-view"
+            data-umami-event-count={featuredPosts.length}
+          >
+            <FeaturedPosts featuredPosts={featuredPosts} />
+          </div>
         )}
-        <div className="flex flex-col gap-8">
-          <h2 className="text-xl font-bold uppercase text-pink-500">
+        <div
+          className="flex flex-col gap-8"
+          data-umami-event="recent-posts-view"
+          data-umami-event-count={posts.length}
+        >
+          <h2
+            className="text-xl font-bold uppercase text-pink-500"
+            data-umami-event="section-header-view"
+            data-umami-event-section="recently-published"
+          >
             Recently Published
           </h2>
           {posts.length === 0 && (
@@ -55,13 +74,18 @@ const HomePage = async () => {
             {posts.length > 0 &&
               posts.map(({ title, url, excerpt, publishedAt }) => {
                 return (
-                  <BlogPost
+                  <div
                     key={title}
-                    title={title}
-                    url={url}
-                    excerpt={excerpt}
-                    publishedAt={publishedAt}
-                  />
+                    data-umami-event="blog-post-view"
+                    data-umami-event-title={title}
+                  >
+                    <BlogPost
+                      title={title}
+                      url={url}
+                      excerpt={excerpt}
+                      publishedAt={publishedAt}
+                    />
+                  </div>
                 );
               })}
           </div>
