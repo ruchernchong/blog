@@ -3,7 +3,7 @@
   "version": "1.4.5",
   "private": true,
   "scripts": {
-    "dev": "contentlayer2 dev & next dev --turbo",
+    "dev": "contentlayer2 dev & next dev --turbopack --experimental-https",
     "build": "next build",
     "start": "next start",
     "test": "vitest",
