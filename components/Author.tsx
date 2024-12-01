@@ -11,7 +11,7 @@ interface AuthorProps {
   description?: string;
 }
 
-const Author = ({ title, tagline, description }: AuthorProps) => {
+export const Author = ({ title, tagline, description }: AuthorProps) => {
   return (
     <div className="flex flex-col-reverse items-center md:flex-row md:items-start md:gap-8">
       <div className="flex grow basis-1/2 flex-col gap-4">
@@ -42,5 +42,3 @@ const Author = ({ title, tagline, description }: AuthorProps) => {
     </div>
   );
 };
-
-export default Author;
