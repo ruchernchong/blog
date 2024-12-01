@@ -1,3 +1,10 @@
+## [1.4.8](https://github.com/ruchernchong/portfolio/compare/v1.4.7...v1.4.8) (2024-12-01)
+
+### Reverts
+
+- Revert "chore: add CORS" ([abce734](https://github.com/ruchernchong/portfolio/commit/abce734eb1c211d177b5fc470fc62f53dfe31201))
+- Revert "chore: remove Vercel URL in CORS" ([ba75497](https://github.com/ruchernchong/portfolio/commit/ba754972a845ecc540711caeac1ab9809c3202fc))
+
 ## [1.4.7](https://github.com/ruchernchong/portfolio/compare/v1.4.6...v1.4.7) (2024-12-01)
 
 ### Bug Fixes
