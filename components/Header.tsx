@@ -8,6 +8,7 @@ import { navLinks } from "@/config";
 interface NavItemProps extends PropsWithChildren {
   href: string;
   className?: string;
+  title?: string;
 }
 
 export const Header = () => {
@@ -15,7 +16,10 @@ export const Header = () => {
   const isHomePage = Boolean(pathname === "/");
 
   return (
-    <div className="shadow shadow-gray-800">
+    <div
+      className="shadow shadow-gray-800"
+      data-umami-event="header-interaction"
+    >
       <header className="mx-auto flex max-w-4xl items-center px-4 py-8">
         <NavItem
           href="/"
@@ -23,10 +27,14 @@ export const Header = () => {
             "text-pink-500 underline underline-offset-8": isHomePage,
             "hover:text-pink-500": !isHomePage,
           })}
+          title="Home"
         >
           Home
         </NavItem>
-        <nav className="flex grow justify-end gap-x-6">
+        <nav
+          className="flex grow justify-end gap-x-6"
+          data-umami-event="navigation-interaction"
+        >
           {navLinks.map(({ title, href }) => {
             const isActive = pathname.startsWith(href) && href !== "/";
 
@@ -38,6 +46,7 @@ export const Header = () => {
                   "text-pink-500 underline underline-offset-8": isActive,
                   "hover:text-pink-500": !isActive,
                 })}
+                title={title}
               >
                 {title}
               </NavItem>
@@ -49,9 +58,15 @@ export const Header = () => {
   );
 };
 
-const NavItem = ({ href, className, children }: NavItemProps) => {
+const NavItem = ({ href, className, children, title }: NavItemProps) => {
   return (
-    <Link href={href} className={className}>
+    <Link
+      href={href}
+      className={className}
+      data-umami-event="navigation-link-click"
+      data-umami-event-link={href}
+      data-umami-event-title={title}
+    >
       {children}
     </Link>
   );

@@ -57,11 +57,27 @@ const NotePage = async (props: { params: Params }) => {
   return (
     <>
       <StructuredData data={note.structuredData} />
-      <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-pink-500 prose-img:rounded-2xl">
-        <Typography variant="h1" className="text-center">
+      <article
+        className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-pink-500 prose-img:rounded-2xl"
+        data-umami-event="note-view"
+        data-umami-event-title={note.title}
+        data-umami-event-slug={note.slug}
+        data-umami-event-url={note.url}
+      >
+        <Typography
+          variant="h1"
+          className="text-center"
+          data-umami-event="note-title-view"
+          data-umami-event-title={note.title}
+        >
           {note.title}
         </Typography>
-        <Mdx code={note.body.code} />
+        <div
+          data-umami-event="note-content-view"
+          data-umami-event-title={note.title}
+        >
+          <Mdx code={note.body.code} />
+        </div>
       </article>
     </>
   );

@@ -10,8 +10,14 @@ interface FeaturedPostsProps {
 
 const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
   return (
-    <div className="flex flex-col gap-8">
-      <div className="text-xl font-bold uppercase text-pink-500">
+    <div
+      className="flex flex-col gap-8"
+      data-umami-event="featured-posts-section-view"
+    >
+      <div
+        className="text-xl font-bold uppercase text-pink-500"
+        data-umami-event="featured-posts-header-view"
+      >
         Featured Posts
       </div>
       <div className="grid gap-4 md:auto-cols-fr md:grid-flow-col">
@@ -20,26 +26,47 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
           .map(({ title, url, excerpt, publishedAt }) => {
             const formattedDate = format(
               parseISO(publishedAt),
-              "iiii, dd MMMM yyyy"
+              "iiii, dd MMMM yyyy",
             );
 
             return (
-              <Card key={title}>
-                <Link href={url} className="flex h-full flex-col gap-2">
+              <Card
+                key={title}
+                data-umami-event="featured-post-card-interaction"
+                data-umami-event-title={title}
+              >
+                <Link
+                  href={url}
+                  className="flex h-full flex-col gap-2"
+                  data-umami-event="featured-post-link-click"
+                  data-umami-event-title={title}
+                  data-umami-event-url={url}
+                >
                   <time
                     dateTime={formatISO(parseISO(publishedAt))}
                     title={formattedDate}
                     className="italic text-gray-400"
+                    data-umami-event="featured-post-date-view"
+                    data-umami-event-title={title}
+                    data-umami-event-date={publishedAt}
                   >
                     {formattedDate}
                   </time>
                   <Typography
                     variant="h3"
                     className="flex grow flex-col justify-center capitalize"
+                    data-umami-event="featured-post-title-view"
+                    data-umami-event-title={title}
                   >
                     {title}
                   </Typography>
-                  <p className="text-gray-400">{excerpt}</p>
+                  <p
+                    className="text-gray-400"
+                    data-umami-event="featured-post-excerpt-view"
+                    data-umami-event-title={title}
+                  >
+                    {excerpt}
+                  </p>
                 </Link>
               </Card>
             );
