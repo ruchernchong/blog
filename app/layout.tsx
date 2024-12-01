@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import classNames from "classnames";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -83,6 +84,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           data-domains="ruchern.dev"
         />
       </body>
+      <GoogleAnalytics gaId="G-RM5T37E098" />
     </html>
   );
 };
