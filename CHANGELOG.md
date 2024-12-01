@@ -1,3 +1,9 @@
+## [1.4.9](https://github.com/ruchernchong/portfolio/compare/v1.4.8...v1.4.9) (2024-12-01)
+
+### Bug Fixes
+
+- images not loading properly for contents ([3708a03](https://github.com/ruchernchong/portfolio/commit/3708a03d26e38a45466ff16fefe50ab8e40c6e10))
+
 ## [1.4.8](https://github.com/ruchernchong/portfolio/compare/v1.4.7...v1.4.8) (2024-12-01)
 
 ### Reverts
