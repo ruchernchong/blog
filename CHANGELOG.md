@@ -1,3 +1,9 @@
+## [1.4.6](https://github.com/ruchernchong/portfolio/compare/v1.4.5...v1.4.6) (2024-12-01)
+
+### Bug Fixes
+
+- CSP causing scripts not to load correctly ([c4f07b0](https://github.com/ruchernchong/portfolio/commit/c4f07b0e5bd6a544bb4a5d17affc8a3623d1746a))
+
 ## [1.4.5](https://github.com/ruchernchong/portfolio/compare/v1.4.4...v1.4.5) (2024-11-29)
 
 ### Bug Fixes

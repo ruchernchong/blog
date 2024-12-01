@@ -1,6 +1,6 @@
 {
   "name": "@ruchernchong/portfolio",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "private": true,
   "scripts": {
     "dev": "contentlayer2 dev & next dev --turbo",
