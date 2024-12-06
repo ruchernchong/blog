@@ -1,18 +1,19 @@
 import classNames from "classnames";
 import {
+  type IconType,
   SiGithub,
   SiLinkedin,
   SiRss,
   SiStackoverflow,
-  SiTwitter,
+  SiX,
 } from "@icons-pack/react-simple-icons";
 
-const SOCIAL_MAP: Record<string, any> = {
+const SOCIAL_MAP: Record<string, IconType> = {
   Github: SiGithub,
   Linkedin: SiLinkedin,
   RSS: SiRss,
   Stackoverflow: SiStackoverflow,
-  Twitter: SiTwitter,
+  Twitter: SiX,
 };
 
 type IconProps = {
