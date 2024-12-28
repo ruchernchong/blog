@@ -1,0 +1,21 @@
+---
+import { resume } from "../data/resume";
+import { Icon } from "astro-icon/components";
+---
+
+<footer class="flex flex-col items-center justify-between py-8 md:flex-row">
+  <div></div>
+  <div class="flex gap-4">
+    {
+      Object.keys(resume.socialMedia).map((key) => {
+        const value = resume.socialMedia[key];
+
+        return (
+          <a href={value} target="_blank" rel="noopener nofollow noreferrer">
+            <Icon name={key} size={16} />
+          </a>
+        );
+      })
+    }
+  </div>
+</footer>
