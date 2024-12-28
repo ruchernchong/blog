@@ -1,1 +1,1 @@
-export const DOMAIN_NAME = "ruchern.xyz";
+export const DOMAIN_NAME = "ruchern.dev";
