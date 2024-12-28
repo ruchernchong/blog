@@ -1,15 +1,17 @@
+import { truncate } from "@/utils/truncate";
 import { defineDocumentType, makeSource } from "contentlayer2/source-files";
+import readingTime from "reading-time";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeSlug from "rehype-slug";
+import remarkGfm from "remark-gfm";
+import remarkUnwrapImages from "remark-unwrap-images";
 import type { BlogPosting, WithContext } from "schema-dts";
 import { BASE_URL } from "./config";
-import readingTime from "reading-time";
-import remarkGfm from "remark-gfm";
-import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import remarkUnwrapImages from "remark-unwrap-images";
-import { truncate } from "@/utils/truncate";
 // import rehypePrettyCode, {
 //   type Options as PrettyCodeOptions,
 // } from "rehype-pretty-code";
+
+import { randomUUID } from "node:crypto";
 
 export const Post = defineDocumentType(() => ({
   name: "Post",
@@ -23,6 +25,10 @@ export const Post = defineDocumentType(() => ({
     image: { type: "string" },
   },
   computedFields: {
+    id: {
+      type: "string",
+      resolve: () => randomUUID(),
+    },
     readingTime: {
       type: "string",
       resolve: (post) => readingTime(post.body.raw).text,
