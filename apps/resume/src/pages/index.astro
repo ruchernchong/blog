@@ -1,0 +1,60 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import GradientText from "../components/GradientText.astro";
+import Section from "../components/Section.astro";
+import { resume } from "../data/resume";
+
+const { experience, education, name, about } = resume;
+---
+
+<BaseLayout title="Resume">
+  <GradientText>{name}</GradientText>
+  <p class="mb-16 text-lg">{about}</p>
+  <!--TODO: Clean up sections-->
+  <Section title="Experience"
+    >{
+      experience.map((item) => {
+        return (
+          <div class="mb-8">
+            <div class="flex items-center justify-between gap-x-4">
+              <div class="prose dark:prose-invert">
+                <h3>{item.name}</h3>
+              </div>
+              <p class="text-right">
+                {item.startDate} - {item.endDate ?? "Present"}
+              </p>
+            </div>
+            <p class="text-sm text-pink-500">{item.location}</p>
+            {item.description && (
+              <ul class="flex flex-col gap-y-4">
+                {item.description.map((description) => {
+                  return <li>&ndash;&nbsp;{description}</li>;
+                })}
+              </ul>
+            )}
+          </div>
+        );
+      })
+    }</Section
+  >
+  <Section title="Education"
+    >{
+      education.map((item) => {
+        return (
+          <div class="mb-8">
+            <div class="flex items-center justify-between gap-x-4">
+              <div class="prose dark:prose-invert">
+                <h3>{item.name}</h3>
+              </div>
+              <p class="text-right">
+                {item.startDate} - {item.endDate ?? "Present"}
+              </p>
+            </div>
+            <p class="text-sm text-pink-500">{item.location}</p>
+            <div>{item.courseOfStudy}</div>
+          </div>
+        );
+      })
+    }</Section
+  >
+</BaseLayout>
