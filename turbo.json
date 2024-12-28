@@ -10,10 +10,13 @@
         "UPSTASH_REDIS_REST_URL",
         "UPSTASH_REDIS_REST_TOKEN"
       ],
-      "outputs": [".next/**", "!.next/cache/**", ".contentlayer/**"]
-    },
-    "resume#build": {
-      "outputs": ["dist/**"]
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        ".contentlayer/**",
+        ".astro/**",
+        "dist/**"
+      ]
     },
     "check-types": {
       "dependsOn": ["^check-types"]
