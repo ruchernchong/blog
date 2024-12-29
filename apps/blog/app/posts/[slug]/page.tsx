@@ -24,7 +24,11 @@ export const generateMetadata = async (props: {
   params: Params;
 }): Promise<Metadata> => {
   const params = await props.params;
-  const post = allPosts.find((post) => post.slug === params.slug)!;
+  const post = allPosts.find((post) => post.slug === params.slug);
+
+  if (!post) {
+    notFound();
+  }
 
   const title = post.title;
   const description = truncate(post.excerpt);
