@@ -12,11 +12,6 @@ import remarkGfm from "remark-gfm";
 import remarkUnwrapImages from "remark-unwrap-images";
 import type { BlogPosting, WithContext } from "schema-dts";
 import { BASE_URL } from "./config";
-// import rehypePrettyCode, {
-//   type Options as PrettyCodeOptions,
-// } from "rehype-pretty-code";
-
-import { randomUUID } from "node:crypto";
 
 export const Post = defineDocumentType(() => ({
   name: "Post",
@@ -45,6 +40,39 @@ export const Post = defineDocumentType(() => ({
         return slug;
       },
     },
+    description: {
+      type: "string",
+      resolve: ({ excerpt }) => truncate(excerpt),
+    },
+    openGraph: {
+      type: "json",
+      resolve: (post) =>
+        ({
+          title: post.title,
+          siteName: "Ru Chern",
+          description: truncate(post.excerpt),
+          type: "article",
+          publishedTime: post.publishedAt,
+          url: `${BASE_URL}/${post._raw.flattenedPath}`,
+          images: post.image
+            ? [`${BASE_URL}/${post.image}`]
+            : [`${BASE_URL}/og?title=${post.title}`],
+          locale: "en_SG",
+        }) satisfies Metadata["openGraph"],
+    },
+    twitter: {
+      type: "json",
+      resolve: (post) =>
+        ({
+          card: "summary_large_image",
+          site: "@ruchernchong",
+          title: post.title,
+          description: truncate(post.excerpt),
+          images: post.image
+            ? [`${BASE_URL}/${post.image}`]
+            : [`${BASE_URL}/og?title=${post.title}`],
+        }) satisfies Metadata["twitter"],
+    },
     structuredData: {
       type: "json",
       resolve: (post) =>
@@ -68,9 +96,9 @@ export const Post = defineDocumentType(() => ({
           },
         }) satisfies WithContext<BlogPosting>,
     },
-    url: {
+    canonical: {
       type: "string",
-      resolve: (post) => `/${post._raw.flattenedPath}`,
+      resolve: (post) => `${BASE_URL}/${post._raw.flattenedPath}`,
     },
   },
 }));

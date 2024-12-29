@@ -3,8 +3,6 @@ import { Mdx } from "@/components/Mdx";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
 import { ViewCounter } from "@/components/ViewCounter";
-import { BASE_URL } from "@/config";
-import truncate from "@/utils/truncate";
 import {
   BookOpenIcon,
   CalendarDaysIcon,
@@ -30,31 +28,14 @@ export const generateMetadata = async (props: {
     notFound();
   }
 
-  const title = post.title;
-  const description = truncate(post.excerpt);
-  const publishedTime = post.publishedAt;
-  const url = post.url;
-  const images = `${BASE_URL}/og?title=${title}`;
-
+  const { title, description, openGraph, twitter, canonical } = post;
   return {
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      type: "article",
-      publishedTime,
-      url,
-      images,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images,
-    },
+    openGraph,
+    twitter,
     alternates: {
-      canonical: url,
+      canonical,
     },
   };
 };
