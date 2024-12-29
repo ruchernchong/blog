@@ -1,4 +1,3 @@
-import Avatar from "@/components/Avatar";
 import ExternalLink from "@/components/ExternalLink";
 import * as Icons from "@/components/Icons";
 import { Typography } from "@/components/Typography";
@@ -38,7 +37,6 @@ export const Author = ({ title, tagline, description }: AuthorProps) => {
           })}
         </div>
       </div>
-      <Avatar />
     </div>
   );
 };
