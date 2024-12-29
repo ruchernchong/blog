@@ -1,5 +1,10 @@
-import { truncate } from "@/utils/truncate";
+// import rehypePrettyCode, {
+//   type Options as PrettyCodeOptions,
+// } from "rehype-pretty-code";
+import { randomUUID } from "node:crypto";
+import truncate from "@/utils/truncate";
 import { defineDocumentType, makeSource } from "contentlayer2/source-files";
+import type { Metadata } from "next";
 import readingTime from "reading-time";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";

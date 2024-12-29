@@ -1,22 +1,22 @@
-import type { Metadata } from "next";
-// import Link from "next/link";
-import { notFound } from "next/navigation";
-import { allPosts } from "contentlayer/generated";
-// import classNames from "classnames";
-import { format, formatISO, parseISO } from "date-fns";
 // import Card from "@/components/Card";
 import { Mdx } from "@/components/Mdx";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
 import { ViewCounter } from "@/components/ViewCounter";
 import { BASE_URL } from "@/config";
+import truncate from "@/utils/truncate";
 import {
   BookOpenIcon,
   CalendarDaysIcon,
   EyeIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
-import { truncate } from "@/utils/truncate";
+import { allPosts } from "contentlayer/generated";
+// import classNames from "classnames";
+import { format, formatISO, parseISO } from "date-fns";
+import type { Metadata } from "next";
+// import Link from "next/link";
+import { notFound } from "next/navigation";
 
 type Params = Promise<{ slug: string }>;
 
