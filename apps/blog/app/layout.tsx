@@ -1,14 +1,14 @@
-import type { ReactNode } from "react";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import Script from "next/script";
-import { GoogleAnalytics } from "@next/third-parties/google";
-import classNames from "classnames";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { BASE_URL } from "@/config";
+import { GoogleAnalytics } from "@next/third-parties/google";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import classNames from "classnames";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import Script from "next/script";
+import type { ReactNode } from "react";
 import "@/app/globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -47,6 +47,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: "@ruchernchong",
     title,
     description,
     creator: "@ruchernchong",

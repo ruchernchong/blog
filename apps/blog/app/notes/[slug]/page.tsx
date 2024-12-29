@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { allNotes } from "contentlayer/generated";
 import { Mdx } from "@/components/Mdx";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
 import { BASE_URL } from "@/config";
+import { allNotes } from "contentlayer/generated";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 type Params = Promise<{ slug: string }>;
 
@@ -12,13 +12,17 @@ export const generateMetadata = async (props: {
   params: Params;
 }): Promise<Metadata> => {
   const params = await props.params;
-  const note = allNotes.find((note) => note.slug === params.slug)!;
+  const note = allNotes.find((note) => note.slug === params.slug);
 
+  if (!note) {
+    return notFound();
+  }
+
+  const { canonical } = note;
   const title = note.title;
   const description = `Notes on ${note.title}`;
   const publishedTime = note.publishedAt;
   const images = `${BASE_URL}/og?title=${title}`;
-  const url = note.url;
 
   return {
     title,
@@ -28,7 +32,7 @@ export const generateMetadata = async (props: {
       description,
       type: "article",
       publishedTime,
-      url,
+      url: canonical,
       images,
     },
     twitter: {
@@ -38,7 +42,7 @@ export const generateMetadata = async (props: {
       images,
     },
     alternates: {
-      canonical: url,
+      canonical,
     },
   };
 };
@@ -62,7 +66,7 @@ const NotePage = async (props: { params: Params }) => {
         data-umami-event="note-view"
         data-umami-event-title={note.title}
         data-umami-event-slug={note.slug}
-        data-umami-event-url={note.url}
+        data-umami-event-url={note.canonical}
       >
         <Typography
           variant="h1"

@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { allNotes } from "contentlayer/generated";
-import { format, formatISO, parseISO } from "date-fns";
 import globalMetadata from "@/app/metadata";
 import { openGraphImage, twitterImage } from "@/app/shared-metadata";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
-import { sortByLatest } from "@/lib/sortByLatest";
-import type { WebPage, WithContext } from "schema-dts";
 import { BASE_URL } from "@/config";
+import { sortByLatest } from "@/lib/sortByLatest";
+import { allNotes } from "contentlayer/generated";
+import { format, formatISO, parseISO } from "date-fns";
+import type { Metadata } from "next";
+import Link from "next/link";
+import type { WebPage, WithContext } from "schema-dts";
 
 const title = "Notes";
 const description =
@@ -73,7 +73,7 @@ const NotesPage = () => {
             className="flex flex-col gap-2"
             data-umami-event="notes-list-view"
           >
-            {sortedNotes.map(({ title, publishedAt, url }) => {
+            {sortedNotes.map(({ title, publishedAt, canonical }) => {
               const formattedDate = format(
                 parseISO(publishedAt),
                 "dd MMM yyyy",
@@ -96,11 +96,11 @@ const NotesPage = () => {
                     {formattedDate}
                   </time>
                   <Link
-                    href={url}
+                    href={canonical}
                     className="no-underline"
                     data-umami-event="note-link-click"
                     data-umami-event-title={title}
-                    data-umami-event-url={url}
+                    data-umami-event-url={canonical}
                   >
                     <Typography
                       variant="h3"

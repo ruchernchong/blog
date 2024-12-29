@@ -121,6 +121,35 @@ export const Note = defineDocumentType(() => ({
         return slug;
       },
     },
+    openGraph: {
+      type: "json",
+      resolve: (note) =>
+        ({
+          title: note.title,
+          siteName: "Ru Chern",
+          description: truncate(note.excerpt ?? note.title),
+          type: "article",
+          publishedTime: note.publishedAt,
+          url: `${BASE_URL}/${note._raw.flattenedPath}`,
+          images: note.image
+            ? [`${BASE_URL}/${note.image}`]
+            : [`${BASE_URL}/og?title=${note.title}`],
+          locale: "en_SG",
+        }) satisfies Metadata["openGraph"],
+    },
+    twitter: {
+      type: "json",
+      resolve: (note) =>
+        ({
+          card: "summary_large_image",
+          site: "@ruchernchong",
+          title: note.title,
+          description: truncate(note.excerpt ?? note.title),
+          images: note.image
+            ? [`${BASE_URL}/${note.image}`]
+            : [`${BASE_URL}/og?title=${note.title}`],
+        }) satisfies Metadata["twitter"],
+    },
     structuredData: {
       type: "json",
       resolve: (note) =>
@@ -130,7 +159,7 @@ export const Note = defineDocumentType(() => ({
           headline: note.title,
           dateModified: note.publishedAt,
           datePublished: note.publishedAt,
-          description: note.title,
+          description: truncate(note.excerpt ?? note.title),
           image: [
             note.image
               ? encodeURI(`${BASE_URL}/${note.image}`)
