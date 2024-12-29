@@ -1,11 +1,11 @@
-import { allPosts } from "contentlayer/generated";
-import type { WebSite, WithContext } from "schema-dts";
 import { Author } from "@/components/Author";
 import BlogPost from "@/components/BlogPost";
 import FeaturedPosts from "@/components/FeaturedPosts";
 import { StructuredData } from "@/components/StructuredData";
-import { sortByLatest } from "@/lib/sortByLatest";
 import { BASE_URL } from "@/config";
+import { sortByLatest } from "@/lib/sortByLatest";
+import { allPosts } from "contentlayer/generated";
+import type { WebSite, WithContext } from "schema-dts";
 
 const HomePage = async () => {
   const posts = allPosts.sort(sortByLatest);
@@ -72,7 +72,7 @@ const HomePage = async () => {
           )}
           <div className="flex flex-col gap-12">
             {posts.length > 0 &&
-              posts.map(({ title, url, excerpt, publishedAt }) => {
+              posts.map(({ title, canonical, excerpt, publishedAt }) => {
                 return (
                   <div
                     key={title}
@@ -81,7 +81,7 @@ const HomePage = async () => {
                   >
                     <BlogPost
                       title={title}
-                      url={url}
+                      canonical={canonical}
                       excerpt={excerpt}
                       publishedAt={publishedAt}
                     />

@@ -1,8 +1,8 @@
-import Link from "next/link";
-import { format, formatISO, parseISO } from "date-fns";
 import Card from "@/components/Card";
 import { Typography } from "@/components/Typography";
 import type { Post } from "contentlayer/generated";
+import { format, formatISO, parseISO } from "date-fns";
+import Link from "next/link";
 
 interface FeaturedPostsProps {
   featuredPosts: Post[];
@@ -23,7 +23,7 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
       <div className="grid gap-4 md:auto-cols-fr md:grid-flow-col">
         {featuredPosts
           .slice(0, 3)
-          .map(({ title, url, excerpt, publishedAt }) => {
+          .map(({ title, canonical, excerpt, publishedAt }) => {
             const formattedDate = format(
               parseISO(publishedAt),
               "iiii, dd MMMM yyyy",
@@ -36,11 +36,11 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
                 data-umami-event-title={title}
               >
                 <Link
-                  href={url}
+                  href={canonical}
                   className="flex h-full flex-col gap-2"
                   data-umami-event="featured-post-link-click"
                   data-umami-event-title={title}
-                  data-umami-event-url={url}
+                  data-umami-event-url={canonical}
                 >
                   <time
                     dateTime={formatISO(parseISO(publishedAt))}

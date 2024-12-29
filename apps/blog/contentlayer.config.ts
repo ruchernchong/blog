@@ -1,12 +1,12 @@
-// import rehypePrettyCode, {
-//   type Options as PrettyCodeOptions,
-// } from "rehype-pretty-code";
 import { randomUUID } from "node:crypto";
 import truncate from "@/utils/truncate";
 import { defineDocumentType, makeSource } from "contentlayer2/source-files";
 import type { Metadata } from "next";
 import readingTime from "reading-time";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypePrettyCode, {
+  type Options as PrettyCodeOptions,
+} from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkUnwrapImages from "remark-unwrap-images";
@@ -187,12 +187,12 @@ export default makeSource({
     remarkPlugins: [remarkGfm, remarkUnwrapImages],
     rehypePlugins: [
       rehypeSlug,
-      // [
-      //   rehypePrettyCode,
-      //   {
-      //     theme: "github-dark-dimmed",
-      //   } satisfies PrettyCodeOptions,
-      // ],
+      [
+        rehypePrettyCode,
+        {
+          theme: "github-dark-dimmed",
+        } satisfies PrettyCodeOptions,
+      ],
       [
         rehypeAutolinkHeadings,
         {

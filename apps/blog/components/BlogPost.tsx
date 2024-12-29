@@ -1,16 +1,21 @@
-import Link from "next/link";
-import { format, formatISO, parseISO } from "date-fns";
-import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { Typography } from "@/components/Typography";
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { format, formatISO, parseISO } from "date-fns";
+import Link from "next/link";
 
 interface BlogPostProps {
   title: string;
-  url: string;
+  canonical: string;
   excerpt: string;
   publishedAt: string;
 }
 
-const BlogPost = ({ title, url, excerpt, publishedAt }: BlogPostProps) => {
+const BlogPost = ({
+  title,
+  canonical,
+  excerpt,
+  publishedAt,
+}: BlogPostProps) => {
   const formattedDate = format(parseISO(publishedAt), "iiii, dd MMMM yyyy");
 
   return (
@@ -22,11 +27,11 @@ const BlogPost = ({ title, url, excerpt, publishedAt }: BlogPostProps) => {
       <div className="mb-4 flex flex-col-reverse md:flex-row md:justify-between">
         <div className="w-full basis-2/3">
           <Link
-            href={url}
+            href={canonical}
             className="group-hover:text-pink-500"
             data-umami-event="blog-post-title-click"
             data-umami-event-title={title}
-            data-umami-event-url={url}
+            data-umami-event-url={canonical}
           >
             <Typography variant="h3" className="capitalize">
               {title}
@@ -55,7 +60,7 @@ const BlogPost = ({ title, url, excerpt, publishedAt }: BlogPostProps) => {
         className="flex items-center gap-x-1"
         data-umami-event="blog-post-read-more"
         data-umami-event-title={title}
-        data-umami-event-url={url}
+        data-umami-event-url={canonical}
       >
         Read more
         <ArrowRightIcon
