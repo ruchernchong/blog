@@ -1,21 +1,18 @@
-import type { MetadataRoute } from "next";
-import { allDocuments } from "contentlayer/generated";
 import { BASE_URL, navLinks } from "@/config";
+import { allDocuments } from "contentlayer/generated";
+import type { MetadataRoute } from "next";
 
 const sitemap = (): MetadataRoute.Sitemap => {
   return [
-    {
-      url: BASE_URL,
-      lastModified: formatLastModified(),
-    },
+    { url: BASE_URL, lastModified: formatLastModified() },
     ...navLinks
       .filter(({ href }) => href !== "/")
       .map(({ href }) => ({
         url: `${BASE_URL}${href}`,
         lastModified: formatLastModified(),
       })),
-    ...allDocuments.map(({ publishedAt, url }) => ({
-      url: `${BASE_URL}${url}`,
+    ...allDocuments.map(({ publishedAt, canonical }) => ({
+      url: canonical,
       lastModified: formatLastModified(publishedAt),
       changeFrequency: "daily",
     })),

@@ -144,9 +144,9 @@ export const Note = defineDocumentType(() => ({
           },
         }) satisfies WithContext<BlogPosting>,
     },
-    url: {
+    canonical: {
       type: "string",
-      resolve: (note) => `/${note._raw.flattenedPath}`,
+      resolve: (note) => `${BASE_URL}/${note._raw.flattenedPath}`,
     },
   },
 }));
