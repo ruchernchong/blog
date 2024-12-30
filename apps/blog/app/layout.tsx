@@ -80,6 +80,11 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
         <SpeedInsights />
         <Script
           defer
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="IbuEg0lrqdkez2MoPQhVXQ"
+        />
+        <Script
+          defer
           src="https://analytics.ruchern.dev/script.js"
           data-website-id="23a07b6c-093c-4831-840e-9d2998eba9e9"
           data-domains="ruchern.dev"
