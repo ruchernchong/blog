@@ -16,7 +16,7 @@ const ExternalLink = ({
     <a
       href={href}
       target="_blank"
-      rel="noopenner noreferrer nofollow me"
+      rel="noreferrer nofollow me"
       aria-label="Link to social media"
       className={className}
       data-umami-event="external-link-click"
