@@ -17,10 +17,6 @@ const socials: Social[] = [
     name: "Twitter",
     link: "https://twitter.com/ruchernchong",
   },
-  {
-    name: "RSS",
-    link: "$BASE_URL/feed.xml",
-  },
 ];
 
 export default socials;
