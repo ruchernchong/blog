@@ -112,6 +112,7 @@ export const Note = defineDocumentType(() => ({
     title: { type: "string", required: true },
     publishedAt: { type: "date", required: true },
     excerpt: { type: "string" },
+    isDraft: { type: "boolean" },
     image: { type: "string" },
   },
   computedFields: {

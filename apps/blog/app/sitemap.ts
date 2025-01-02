@@ -11,11 +11,13 @@ const sitemap = (): MetadataRoute.Sitemap => {
         url: `${BASE_URL}${href}`,
         lastModified: formatLastModified(),
       })),
-    ...allDocuments.map(({ publishedAt, canonical }) => ({
-      url: canonical,
-      lastModified: formatLastModified(publishedAt),
-      changeFrequency: "daily",
-    })),
+    ...allDocuments
+      .filter(({ isDraft }) => !isDraft)
+      .map(({ publishedAt, canonical }) => ({
+        url: canonical,
+        lastModified: formatLastModified(publishedAt),
+        changeFrequency: "daily",
+      })),
   ];
 };
 
