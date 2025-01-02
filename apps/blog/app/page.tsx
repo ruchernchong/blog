@@ -8,7 +8,7 @@ import { allPosts } from "contentlayer/generated";
 import type { WebSite, WithContext } from "schema-dts";
 
 const HomePage = async () => {
-  const posts = allPosts.sort(sortByLatest);
+  const posts = allPosts.filter(({ isDraft }) => !isDraft).sort(sortByLatest);
   const featuredPosts = posts.filter(({ featured }) => featured);
 
   const structuredData: WithContext<WebSite> = {

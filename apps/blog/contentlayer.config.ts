@@ -22,6 +22,7 @@ export const Post = defineDocumentType(() => ({
     publishedAt: { type: "date", required: true },
     excerpt: { type: "string", required: true },
     featured: { type: "boolean" },
+    isDraft: { type: "boolean" },
     image: { type: "string" },
   },
   computedFields: {

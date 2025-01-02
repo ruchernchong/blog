@@ -41,11 +41,13 @@ export const generateMetadata = async (props: {
 };
 
 export const generateStaticParams = () =>
-  allPosts.map(({ slug }) => ({ slug }));
+  allPosts.filter(({ isDraft }) => !isDraft).map(({ slug }) => ({ slug }));
 
 const PostPage = async (props: { params: Params }) => {
   const params = await props.params;
-  const post = allPosts.find((post) => post.slug === params.slug);
+  const post = allPosts
+    .filter(({ isDraft }) => !isDraft)
+    .find((post) => post.slug === params.slug);
 
   if (!post) {
     return notFound();
