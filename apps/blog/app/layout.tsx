@@ -1,6 +1,6 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
-import { BASE_URL } from "@/config";
+import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -14,11 +14,11 @@ import "@/app/globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 const title = {
-  default: "Home - Ru Chern",
-  template: "%s - Ru Chern",
+  default: "Home",
+  template: `%s - ${SITE_NAME}`,
+  absolute: `Home - ${SITE_NAME}`,
 };
-const description =
-  "Frontend Developer from Singapore. Interested in automating workflows and building in React, Node, and Typescript.";
+const description = SITE_DESCRIPTION;
 const url = new URL(BASE_URL);
 
 export const metadata: Metadata = {
@@ -54,9 +54,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/",
-    types: {
-      "application/rss+xml": "/feed.xml",
-    },
     languages: {
       "x-default": url.toString(),
       "en-SG": url.toString(),

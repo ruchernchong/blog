@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import globalMetadata from "@/app/metadata";
 import { openGraphImage, twitterImage } from "@/app/shared-metadata";
 import { Chip } from "@/components/Chip";
@@ -6,13 +5,15 @@ import { ItemOverlay } from "@/components/ItemOverlay";
 import { LinkWithIcon } from "@/components/LinkWithIcon";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
-import projects from "@/data/projects";
-import type { WebPage, WithContext } from "schema-dts";
 import { BASE_URL } from "@/config";
+import projects from "@/data/projects";
+import type { Metadata } from "next";
+import type { WebPage, WithContext } from "schema-dts";
 
 const title = "Projects";
 const description =
-  "A showcase of my past projects and/or experimenting with different technologies";
+  "This space serves as both a showcase of my completed projects and playground for experimenting new technologies.";
+const canonical = "/projects";
 
 export const metadata: Metadata = {
   title,
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
     ...globalMetadata.openGraph,
     title,
     description,
-    url: "/projects",
+    url: canonical,
     ...openGraphImage,
   },
   twitter: {
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     ...twitterImage,
   },
   alternates: {
-    canonical: "/projects",
+    canonical,
   },
 };
 
@@ -40,12 +41,8 @@ const ProjectsPage = async () => {
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: title,
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": "/projects",
-    },
     description,
-    url: `${BASE_URL}/projects`,
+    url: `${BASE_URL}/${canonical}`,
   };
 
   return (

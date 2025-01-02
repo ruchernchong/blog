@@ -1,13 +1,12 @@
-import { BASE_URL } from "@/config";
+import { BASE_URL, SITE_DESCRIPTION } from "@/config";
 import type { Metadata } from "next";
 
 const title = {
   default: "Ru Chern",
-  template: "%s | Ru Chern",
+  template: "%s - Ru Chern",
 };
 
-const description =
-  "Frontend Developer from Singapore. Interested in automating workflows and building in React, Node, and Typescript.";
+const description = SITE_DESCRIPTION;
 const url = new URL(BASE_URL);
 
 const metadata: Metadata = {

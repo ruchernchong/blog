@@ -18,29 +18,15 @@ export const generateMetadata = async (props: {
     return notFound();
   }
 
-  const { canonical } = note;
-  const title = note.title;
-  const description = `Notes on ${note.title}`;
+  const { title, description, openGraph, twitter, canonical } = note;
   const publishedTime = note.publishedAt;
   const images = `${BASE_URL}/og?title=${title}`;
 
   return {
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      type: "article",
-      publishedTime,
-      url: canonical,
-      images,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images,
-    },
+    openGraph,
+    twitter,
     alternates: {
       canonical,
     },

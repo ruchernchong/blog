@@ -122,13 +122,22 @@ export const Note = defineDocumentType(() => ({
         return slug;
       },
     },
+    description: {
+      type: "string",
+      resolve: ({ title }) =>
+        truncate(
+          `Notes on ${title}. A collection of short notes of the things I found interesting while working on different technologies.`,
+        ),
+    },
     openGraph: {
       type: "json",
       resolve: (note) =>
         ({
           title: note.title,
           siteName: "Ru Chern",
-          description: truncate(note.excerpt ?? note.title),
+          description: truncate(
+            `Notes on ${note.title}. A collection of short notes of the things I found interesting while working on different technologies.`,
+          ),
           type: "article",
           publishedTime: note.publishedAt,
           url: `${BASE_URL}/${note._raw.flattenedPath}`,
@@ -145,7 +154,9 @@ export const Note = defineDocumentType(() => ({
           card: "summary_large_image",
           site: "@ruchernchong",
           title: note.title,
-          description: truncate(note.excerpt ?? note.title),
+          description: truncate(
+            `Notes on ${note.title}. A collection of short notes of the things I found interesting while working on different technologies.`,
+          ),
           images: note.image
             ? [`${BASE_URL}/${note.image}`]
             : [`${BASE_URL}/og?title=${note.title}`],
@@ -160,7 +171,9 @@ export const Note = defineDocumentType(() => ({
           headline: note.title,
           dateModified: note.publishedAt,
           datePublished: note.publishedAt,
-          description: truncate(note.excerpt ?? note.title),
+          description: truncate(
+            `Notes on ${note.title}. A collection of short notes of the things I found interesting while working on different technologies.`,
+          ),
           image: [
             note.image
               ? encodeURI(`${BASE_URL}/${note.image}`)

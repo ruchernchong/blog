@@ -12,7 +12,8 @@ import type { WebPage, WithContext } from "schema-dts";
 
 const title = "Notes";
 const description =
-  "A collection containing fun and interesting things I came across randomly.";
+  "This is my curated collection of short notes of the things I found interesting while working on different technologies.";
+const canonical = "/notes";
 
 export const metadata: Metadata = {
   title,
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
     ...globalMetadata.openGraph,
     title,
     description,
-    url: "/notes",
+    url: canonical,
     ...openGraphImage,
   },
   twitter: {
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     ...twitterImage,
   },
   alternates: {
-    canonical: "/notes",
+    canonical,
   },
 };
 
@@ -41,7 +42,7 @@ const NotesPage = () => {
     "@type": "WebPage",
     name: title,
     description,
-    url: `${BASE_URL}/notes`,
+    url: `${BASE_URL}${canonical}`,
   };
 
   const sortedNotes = allNotes.sort(sortByLatest);

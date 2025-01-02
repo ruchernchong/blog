@@ -1,19 +1,20 @@
-import type { Metadata } from "next";
 import globalMetadata from "@/app/metadata";
 import { openGraphImage, twitterImage } from "@/app/shared-metadata";
 import { Author } from "@/components/Author";
 import Contributions from "@/components/Contributions";
 import Employment from "@/components/Employment";
 import { StructuredData } from "@/components/StructuredData";
-import companies from "@/data/companies";
-import { getStackOverflowProfile } from "@/lib/stackoverflow";
-import { getGitHubContributions } from "@/lib/github";
-import type { WebPage, WithContext } from "schema-dts";
 import { BASE_URL } from "@/config";
+import companies from "@/data/companies";
+import { getGitHubContributions } from "@/lib/github";
+import { getStackOverflowProfile } from "@/lib/stackoverflow";
+import type { Metadata } from "next";
+import type { WebPage, WithContext } from "schema-dts";
 
 const title = "About";
 const description =
-  "My name is Ru Chern and I am a frontend developer with focus on optimising performance and delivering good user experience. I believe with technology, we are able to change how the way we automate things to make living more efficient and smarter.";
+  "I'm Ru Chern, a frontend developer focused on optimizing performance and delivering excellent user experiences.";
+const canonical = "/about";
 
 export const metadata: Metadata = {
   title,
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
     ...globalMetadata.openGraph,
     title,
     description,
-    url: "/about",
+    url: canonical,
     ...openGraphImage,
   },
   twitter: {
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
     ...twitterImage,
   },
   alternates: {
-    canonical: "/about",
+    canonical,
   },
 };
 
@@ -53,7 +54,7 @@ const AboutPage = async () => {
     "@type": "WebPage",
     name: title,
     description,
-    url: `${BASE_URL}/about`,
+    url: `${BASE_URL}${canonical}`,
   };
 
   return (
