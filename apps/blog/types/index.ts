@@ -15,7 +15,10 @@ export interface Project {
   links: string[];
 }
 
-export interface Social {
-  name: string;
-  link: string;
-}
+export type SocialMedia =
+  | "Github"
+  | "Linkedin"
+  | "Stackoverflow"
+  | "Twitter"
+  | "Bluesky"
+  | "Threads";

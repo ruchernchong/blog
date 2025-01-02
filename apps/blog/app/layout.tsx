@@ -1,4 +1,4 @@
-import { Footer } from "@/components/Footer";
+import Footer from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { GoogleAnalytics } from "@next/third-parties/google";

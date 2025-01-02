@@ -1,16 +1,15 @@
 import ExternalLink from "@/components/ExternalLink";
 import * as Icons from "@/components/Icons";
 import { Typography } from "@/components/Typography";
-import { BASE_URL } from "@/config";
 import socials from "@/data/socials";
 
-interface AuthorProps {
+interface Props {
   title: string;
   tagline?: string;
   description?: string;
 }
 
-export const Author = ({ title, tagline, description }: AuthorProps) => {
+const Author = ({ title, tagline, description }: Props) => {
   return (
     <div className="flex flex-col-reverse items-center md:flex-row md:items-start md:gap-8">
       <div className="flex grow basis-1/2 flex-col gap-4">
@@ -20,23 +19,19 @@ export const Author = ({ title, tagline, description }: AuthorProps) => {
         </div>
         {description && <p className="text-gray-400">{description}</p>}
         <div className="flex justify-center gap-4 md:justify-start">
-          {socials.map(({ name, link }) => {
-            if (/\$BASE_URL/.test(link)) {
-              link = link.replace("$BASE_URL", BASE_URL);
-            }
-
-            return (
-              <ExternalLink
-                key={name}
-                href={link}
-                className="hover:text-pink-500"
-              >
-                <Icons.Social name={name} className="h-4 w-4" />
-              </ExternalLink>
-            );
-          })}
+          {socials.map(({ name, link }) => (
+            <ExternalLink
+              key={name}
+              href={link}
+              className="hover:text-pink-500"
+            >
+              <Icons.Social name={name} className="h-4 w-4" />
+            </ExternalLink>
+          ))}
         </div>
       </div>
     </div>
   );
 };
+
+export default Author;

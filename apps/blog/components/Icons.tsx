@@ -1,29 +1,36 @@
-import classNames from "classnames";
+import type { SocialMedia } from "@/types";
 import {
   type IconType,
+  SiBluesky,
   SiGithub,
   SiLinkedin,
-  SiRss,
   SiStackoverflow,
+  SiThreads,
   SiX,
 } from "@icons-pack/react-simple-icons";
+import classNames from "classnames";
 
-const SOCIAL_MAP: Record<string, IconType> = {
-  Github: SiGithub,
-  Linkedin: SiLinkedin,
-  RSS: SiRss,
-  Stackoverflow: SiStackoverflow,
-  Twitter: SiX,
+type SocialIcon = {
+  [key in SocialMedia]: IconType;
 };
 
-type IconProps = {
-  name: string;
+const SOCIAL_ICONS_MAP: SocialIcon = {
+  Github: SiGithub,
+  Linkedin: SiLinkedin,
+  Stackoverflow: SiStackoverflow,
+  Twitter: SiX,
+  Bluesky: SiBluesky,
+  Threads: SiThreads,
+};
+
+type Props = {
+  name: SocialMedia;
   className?: string;
 };
 
-export const Social = ({ name, className }: IconProps) => {
-  const Icon = SOCIAL_MAP[name];
-  const title = Object.keys(SOCIAL_MAP).find((item) => item === name)!;
+export const Social = ({ name, className }: Props) => {
+  const Icon = SOCIAL_ICONS_MAP[name];
+  const title = Object.keys(SOCIAL_ICONS_MAP).find((item) => item === name);
 
   return <Icon title={title} className={classNames(className)} />;
 };
