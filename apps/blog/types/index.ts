@@ -22,3 +22,8 @@ export type SocialMedia =
   | "Twitter"
   | "Bluesky"
   | "Threads";
+
+export type Likes = {
+  totalLikes: number;
+  totalLikesByUser: number;
+};
