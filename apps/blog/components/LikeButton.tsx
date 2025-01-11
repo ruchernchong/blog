@@ -60,9 +60,9 @@ export const LikeButton = ({
       data-umami-event-action="like"
     >
       {optimisticLikes.totalLikesByUser > 0 ? (
-        <HeartSolidIcon className="h-8 w-8" />
+        <HeartSolidIcon className="h-6 w-6" />
       ) : (
-        <HeartIcon className="h-8 w-8" />
+        <HeartIcon className="h-6 w-6" />
       )}
     </button>
   );
