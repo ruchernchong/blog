@@ -5,6 +5,8 @@ import type { PostStats } from "@/types";
 import { generateUserHash } from "@/lib/hash";
 import { headers } from "next/headers";
 
+const DEFAULT_IP = "127.0.0.1";
+
 const getIpAddress = async (): Promise<string> => {
   const headersList = headers();
   const forwardedFor = (await headersList).get("x-forwarded-for");
@@ -12,7 +14,7 @@ const getIpAddress = async (): Promise<string> => {
     return forwardedFor.split(",")[0];
   }
   const realIp = (await headersList).get("x-real-ip");
-  return realIp ?? "127.0.0.1";
+  return realIp ?? DEFAULT_IP;
 };
 
 export const getPostStats = async (slug: string): Promise<PostStats> => {
@@ -33,15 +35,12 @@ export const getPostStats = async (slug: string): Promise<PostStats> => {
 };
 
 export const incrementViews = async (slug: string): Promise<PostStats> => {
-  const key = `post:${slug}`;
   const stats = await getPostStats(slug);
-
   const updatedStats: PostStats = {
     ...stats,
     views: stats.views + 1,
   };
-
-  await redis.set(key, updatedStats);
+  await redis.set(`post:${slug}`, updatedStats);
   return updatedStats;
 };
 
@@ -59,11 +58,10 @@ export const getTotalLikes = async (slug: string): Promise<number> => {
   );
 };
 
-export const addLike = async (slug: string) => {
+export const incrementLikes = async (slug: string) => {
   try {
     const userHash = generateUserHash(await getIpAddress());
     const stats = await getPostStats(slug);
-
     const userLikes = stats.likesByUser[userHash] ?? 0;
 
     const updatedStats: PostStats = {
@@ -81,7 +79,7 @@ export const addLike = async (slug: string) => {
         (sum, likes) => sum + likes,
         0,
       ),
-      totalLikesByUser: updatedStats.likesByUser[userHash],
+      likesByUser: updatedStats.likesByUser[userHash],
     };
   } catch (error) {
     console.error("Error adding like:", error);

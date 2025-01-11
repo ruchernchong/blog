@@ -1,35 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { LikeButton } from "./LikeButton";
-import { getLikesByUser, getTotalLikes } from "@/app/actions/stats";
+import { useState } from "react";
+import LikeButton from "./LikeButton";
 import type { Likes } from "@/types";
 
 interface Props {
   slug: string;
+  initialTotalLikes: number;
+  initialLikesByUser: number;
 }
 
-export const LikeCounter = ({ slug }: Props) => {
-  const [totalLikes, setTotalLikes] = useState(0);
-  const [totalLikesByUser, setTotalLikesByUser] = useState(0);
+export const LikeCounter = ({
+  slug,
+  initialTotalLikes,
+  initialLikesByUser,
+}: Props) => {
+  const [totalLikes, setTotalLikes] = useState(initialTotalLikes);
+  const [likesByUser, setLikesByUser] = useState(initialLikesByUser);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const [likes, userLikes] = await Promise.all([
-        getTotalLikes(slug),
-        getLikesByUser(slug),
-      ]);
-
-      setTotalLikes(likes);
-      setTotalLikesByUser(userLikes);
-    };
-
-    void fetchData();
-  }, [slug]);
-
-  const handleLikeUpdate = ({ totalLikes, totalLikesByUser }: Likes) => {
+  const handleLikeUpdate = ({ totalLikes, likesByUser }: Likes) => {
     setTotalLikes(totalLikes);
-    setTotalLikesByUser(totalLikesByUser);
+    setLikesByUser(likesByUser);
   };
 
   return (
@@ -37,7 +28,7 @@ export const LikeCounter = ({ slug }: Props) => {
       <LikeButton
         slug={slug}
         totalLikes={totalLikes}
-        totalLikesByUser={totalLikesByUser}
+        likesByUser={likesByUser}
         onLikeUpdateAction={handleLikeUpdate}
       />
       <div

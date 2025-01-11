@@ -35,5 +35,5 @@ export interface PostStats {
 
 export type Likes = {
   totalLikes: number;
-  totalLikesByUser: number;
+  likesByUser: number;
 };

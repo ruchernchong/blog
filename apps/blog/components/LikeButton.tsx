@@ -3,7 +3,7 @@
 import { HeartIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import { useOptimistic } from "react";
-import { addLike } from "@/app/actions/stats";
+import { incrementLikes } from "@/app/actions/stats";
 import { MAX_LIKES_PER_USER } from "@/config";
 import type { Likes } from "@/types";
 
@@ -12,26 +12,18 @@ interface Props extends Likes {
   onLikeUpdateAction: (likes: Likes) => void;
 }
 
-export const LikeButton = ({
+const LikeButton = ({
   slug,
   totalLikes,
-  totalLikesByUser,
+  likesByUser,
   onLikeUpdateAction,
 }: Props) => {
-  const initialState: Likes = { totalLikes, totalLikesByUser };
+  const initialState: Likes = { totalLikes, likesByUser };
 
-  console.log("Props received:", { totalLikes, totalLikesByUser });
-
-  const updateLikesState = (state: Likes) => {
-    const newState = {
-      totalLikes: state.totalLikes + 1,
-      totalLikesByUser: state.totalLikesByUser + 1,
-    };
-
-    console.log("Optimistic update:", newState);
-
-    return newState;
-  };
+  const updateLikesState = (state: Likes) => ({
+    totalLikes: state.totalLikes + 1,
+    likesByUser: state.likesByUser + 1,
+  });
 
   const [optimisticLikes, addOptimisticLike] = useOptimistic(
     initialState,
@@ -39,27 +31,26 @@ export const LikeButton = ({
   );
 
   const handleClick = async () => {
-    if (optimisticLikes.totalLikesByUser >= MAX_LIKES_PER_USER) {
+    if (optimisticLikes.likesByUser >= MAX_LIKES_PER_USER) {
       return;
     }
 
-    addOptimisticLike(optimisticLikes); // Pass the current state
-    const response = await addLike(slug);
-    console.log("Server response:", response);
-    onLikeUpdateAction(response);
+    addOptimisticLike(optimisticLikes);
+    const stats = await incrementLikes(slug);
+    onLikeUpdateAction(stats);
   };
 
   return (
     <button
       onClick={handleClick}
       className={`transform transition-all duration-300 hover:scale-110 ${
-        optimisticLikes.totalLikesByUser > 0 ? "text-pink-500" : "text-gray-400"
+        optimisticLikes.likesByUser > 0 ? "text-pink-500" : "text-gray-400"
       }`}
       data-umami-event="like-button-click"
       data-umami-event-slug={slug}
       data-umami-event-action="like"
     >
-      {optimisticLikes.totalLikesByUser > 0 ? (
+      {optimisticLikes.likesByUser > 0 ? (
         <HeartSolidIcon className="h-6 w-6" />
       ) : (
         <HeartIcon className="h-6 w-6" />
@@ -67,3 +58,5 @@ export const LikeButton = ({
     </button>
   );
 };
+
+export default LikeButton;
