@@ -58,7 +58,8 @@ const PostPage = async (props: { params: Params }) => {
       <StructuredData data={post.structuredData} />
       <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-pink-500 prose-img:rounded-2xl">
         <div className="flex flex-col items-center gap-y-4 text-center">
-          <div className="flex flex-col gap-x-2 text-gray-400 md:flex-row">
+          <StatsBar slug={post.slug} />
+          <div className="flex gap-x-2 text-gray-400 md:flex-row">
             <div
               className="flex items-center justify-center gap-x-2"
               data-umami-event="post-date-view"
@@ -77,7 +78,7 @@ const PostPage = async (props: { params: Params }) => {
               data-umami-event="post-stats-view"
               data-umami-event-slug={post.slug}
             >
-              <div className="hidden md:block">&middot;</div>
+              <span>&middot;</span>
               <BookOpenIcon className="h-6 w-6" />
               <div data-umami-event="reading-time-view">{post.readingTime}</div>
             </div>
@@ -101,7 +102,6 @@ const PostPage = async (props: { params: Params }) => {
           <Mdx code={post.body.code} />
         </div>
       </article>
-      <StatsBar slug={post.slug} />
     </>
   );
 };
