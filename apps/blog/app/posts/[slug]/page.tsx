@@ -100,8 +100,8 @@ const PostPage = async (props: { params: Params }) => {
         >
           <Mdx code={post.body.code} />
         </div>
-        <StatsBar slug={post.slug} />
       </article>
+      <StatsBar slug={post.slug} />
     </>
   );
 };
