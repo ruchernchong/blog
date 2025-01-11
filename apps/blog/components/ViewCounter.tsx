@@ -1,26 +1,20 @@
-import { Redis } from "@upstash/redis";
+import { incrementViews } from "@/app/actions/stats";
 
 interface Props {
   slug: string;
 }
 
-const redis = Redis.fromEnv();
-
-const view = async (slug: string) => await redis.incr(`pageviews:${slug}`);
-
 export const ViewCounter = async ({ slug }: Props) => {
-  await view(slug);
-
-  const views = (await redis.get<number>(`pageviews:${slug}`)) || 0;
+  const stats = await incrementViews(slug);
 
   return (
-    <p
+    <div
       className="text-sm text-neutral-400"
       data-umami-event="view-counter-display"
       data-umami-event-slug={slug}
-      data-umami-event-views={views}
+      data-umami-event-views={stats.views}
     >
-      {views} views
-    </p>
+      {stats.views}
+    </div>
   );
 };

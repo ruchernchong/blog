@@ -5,9 +5,9 @@ export interface NavLink {
   href: string;
 }
 
-export const DOMAIN_NAME = "ruchern.dev";
+export const DOMAIN_NAME = process.env.VERCEL_URL ?? "ruchern.dev";
 export const BASE_URL =
-  process.env.NEXT_PUBLIC_BASE_URL || `https://${DOMAIN_NAME}`;
+  process.env.NEXT_PUBLIC_BASE_URL ?? `https://${DOMAIN_NAME}`;
 
 export const SITE_NAME = "Ru Chern";
 export const SITE_DESCRIPTION =
@@ -20,3 +20,5 @@ export const navLinks: NavLink[] = [
   { title: "Projects", href: "/projects" },
   // { title: "Resume", href: "/resume" },
 ];
+
+export const MAX_LIKES_PER_USER = 50;
