@@ -40,14 +40,14 @@ export const LikeCounter = ({ slug }: Props) => {
         totalLikesByUser={totalLikesByUser}
         onLikeUpdateAction={handleLikeUpdate}
       />
-      <p
+      <div
         className="text-sm text-neutral-400"
         data-umami-event="like-counter-display"
         data-umami-event-slug={slug}
         data-umami-event-likes={totalLikes}
       >
         {totalLikes.toLocaleString()}
-      </p>
+      </div>
     </div>
   );
 };
