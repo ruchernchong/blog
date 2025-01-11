@@ -3,7 +3,7 @@
 import { HeartIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import { useOptimistic } from "react";
-import { addLike } from "@/app/actions/likes";
+import { addLike } from "@/app/actions/stats";
 import { MAX_LIKES_PER_USER } from "@/config";
 import type { Likes } from "@/types";
 
