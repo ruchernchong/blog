@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { LikeButton } from "./LikeButton";
-import { getLikesByUser, getTotalLikes } from "@/app/actions/likes";
+import { getLikesByUser, getTotalLikes } from "@/app/actions/stats";
 import type { Likes } from "@/types";
 
 interface Props {
@@ -15,13 +15,13 @@ export const LikeCounter = ({ slug }: Props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [totalLikes, totalLikesByUser] = await Promise.all([
+      const [likes, userLikes] = await Promise.all([
         getTotalLikes(slug),
         getLikesByUser(slug),
       ]);
 
-      setTotalLikes(totalLikes);
-      setTotalLikesByUser(totalLikesByUser);
+      setTotalLikes(likes);
+      setTotalLikesByUser(userLikes);
     };
 
     void fetchData();

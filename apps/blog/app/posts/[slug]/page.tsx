@@ -1,12 +1,10 @@
 import { Mdx } from "@/components/Mdx";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
-import { ViewCounter } from "@/components/ViewCounter";
-import { LikeCounter } from "@/components/LikeCounter";
+import { StatsBar } from "@/components/StatsBar";
 import {
   BookOpenIcon,
   CalendarDaysIcon,
-  EyeIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { allPosts } from "contentlayer/generated";
@@ -85,13 +83,6 @@ const PostPage = async (props: { params: Params }) => {
                 <div data-umami-event="reading-time-view">
                   {post.readingTime}
                 </div>
-                <div>&middot;</div>
-                <EyeIcon className="h-6 w-6" />
-                <ViewCounter
-                  slug={post.slug}
-                  data-umami-event="view-counter-interaction"
-                  data-umami-event-slug={post.slug}
-                />
               </div>
             </div>
             <Typography variant="h1">{post.title}</Typography>
@@ -114,12 +105,7 @@ const PostPage = async (props: { params: Params }) => {
           </div>
         </article>
 
-        {/* Like Button Container - Responsive */}
-        <div className="fixed bottom-8 right-8 xl:bottom-auto xl:right-8 xl:top-1/2 xl:-translate-y-1/2">
-          <div className="flex flex-col items-center gap-2 rounded-lg bg-gray-800/50 p-4 backdrop-blur">
-            <LikeCounter slug={post.slug} />
-          </div>
-        </div>
+        <StatsBar slug={post.slug} />
       </div>
     </>
   );
