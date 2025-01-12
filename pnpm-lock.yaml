@@ -174,9 +174,6 @@ importers:
       tailwindcss:
         specifier: ^3.2.4
         version: 3.4.17(ts-node@10.9.2(@types/node@22.10.2)(typescript@5.7.2))
-      tsx:
-        specifier: ^4.19.2
-        version: 4.19.2
       vitest:
         specifier: ^2.1.6
         version: 2.1.8(@types/node@22.10.2)
@@ -8838,6 +8835,7 @@ snapshots:
       '@esbuild/win32-arm64': 0.23.1
       '@esbuild/win32-ia32': 0.23.1
       '@esbuild/win32-x64': 0.23.1
+    optional: true
 
   esbuild@0.24.2:
     optionalDependencies:
@@ -11875,6 +11873,7 @@ snapshots:
       get-tsconfig: 4.8.1
     optionalDependencies:
       fsevents: 2.3.3
+    optional: true
 
   tunnel-agent@0.6.0:
     dependencies:

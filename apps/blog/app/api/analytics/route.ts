@@ -14,6 +14,10 @@ interface RequestData {
   isBot: boolean;
 }
 
+export const config = {
+  runtime: "edge",
+};
+
 export const POST = async (request: NextRequest) => {
   try {
     const {
@@ -58,8 +62,4 @@ export const POST = async (request: NextRequest) => {
       { status: 500 },
     );
   }
-};
-
-export const config = {
-  runtime: "edge",
 };
