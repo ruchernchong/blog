@@ -12,14 +12,18 @@ const Analytics = () => {
       const userAgent = navigator.userAgent;
       const parsedUA = parseUserAgent(userAgent);
 
-      fetch("/api/analytics", {
-        method: "POST",
-        body: JSON.stringify({
-          path: pathname,
-          referrer: document.referrer,
-          ...parsedUA,
-        }),
+      const url = "/api/analytics";
+      const body = JSON.stringify({
+        path: pathname,
+        referrer: document.referrer,
+        ...parsedUA,
       });
+
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(url, body);
+      } else {
+        fetch("/api/analytics", { method: "POST", body, keepalive: true });
+      }
     } catch (error) {
       console.error("Failed to record analytics:", error);
     }
