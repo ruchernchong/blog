@@ -69,10 +69,16 @@ Your site should now be running at `http://localhost:3000`!
 
 The following environment variables are required to run the application:
 
-| Variable                   | Description                                                                                                                                | Required |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
-| `UPSTASH_REDIS_REST_URL`   | The REST API endpoint URL for your Upstash Redis database. Found in your Upstash Redis console under "REST API" details.                   | Yes      |
-| `UPSTASH_REDIS_REST_TOKEN` | Authentication token for accessing your Upstash Redis database via REST API. Found in your Upstash Redis console under "REST API" details. | Yes      |
+| Variable                   | Description                                                                                                                               | Required |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `NEXT_PUBLIC_BASE_URL`     | The base URL of your application (default: http://localhost:3000)                                                                         | Yes      |
+| `DATABASE_URL`             | Connection string for your Neon PostgreSQL database                                                                                       | Yes      |
+| `GH_ACCESS_TOKEN`          | GitHub Personal Access Token for GitHub integration                                                                                       | Yes      |
+| `UPSTASH_REDIS_REST_URL`   | The REST API endpoint URL for your Upstash Redis database. Found in your Upstash Redis console under "REST API" details                   | Yes      |
+| `UPSTASH_REDIS_REST_TOKEN` | Authentication token for accessing your Upstash Redis database via REST API. Found in your Upstash Redis console under "REST API" details | Yes      |
+| `IP_SALT`                  | Salt value used for IP address hashing                                                                                                    | Yes      |
+
+Make sure to copy `.env.example` to `.env` and fill in the required values:
 
 ## 📝 Project Structure
 
@@ -100,6 +106,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📫 Contact
 
-Your Name - [@ruchernchong](https://twitter.com/ruchernchong)
+[@ruchernchong](https://twitter.com/ruchernchong)
 
 Project Link: [https://github.com/ruchernchong/portfolio](https://github.com/ruchernchong/portfolio)
