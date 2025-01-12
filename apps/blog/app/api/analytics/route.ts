@@ -46,7 +46,8 @@ export const POST = async (request: NextRequest) => {
       longitude,
     };
 
-    const [newPageView] = await db
+    // Exclude the ID and duration from the returned values
+    const [{ id, duration, ...newPageView }] = await db
       .insert(pageViews)
       .values(pageView)
       .returning();
