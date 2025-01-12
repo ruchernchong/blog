@@ -8,14 +8,16 @@ type ParsedUA = {
   language?: string;
 };
 
-export const parseUserAgent = (userAgent: string): ParsedUA => {
+const parseUserAgent = (userAgent: string): ParsedUA => {
   const parser = new UAParser(userAgent);
 
   return {
     browser: parser.getBrowser().name,
     os: parser.getOS().name,
-    device: parser.getDevice().type,
+    device: parser.getDevice().type ?? "desktop", // UAParser does not identify "desktop" type
     screen: `${window.screen.width}x${window.screen.height}`,
     language: navigator.language,
   };
 };
+
+export default parseUserAgent;

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { parseUserAgent } from "@/lib/userAgent";
+import parseUserAgent from "@/lib/parseUserAgent";
 
 const Analytics = () => {
   const pathname = usePathname();
@@ -22,7 +22,7 @@ const Analytics = () => {
       if (navigator.sendBeacon) {
         navigator.sendBeacon(url, body);
       } else {
-        fetch("/api/analytics", { method: "POST", body, keepalive: true });
+        fetch(url, { method: "POST", body, keepalive: true });
       }
     } catch (error) {
       console.error("Failed to record analytics:", error);
