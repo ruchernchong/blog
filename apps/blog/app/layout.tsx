@@ -2,7 +2,7 @@ import Footer from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { Analytics } from "@vercel/analytics/react";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import classNames from "classnames";
 import type { Metadata } from "next";
@@ -10,6 +10,7 @@ import { Inter } from "next/font/google";
 import Script from "next/script";
 import type { ReactNode } from "react";
 import "@/app/globals.css";
+import Analytics from "@/components/Analytics";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,7 +26,6 @@ export const metadata: Metadata = {
   metadataBase: url,
   title,
   description,
-  // Enhanced robots directives
   robots: {
     index: true,
     follow: true,
@@ -74,6 +74,7 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
           <Footer />
         </div>
         <Analytics />
+        <VercelAnalytics />
         <SpeedInsights />
         <Script
           defer
