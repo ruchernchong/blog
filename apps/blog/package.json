@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "contentlayer2 dev & next dev --turbo",
+    "migrate": "drizzle-kit migrate",
     "build": "next build",
     "start": "next start",
     "test": "vitest",
     "lint": "next lint",
     "prepare": "husky",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "vercel-build": "pnpm migrate && pnpm build"
   },
   "dependencies": {
     "@apollo/client": "^3.12.2",
