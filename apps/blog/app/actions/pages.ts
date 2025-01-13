@@ -13,4 +13,4 @@ export const getPages = async () =>
     })
     .from(sessions)
     .groupBy(sessions.path)
-    .orderBy(desc(sql`COUNT('*')`));
+    .orderBy(desc(sql`COUNT(${sessions.path})`));

@@ -13,4 +13,4 @@ export const getReferrers = async () =>
     })
     .from(sessions)
     .groupBy(sessions.referrer)
-    .orderBy(desc(sql`COUNT('*')`));
+    .orderBy(desc(sql`COUNT(${sessions.referrer})`));
