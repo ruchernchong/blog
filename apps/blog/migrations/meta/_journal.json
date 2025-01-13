@@ -8,6 +8,13 @@
       "when": 1736697519802,
       "tag": "0000_serious_landau",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1736790614327,
+      "tag": "0001_special_lady_ursula",
+      "breakpoints": true
     }
   ]
 }

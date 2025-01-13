@@ -29,7 +29,7 @@ export const POST = async (request: NextRequest) => {
       screen,
       language,
     }: RequestData = await request.json();
-    const { city, country, region, latitude, longitude } = geolocation(request);
+    const { city, country, flag, latitude, longitude } = geolocation(request);
 
     const pageView: NewPageView = {
       path,
@@ -41,7 +41,7 @@ export const POST = async (request: NextRequest) => {
       referrer,
       city,
       country,
-      region,
+      flag,
       latitude,
       longitude,
     };

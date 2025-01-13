@@ -11,7 +11,7 @@ export const pageViews = pgTable("page_views", {
   language: text("language"),
   city: text("city"),
   country: text("country"),
-  region: text("region"),
+  flag: text("flag"),
   latitude: text("latitude"),
   longitude: text("longitude"),
   createdAt: timestamp("created_at", { withTimezone: true })
