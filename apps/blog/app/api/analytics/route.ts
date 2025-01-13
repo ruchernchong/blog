@@ -1,7 +1,7 @@
 import { geolocation } from "@vercel/functions";
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/db";
-import { type NewPageView, pageViews } from "@/db/schema";
+import { sessions, type NewSession } from "@/db/schema";
 
 interface RequestData {
   path: string;
@@ -29,30 +29,30 @@ export const POST = async (request: NextRequest) => {
       screen,
       language,
     }: RequestData = await request.json();
-    const { city, country, region, latitude, longitude } = geolocation(request);
+    const { city, country, flag, latitude, longitude } = geolocation(request);
 
-    const pageView: NewPageView = {
+    const session: NewSession = {
       path,
+      referrer,
+      city,
+      country,
+      flag,
+      latitude,
+      longitude,
       browser,
       os,
       device,
       screen,
       language,
-      referrer,
-      city,
-      country,
-      region,
-      latitude,
-      longitude,
     };
 
     // Exclude the ID and duration from the returned values
-    const [{ id, duration, ...newPageView }] = await db
-      .insert(pageViews)
-      .values(pageView)
+    const [{ id, duration, ...newSession }] = await db
+      .insert(sessions)
+      .values(session)
       .returning();
 
-    return NextResponse.json(newPageView);
+    return NextResponse.json(newSession);
   } catch (error) {
     console.error("Analytics recording failed:", error);
     return NextResponse.json(

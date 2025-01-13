@@ -1,6 +1,6 @@
 {
-  "id": "28dedc7b-575f-444b-8a25-9d07ae45b0d4",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "078fc8d9-fedb-44f3-958c-4e1b208a2516",
+  "prevId": "28dedc7b-575f-444b-8a25-9d07ae45b0d4",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -101,7 +101,68 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "created_at_idx": {
+          "name": "created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "path_idx": {
+          "name": "path_idx",
+          "columns": [
+            {
+              "expression": "path",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "country_idx": {
+          "name": "country_idx",
+          "columns": [
+            {
+              "expression": "country",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "browser_idx": {
+          "name": "browser_idx",
+          "columns": [
+            {
+              "expression": "browser",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
