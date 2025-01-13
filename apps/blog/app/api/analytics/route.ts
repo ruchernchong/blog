@@ -1,7 +1,7 @@
 import { geolocation } from "@vercel/functions";
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/db";
-import { pageViews, type NewPageView } from "@/db/schema";
+import { type NewPageView, pageViews } from "@/db/schema";
 
 interface RequestData {
   path: string;
