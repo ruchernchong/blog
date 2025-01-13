@@ -8,6 +8,13 @@
       "when": 1736791682013,
       "tag": "0000_blue_wolverine",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1736793201489,
+      "tag": "0001_cold_wonder_man",
+      "breakpoints": true
     }
   ]
 }
