@@ -33,17 +33,17 @@ export const POST = async (request: NextRequest) => {
 
     const pageView: NewPageView = {
       path,
-      browser,
-      os,
-      device,
-      screen,
-      language,
       referrer,
       city,
       country,
       flag,
       latitude,
       longitude,
+      browser,
+      os,
+      device,
+      screen,
+      language,
     };
 
     // Exclude the ID and duration from the returned values
