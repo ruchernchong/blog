@@ -1,6 +1,13 @@
-import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  decimal,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
-export const pageViews = pgTable("page_views", {
+export const sessions = pgTable("sessions", {
   id: uuid("id").defaultRandom().primaryKey(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
@@ -10,8 +17,8 @@ export const pageViews = pgTable("page_views", {
   city: text("city"),
   country: text("country"),
   flag: text("flag"),
-  latitude: text("latitude"),
-  longitude: text("longitude"),
+  latitude: decimal("latitude", { precision: 8, scale: 6 }),
+  longitude: decimal("longitude", { precision: 9, scale: 6 }),
   browser: text("browser"),
   os: text("os"),
   device: text("device"),
@@ -20,5 +27,5 @@ export const pageViews = pgTable("page_views", {
   duration: integer("duration"),
 });
 
-export type PageView = typeof pageViews.$inferSelect;
-export type NewPageView = typeof pageViews.$inferInsert;
+export type Session = typeof sessions.$inferSelect;
+export type NewSession = typeof sessions.$inferInsert;
