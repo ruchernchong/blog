@@ -1,16 +1,16 @@
 "use server";
 
 import db from "@/db";
-import { pageViews } from "@/db/schema";
+import { sessions } from "@/db/schema";
 import { desc, sql } from "drizzle-orm";
 
 export const getReferrers = async () =>
   db
     .select({
-      referrer: pageViews.referrer,
-      count: sql<number>`CAST(COUNT(${pageViews.referrer}) AS INTEGER)`,
-      percent: sql<number>`ROUND(CAST(COUNT(${pageViews.referrer}) * 100.0 / SUM(COUNT(*)) OVER () AS DECIMAL), 1)`,
+      referrer: sessions.referrer,
+      count: sql<number>`CAST(COUNT(${sessions.referrer}) AS INTEGER)`,
+      percent: sql<number>`ROUND(CAST(COUNT(${sessions.referrer}) * 100.0 / SUM(COUNT(*)) OVER () AS DECIMAL), 1)`,
     })
-    .from(pageViews)
-    .groupBy(pageViews.referrer)
+    .from(sessions)
+    .groupBy(sessions.referrer)
     .orderBy(desc(sql`COUNT('*')`));
