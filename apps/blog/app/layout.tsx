@@ -2,7 +2,7 @@ import Footer from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import classNames from "classnames";
 import type { Metadata } from "next";
