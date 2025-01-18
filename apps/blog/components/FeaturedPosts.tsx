@@ -45,7 +45,7 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
                   <time
                     dateTime={formatISO(parseISO(publishedAt))}
                     title={formattedDate}
-                    className="italic text-gray-400"
+                    className="italic text-zinc-400"
                     data-umami-event="featured-post-date-view"
                     data-umami-event-title={title}
                     data-umami-event-date={publishedAt}
@@ -61,7 +61,7 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
                     {title}
                   </Typography>
                   <p
-                    className="text-gray-400"
+                    className="text-zinc-400"
                     data-umami-event="featured-post-excerpt-view"
                     data-umami-event-title={title}
                   >

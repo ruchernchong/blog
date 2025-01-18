@@ -33,7 +33,7 @@ const Contributions = ({
           <UsersIcon className="h-8 w-8 fill-pink-500" />
           <Typography variant="h2">Contributions</Typography>
         </div>
-        <Typography variant="p" className="text-gray-400">
+        <Typography variant="p" className="text-zinc-400">
           My contributions to open-source platforms. I believe that by sharing
           my knowledge and expertise, I can help others to learn and grow too.
         </Typography>
@@ -52,7 +52,7 @@ const Contributions = ({
             >
               <div>
                 <Typography variant="h3">GitHub</Typography>
-                <p className="text-sm italic text-gray-400">
+                <p className="text-sm italic text-zinc-400">
                   (Powered by GitHub GraphQL API)
                 </p>
               </div>
@@ -84,7 +84,7 @@ const Contributions = ({
             >
               <div>
                 <Typography variant="h3">Stack Overflow</Typography>
-                <p className="text-sm italic text-gray-400">
+                <p className="text-sm italic text-zinc-400">
                   (Powered by Stack Exchange API)
                 </p>
               </div>

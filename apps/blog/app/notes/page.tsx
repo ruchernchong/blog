@@ -90,7 +90,7 @@ const NotesPage = () => {
                   <time
                     dateTime={formatISO(parseISO(publishedAt))}
                     title={formattedDate}
-                    className="shrink-0 italic text-gray-300"
+                    className="shrink-0 italic text-zinc-300"
                     data-umami-event="note-date-view"
                     data-umami-event-date={formattedDate}
                   >

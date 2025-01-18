@@ -44,7 +44,7 @@ const LikeButton = ({
     <button
       onClick={handleClick}
       className={`transform transition-all duration-300 hover:scale-110 ${
-        optimisticLikes.likesByUser > 0 ? "text-pink-500" : "text-gray-400"
+        optimisticLikes.likesByUser > 0 ? "text-pink-500" : "text-zinc-400"
       }`}
       data-umami-event="like-button-click"
       data-umami-event-slug={slug}

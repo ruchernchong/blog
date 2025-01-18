@@ -18,9 +18,9 @@ const config: Config = {
               content: "",
             },
             code: {
-              backgroundColor: theme("colors.gray.800"),
+              backgroundColor: theme("colors.zinc.800"),
               borderWidth: theme("borderWidth.2"),
-              borderColor: theme("colors.gray.600"),
+              borderColor: theme("colors.zinc.600"),
               borderRadius: theme("borderRadius.lg"),
               padding: theme("spacing.1"),
               margin: theme("spacing.1"),

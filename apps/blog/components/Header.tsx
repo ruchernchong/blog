@@ -17,7 +17,7 @@ export const Header = () => {
 
   return (
     <div
-      className="shadow shadow-gray-800"
+      className="shadow shadow-zinc-800"
       data-umami-event="header-interaction"
     >
       <header className="mx-auto flex max-w-4xl items-center px-4 py-8">

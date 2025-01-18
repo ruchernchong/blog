@@ -50,7 +50,7 @@ const Employment = ({ companies }: EmploymentProps) => {
                 <div
                   className={classNames(
                     "flex h-12 w-12 items-center rounded-2xl p-2 md:h-[72px] md:w-[72px]",
-                    logo ? "bg-gray-50" : "bg-transparent",
+                    logo ? "bg-zinc-50" : "bg-transparent",
                   )}
                 >
                   {logo && (
@@ -89,7 +89,7 @@ const Employment = ({ companies }: EmploymentProps) => {
                     </div>
                   </a>
                   <div>{title}</div>
-                  <div className="text-sm italic text-gray-400">
+                  <div className="text-sm italic text-zinc-400">
                     <div>
                       {dateStart} - {dateEnd ?? "Present"}
                     </div>

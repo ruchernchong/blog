@@ -106,7 +106,7 @@ const ProjectsPage = async () => {
                     })}
                   </div>
                   <div
-                    className="z-20 text-gray-400"
+                    className="z-20 text-zinc-400"
                     data-umami-event="project-description-view"
                     data-umami-event-project={name}
                   >
