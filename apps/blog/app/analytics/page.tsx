@@ -7,12 +7,14 @@ import { getCountries } from "@/app/actions/analytics/countries";
 import { getDevices } from "@/app/actions/analytics/devices";
 import { getBrowsers } from "@/app/actions/analytics/browsers";
 import { getOS } from "@/app/actions/analytics/os";
+import { getVisits } from "@/app/actions/analytics/visits";
+import TotalVisitsChart from "./TotalVisitsChart";
 
 export const dynamic = "force-dynamic";
 
 const fetchAnalytics = async () => {
   try {
-    const [browsers, countries, devices, os, pages, referrers] =
+    const [browsers, countries, devices, os, pages, referrers, visits] =
       await Promise.all([
         getBrowsers(),
         getCountries(),
@@ -20,6 +22,7 @@ const fetchAnalytics = async () => {
         getOS(),
         getPages(),
         getReferrers(),
+        getVisits(),
       ]);
 
     return {
@@ -29,6 +32,7 @@ const fetchAnalytics = async () => {
       os,
       pages,
       referrers,
+      visits,
     };
   } catch (e) {
     console.error("Failed to fetch analytics data", e);
@@ -37,11 +41,12 @@ const fetchAnalytics = async () => {
 };
 
 const AnalyticsPage = async () => {
-  const { browsers, countries, devices, os, pages, referrers } =
+  const { browsers, countries, devices, os, pages, referrers, visits } =
     await fetchAnalytics();
 
   return (
     <div className="grid grid-cols-1 gap-4">
+      <TotalVisitsChart data={visits} />
       <Card className="bg-gray-900 text-gray-50">
         <CardHeader>
           <CardTitle>Top Sources</CardTitle>
