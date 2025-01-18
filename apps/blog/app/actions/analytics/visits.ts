@@ -1,6 +1,6 @@
 import db from "@/db";
 import { sessions } from "@/db/schema";
-import { count, desc, sql } from "drizzle-orm";
+import { asc, count, sql } from "drizzle-orm";
 import { PgColumn } from "drizzle-orm/pg-core";
 
 export type Visit = {
@@ -19,4 +19,4 @@ export const getVisits = async () =>
     })
     .from(sessions)
     .groupBy(formatDate(sessions.createdAt))
-    .orderBy(desc(formatDate(sessions.createdAt)));
+    .orderBy(asc(formatDate(sessions.createdAt)));
