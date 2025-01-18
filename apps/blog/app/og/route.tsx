@@ -10,7 +10,7 @@ export const GET = async (req: NextRequest) => {
     (
       <div
         style={{ background: `url("${BASE_URL}/opengraph-bg.png")` }}
-        tw="flex flex-col w-full h-full items-center justify-center text-gray-50"
+        tw="flex flex-col w-full h-full items-center justify-center text-zinc-50"
       >
         <div tw="flex text-center mx-12">
           <h1 tw="text-6xl capitalize">{title}</h1>

@@ -59,7 +59,7 @@ const PostPage = async (props: { params: Params }) => {
       <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-a:text-pink-500 prose-img:rounded-2xl">
         <div className="flex flex-col items-center gap-y-4 text-center">
           <StatsBar slug={post.slug} />
-          <div className="flex gap-x-2 text-gray-400 md:flex-row">
+          <div className="flex gap-x-2 text-zinc-400 md:flex-row">
             <div
               className="flex items-center justify-center gap-x-2"
               data-umami-event="post-date-view"
@@ -86,11 +86,11 @@ const PostPage = async (props: { params: Params }) => {
           <Typography variant="h1">{post.title}</Typography>
         </div>
         <aside
-          className="relative rounded-md border-l-4 border-l-pink-500 bg-gray-800 p-6"
+          className="relative rounded-md border-l-4 border-l-pink-500 bg-zinc-800 p-6"
           data-umami-event="post-excerpt-view"
           data-umami-event-slug={post.slug}
         >
-          <div className="absolute left-0 top-0 -translate-x-[50%] -translate-y-[50%] rounded-full bg-gray-900 p-2 text-pink-500">
+          <div className="absolute left-0 top-0 -translate-x-[50%] -translate-y-[50%] rounded-full bg-zinc-900 p-2 text-pink-500">
             <InformationCircleIcon width={32} height={32} />
           </div>
           {post.excerpt}

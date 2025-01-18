@@ -26,7 +26,7 @@ h1 .permalink::after {
 }
 
 ::selection {
-  @apply bg-pink-500 text-gray-50;
+  @apply bg-pink-500 text-zinc-50;
 }
 
 @layer base {

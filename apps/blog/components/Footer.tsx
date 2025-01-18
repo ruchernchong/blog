@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const Footer = () => (
-  <footer className="bg-gray-800 py-8" data-umami-event="footer-interaction">
+  <footer className="bg-zinc-800 py-8" data-umami-event="footer-interaction">
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-y-4 px-4">
       <div className="flex flex-col gap-y-4 md:flex-row md:justify-between">
         <div className="flex flex-col" data-umami-event="footer-logo-view">
