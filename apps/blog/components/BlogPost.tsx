@@ -38,7 +38,7 @@ const BlogPost = ({
             </Typography>
           </Link>
           <p
-            className="line-clamp-2 text-gray-400"
+            className="line-clamp-2 text-zinc-400"
             data-umami-event="blog-post-excerpt-view"
             data-umami-event-title={title}
           >
@@ -48,7 +48,7 @@ const BlogPost = ({
         <time
           dateTime={formatISO(parseISO(publishedAt))}
           title={formattedDate}
-          className="italic text-gray-400"
+          className="italic text-zinc-400"
           data-umami-event="blog-post-date-view"
           data-umami-event-title={title}
           data-umami-event-date={publishedAt}

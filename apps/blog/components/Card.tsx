@@ -21,7 +21,7 @@ const Card = ({ children, className, onClick, ...props }: CardProps) => {
       data-umami-event="card-interaction"
       {...props}
     >
-      <div className="w-full grow rounded-xl bg-gray-900 p-4">{children}</div>
+      <div className="w-full grow rounded-xl bg-zinc-900 p-4">{children}</div>
     </div>
   );
 };

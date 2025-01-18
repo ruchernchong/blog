@@ -76,14 +76,14 @@ const AboutPage = async () => {
             description={description}
           />
         </div>
-        <hr className="border-gray-600" />
+        <hr className="border-zinc-600" />
         <div
           data-umami-event="employment-section-view"
           data-umami-event-companies-count={sortedCompanies.length}
         >
           <Employment companies={sortedCompanies} />
         </div>
-        <hr className="border-gray-600" />
+        <hr className="border-zinc-600" />
         <div
           data-umami-event="contributions-section-view"
           data-umami-event-has-github={!!githubProfile}

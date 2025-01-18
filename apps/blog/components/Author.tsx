@@ -17,7 +17,7 @@ const Author = ({ title, tagline, description }: Props) => {
           <Typography variant="h1">{title}</Typography>
           {tagline && <Typography variant="h2">{tagline}</Typography>}
         </div>
-        {description && <p className="text-gray-400">{description}</p>}
+        {description && <p className="text-zinc-400">{description}</p>}
         <div className="flex justify-center gap-4 md:justify-start">
           {socials.map(({ name, link }) => (
             <ExternalLink
