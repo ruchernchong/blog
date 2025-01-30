@@ -10,12 +10,12 @@ export const GET = () => {
     feed_url: `${BASE_URL}/feed.xml`,
   });
 
-  allDocuments.map(({ title, publishedAt, excerpt, url }) =>
+  allDocuments.map(({ title, publishedAt, excerpt, canonical }) =>
     feed.item({
       title,
-      url: `${BASE_URL}${url}`,
-      date: publishedAt as string,
-      description: excerpt || title,
+      url: canonical,
+      date: publishedAt,
+      description: excerpt ?? title,
     }),
   );
 
