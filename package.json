@@ -12,7 +12,9 @@
   },
   "pnpm": {
     "overrides": {
-      "micromatch@<4.0.8": ">=4.0.8"
+      "micromatch@<4.0.8": ">=4.0.8",
+      "undici@>=6.0.0 <6.21.1": ">=6.21.1",
+      "vite@>=6.0.0 <=6.0.8": ">=6.0.9"
     }
   },
   "packageManager": "pnpm@10.2.0"
