@@ -13,7 +13,7 @@ const StatsBar = async ({ slug }: StatsBarProps) => {
 
   return (
     <div className="sticky top-0 z-50 md:fixed md:bottom-auto md:left-auto md:right-0 md:top-1/2 md:-translate-y-1/2">
-      <div className="flex w-full items-center justify-center gap-4 p-2 backdrop-blur md:w-auto md:flex-col md:items-center md:rounded-lg md:bg-zinc-800/50 md:p-4">
+      <div className="flex w-full items-center justify-center gap-4 p-2 backdrop-blur-sm md:w-auto md:flex-col md:items-center md:rounded-lg md:bg-zinc-800/50 md:p-4">
         <LikeCounter
           slug={slug}
           initialTotalLikes={totalLikes}
