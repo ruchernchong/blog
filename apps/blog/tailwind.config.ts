@@ -9,26 +9,6 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      typography: (theme: (path: string) => string) => ({
-        DEFAULT: {
-          css: {
-            "code::before": {
-              content: "",
-            },
-            "code::after": {
-              content: "",
-            },
-            code: {
-              backgroundColor: theme("colors.zinc.800"),
-              borderWidth: theme("borderWidth.2"),
-              borderColor: theme("colors.zinc.600"),
-              borderRadius: theme("borderRadius.lg"),
-              padding: theme("spacing.1"),
-              margin: theme("spacing.1"),
-            },
-          },
-        },
-      }),
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

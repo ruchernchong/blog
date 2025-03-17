@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 .prose :is(h2, h3, h4, h5, h6) {
   @apply scroll-mt-8;
 }
@@ -27,6 +28,16 @@ h1 .permalink::after {
 
 ::selection {
   @apply bg-pink-500 text-zinc-50;
+}
+
+/* Added code styling from tailwind.config.ts */
+.prose code {
+  @apply bg-zinc-800 border-2 border-zinc-600 rounded-lg p-1 m-1;
+}
+
+.prose code::before,
+.prose code::after {
+  content: "";
 }
 
 @layer base {
