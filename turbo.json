@@ -2,7 +2,9 @@
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build"
+      ],
       "env": [
         "GH_ACCESS_TOKEN",
         "DATABASE_URL",
@@ -14,12 +16,13 @@
         ".next/**",
         "!.next/cache/**",
         ".contentlayer/**",
-        ".astro/**",
         "dist/**"
       ]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": [
+        "^check-types"
+      ]
     },
     "dev": {
       "persistent": true,
