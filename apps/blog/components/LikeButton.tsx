@@ -46,9 +46,6 @@ const LikeButton = ({
       className={`transform transition-all duration-300 hover:scale-110 ${
         optimisticLikes.likesByUser > 0 ? "text-pink-500" : "text-zinc-400"
       }`}
-      data-umami-event="like-button-click"
-      data-umami-event-slug={slug}
-      data-umami-event-action="like"
     >
       {optimisticLikes.likesByUser > 0 ? (
         <HeartSolidIcon className="h-6 w-6" />

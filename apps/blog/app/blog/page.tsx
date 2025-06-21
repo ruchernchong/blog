@@ -28,41 +28,24 @@ const BlogPage = () => {
             );
 
             return (
-              <Card
-                key={title}
-                data-umami-event="blog-post-view"
-                data-umami-event-title={title}
-              >
+              <Card key={title}>
                 <Link
                   href={canonical}
                   className="flex h-full flex-col"
-                  data-umami-event="blog-post-link-click"
-                  data-umami-event-title={title}
-                  data-umami-event-url={canonical}
                 >
                   <CardHeader>
                     <time
                       dateTime={formatISO(parseISO(publishedAt))}
                       title={formattedDate}
                       className="text-sm text-zinc-400 italic"
-                      data-umami-event="blog-post-date-view"
-                      data-umami-event-title={title}
-                      data-umami-event-date={publishedAt}
                     >
                       {formattedDate}
                     </time>
-                    <CardTitle
-                      className="capitalize"
-                      data-umami-event="blog-post-title-view"
-                      data-umami-event-title={title}
-                    >
+                    <CardTitle className="capitalize">
                       {title}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent
-                    data-umami-event="blog-post-excerpt-view"
-                    data-umami-event-title={title}
-                  >
+                  <CardContent>
                     {excerpt}
                   </CardContent>
                 </Link>

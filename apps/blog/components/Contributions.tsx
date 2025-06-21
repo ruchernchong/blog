@@ -21,14 +21,8 @@ const Contributions = ({
   stackOverflow: StackOverflowProfile;
 }) => {
   return (
-    <section
-      className="flex flex-col gap-8"
-      data-umami-event="contributions-section-view"
-    >
-      <div
-        className="flex flex-col gap-4"
-        data-umami-event="contributions-header-view"
-      >
+    <section className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4">
         <div className="flex items-center gap-x-2">
           <UsersIcon className="h-8 w-8 fill-pink-500" />
           <Typography variant="h2">Contributions</Typography>
@@ -41,15 +35,7 @@ const Contributions = ({
       <div className="grid gap-8 md:grid-cols-2">
         <Card>
           {github && (
-            <div
-              className="flex flex-col gap-2"
-              data-umami-event="github-stats-view"
-              data-umami-event-commits={
-                github.contributionsCollection.totalCommitContributions
-              }
-              data-umami-event-prs={github.pullRequests.totalCount}
-              data-umami-event-followers={github.followers.totalCount}
-            >
+            <div className="flex flex-col gap-2">
               <div>
                 <Typography variant="h3">GitHub</Typography>
                 <p className="text-sm text-zinc-400 italic">
@@ -66,10 +52,7 @@ const Contributions = ({
                   Followers: {github.followers.totalCount}
                 </div>
                 <div className="flex flex-col items-start">
-                  <LinkWithIcon
-                    url={github.url}
-                    data-umami-event="github-profile-click"
-                  />
+                  <LinkWithIcon url={github.url} />
                 </div>
               </div>
             </div>
@@ -77,11 +60,7 @@ const Contributions = ({
         </Card>
         <Card>
           {stackOverflow && (
-            <div
-              className="flex flex-col gap-2"
-              data-umami-event="stackoverflow-stats-view"
-              data-umami-event-reputation={stackOverflow.reputation}
-            >
+            <div className="flex flex-col gap-2">
               <div>
                 <Typography variant="h3">Stack Overflow</Typography>
                 <p className="text-sm text-zinc-400 italic">
@@ -90,10 +69,7 @@ const Contributions = ({
               </div>
               <div className="flex flex-col gap-2">
                 <div>Reputation: {stackOverflow.reputation}</div>
-                <div
-                  className="flex items-center gap-2"
-                  data-umami-event="stackoverflow-badges-view"
-                >
+                <div className="flex items-center gap-2">
                   {Object.entries(stackOverflow.badge_counts)
                     .reverse()
                     .map(([tier, count]) => {
@@ -104,9 +80,6 @@ const Contributions = ({
                               `h-4 w-4 rounded-full ${STACK_OVERFLOW_BADGES[tier]}`,
                             )}
                             title={tier}
-                            data-umami-event="stackoverflow-badge-view"
-                            data-umami-event-tier={tier}
-                            data-umami-event-count={count}
                           />
                           <div>{count}</div>
                         </Fragment>
@@ -114,10 +87,7 @@ const Contributions = ({
                     })}
                 </div>
                 <div className="flex flex-col items-start">
-                  <LinkWithIcon
-                    url="https://stackoverflow.com/users/4031163/ru-chern-chong"
-                    data-umami-event="stackoverflow-profile-click"
-                  />
+                  <LinkWithIcon url="https://stackoverflow.com/users/4031163/ru-chern-chong" />
                 </div>
               </div>
             </div>

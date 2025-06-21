@@ -60,16 +60,8 @@ const AboutPage = async () => {
   return (
     <>
       <StructuredData data={structuredData} />
-      <div
-        className="flex flex-col gap-8"
-        data-umami-event="page-view"
-        data-umami-event-page="about"
-      >
-        <div
-          className="flex flex-col"
-          data-umami-event="about-author-view"
-          data-umami-event-position={currentPosition}
-        >
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-col">
           <Author
             title="About Me"
             tagline={currentPosition}
@@ -77,18 +69,11 @@ const AboutPage = async () => {
           />
         </div>
         <hr className="border-zinc-600" />
-        <div
-          data-umami-event="employment-section-view"
-          data-umami-event-companies-count={sortedCompanies.length}
-        >
+        <div>
           <Employment companies={sortedCompanies} />
         </div>
         <hr className="border-zinc-600" />
-        <div
-          data-umami-event="contributions-section-view"
-          data-umami-event-has-github={!!githubProfile}
-          data-umami-event-has-stackoverflow={!!stackOverflowProfile}
-        >
+        <div>
           <Contributions
             github={githubProfile}
             stackOverflow={stackOverflowProfile}

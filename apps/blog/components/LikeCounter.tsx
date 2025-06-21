@@ -31,12 +31,7 @@ export const LikeCounter = ({
         likesByUser={likesByUser}
         onLikeUpdateAction={handleLikeUpdate}
       />
-      <div
-        className="text-sm text-neutral-400"
-        data-umami-event="like-counter-display"
-        data-umami-event-slug={slug}
-        data-umami-event-likes={totalLikes}
-      >
+      <div className="text-sm text-neutral-400">
         {totalLikes.toLocaleString()}
       </div>
     </div>

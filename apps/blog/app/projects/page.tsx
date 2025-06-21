@@ -48,75 +48,36 @@ const ProjectsPage = async () => {
   return (
     <>
       <StructuredData data={structuredData} />
-      <div
-        data-umami-event="page-view"
-        data-umami-event-page="projects"
-        data-umami-event-project-count={projects.length}
-      >
-        <Typography
-          variant="h1"
-          className="mb-8"
-          data-umami-event="projects-title-view"
-        >
+      <div>
+        <Typography variant="h1" className="mb-8">
           Projects
         </Typography>
-        <Typography
-          variant="h2"
-          className="mb-8"
-          data-umami-event="projects-description-view"
-        >
+        <Typography variant="h2" className="mb-8">
           {description}
         </Typography>
         <div className="flex flex-col gap-y-12">
           {projects.map(({ name, description, skills, links }) => (
-            <Card
-              key={name}
-              data-umami-event="project-card-view"
-              data-umami-event-project={name}
-            >
+            <Card key={name}>
               <CardHeader>
-                <CardTitle
-                  data-umami-event="project-title-view"
-                  data-umami-event-title={name}
-                >
+                <CardTitle>
                   {name}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div
-                  className="flex flex-wrap gap-2 mb-4"
-                  data-umami-event="project-skills-view"
-                  data-umami-event-project={name}
-                  data-umami-event-skills={skills?.join(",")}
-                >
+                <div className="flex flex-wrap gap-2 mb-4">
                   {skills?.map((skill) => (
-                    <Chip
-                      key={skill}
-                      data-umami-event="project-skill-click"
-                      data-umami-event-skill={skill}
-                      data-umami-event-project={name}
-                    >
+                    <Chip key={skill}>
                       {skill}
                     </Chip>
                   ))}
                 </div>
-                <div
-                  className="text-zinc-300"
-                  data-umami-event="project-description-view"
-                  data-umami-event-project={name}
-                >
+                <div className="text-zinc-300">
                   {description}
                 </div>
               </CardContent>
               <CardFooter>
                 {links.map((link) => (
-                  <LinkWithIcon
-                    key={link}
-                    url={link}
-                    data-umami-event="project-link-click"
-                    data-umami-event-project={name}
-                    data-umami-event-url={link}
-                  />
+                  <LinkWithIcon key={link} url={link} />
                 ))}
               </CardFooter>
             </Card>

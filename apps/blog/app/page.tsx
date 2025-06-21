@@ -29,12 +29,8 @@ const HomePage = async () => {
   return (
     <>
       <StructuredData data={structuredData} />
-      <div
-        className="flex flex-col justify-center gap-8"
-        data-umami-event="page-view"
-        data-umami-event-type="home"
-      >
-        <div data-umami-event="author-section-view">
+      <div className="flex flex-col justify-center gap-8">
+        <div>
           <Author title="Chong Ru Chern" />
         </div>
       </div>

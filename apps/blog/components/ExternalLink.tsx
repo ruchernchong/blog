@@ -19,10 +19,6 @@ const ExternalLink = ({
       rel="noreferrer nofollow me"
       aria-label="Link to social media"
       className={className}
-      data-umami-event="external-link-click"
-      data-umami-event-url={href}
-      data-umami-event-type="social"
-      data-umami-event-title={title ?? href}
     >
       {children}
     </a>

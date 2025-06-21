@@ -14,8 +14,6 @@ const CustomLink = ({ href, children, ...props }: any) => {
       <Link
         href={href}
         className="text-pink-500 hover:text-pink-300"
-        data-umami-event="internal-link-click"
-        data-umami-event-destination={href}
         {...props}
       >
         {children}
@@ -29,8 +27,6 @@ const CustomLink = ({ href, children, ...props }: any) => {
       target="_blank"
       rel="noopener noreferrer nofollow"
       className="text-pink-500 hover:text-pink-300"
-      data-umami-event="external-link-click"
-      data-umami-event-destination={href}
       {...props}
     >
       <span>
@@ -50,8 +46,6 @@ const ImageComponent = ({ alt, ...props }: any) => (
         height={0}
         sizes="100vw"
         className="h-auto w-full rounded-2xl"
-        data-umami-event="image-view"
-        data-umami-event-alt={alt}
         {...props}
       />
     </Suspense>
@@ -66,19 +60,12 @@ const ImageComponent = ({ alt, ...props }: any) => (
 const components: MDXComponents = {
   a: CustomLink,
   h1: (props) => (
-    <Typography
-      variant="h1"
-      data-umami-event="heading-view"
-      data-umami-event-level="h1"
-      {...props}
-    />
+    <Typography variant="h1" {...props} />
   ),
   h2: (props) => (
     <Typography
       variant="h2"
       className="mt-24 text-3xl text-yellow-400"
-      data-umami-event="heading-view"
-      data-umami-event-level="h2"
       {...props}
     />
   ),
@@ -86,8 +73,6 @@ const components: MDXComponents = {
     <Typography
       variant="h3"
       className="mt-16 text-2xl"
-      data-umami-event="heading-view"
-      data-umami-event-level="h3"
       {...props}
     />
   ),
@@ -98,7 +83,7 @@ export const Mdx = ({ code }: { code: string }) => {
   const Component = useMDXComponent(code);
 
   return (
-    <div data-umami-event="mdx-content-view">
+    <div>
       <Component components={components} />
     </div>
   );

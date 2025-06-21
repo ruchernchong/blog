@@ -15,14 +15,8 @@ interface FeaturedPostsProps {
 
 const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
   return (
-    <div
-      className="flex flex-col gap-8"
-      data-umami-event="featured-posts-section-view"
-    >
-      <div
-        className="text-xl font-bold text-pink-500 uppercase"
-        data-umami-event="featured-posts-header-view"
-      >
+    <div className="flex flex-col gap-8">
+      <div className="text-xl font-bold text-pink-500 uppercase">
         Featured Posts
       </div>
       <div className="grid gap-4 md:auto-cols-fr md:grid-flow-col">
@@ -35,41 +29,24 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
             );
 
             return (
-              <Card
-                key={title}
-                data-umami-event="featured-post-card-interaction"
-                data-umami-event-title={title}
-              >
+              <Card key={title}>
                 <Link
                   href={canonical}
                   className="flex h-full flex-col"
-                  data-umami-event="featured-post-link-click"
-                  data-umami-event-title={title}
-                  data-umami-event-url={canonical}
                 >
                   <CardHeader>
                     <time
                       dateTime={formatISO(parseISO(publishedAt))}
                       title={formattedDate}
                       className="text-sm text-zinc-400 italic"
-                      data-umami-event="featured-post-date-view"
-                      data-umami-event-title={title}
-                      data-umami-event-date={publishedAt}
                     >
                       {formattedDate}
                     </time>
-                    <CardTitle
-                      className="capitalize"
-                      data-umami-event="featured-post-title-view"
-                      data-umami-event-title={title}
-                    >
+                    <CardTitle className="capitalize">
                       {title}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent
-                    data-umami-event="featured-post-excerpt-view"
-                    data-umami-event-title={title}
-                  >
+                  <CardContent>
                     {excerpt}
                   </CardContent>
                 </Link>

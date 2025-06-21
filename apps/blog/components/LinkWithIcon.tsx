@@ -14,17 +14,9 @@ export const LinkWithIcon = ({ url, title }: SpecialLinkProps) => {
       target="_blank"
       rel="noopener"
       className="z-20 no-underline"
-      data-umami-event="icon-link-click"
-      data-umami-event-url={url}
-      data-umami-event-title={title ?? newUrl}
     >
       <div className="flex items-center">
-        <LinkIcon
-          className="mr-2 h-4 w-4"
-          data-umami-event="icon-interaction"
-          data-umami-event-type="link-icon"
-          data-umami-event-url={url}
-        />
+        <LinkIcon className="mr-2 h-4 w-4" />
         <span className="hover:text-pink-500">{title ?? newUrl}</span>
       </div>
     </a>

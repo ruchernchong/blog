@@ -8,24 +8,15 @@ import Link from "next/link";
 
 export const Footer = () => (
   <div className="flex justify-center px-6 pb-6">
-    <footer
-      className="w-full max-w-4xl rounded-2xl border border-white/10 bg-black/20 px-8 py-6 shadow-2xl backdrop-blur-lg"
-      data-umami-event="footer-interaction"
-    >
+    <footer className="w-full max-w-4xl rounded-2xl border border-white/10 bg-black/20 px-8 py-6 shadow-2xl backdrop-blur-lg">
       <div className="flex flex-col gap-y-6">
         <div className="flex flex-col gap-y-6 md:flex-row md:items-start md:justify-between">
           <Image src={Icon} width={48} height={48} alt="Logo" />
           <div className="flex gap-x-12 md:gap-x-16">
-            <div
-              className="flex flex-col gap-3"
-              data-umami-event="footer-nav-interaction"
-            >
+            <div className="flex flex-col gap-3">
               <Link
                 href="/"
                 className="text-sm font-medium text-gray-400 transition-colors duration-300 hover:text-white"
-                data-umami-event="footer-nav-click"
-                data-umami-event-title="Home"
-                data-umami-event-url="/"
               >
                 Home
               </Link>
@@ -35,19 +26,13 @@ export const Footer = () => (
                     key={title}
                     href={href}
                     className="text-sm font-medium text-gray-400 transition-colors duration-300 hover:text-white"
-                    data-umami-event="footer-nav-click"
-                    data-umami-event-title={title}
-                    data-umami-event-url={href}
                   >
                     {title}
                   </Link>
                 );
               })}
             </div>
-            <div
-              className="flex flex-col gap-3"
-              data-umami-event="footer-social-links-interaction"
-            >
+            <div className="flex flex-col gap-3">
               {socials.map(({ name, link }) => (
                 <div key={name}>
                   <ExternalLink
@@ -65,10 +50,7 @@ export const Footer = () => (
             </div>
           </div>
         </div>
-        <div
-          className="text-center text-sm text-gray-400 md:text-left"
-          data-umami-event="footer-copyright-view"
-        >
+        <div className="text-center text-sm text-gray-400 md:text-left">
           &copy; {new Date().getFullYear()} Chong Ru Chern. All Rights Reserved.
         </div>
       </div>

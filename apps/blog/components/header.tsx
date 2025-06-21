@@ -18,10 +18,7 @@ export const Header = () => {
   const pathname = usePathname();
 
   return (
-    <div
-      className="sticky top-6 left-1/2 z-50 w-[90vw] max-w-4xl -translate-x-1/2"
-      data-umami-event="header-interaction"
-    >
+    <div className="sticky top-6 left-1/2 z-50 w-[90vw] max-w-4xl -translate-x-1/2">
       <header className="w-full rounded-2xl border border-white/10 bg-black/20 px-8 py-3 shadow-2xl backdrop-blur-lg">
         <div className="flex items-center justify-between">
           <NavItem
@@ -31,10 +28,7 @@ export const Header = () => {
           >
             <Image src={Icon} width={32} height={32} alt="Logo" />
           </NavItem>
-          <nav
-            className="flex items-center gap-x-6"
-            data-umami-event="navigation-interaction"
-          >
+          <nav className="flex items-center gap-x-6">
             {navLinks.map(({ title, href }) => {
               const isActive =
                 pathname === href ||
@@ -66,13 +60,7 @@ export const Header = () => {
 
 const NavItem = ({ href, className, children, title }: NavItemProps) => {
   return (
-    <Link
-      href={href}
-      className={className}
-      data-umami-event="navigation-link-click"
-      data-umami-event-link={href}
-      data-umami-event-title={title}
-    >
+    <Link href={href} className={className}>
       {children}
     </Link>
   );
