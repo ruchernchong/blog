@@ -1,7 +1,7 @@
 import globalMetadata from "@/app/metadata";
 import { openGraphImage, twitterImage } from "@/app/shared-metadata";
 import { Chip } from "@/components/Chip";
-import { LinkWithIcon } from "@/components/LinkWithIcon";
+import { LinkWithIcon } from "@/components/link-with-icon";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/card";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";

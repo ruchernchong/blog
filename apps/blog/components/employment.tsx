@@ -1,6 +1,6 @@
 import Image from "next/image";
 import classNames from "classnames";
-import ExternalLink from "@/components/ExternalLink";
+import ExternalLink from "@/components/external-link";
 import { ItemOverlay } from "@/components/ItemOverlay";
 import { BriefcaseIcon } from "@heroicons/react/24/solid";
 import type { Company } from "@/types";

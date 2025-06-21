@@ -1,4 +1,4 @@
-import { Mdx } from "@/components/Mdx";
+import { Mdx } from "@/components/mdx";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
 import StatsBar from "@/components/StatsBar";

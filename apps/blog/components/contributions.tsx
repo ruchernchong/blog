@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import classNames from "classnames";
 import { Card } from "@/components/card";
-import { LinkWithIcon } from "@/components/LinkWithIcon";
+import { LinkWithIcon } from "@/components/link-with-icon";
 import { Typography } from "@/components/Typography";
 import type { StackOverflowProfile } from "@/lib/stackoverflow";
 import type { GitHubProfile } from "@/lib/github";

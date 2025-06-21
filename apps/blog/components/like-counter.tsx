@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import LikeButton from "./LikeButton";
+import LikeButton from "./like-button";
 import type { Likes } from "@/types";
 
 interface Props {

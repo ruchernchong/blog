@@ -1,4 +1,4 @@
-import ExternalLink from "@/components/ExternalLink";
+import ExternalLink from "@/components/external-link";
 import * as Icons from "@/components/Icons";
 import { Typography } from "@/components/Typography";
 import socials from "@/data/socials";

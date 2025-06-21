@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { truncate } from "../truncate";
+import truncate from "../truncate";
 
 describe("truncate", () => {
   it("returns original string if shorter than maxLength", () => {

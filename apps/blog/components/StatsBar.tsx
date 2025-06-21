@@ -1,6 +1,6 @@
 import { EyeIcon } from "@heroicons/react/24/outline";
-import { LikeCounter } from "./LikeCounter";
-import { ViewCounter } from "./ViewCounter";
+import { LikeCounter } from "./like-counter";
+import { ViewCounter } from "./view-counter";
 import { getLikesByUser, getTotalLikes } from "@/app/actions/stats";
 
 interface StatsBarProps {

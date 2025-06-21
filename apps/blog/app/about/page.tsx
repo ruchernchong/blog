@@ -1,8 +1,8 @@
 import globalMetadata from "@/app/metadata";
 import { openGraphImage, twitterImage } from "@/app/shared-metadata";
 import Author from "@/components/Author";
-import Contributions from "@/components/Contributions";
-import Employment from "@/components/Employment";
+import Contributions from "@/components/contributions";
+import Employment from "@/components/employment";
 import { StructuredData } from "@/components/StructuredData";
 import { BASE_URL } from "@/config";
 import companies from "@/data/companies";

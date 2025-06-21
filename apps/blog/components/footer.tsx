@@ -1,5 +1,5 @@
 import Icon from "@/app/icon.png";
-import ExternalLink from "@/components/ExternalLink";
+import ExternalLink from "@/components/external-link";
 import * as Icons from "@/components/Icons";
 import { navLinks } from "@/config";
 import socials from "@/data/socials";
