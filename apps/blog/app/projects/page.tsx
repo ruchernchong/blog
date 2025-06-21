@@ -1,8 +1,8 @@
 import globalMetadata from "@/app/metadata";
 import { openGraphImage, twitterImage } from "@/app/shared-metadata";
 import { Chip } from "@/components/Chip";
-import { ItemOverlay } from "@/components/ItemOverlay";
 import { LinkWithIcon } from "@/components/LinkWithIcon";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/card";
 import { StructuredData } from "@/components/StructuredData";
 import { Typography } from "@/components/Typography";
 import { BASE_URL } from "@/config";
@@ -68,63 +68,59 @@ const ProjectsPage = async () => {
           {description}
         </Typography>
         <div className="flex flex-col gap-y-12">
-          {projects.map(({ name, description, skills, links }) => {
-            return (
-              <div
-                key={name}
-                className="group relative"
-                data-umami-event="project-card-view"
-                data-umami-event-project={name}
-              >
-                <div className="flex flex-col items-start gap-4">
-                  <ItemOverlay />
-                  <Typography
-                    variant="h3"
-                    className="z-20"
-                    data-umami-event="project-title-view"
-                    data-umami-event-title={name}
-                  >
-                    {name}
-                  </Typography>
-                  <div
-                    className="flex flex-wrap gap-2"
-                    data-umami-event="project-skills-view"
-                    data-umami-event-project={name}
-                    data-umami-event-skills={skills?.join(",")}
-                  >
-                    {skills?.map((skill) => {
-                      return (
-                        <Chip
-                          key={skill}
-                          data-umami-event="project-skill-click"
-                          data-umami-event-skill={skill}
-                          data-umami-event-project={name}
-                        >
-                          {skill}
-                        </Chip>
-                      );
-                    })}
-                  </div>
-                  <div
-                    className="z-20 text-zinc-400"
-                    data-umami-event="project-description-view"
-                    data-umami-event-project={name}
-                  >
-                    {description}
-                  </div>
-                  {links.map((link) => (
-                    <LinkWithIcon
-                      key={link}
-                      url={link}
-                      data-umami-event="project-link-click"
+          {projects.map(({ name, description, skills, links }) => (
+            <Card
+              key={name}
+              data-umami-event="project-card-view"
+              data-umami-event-project={name}
+            >
+              <CardHeader>
+                <CardTitle
+                  data-umami-event="project-title-view"
+                  data-umami-event-title={name}
+                >
+                  {name}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div
+                  className="flex flex-wrap gap-2 mb-4"
+                  data-umami-event="project-skills-view"
+                  data-umami-event-project={name}
+                  data-umami-event-skills={skills?.join(",")}
+                >
+                  {skills?.map((skill) => (
+                    <Chip
+                      key={skill}
+                      data-umami-event="project-skill-click"
+                      data-umami-event-skill={skill}
                       data-umami-event-project={name}
-                      data-umami-event-url={link}
-                    />
+                    >
+                      {skill}
+                    </Chip>
                   ))}
                 </div>
-              </div>
-            );
-          })}
+                <div
+                  className="text-zinc-300"
+                  data-umami-event="project-description-view"
+                  data-umami-event-project={name}
+                >
+                  {description}
+                </div>
+              </CardContent>
+              <CardFooter>
+                {links.map((link) => (
+                  <LinkWithIcon
+                    key={link}
+                    url={link}
+                    data-umami-event="project-link-click"
+                    data-umami-event-project={name}
+                    data-umami-event-url={link}
+                  />
+                ))}
+              </CardFooter>
+            </Card>
+          ))}
         </div>
       </div>
     </>
