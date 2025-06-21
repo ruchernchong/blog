@@ -1,7 +1,7 @@
 import { format, formatISO, parseISO } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
 import Link from "next/link";
-import { sortByLatest } from "@/lib/sortByLatest";
+import { sortByLatest } from "@/utils/sortByLatest";
 import { allPosts } from "contentlayer/generated";
 import { Typography } from "@/components/Typography";
 import type { Metadata } from "next";
@@ -29,10 +29,7 @@ const BlogPage = () => {
 
             return (
               <Card key={title}>
-                <Link
-                  href={canonical}
-                  className="flex h-full flex-col"
-                >
+                <Link href={canonical} className="flex h-full flex-col">
                   <CardHeader>
                     <time
                       dateTime={formatISO(parseISO(publishedAt))}
@@ -41,13 +38,9 @@ const BlogPage = () => {
                     >
                       {formattedDate}
                     </time>
-                    <CardTitle className="capitalize">
-                      {title}
-                    </CardTitle>
+                    <CardTitle className="capitalize">{title}</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    {excerpt}
-                  </CardContent>
+                  <CardContent>{excerpt}</CardContent>
                 </Link>
               </Card>
             );

@@ -2,7 +2,7 @@
 
 import redis from "@/config/redis";
 import type { PostStats } from "@/types";
-import { generateUserHash } from "@/lib/hash";
+import { generateUserHash } from "@/utils/hash";
 import { headers } from "next/headers";
 
 const DEFAULT_IP = "127.0.0.1";
