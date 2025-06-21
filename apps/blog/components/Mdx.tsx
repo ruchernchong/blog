@@ -56,7 +56,7 @@ const ImageComponent = ({ alt, ...props }: any) => (
       />
     </Suspense>
     {alt && (
-      <figcaption className="text-center text-xs font-bold italic text-zinc-50">
+      <figcaption className="text-center text-xs font-bold text-zinc-50 italic">
         {alt}
       </figcaption>
     )}
