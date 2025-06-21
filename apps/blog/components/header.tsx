@@ -13,7 +13,7 @@ interface NavItemProps extends PropsWithChildren {
   className?: string;
   title?: string;
 }
-
+ 
 export const Header = () => {
   const pathname = usePathname();
 

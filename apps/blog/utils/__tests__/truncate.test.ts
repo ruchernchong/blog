@@ -1,4 +1,3 @@
-import { describe, it, expect } from "vitest";
 import truncate from "../truncate";
 
 describe("truncate", () => {
