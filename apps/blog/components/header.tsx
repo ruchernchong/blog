@@ -22,7 +22,7 @@ export const Header = () => {
       className="sticky top-6 left-1/2 z-50 w-[90vw] max-w-4xl -translate-x-1/2"
       data-umami-event="header-interaction"
     >
-      <header className="w-full rounded-full border border-white/10 bg-black/20 px-8 py-3 shadow-2xl backdrop-blur-lg">
+      <header className="w-full rounded-2xl border border-white/10 bg-black/20 px-8 py-3 shadow-2xl backdrop-blur-lg">
         <div className="flex items-center justify-between">
           <NavItem
             href="/"
