@@ -1,4 +1,4 @@
-import { createHash } from "crypto";
+import { createHash } from "node:crypto";
 
 export function generateUserHash(ip: string): string {
   const salt = process.env.IP_SALT;
