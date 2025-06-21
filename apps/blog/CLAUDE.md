@@ -16,7 +16,7 @@
 - Path aliases: `@/*` maps to project root
 - Prettier with tailwindcss plugin
 - Use named exports over default exports
-- Components use PascalCase, utilities use camelCase
+- Use kebab-case for filenames whenever possible
 - Use TypeScript interfaces/types for props
 - Prefer functional components with hooks
 - Files organized by feature/domain
