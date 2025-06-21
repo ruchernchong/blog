@@ -131,3 +131,6 @@ dist
 .pnp.*
 
 .turbo
+
+# claude
+.claude
