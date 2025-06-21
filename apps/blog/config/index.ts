@@ -14,7 +14,7 @@ export const SITE_DESCRIPTION =
   "Frontend Developer from Singapore. Interested in automating workflows and building in React, Node, and Typescript.";
 
 export const navLinks: NavLink[] = [
-  // { title: "Blog", href: "/blog" },
+  { title: "Blog", href: "/blog" },
   { title: "About", href: "/about" },
   { title: "Notes", href: "/notes" },
   { title: "Projects", href: "/projects" },

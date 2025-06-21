@@ -82,7 +82,7 @@ Next.js was the chosen React framework for several reasons. It has server-side r
 Example of creating a post using the dynamic routing:
 
 ```jsx
-// app/posts/[slug]/page.js
+// app/blog/[slug]/page.js
 export default function PostPage({ params }) {
   // Get the matching post based on the slug in the URL
   const post = allPosts.find((post) => post.slug === params.slug);
@@ -195,7 +195,7 @@ With Next.js, I was able to leverage on its `generateMetadata` to create dynamic
 Example of creating the required tags for SEO purposes using the metadata:
 
 ```jsx
-// app/posts/[slug]/page.js
+// app/blog/[slug]/page.js
 export async function generateMetadata({ params }) {
   // Get the matching post based on the slug in the URL
   const post = await allPosts.find((post) => post.slug === params.slug);

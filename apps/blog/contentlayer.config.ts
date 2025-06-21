@@ -15,7 +15,7 @@ import { BASE_URL } from "./config";
 
 export const Post = defineDocumentType(() => ({
   name: "Post",
-  filePathPattern: "posts/**/*.mdx",
+  filePathPattern: "blog/**/*.mdx",
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
