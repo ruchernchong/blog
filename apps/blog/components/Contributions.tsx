@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import classNames from "classnames";
-import Card from "@/components/Card";
+import { Card } from "@/components/card";
 import { LinkWithIcon } from "@/components/LinkWithIcon";
 import { Typography } from "@/components/Typography";
 import type { StackOverflowProfile } from "@/lib/stackoverflow";
@@ -52,7 +52,7 @@ const Contributions = ({
             >
               <div>
                 <Typography variant="h3">GitHub</Typography>
-                <p className="text-sm italic text-zinc-400">
+                <p className="text-sm text-zinc-400 italic">
                   (Powered by GitHub GraphQL API)
                 </p>
               </div>
@@ -84,7 +84,7 @@ const Contributions = ({
             >
               <div>
                 <Typography variant="h3">Stack Overflow</Typography>
-                <p className="text-sm italic text-zinc-400">
+                <p className="text-sm text-zinc-400 italic">
                   (Powered by Stack Exchange API)
                 </p>
               </div>

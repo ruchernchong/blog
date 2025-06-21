@@ -1,15 +1,20 @@
 import Author from "@/components/Author";
-import BlogPost from "@/components/BlogPost";
-import FeaturedPosts from "@/components/FeaturedPosts";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/card";
 import { StructuredData } from "@/components/StructuredData";
 import { BASE_URL } from "@/config";
 import { sortByLatest } from "@/lib/sortByLatest";
 import { allPosts } from "contentlayer/generated";
 import type { WebSite, WithContext } from "schema-dts";
+import { format, formatISO, parseISO } from "date-fns";
+import Link from "next/link";
 
 const HomePage = async () => {
   const posts = allPosts.filter(({ isDraft }) => !isDraft).sort(sortByLatest);
-  const featuredPosts = posts.filter(({ featured }) => featured);
 
   const structuredData: WithContext<WebSite> = {
     "@context": "https://schema.org",
@@ -44,14 +49,6 @@ const HomePage = async () => {
         <div data-umami-event="author-section-view">
           <Author title="Chong Ru Chern" />
         </div>
-        {featuredPosts.length > 0 && (
-          <div
-            data-umami-event="featured-posts-view"
-            data-umami-event-count={featuredPosts.length}
-          >
-            <FeaturedPosts featuredPosts={featuredPosts} />
-          </div>
-        )}
         <div
           className="flex flex-col gap-8"
           data-umami-event="recent-posts-view"
@@ -70,22 +67,54 @@ const HomePage = async () => {
               one!
             </p>
           )}
-          <div className="flex flex-col gap-12">
+          <div className="grid gap-6 md:grid-cols-2">
             {posts.length > 0 &&
               posts.map(({ title, canonical, excerpt, publishedAt }) => {
+                const formattedDate = format(
+                  parseISO(publishedAt),
+                  "iiii, dd MMMM yyyy",
+                );
+
                 return (
-                  <div
+                  <Card
                     key={title}
                     data-umami-event="blog-post-view"
                     data-umami-event-title={title}
                   >
-                    <BlogPost
-                      title={title}
-                      canonical={canonical}
-                      excerpt={excerpt}
-                      publishedAt={publishedAt}
-                    />
-                  </div>
+                    <Link
+                      href={canonical}
+                      className="flex h-full flex-col"
+                      data-umami-event="blog-post-link-click"
+                      data-umami-event-title={title}
+                      data-umami-event-url={canonical}
+                    >
+                      <CardHeader>
+                        <time
+                          dateTime={formatISO(parseISO(publishedAt))}
+                          title={formattedDate}
+                          className="text-sm text-zinc-400 italic"
+                          data-umami-event="blog-post-date-view"
+                          data-umami-event-title={title}
+                          data-umami-event-date={publishedAt}
+                        >
+                          {formattedDate}
+                        </time>
+                        <CardTitle
+                          className="capitalize"
+                          data-umami-event="blog-post-title-view"
+                          data-umami-event-title={title}
+                        >
+                          {title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent
+                        data-umami-event="blog-post-excerpt-view"
+                        data-umami-event-title={title}
+                      >
+                        {excerpt}
+                      </CardContent>
+                    </Link>
+                  </Card>
                 );
               })}
           </div>
