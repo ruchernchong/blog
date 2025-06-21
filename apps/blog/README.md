@@ -9,17 +9,53 @@ Welcome to my portfolio website! Visit the live site at [ruchern.dev](https://ru
 
 This portfolio is built with modern web technologies:
 
-- **Framework**: [Next.js](https://nextjs.org) - React framework for production
-- **Styling**: [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework
-- **Database**: [Neon](https://neon.tech) - Serverless Postgres database
-- **Deployment**: [Vercel](https://vercel.com) - Platform for frontend frameworks and static sites
+### Core Framework
+
+- **Next.js 15** - React framework with App Router
+- **React 19** - Latest React with concurrent features
+- **TypeScript** - Type-safe JavaScript with strict mode
+
+### Styling & UI
+
+- **Tailwind CSS v4** - Utility-first CSS framework
+- **Tailwind Typography** - Beautiful typographic defaults
+- **Lucide React** - Beautiful & consistent icons
+- **Class Variance Authority** - Component variants
+
+### Content & Data
+
+- **Contentlayer2** - Content SDK for MDX processing
+- **MDX** - Markdown with JSX components
+- **Neon PostgreSQL** - Serverless Postgres database
+- **Drizzle ORM** - Type-safe database toolkit
+- **Upstash Redis** - Serverless Redis for caching
+
+### Analytics & Monitoring
+
+- **Custom Analytics** - Privacy-focused visitor tracking
+- **Vercel Analytics** - Web vitals and performance
+- **Vercel Speed Insights** - Real user monitoring
+
+### Development & Testing
+
+- **Vitest** - Fast unit testing framework
+- **Testing Library** - React component testing
+- **Prettier** - Code formatting
+- **ESLint** - Code linting
+- **Husky** - Git hooks
+
+### Deployment & Infrastructure
+
+- **Vercel** - Deployment platform (Singapore region)
+- **GitHub Actions** - CI/CD workflows
 
 ## 🛠️ Getting Started
 
 ### Prerequisites
 
-- Node.js 18.x or higher
-- [pnpm](https://pnpm.io) package manager
+- **Node.js 18.x or higher** - JavaScript runtime
+- **pnpm** - Fast, disk space efficient package manager
+- **Git** - Version control system
 
 ### Installation
 
@@ -47,15 +83,15 @@ pnpm install
 cp .env.example .env
 ```
 
-5. Update the `.env` file with your own values
+5. Update the `.env` file with your configuration (see [Environment Variables](#-environment-variables) section)
 
-```env
-# Upstash Redis
-UPSTASH_REDIS_REST_URL=
-UPSTASH_REDIS_REST_TOKEN=
+6. Set up the database
+
+```bash
+pnpm migrate
 ```
 
-6. Start the development server
+7. Start the development server
 
 ```bash
 pnpm dev
@@ -63,32 +99,78 @@ pnpm dev
 
 Your site should now be running at `http://localhost:3000`!
 
-## 🔧 Configuration
+## 🧪 Development Workflow
 
-### Environment Variables
+### Available Scripts
 
-The following environment variables are required to run the application:
+```bash
+# Development
+pnpm dev              # Start development server with hot reload
+pnpm build            # Build for production
+pnpm start            # Start production server
 
-| Variable                   | Description                                                                                                                               | Required |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| `NEXT_PUBLIC_BASE_URL`     | The base URL of your application (default: http://localhost:3000)                                                                         | Yes      |
-| `DATABASE_URL`             | Connection string for your Neon PostgreSQL database                                                                                       | Yes      |
-| `GH_ACCESS_TOKEN`          | GitHub Personal Access Token for GitHub integration                                                                                       | Yes      |
-| `UPSTASH_REDIS_REST_URL`   | The REST API endpoint URL for your Upstash Redis database. Found in your Upstash Redis console under "REST API" details                   | Yes      |
-| `UPSTASH_REDIS_REST_TOKEN` | Authentication token for accessing your Upstash Redis database via REST API. Found in your Upstash Redis console under "REST API" details | Yes      |
-| `IP_SALT`                  | Salt value used for IP address hashing                                                                                                    | Yes      |
+# Testing
+pnpm test             # Run tests with coverage
+pnpm test:coverage    # Generate coverage report
 
-Make sure to copy `.env.example` to `.env` and fill in the required values:
+# Code Quality
+pnpm lint             # Run ESLint
+pnpm check-types      # TypeScript type checking
 
-## 📝 Project Structure
+# Database
+pnpm migrate          # Run database migrations
+
+# Production
+pnpm vercel-build     # Build with migrations for Vercel
+```
+
+### Testing Strategy
+
+- **Unit Tests**: Components and utilities with Vitest
+- **Coverage Reports**: Generated in `coverage/` directory
+- **Test Location**: Tests located in `__tests__/` directories alongside components
+
+### Code Style
+
+- **TypeScript**: Strict mode enabled with path aliases (`@/*`)
+- **File Naming**: kebab-case for filenames
+- **Components**: Functional components with hooks
+- **Exports**: Named exports preferred over default exports
+
+
+## 📁 Project Structure
 
 ```
 portfolio/
-├── app/              # Next.js app directory
-├── components/       # React components
-├── lib/             # Utility functions
-└── public/          # Static assets
+├── app/                    # Next.js App Router pages and API routes
+│   ├── blog/              # Blog pages and dynamic routes
+│   ├── analytics/         # Analytics dashboard
+│   ├── api/               # API endpoints
+│   └── actions/           # Server actions for data fetching
+├── components/            # Reusable React components
+│   ├── ui/               # Base UI components
+│   └── __tests__/        # Component tests
+├── content/              # MDX blog posts
+│   └── blog/            # Blog post markdown files
+├── lib/                  # Utility functions and integrations
+├── config/               # Application configuration
+├── db/                   # Database schema and setup
+├── data/                 # Static data (companies, projects, etc.)
+├── utils/                # Helper functions with tests
+├── migrations/           # Database migration files
+└── public/               # Static assets (images, icons, etc.)
 ```
+
+## 🎯 Key Features
+
+- **📝 Blog System**: MDX-powered blog with syntax highlighting
+- **📊 Analytics Dashboard**: Custom privacy-focused visitor analytics
+- **🎨 Dark/Light Mode**: Tailwind CSS theming support
+- **📱 Responsive Design**: Mobile-first responsive layout
+- **🔍 SEO Optimized**: Structured data, sitemaps, and meta tags
+- **⚡ Performance**: Optimized images, caching, and core web vitals
+- **🔒 Privacy-First**: IP hashing and minimal data collection
+- **🚀 Modern Stack**: Latest Next.js, React, and TypeScript features
 
 ## 🤝 Contributing
 
