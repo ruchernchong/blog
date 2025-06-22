@@ -13,13 +13,13 @@ interface NavItemProps extends PropsWithChildren {
   className?: string;
   title?: string;
 }
- 
+
 export const Header = () => {
   const pathname = usePathname();
 
   return (
-    <div className="sticky top-6 left-1/2 z-50 w-[90vw] max-w-4xl -translate-x-1/2">
-      <header className="w-full rounded-2xl border border-white/10 bg-black/20 px-8 py-3 shadow-2xl backdrop-blur-lg">
+    <div className="fixed top-6 left-1/2 z-50 w-full -translate-x-1/2 px-4 md:max-w-4xl">
+      <header className="w-full rounded-2xl border border-white/10 bg-black/20 px-8 py-3 shadow-2xl backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <NavItem
             href="/"

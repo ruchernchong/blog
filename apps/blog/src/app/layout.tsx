@@ -70,7 +70,7 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
         <TRPCProvider>
           <div className="flex min-h-screen flex-col">
             <Header />
-            <main className="mx-auto my-8 w-screen max-w-4xl grow px-4 md:my-16">
+            <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24">
               {children}
             </main>
             <Footer />
