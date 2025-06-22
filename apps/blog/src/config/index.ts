@@ -15,6 +15,7 @@ export const SITE_DESCRIPTION =
 
 export const navLinks: NavLink[] = [
   { title: "Blog", href: "/blog" },
+  { title: "Dashboard", href: "/dashboard" },
   { title: "About", href: "/about" },
   { title: "Projects", href: "/projects" },
   // { title: "Resume", href: "/resume" },
