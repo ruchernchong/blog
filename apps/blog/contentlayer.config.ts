@@ -11,7 +11,7 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkUnwrapImages from "remark-unwrap-images";
 import type { BlogPosting, WithContext } from "schema-dts";
-import { BASE_URL } from "./config";
+import { BASE_URL } from "./src/config";
 
 export const Post = defineDocumentType(() => ({
   name: "Post",
