@@ -5,14 +5,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ### Development
-
 - `pnpm dev` - Start development server with hot reload (uses Turbo)
 - `pnpm build` - Build all apps for production (uses Turbo)
 - `pnpm test` - Run tests across all apps (uses Turbo)
 - `pnpm lint` - Run linting across all apps (uses Turbo)
 
 ### App-specific commands (run from `/apps/blog/`)
-
 - `pnpm dev` - Start blog dev server (contentlayer2 dev & next dev --turbopack)
 - `pnpm build` - Build blog app for production
 - `pnpm test` - Run Vitest tests with coverage
@@ -23,7 +21,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm vercel-build` - Production build with migrations
 
 ### Quality & Release
-
 - `pnpm release` - Create semantic release (runs build, test, lint, check-types)
 - `pnpm release:blog` - Release blog app specifically
 
@@ -32,13 +29,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a Turborepo monorepo containing a Next.js 15 portfolio website with an integrated blog system.
 
 ### Monorepo Structure
-
 - **Root**: Turborepo configuration with shared tooling (Biome, commitlint, semantic-release)
 - **apps/blog**: Main Next.js application with blog functionality
 - **packages/**: Currently empty but structured for shared packages
 
 ### Tech Stack
-
 - **Framework**: Next.js 15 with App Router and React 19
 - **Content**: Contentlayer2 for MDX blog processing
 - **Database**: Neon PostgreSQL with Drizzle ORM
@@ -49,20 +44,17 @@ This is a Turborepo monorepo containing a Next.js 15 portfolio website with an i
 - **Deployment**: Vercel with automated migrations
 
 ### Key Features
-
 - **Custom Analytics**: Privacy-focused visitor tracking with IP hashing
 - **Blog System**: MDX-powered posts with computed fields (reading time, SEO metadata)
 - **Performance**: Optimized images, caching, and core web vitals tracking
 - **SEO**: Structured data, sitemaps, OpenGraph image generation
 
 ### Database Architecture
-
 - Schema in `apps/blog/db/schema.ts` using Drizzle ORM
 - Session tracking table for analytics (visits, geolocation, device info)
 - Migrations in `apps/blog/migrations/` managed by drizzle-kit
 
 ### Analytics System
-
 - Real-time visitor statistics (browsers, countries, devices, OS, pages, referrers)
 - Data visualization with Recharts components in `/analytics` dashboard
 - Privacy protection through IP address hashing
@@ -70,21 +62,18 @@ This is a Turborepo monorepo containing a Next.js 15 portfolio website with an i
 ## Code Conventions
 
 ### File Structure
-
 - TypeScript with strict mode and path aliases (`@/*` maps to app root)
 - Use kebab-case for filenames
 - Tests in `__tests__/` directories alongside components
 - Named exports preferred over default exports
 
 ### Styling & Components
-
 - Tailwind CSS v4 with utility-first approach
 - Component variants using class-variance-authority
 - Functional components with hooks
 - Error handling with proper TypeScript types
 
 ### Content Management
-
 - Blog posts as MDX files in `apps/blog/content/blog/`
 - Contentlayer2 processes MDX with automatic slug generation
 - Support for draft posts via `isDraft` field
