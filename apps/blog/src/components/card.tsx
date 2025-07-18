@@ -1,7 +1,7 @@
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-interface CardProps extends PropsWithChildren {
+interface CardProps extends PropsWithChildren, HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
@@ -25,13 +25,14 @@ interface CardFooterProps extends PropsWithChildren {
   className?: string;
 }
 
-export const Card = ({ children, className }: CardProps) => {
+export const Card = ({ children, className, ...props }: CardProps) => {
   return (
     <div
       className={cn(
         "rounded-xl border border-white/5 bg-transparent shadow-lg backdrop-blur-md",
         className,
       )}
+      {...props}
     >
       {children}
     </div>

@@ -10,9 +10,12 @@ export interface Company {
 
 export interface Project {
   name: string;
+  slug: string;
+  coverImage?: string;
   description?: string;
   skills: string[];
   links: string[];
+  previewImage?: string;
 }
 
 export type SocialMedia =
