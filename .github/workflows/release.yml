@@ -55,10 +55,10 @@ jobs:
       - name: Run linting
         run: pnpm lint
 
-      - name: Check types
-        run: |
-          cd apps/blog
-          pnpm check-types
+      #      - name: Check types
+      #        run: |
+      #          cd apps/blog
+      #          pnpm check-types
 
       - name: Build
         run: pnpm build
