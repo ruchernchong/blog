@@ -26,7 +26,12 @@ export const Header = () => {
             className="text-lg font-bold text-white transition-colors duration-300 hover:text-pink-500"
             title="Ru Chern"
           >
-            <Image src={Icon} width={32} height={32} alt="Logo" />
+            <div className="flex items-center gap-2">
+              <Image src={Icon} width={32} height={32} alt="Logo" />
+              <span className="rounded-full bg-pink-500/20 border border-pink-500/30 px-2 py-0.5 text-xs font-medium text-pink-400">
+                beta
+              </span>
+            </div>
           </NavItem>
           <nav className="flex items-center gap-x-6">
             {navLinks.map(({ title, href }) => {
