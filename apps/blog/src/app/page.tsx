@@ -1,7 +1,10 @@
 import Author from "@/components/Author";
+import { LocationCard } from "@/components/location-card";
+import { ExperienceCard } from "@/components/experience-card";
 import { StructuredData } from "@/components/StructuredData";
 import { BASE_URL } from "@/config";
 import type { WebSite, WithContext } from "schema-dts";
+import { AboutCard } from "@/components/about-card";
 
 const HomePage = async () => {
   const structuredData: WithContext<WebSite> = {
@@ -16,23 +19,22 @@ const HomePage = async () => {
         "@type": "ImageObject",
         url: `${BASE_URL}/cover-image.png`,
         width: "1200",
-        height: "630",
-      },
+        height: "630"
+      }
     ],
     sameAs: [
       "https://github.com/ruchernchong",
       "https://www.linkedin.com/in/ruchernchong",
-      "https://twitter.com/ruchernchong",
-    ],
+      "https://twitter.com/ruchernchong"
+    ]
   };
 
   return (
     <>
       <StructuredData data={structuredData} />
       <div className="flex flex-col justify-center gap-8">
-        <div>
-          <Author title="Chong Ru Chern" />
-        </div>
+        <Author title="Chong Ru Chern" />
+        <AboutCard />
       </div>
     </>
   );
