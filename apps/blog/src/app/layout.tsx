@@ -12,6 +12,7 @@ import type { ReactNode } from "react";
 import "@/app/globals.css";
 import Analytics from "@/components/Analytics";
 import { TRPCProvider } from "@/trpc/provider";
+import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -67,18 +68,20 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en" className={classNames("scroll-smooth", inter.className)}>
       <body className="bg-zinc-900 text-zinc-50">
-        <TRPCProvider>
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24">
-              {children}
-            </main>
-            <Footer />
-          </div>
-          <Analytics />
-          <VercelAnalytics />
-          <SpeedInsights />
-        </TRPCProvider>
+        <Providers>
+          <TRPCProvider>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24">
+                {children}
+              </main>
+              <Footer />
+            </div>
+            <Analytics />
+            <VercelAnalytics />
+            <SpeedInsights />
+          </TRPCProvider>
+        </Providers>
         <Script
           defer
           src="https://analytics.ahrefs.com/analytics.js"
