@@ -27,6 +27,15 @@
     "dev": {
       "persistent": true,
       "cache": false
+    },
+    "release": {
+      "dependsOn": [
+        "build",
+        "test",
+        "lint",
+        "check-types"
+      ],
+      "cache": false
     }
   }
 }
