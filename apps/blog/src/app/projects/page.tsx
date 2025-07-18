@@ -2,7 +2,7 @@ import globalMetadata from "@/app/metadata";
 import { openGraphImage, twitterImage } from "@/app/shared-metadata";
 import ProjectCard from "@/components/project-card";
 import { StructuredData } from "@/components/StructuredData";
-import { Typography } from "@/components/Typography";
+import { PageTitle } from "@/components/page-title";
 import { BASE_URL } from "@/config";
 import projects from "@/data/projects";
 import type { Metadata } from "next";
@@ -47,12 +47,7 @@ const ProjectsPage = async () => {
     <>
       <StructuredData data={structuredData} />
       <div>
-        <Typography variant="h1" className="mb-8">
-          Projects
-        </Typography>
-        <Typography variant="h2" className="mb-8">
-          {description}
-        </Typography>
+        <PageTitle title={title} description={description} className="mb-8" />
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {projects.map((project) => (
             <ProjectCard key={project.name} project={project} />

@@ -6,7 +6,12 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 export const Providers = ({ children }: { children: ReactNode }) => (
   <HeroUIProvider>
-    <NextThemesProvider attribute="class" defaultTheme="dark">
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="dark"
+      enableSystem={false}
+      disableTransitionOnChange
+    >
       {children}
     </NextThemesProvider>
   </HeroUIProvider>

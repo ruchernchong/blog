@@ -3,6 +3,7 @@
 import { StarIcon, CodeBracketIcon } from "@heroicons/react/24/solid";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import { MetricCard } from "@/components/metric-card";
+import { PageTitle } from "@/components/page-title";
 import { trpc } from "@/trpc/client";
 
 const Dashboard = () => {
@@ -15,13 +16,11 @@ const Dashboard = () => {
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
-      <div className="space-y-4">
-        <h1 className="text-4xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground text-lg">
-          📊 Just sharing a quick snapshot of a few personal wins and milestones
-          I&#39;ve hit along the way—it’s been a fun ride so far!
-        </p>
-      </div>
+      <PageTitle
+        title="Dashboard"
+        description="📊 Just sharing a quick snapshot of a few personal wins and milestones I've hit along the way—it's been a fun ride so far!"
+        className="space-y-4"
+      />
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <MetricCard
