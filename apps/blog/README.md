@@ -40,8 +40,8 @@ This portfolio is built with modern web technologies:
 
 - **Vitest** - Fast unit testing framework
 - **Testing Library** - React component testing
-- **Prettier** - Code formatting
-- **ESLint** - Code linting
+- **Biome** - Fast linting and formatting
+- **TypeScript** - Strict mode type checking
 - **Husky** - Git hooks
 
 ### Deployment & Infrastructure
@@ -105,23 +105,22 @@ Your site should now be running at `http://localhost:3000`!
 
 ```bash
 # Development
-pnpm dev              # Start development server with hot reload
-pnpm build            # Build for production
-pnpm start            # Start production server
+pnpm dev              # Start development server with hot reload (uses Turbo)
+pnpm build            # Build all apps for production (uses Turbo)
+pnpm test             # Run tests across all apps (uses Turbo)
+pnpm lint             # Run linting across all apps (uses Turbo)
 
-# Testing
-pnpm test             # Run tests with coverage
-pnpm test:coverage    # Generate coverage report
-
-# Code Quality
-pnpm lint             # Run ESLint
+# App-specific (from /apps/blog/)
+pnpm dev              # Start blog dev server (contentlayer2 dev & next dev --turbopack)
+pnpm build            # Build blog app for production
+pnpm test             # Run Vitest tests with coverage
 pnpm check-types      # TypeScript type checking
-
-# Database
 pnpm migrate          # Run database migrations
+pnpm vercel-build     # Production build with migrations
 
-# Production
-pnpm vercel-build     # Build with migrations for Vercel
+# Quality & Release
+pnpm release          # Create semantic release (runs build, test, lint, check-types)
+pnpm release:blog     # Release blog app specifically
 ```
 
 ### Testing Strategy
@@ -140,25 +139,21 @@ pnpm vercel-build     # Build with migrations for Vercel
 
 ## 📁 Project Structure
 
+This is a Turborepo monorepo with the following structure:
+
 ```
 portfolio/
-├── app/                    # Next.js App Router pages and API routes
-│   ├── blog/              # Blog pages and dynamic routes
-│   ├── analytics/         # Analytics dashboard
-│   ├── api/               # API endpoints
-│   └── actions/           # Server actions for data fetching
-├── components/            # Reusable React components
-│   ├── ui/               # Base UI components
-│   └── __tests__/        # Component tests
-├── content/              # MDX blog posts
-│   └── blog/            # Blog post markdown files
-├── lib/                  # Utility functions and integrations
-├── config/               # Application configuration
-├── db/                   # Database schema and setup
-├── data/                 # Static data (companies, projects, etc.)
-├── utils/                # Helper functions with tests
-├── migrations/           # Database migration files
-└── public/               # Static assets (images, icons, etc.)
+├── apps/
+│   └── blog/              # Main Next.js application
+│       ├── app/           # Next.js App Router pages and API routes
+│       ├── components/    # Reusable React components
+│       ├── content/       # MDX blog posts
+│       ├── db/           # Database schema and setup
+│       ├── lib/          # Utility functions and integrations
+│       ├── migrations/   # Database migration files
+│       └── utils/        # Helper functions with tests
+├── packages/             # Shared packages (currently empty)
+└── turbo.json           # Turborepo configuration
 ```
 
 ## 🎯 Key Features
