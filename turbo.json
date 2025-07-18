@@ -28,6 +28,12 @@
       "persistent": true,
       "cache": false
     },
+    "test": {
+      "dependsOn": [
+        "^test"
+      ],
+      "cache": false
+    },
     "release": {
       "dependsOn": [
         "build",
