@@ -1,7 +1,7 @@
 import globalMetadata from "@/app/metadata";
 import { openGraphImage, twitterImage } from "@/app/shared-metadata";
 import Author from "@/components/Author";
-import Contributions from "@/components/contributions";
+// import Contributions from "@/components/contributions";
 import Employment from "@/components/employment";
 import { StructuredData } from "@/components/StructuredData";
 import { BASE_URL } from "@/config";
@@ -72,13 +72,13 @@ const AboutPage = async () => {
         <div>
           <Employment companies={sortedCompanies} />
         </div>
-        <hr className="border-zinc-600" />
-        <div>
-          <Contributions
-            github={githubProfile}
-            stackOverflow={stackOverflowProfile}
-          />
-        </div>
+        {/*<hr className="border-zinc-600" />*/}
+        {/*<div>*/}
+        {/*  <Contributions*/}
+        {/*    github={githubProfile}*/}
+        {/*    stackOverflow={stackOverflowProfile}*/}
+        {/*  />*/}
+        {/*</div>*/}
       </div>
     </>
   );
