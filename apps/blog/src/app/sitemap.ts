@@ -1,4 +1,5 @@
 import { BASE_URL, navLinks } from "@/config";
+import projects from "@/data/projects";
 import { allDocuments } from "contentlayer/generated";
 import type { MetadataRoute } from "next";
 
@@ -11,6 +12,10 @@ const sitemap = (): MetadataRoute.Sitemap => {
         url: `${BASE_URL}${href}`,
         lastModified: formatLastModified(),
       })),
+    ...projects.map(({ slug }) => ({
+      url: `${BASE_URL}/projects/${slug}`,
+      lastModified: formatLastModified(),
+    })),
     ...allDocuments
       .filter(({ isDraft }) => !isDraft)
       .map(({ publishedAt, canonical }) => ({
