@@ -1,6 +1,6 @@
 import ExternalLink from "@/components/external-link";
 import * as Icons from "@/components/Icons";
-import { Typography } from "@/components/Typography";
+import { PageTitle } from "@/components/page-title";
 import socials from "@/data/socials";
 
 interface Props {
@@ -14,8 +14,7 @@ const Author = ({ title, tagline, description }: Props) => {
     <div className="flex flex-col-reverse items-center md:flex-row md:items-start md:gap-8">
       <div className="flex grow basis-1/2 flex-col gap-4">
         <div className="flex flex-col items-center md:items-start">
-          <Typography variant="h1">{title}</Typography>
-          {tagline && <Typography variant="h2">{tagline}</Typography>}
+          <PageTitle title={title} description={tagline} />
         </div>
         {description && <p className="text-zinc-400">{description}</p>}
         <div className="flex justify-center gap-4 md:justify-start">

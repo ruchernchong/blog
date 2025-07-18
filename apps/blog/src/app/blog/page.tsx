@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
 import Link from "next/link";
 import { sortByLatest } from "@/utils/sortByLatest";
 import { allPosts } from "contentlayer/generated";
-import { Typography } from "@/components/Typography";
+import { PageTitle } from "@/components/page-title";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -16,9 +16,11 @@ const BlogPage = () => {
 
   return (
     <>
-      <Typography variant="h1" className="mb-8">
-        Blog
-      </Typography>
+      <PageTitle
+        title="Blog"
+        description="My blog posts on coding, tech, and random thoughts."
+        className="mb-8"
+      />
       <div className="flex flex-col gap-4">
         {posts.length > 0 &&
           posts.map(({ title, canonical, excerpt, publishedAt }) => {

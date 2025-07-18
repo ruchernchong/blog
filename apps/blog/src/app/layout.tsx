@@ -7,6 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import classNames from "classnames";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ViewTransitions } from "next-view-transitions";
 import Script from "next/script";
 import type { ReactNode } from "react";
 import "@/app/globals.css";
@@ -66,22 +67,28 @@ export const metadata: Metadata = {
 
 const RootLayout = async ({ children }: { children: ReactNode }) => {
   return (
-    <html lang="en" className={classNames("scroll-smooth", inter.className)}>
-      <body className="bg-zinc-900 text-zinc-50">
-        <Providers>
-          <TRPCProvider>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24">
-                {children}
-              </main>
-              <Footer />
-            </div>
-            <Analytics />
-            <VercelAnalytics />
-            <SpeedInsights />
-          </TRPCProvider>
-        </Providers>
+    <html
+      lang="en"
+      className={classNames("scroll-smooth", inter.className)}
+      suppressHydrationWarning
+    >
+      <body className="bg-zinc-900 text-zinc-50" suppressHydrationWarning>
+        <ViewTransitions>
+          <Providers>
+            <TRPCProvider>
+              <div className="flex min-h-screen flex-col">
+                <Header />
+                <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+              <Analytics />
+              <VercelAnalytics />
+              <SpeedInsights />
+            </TRPCProvider>
+          </Providers>
+        </ViewTransitions>
         <Script
           defer
           src="https://analytics.ahrefs.com/analytics.js"

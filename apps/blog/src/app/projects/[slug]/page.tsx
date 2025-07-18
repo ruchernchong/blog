@@ -3,11 +3,11 @@ import type { Metadata } from "next";
 import globalMetadata from "@/app/metadata";
 import { openGraphImage, twitterImage } from "@/app/shared-metadata";
 import { StructuredData } from "@/components/StructuredData";
-import { Typography } from "@/components/Typography";
 import { BASE_URL } from "@/config";
 import { ProjectDetail } from "@/components/project-detail";
 import type { WebPage, WithContext } from "schema-dts";
 import { getProjectBySlug } from "@/utils/getProjectBySlug";
+import { PageTitle } from "@/components/page-title";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -69,7 +69,7 @@ const ProjectPage = async ({ params }: Props) => {
     <>
       <StructuredData data={structuredData} />
       <section className="space-y-8">
-        <Typography variant="h1">{project.name}</Typography>
+        <PageTitle title={project.name} />
         <ProjectDetail project={project} />
       </section>
     </>
