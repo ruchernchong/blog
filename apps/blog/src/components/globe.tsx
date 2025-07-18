@@ -6,7 +6,7 @@ import { useSpring } from "react-spring";
 
 export const Globe = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const pointerInteracting = useRef(null);
+  const pointerInteracting = useRef<number | null>(null);
   const pointerInteractionMovement = useRef(0);
 
   const [{ r }, api] = useSpring(() => ({
@@ -73,15 +73,21 @@ export const Globe = () => {
         onPointerDown={(e) => {
           pointerInteracting.current =
             e.clientX - pointerInteractionMovement.current;
-          canvasRef.current.style.cursor = "grabbing";
+          if (canvasRef.current) {
+            canvasRef.current.style.cursor = "grabbing";
+          }
         }}
         onPointerUp={() => {
           pointerInteracting.current = null;
-          canvasRef.current.style.cursor = "grab";
+          if (canvasRef.current) {
+            canvasRef.current.style.cursor = "grab";
+          }
         }}
         onPointerOut={() => {
           pointerInteracting.current = null;
-          canvasRef.current.style.cursor = "grab";
+          if (canvasRef.current) {
+            canvasRef.current.style.cursor = "grab";
+          }
         }}
         onMouseMove={(e) => {
           if (pointerInteracting.current !== null) {
