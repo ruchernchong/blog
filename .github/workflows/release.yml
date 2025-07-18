@@ -61,6 +61,8 @@ jobs:
       #          pnpm check-types
 
       - name: Build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: pnpm build
 
       - name: Release
