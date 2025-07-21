@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
-import { getVisits } from "@/app/actions/analytics/visits";
+import { getTotalVisits, getVisits } from "@/app/actions/analytics/visits";
 import { getBrowsers } from "@/app/actions/analytics/browsers";
 import { getCountries } from "@/app/actions/analytics/countries";
 import { getDevices } from "@/app/actions/analytics/devices";
@@ -38,4 +38,5 @@ export const analyticsRouter = router({
   getTotalLikes: publicProcedure
     .input(z.object({ slug: z.string() }))
     .query(({ input }) => getTotalLikes(input.slug)),
+  getTotalVisits: publicProcedure.query(() => getTotalVisits()),
 });

@@ -1,6 +1,6 @@
 import db from "@/db";
 import { sessions } from "@/db/schema";
-import { asc, count, sql } from "drizzle-orm";
+import { asc, count, sql, sum } from "drizzle-orm";
 import { PgColumn } from "drizzle-orm/pg-core";
 
 export type Visit = {
@@ -9,7 +9,9 @@ export type Visit = {
 };
 
 const formatDate = (column: PgColumn) =>
-  sql<string>`DATE(${column}) AT TIME ZONE 'ASIA/SINGAPORE'`;
+  sql<string>`DATE
+    (${column})
+    AT TIME ZONE 'ASIA/SINGAPORE'`;
 
 export const getVisits = async () =>
   db
@@ -20,3 +22,5 @@ export const getVisits = async () =>
     .from(sessions)
     .groupBy(formatDate(sessions.createdAt))
     .orderBy(asc(formatDate(sessions.createdAt)));
+
+export const getTotalVisits = async () => db.$count(sessions);
