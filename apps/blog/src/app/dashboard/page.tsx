@@ -1,11 +1,14 @@
 "use client";
 
-import { StarIcon, CodeBracketIcon } from "@heroicons/react/24/solid";
+import { CodeBracketIcon, StarIcon } from "@heroicons/react/24/solid";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import { MetricCard } from "@/components/metric-card";
 import { PageTitle } from "@/components/page-title";
 import { trpc } from "@/trpc/client";
 import { ChartColumnIncreasing } from "lucide-react";
+import VisitsChart from "@/components/visits-chart";
+import React from "react";
+import { Referrers } from "@/components/analytics/referrers";
 
 const Dashboard = () => {
   const { data: totalVisits, isLoading: totalVisitsLoading } =
@@ -52,6 +55,8 @@ const Dashboard = () => {
           icon={<CodeBracketIcon className="size-8" />}
         />
       </div>
+      <VisitsChart />
+      <Referrers />
     </div>
   );
 };
