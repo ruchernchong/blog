@@ -4,7 +4,7 @@ import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import classNames from "classnames";
+import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ViewTransitions } from "next-view-transitions";
@@ -69,7 +69,7 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
   return (
     <html
       lang="en"
-      className={classNames("scroll-smooth", inter.className)}
+      className={cn("scroll-smooth", inter.className)}
       suppressHydrationWarning
     >
       <body className="bg-zinc-900 text-zinc-50" suppressHydrationWarning>

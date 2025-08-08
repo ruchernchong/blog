@@ -6,7 +6,7 @@ import Employment from "@/components/employment";
 import { StructuredData } from "@/components/StructuredData";
 import { BASE_URL } from "@/config";
 import companies from "@/data/companies";
-import { getGitHubContributions } from "@/utils/github";
+import { getGitHubContributions } from "@/lib/github";
 import { getStackOverflowProfile } from "@/utils/stackoverflow";
 import type { Metadata } from "next";
 import type { WebPage, WithContext } from "schema-dts";

@@ -3,7 +3,7 @@
 import { type PropsWithChildren } from "react";
 import { Link } from "next-view-transitions";
 import { usePathname } from "next/navigation";
-import classNames from "classnames";
+import { cn } from "@/lib/utils";
 import { navLinks } from "@/config";
 import Image from "next/image";
 import Icon from "@/app/icon.png";
@@ -43,12 +43,9 @@ export const Header = () => {
                 <NavItem
                   key={title}
                   href={href}
-                  className={classNames(
+                  className={cn(
                     "text-sm font-medium transition-all duration-300 ease-out",
-                    {
-                      "text-white": isActive,
-                      "text-gray-400 hover:text-white": !isActive,
-                    },
+                    isActive ? "text-white" : "text-gray-400 hover:text-white",
                   )}
                   title={title}
                 >

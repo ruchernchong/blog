@@ -1,10 +1,10 @@
 import { Fragment } from "react";
-import classNames from "classnames";
+import { cn } from "@/lib/utils";
 import { Card } from "@/components/card";
 import { LinkWithIcon } from "@/components/link-with-icon";
 import { Typography } from "@/components/Typography";
 import type { StackOverflowProfile } from "@/utils/stackoverflow";
-import type { GitHubProfile } from "@/utils/github";
+import type { GitHubProfile } from "@/lib/github";
 import { UsersIcon } from "@heroicons/react/24/solid";
 
 const STACK_OVERFLOW_BADGES: Record<string, string> = {
@@ -76,8 +76,9 @@ const Contributions = ({
                       return (
                         <Fragment key={tier}>
                           <span
-                            className={classNames(
-                              `h-4 w-4 rounded-full ${STACK_OVERFLOW_BADGES[tier]}`,
+                            className={cn(
+                              "size-4 rounded-full",
+                              STACK_OVERFLOW_BADGES[tier],
                             )}
                             title={tier}
                           />

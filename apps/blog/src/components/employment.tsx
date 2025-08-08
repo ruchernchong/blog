@@ -1,6 +1,6 @@
 import Image from "next/image";
-import classNames from "classnames";
 import ExternalLink from "@/components/external-link";
+import { cn } from "@/lib/utils";
 import { ItemOverlay } from "@/components/ItemOverlay";
 import { BriefcaseIcon } from "@heroicons/react/24/solid";
 import type { Company } from "@/types";
@@ -38,8 +38,8 @@ const Employment = ({ companies }: EmploymentProps) => {
                 className="group relative flex items-center gap-4"
               >
                 <div
-                  className={classNames(
-                    "flex h-12 w-12 items-center rounded-2xl p-2 md:h-[72px] md:w-[72px]",
+                  className={cn(
+                    "flex size-12 items-center rounded-2xl p-2 md:h-[72px] md:w-[72px]",
                     logo ? "bg-zinc-50" : "bg-transparent",
                   )}
                 >
@@ -74,7 +74,7 @@ const Employment = ({ companies }: EmploymentProps) => {
                     </div>
                   </a>
                   <div>{title}</div>
-                  <div className="text-sm italic text-zinc-400">
+                  <div className="text-sm text-zinc-400 italic">
                     <div>
                       {dateStart} - {dateEnd ?? "Present"}
                     </div>

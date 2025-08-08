@@ -8,7 +8,7 @@ import {
   SiThreads,
   SiX,
 } from "@icons-pack/react-simple-icons";
-import classNames from "classnames";
+import { cn } from "@/lib/utils";
 
 type SocialIcon = {
   [key in SocialMedia]: IconType;
@@ -32,5 +32,5 @@ export const Social = ({ name, className }: Props) => {
   const Icon = SOCIAL_ICONS_MAP[name];
   const title = Object.keys(SOCIAL_ICONS_MAP).find((item) => item === name);
 
-  return <Icon title={title} className={classNames(className)} />;
+  return <Icon title={title} className={cn(className)} />;
 };
