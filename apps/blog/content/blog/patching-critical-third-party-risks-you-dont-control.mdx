@@ -1,0 +1,134 @@
+---
+title: Patching critical third-party risks you don’t control
+publishedAt: 2025-09-13
+excerpt: A simple playbook to patch critical third‑party risks fast, keep day-to-day work running, ship on time, and plan the exit.
+---
+
+## Scenario
+
+Your organisation relies on third‑party libraries. Sooner or later, your security tools will flag a critical bug in a dependency of a dependency. The original project still uses the unsafe version, the maintainers are inactive, and your release is close. You need a safe, fast fix that doesn’t change product behaviour.
+
+## Constraints
+
+- Critical bug in an indirect dependency.
+- Upstream looks unmaintained; no quick release expected.
+- Open‑source checks block the release.
+- A nearby release date adds time pressure.
+
+Make the smallest safe change so the build passes checks and the schedule stays on track.
+
+## Options
+
+- Wait for upstream: low effort, high schedule risk; you stay exposed.
+- Rewrite now: good long‑term, too slow for a blocker.
+- Override only the risky dependency: simple, but may fail if versions are fixed or the library depends on that exact version.
+- Fork‑patch‑publish: fastest reliable route; behaviour unchanged; easy to review.
+
+Given this, most teams should choose fork‑patch‑publish.
+
+## Decision: fork, patch, publish
+
+Keep the fork small:
+
+- Update the vulnerable dependency to a safe version and fix any small breaks.
+- Keep how your app uses it the same to avoid changes.
+- Keep the changes small and write short notes.
+- Publish under a temporary npm scope so teams can use it right away.
+
+This lowers risk, meets checks, and keeps the release on time.
+
+## What changed
+
+- Update the vulnerable dependency to a safe version.
+- Check types, build, and how it runs stay the same.
+- No new features, no extra surface area, no new dependencies.
+
+In short: make the smallest change needed to remove the issue.
+
+## Why not wait or rewrite?
+
+- Waiting risks the release and does not reduce risk.
+- A rewrite is safer long‑term but too slow when you only need to fix one dependency of a dependency.
+
+Forking gives the fastest, lowest‑risk path to a green build while keeping behaviour the same.
+
+## Caveats
+
+Publishing a forked package to npm isn’t always possible. Use it when these hold:
+
+- The issue blocks a release and is critical.
+- Upstream is inactive or unlikely to release soon.
+- Your change is small, safe, and keeps behaviour the same.
+- You have a clear plan to remove the fork later.
+- Legal/licence is compatible and approved.
+- An owner is assigned to maintain and deprecate the fork.
+
+If you meet these criteria, publishing a forked package is a sensible, low‑risk way to unblock a release.
+
+## Real‑life example
+
+This approach came from a real case:
+
+- Original library: https://github.com/linkedin-developers/linkedin-api-js-client (appeared unmaintained at the time).
+- Fork with patch: https://github.com/ruchernchong/linkedin-api-js-client (updated the vulnerable dependency and kept behaviour the same).
+- Temporary npm publish: https://www.npmjs.com/package/@ruchernchong/linkedin-api-client (used to unblock a release while staying compliant).
+
+Example dependency swap in `package.json`:
+
+```json package.json
+{
+  "dependencies": {
+    "linkedin-api-js-client": "npm:@ruchernchong/linkedin-api-client@^X.Y.Z"
+}
+}
+```
+
+## Side projects with an organisation mindset
+
+Thinking like an organisation on your side projects pays off at work. Use the same habits:
+
+- Make small, safe changes.
+- Write short notes about what changed and why.
+- Keep behaviour the same unless you mean to change it.
+- Plan an exit before you add a fork or workaround.
+- Add a couple of basic tests so you can move fast with confidence.
+
+While working on my SG Cars Trends side project, I hit a similar problem. I solved it the same way: make a small, safe change, document it, and keep behaviour the same. Here’s the commit:
+
+https://github.com/sgcarstrends/sgcarstrends/commit/3c122d94d1f0d9625eaf0295438c1be6d83ef3e8
+
+## How to adopt the patched version
+
+Switch in one of two ways. Replace names and versions as needed.
+
+Option A — override the transitive dependency (works well for monorepos):
+
+```json package.json
+{
+  "overrides": {
+    "<vulnerable-dependency>": "^<safe-version>"
+  }
+}
+```
+
+Option B — swap the package to the forked publish name (no code changes required):
+
+```json package.json
+{
+  "dependencies": {
+    "<original-package>": "npm:@your-scope/<forked-package>@^X.Y.Z"
+  }
+}
+```
+
+For npm you can use `overrides`; for Yarn use `resolutions`; for pnpm use top‑level `overrides`. Pick the simplest option your tooling supports.
+
+This builds good habits, reduces risk, and makes it easier to bring useful ideas back into the company.
+
+## Takeaways
+
+- In organisations, simple, safe fixes beat perfect solutions when time is short.
+- Forks are fine if they are small, documented, and temporary.
+- Plan the exit: watch upstream or replace the library with a small, maintainable option.
+
+If your team hits a similar blocker, make the smallest safe change to pass checks, ship the release, and keep a clear plan to remove the fork.
