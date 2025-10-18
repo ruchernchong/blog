@@ -1,52 +1,24 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "env": [
-        "GH_ACCESS_TOKEN",
-        "DATABASE_URL",
-        "SITE_URL",
-        "UPSTASH_REDIS_REST_URL",
-        "UPSTASH_REDIS_REST_TOKEN"
-      ],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**",
-        ".contentlayer/**",
-        "dist/**"
-      ]
-    },
-    "check-types": {
-      "dependsOn": [
-        "^check-types"
-      ]
+      "env": ["GH_ACCESS_TOKEN", "DATABASE_URL", "SITE_URL", "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN"],
+      "outputs": [".next/**", "!.next/cache/**", ".contentlayer/**", "dist/**"]
     },
     "dev": {
       "persistent": true,
       "cache": false
     },
     "test": {
-      "dependsOn": [
-        "^test"
-      ],
       "cache": false
     },
     "lint": {
-      "dependsOn": [
-        "^lint"
-      ],
       "cache": false
     },
+    "check-types": {},
     "release": {
-      "dependsOn": [
-        "build",
-        "test",
-        "lint",
-        "check-types"
-      ],
+      "dependsOn": ["build", "test", "lint", "check-types"],
       "cache": false
     }
   }
