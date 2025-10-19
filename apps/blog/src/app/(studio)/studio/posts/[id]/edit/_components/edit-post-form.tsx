@@ -295,20 +295,6 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
               <p className="text-muted-foreground text-xs">
                 Optional cover image URL
               </p>
-              {formData.coverImage && (
-                <div className="mt-2">
-                  <Image
-                    src={formData.coverImage}
-                    alt="Cover preview"
-                    width={800}
-                    height={160}
-                    className="h-auto max-h-40 w-full rounded-md object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                    }}
-                  />
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>

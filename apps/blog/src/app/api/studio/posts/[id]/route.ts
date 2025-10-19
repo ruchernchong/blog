@@ -3,12 +3,11 @@ import { NextResponse } from "next/server";
 import { generatePostMetadata } from "@/lib/post-metadata";
 import { db, posts } from "@/schema";
 
-export const GET = async ({
-  params,
-}: {
-  params: Promise<Record<string, string>>;
-}) => {
-  const postId = (await params).id;
+export const GET = async (
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) => {
+  const { id: postId } = await params;
 
   if (!postId) {
     return NextResponse.json({ message: "Invalid post id" }, { status: 400 });
@@ -37,9 +36,9 @@ export const GET = async ({
 
 export const PATCH = async (
   request: Request,
-  { params }: { params: Promise<Record<string, string>> },
+  { params }: { params: Promise<{ id: string }> },
 ) => {
-  const postId = (await params).id;
+  const { id: postId } = await params;
 
   if (!postId) {
     return NextResponse.json({ message: "Invalid post id" }, { status: 400 });
@@ -113,12 +112,11 @@ export const PATCH = async (
   }
 };
 
-export const DELETE = async ({
-  params,
-}: {
-  params: Promise<Record<string, string>>;
-}) => {
-  const postId = (await params).id;
+export const DELETE = async (
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) => {
+  const { id: postId } = await params;
 
   if (!postId) {
     return NextResponse.json({ message: "Invalid post id" }, { status: 400 });

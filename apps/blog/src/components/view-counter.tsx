@@ -1,4 +1,4 @@
-import { incrementViews } from "@/app/actions/stats";
+import { incrementViews } from "@/app/(blog)/actions/stats";
 
 interface Props {
   slug: string;
@@ -7,5 +7,5 @@ interface Props {
 export const ViewCounter = async ({ slug }: Props) => {
   const stats = await incrementViews(slug);
 
-  return <div className="text-sm text-neutral-400">{stats.views}</div>;
+  return <div className="text-neutral-400 text-sm">{stats.views}</div>;
 };
