@@ -57,7 +57,7 @@ export const Globe = () => {
       globe.destroy();
       window.removeEventListener("resize", onResize);
     };
-  }, []);
+  }, [r]);
 
   return (
     <div className="relative mx-auto aspect-[2/1] w-full max-w-2xl">

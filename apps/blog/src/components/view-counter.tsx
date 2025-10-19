@@ -7,9 +7,5 @@ interface Props {
 export const ViewCounter = async ({ slug }: Props) => {
   const stats = await incrementViews(slug);
 
-  return (
-    <div className="text-sm text-neutral-400">
-      {stats.views}
-    </div>
-  );
+  return <div className="text-sm text-neutral-400">{stats.views}</div>;
 };

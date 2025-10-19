@@ -30,8 +30,7 @@ This is a Turborepo monorepo containing a Next.js 15 portfolio website with an i
 
 ### Monorepo Structure
 - **Root**: Turborepo configuration with shared tooling (Biome, commitlint, semantic-release)
-- **apps/blog**: Main Next.js application with blog functionality
-- **packages/**: Currently empty but structured for shared packages
+- **apps/blog**: Main Next.js application with blog functionality and integrated CMS at `/studio`
 
 ### Tech Stack
 - **Framework**: Next.js 15 with App Router and React 19
@@ -46,12 +45,14 @@ This is a Turborepo monorepo containing a Next.js 15 portfolio website with an i
 ### Key Features
 - **Custom Analytics**: Privacy-focused visitor tracking with IP hashing
 - **Blog System**: MDX-powered posts with computed fields (reading time, SEO metadata)
+- **Content Studio**: Built-in CMS at `/studio` for managing blog posts directly in the database
 - **Performance**: Optimized images, caching, and core web vitals tracking
 - **SEO**: Structured data, sitemaps, OpenGraph image generation
 
 ### Database Architecture
-- Schema in `apps/blog/db/schema.ts` using Drizzle ORM
-- Session tracking table for analytics (visits, geolocation, device info)
+- Schema in `apps/blog/src/db/schema.ts` using Drizzle ORM
+  - Posts table: Blog posts with MDX content, metadata, tags, and publish status
+- Database client in `apps/blog/src/db/index.ts`
 - Migrations in `apps/blog/migrations/` managed by drizzle-kit
 
 ### Analytics System
@@ -74,7 +75,17 @@ This is a Turborepo monorepo containing a Next.js 15 portfolio website with an i
 - Error handling with proper TypeScript types
 
 ### Content Management
-- Blog posts as MDX files in `apps/blog/content/blog/`
+
+#### File-based (Contentlayer2)
+- Legacy MDX files in `apps/blog/content/blog/`
 - Contentlayer2 processes MDX with automatic slug generation
 - Support for draft posts via `isDraft` field
-- Automatic OpenGraph image generation for posts
+
+#### Database-based (Content Studio)
+- Access CMS at `/studio` route (isolated route group with own layout)
+- CRUD operations for blog posts stored in Neon PostgreSQL
+- Posts table in `src/db/schema.ts` with MDX content, metadata, tags, and publish status
+- Automatic metadata generation (reading time, SEO tags, OpenGraph)
+- API routes at `/api/studio/posts` for post management
+- Simple UI with post listing, creation, and editing forms
+- Uses `(studio)` route group for complete layout separation from blog

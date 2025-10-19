@@ -5,11 +5,12 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
+    "lint:blog": "turbo run @ruchernchong/portfolio#lint",
     "release": "turbo run release",
     "release:blog": "cd apps/blog && npx semantic-release"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "2.2.6",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@semantic-release/changelog": "^6.0.3",

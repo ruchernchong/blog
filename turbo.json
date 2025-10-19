@@ -3,7 +3,7 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "env": ["GH_ACCESS_TOKEN", "DATABASE_URL", "SITE_URL", "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN"],
+      "env": ["GH_ACCESS_TOKEN", "DATABASE_URL", "SITE_URL", "UPSTASH_REDIS_*"],
       "outputs": [".next/**", "!.next/cache/**", ".contentlayer/**", "dist/**"]
     },
     "dev": {
@@ -14,6 +14,7 @@
       "cache": false
     },
     "lint": {
+      "dependsOn": ["^lint"],
       "cache": false
     },
     "check-types": {},

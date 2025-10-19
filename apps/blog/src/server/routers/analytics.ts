@@ -1,19 +1,22 @@
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
-import { getTotalVisits, getVisits } from "@/app/actions/analytics/visits";
-import { getBrowsers } from "@/app/actions/analytics/browsers";
-import { getCountries } from "@/app/actions/analytics/countries";
-import { getDevices } from "@/app/actions/analytics/devices";
-import { getOS } from "@/app/actions/analytics/os";
-import { getPages } from "@/app/actions/analytics/pages";
-import { getReferrers } from "@/app/actions/analytics/referrers";
+import { getBrowsers } from "@/app/(blog)/actions/analytics/browsers";
+import { getCountries } from "@/app/(blog)/actions/analytics/countries";
+import { getDevices } from "@/app/(blog)/actions/analytics/devices";
+import { getOS } from "@/app/(blog)/actions/analytics/os";
+import { getPages } from "@/app/(blog)/actions/analytics/pages";
+import { getReferrers } from "@/app/(blog)/actions/analytics/referrers";
 import {
-  getPostStats,
-  incrementViews,
-  incrementLikes,
+  getTotalVisits,
+  getVisits,
+} from "@/app/(blog)/actions/analytics/visits";
+import {
   getLikesByUser,
+  getPostStats,
   getTotalLikes,
-} from "@/app/actions/stats";
+  incrementLikes,
+  incrementViews,
+} from "@/app/(blog)/actions/stats";
+import { publicProcedure, router } from "../trpc";
 
 export const analyticsRouter = router({
   getVisits: publicProcedure.query(() => getVisits()),
