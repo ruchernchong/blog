@@ -6,6 +6,9 @@
       "env": ["GH_ACCESS_TOKEN", "DATABASE_URL", "SITE_URL", "UPSTASH_REDIS_*"],
       "outputs": [".next/**", "!.next/cache/**", ".contentlayer/**", "dist/**"]
     },
+    "start": {
+      "dependsOn": ["^build"]
+    },
     "dev": {
       "persistent": true,
       "cache": false
