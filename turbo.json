@@ -3,27 +3,90 @@
   "ui": "tui",
   "tasks": {
     "build": {
+      "dependsOn": ["migrate", "^build"],
       "env": ["GH_ACCESS_TOKEN", "DATABASE_URL", "SITE_URL", "UPSTASH_REDIS_*"],
       "outputs": [".next/**", "!.next/cache/**", ".contentlayer/**", "dist/**"]
     },
     "start": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "persistent": true,
+      "cache": false
     },
     "dev": {
       "persistent": true,
       "cache": false
     },
     "test": {
+      "inputs": ["src/**", "**/*.test.ts", "**/*.test.tsx", "vitest.config.ts"],
+      "cache": false
+    },
+    "test:coverage": {
+      "inputs": ["src/**", "**/*.test.ts", "**/*.test.tsx", "vitest.config.ts"],
+      "outputs": ["coverage/**"],
       "cache": false
     },
     "lint": {
       "dependsOn": ["^lint"],
+      "inputs": [
+        "src/**",
+        "*.config.js",
+        "*.config.ts",
+        ".eslintrc*",
+        "biome.json"
+      ],
       "cache": false
     },
-    "check-types": {},
+    "check-types": {
+      "inputs": ["src/**", "tsconfig.json"],
+      "outputs": []
+    },
+    "generate": {
+      "inputs": ["src/schema/**", "drizzle.config.ts"],
+      "outputs": ["migrations/**"],
+      "env": ["DATABASE_URL"]
+    },
+    "migrate": {
+      "inputs": ["migrations/**/*.sql"],
+      "outputs": ["migrations/**"],
+      "env": ["DATABASE_URL"]
+    },
+    "push": {
+      "inputs": ["src/schema/**", "drizzle.config.ts"],
+      "env": ["DATABASE_URL"],
+      "cache": false
+    },
+    "pull": {
+      "inputs": ["drizzle.config.ts"],
+      "outputs": ["src/schema/**"],
+      "env": ["DATABASE_URL"],
+      "cache": false
+    },
+    "check": {
+      "inputs": ["migrations/**", "drizzle.config.ts"],
+      "cache": false
+    },
+    "up": {
+      "inputs": ["migrations/**", "drizzle.config.ts"],
+      "env": ["DATABASE_URL"],
+      "cache": false
+    },
+    "studio": {
+      "persistent": true,
+      "env": ["DATABASE_URL"],
+      "cache": false
+    },
+    "seed": {
+      "inputs": ["src/scripts/seed.ts", "src/schema/**"],
+      "env": ["DATABASE_URL", "NODE_ENV"],
+      "cache": false
+    },
     "release": {
       "dependsOn": ["build", "test", "lint", "check-types"],
       "cache": false
+    },
+    "drop": {
+      "cache": false,
+      "env": ["DATABASE_URL"]
     }
   }
 }
