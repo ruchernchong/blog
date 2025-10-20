@@ -29,6 +29,7 @@ This portfolio is built with modern web technologies:
 - **Neon PostgreSQL** - Serverless Postgres database
 - **Drizzle ORM** - Type-safe database toolkit
 - **Upstash Redis** - Serverless Redis for caching
+- **Better Auth** - Authentication with OAuth providers (GitHub, Google)
 
 ### Analytics & Monitoring
 
@@ -54,8 +55,11 @@ This portfolio is built with modern web technologies:
 ### Prerequisites
 
 - **Node.js 18.x or higher** - JavaScript runtime
-- **pnpm** - Fast, disk space efficient package manager
+- **pnpm 10.2.0 or higher** - Fast, disk space efficient package manager
 - **Git** - Version control system
+- **Neon PostgreSQL database** - Serverless database (sign up at [neon.tech](https://neon.tech))
+- **Upstash Redis** - Serverless Redis (sign up at [upstash.com](https://upstash.com))
+- **GitHub/Google OAuth apps** - For authentication (optional, for `/studio` CMS access)
 
 ### Installation
 
@@ -80,18 +84,34 @@ pnpm install
 4. Set up environment variables
 
 ```bash
+cd apps/blog
 cp .env.example .env
 ```
 
-5. Update the `.env` file with your configuration (see [Environment Variables](#-environment-variables) section)
+5. Update the `.env` file with your configuration:
+   - `DATABASE_URL` - Your Neon PostgreSQL connection string
+   - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` - From Upstash
+   - `GH_ACCESS_TOKEN` - GitHub personal access token
+   - `IP_SALT` - Random string for IP hashing
+   - OAuth credentials (optional, for `/studio` CMS):
+     - `BETTER_AUTH_SECRET` - Random secret string
+     - `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`
+     - `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
 
-6. Set up the database
+6. Return to project root and set up the database
 
 ```bash
-pnpm migrate
+cd ../..
+pnpm db:migrate
 ```
 
-7. Start the development server
+7. (Optional) Seed the database with sample data
+
+```bash
+pnpm db:seed
+```
+
+8. Start the development server
 
 ```bash
 pnpm dev
@@ -99,29 +119,39 @@ pnpm dev
 
 Your site should now be running at `http://localhost:3000`!
 
+### Accessing the CMS
+
+If you've configured OAuth providers, you can access the Content Studio at `http://localhost:3000/studio` to manage blog posts through the web interface.
+
 ## 🧪 Development Workflow
 
 ### Available Scripts
 
+#### Development (run from project root)
 ```bash
-# Development
-pnpm dev              # Start development server with hot reload (uses Turbo)
-pnpm build            # Build all apps for production (uses Turbo)
-pnpm test             # Run tests across all apps (uses Turbo)
-pnpm lint             # Run linting across all apps (uses Turbo)
+pnpm dev              # Start development server with hot reload
+pnpm build            # Build all apps for production
+pnpm start            # Start production server
+pnpm test             # Run tests across all apps
+pnpm lint             # Run linting across all apps
+```
 
-# App-specific (from /apps/blog/)
-pnpm dev              # Start blog dev server (contentlayer2 dev & next dev --turbopack)
-pnpm build            # Build blog app for production
-pnpm test             # Run Vitest tests with coverage
-pnpm check-types      # TypeScript type checking
-pnpm migrate          # Run database migrations
-pnpm vercel-build     # Production build with migrations
+#### Database Management (run from project root)
+```bash
+pnpm db:generate      # Generate migrations from schema
+pnpm db:migrate       # Run database migrations
+pnpm db:push          # Push schema changes to database
+pnpm db:studio        # Open Drizzle Studio for database management
+pnpm db:seed          # Seed database with test data
+```
 
-# Quality & Release
+#### Quality & Release
+```bash
 pnpm release          # Create semantic release (runs build, test, lint, check-types)
 pnpm release:blog     # Release blog app specifically
 ```
+
+For more commands, see the [CLAUDE.md](CLAUDE.md) file.
 
 ### Testing Strategy
 
@@ -144,21 +174,32 @@ This is a Turborepo monorepo with the following structure:
 ```
 portfolio/
 ├── apps/
-│   └── blog/              # Main Next.js application
-│       ├── app/           # Next.js App Router pages and API routes
-│       ├── components/    # Reusable React components
-│       ├── content/       # MDX blog posts
-│       ├── db/           # Database schema and setup
-│       ├── lib/          # Utility functions and integrations
-│       ├── migrations/   # Database migration files
-│       └── utils/        # Helper functions with tests
-├── packages/             # Shared packages (currently empty)
-└── turbo.json           # Turborepo configuration
+│   └── blog/                    # Main Next.js application
+│       ├── src/
+│       │   ├── app/            # Next.js App Router pages and API routes
+│       │   │   ├── (auth)/     # Authentication routes (login)
+│       │   │   ├── (blog)/     # Main blog routes
+│       │   │   ├── (studio)/   # CMS routes at /studio
+│       │   │   └── api/        # API routes (studio, auth)
+│       │   ├── components/     # Reusable React components
+│       │   ├── lib/           # Utility functions and integrations
+│       │   ├── schema/        # Drizzle database schema
+│       │   │   ├── posts.ts   # Blog posts table
+│       │   │   ├── sessions.ts # Analytics sessions
+│       │   │   └── auth.ts    # Better Auth tables
+│       │   └── utils/         # Helper functions with tests
+│       ├── content/           # Legacy MDX blog posts
+│       ├── migrations/        # Database migration files
+│       └── drizzle.config.ts  # Drizzle configuration
+├── packages/                  # Shared packages (currently empty)
+└── turbo.json                # Turborepo configuration
 ```
 
 ## 🎯 Key Features
 
 - **📝 Blog System**: MDX-powered blog with syntax highlighting
+- **✏️ Content Studio**: Web-based CMS at `/studio` for managing blog posts
+- **🔐 Authentication**: OAuth login with GitHub and Google via Better Auth
 - **📊 Analytics Dashboard**: Custom privacy-focused visitor analytics
 - **🎨 Dark/Light Mode**: Tailwind CSS theming support
 - **📱 Responsive Design**: Mobile-first responsive layout
