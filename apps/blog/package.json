@@ -9,6 +9,7 @@
     "test": "vitest --coverage",
     "test:coverage": "vitest run --coverage",
     "lint": "next lint",
+    "drop": "drizzle-kit drop",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
     "push": "drizzle-kit push",
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.12.2",
+    "@better-fetch/fetch": "^1.1.18",
     "@heroicons/react": "^2.0.13",
     "@heroui/react": "^2.8.1",
     "@hookform/resolvers": "^3.10.0",
@@ -49,6 +51,7 @@
     "@vercel/functions": "^1.6.0",
     "@vercel/og": "^0.0.27",
     "@vercel/speed-insights": "^1.2.0",
+    "better-auth": "^1.3.28",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cobe": "^0.6.4",

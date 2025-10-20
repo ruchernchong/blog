@@ -3,6 +3,15 @@ import { withContentlayer } from "next-contentlayer2";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+        pathname: "/**",
+      },
+    ],
+  },
   async headers() {
     return [
       {

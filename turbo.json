@@ -86,6 +86,7 @@
     },
     "drop": {
       "cache": false,
+      "interactive": true,
       "env": ["DATABASE_URL"]
     }
   }
