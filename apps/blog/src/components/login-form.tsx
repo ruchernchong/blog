@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,23 +12,52 @@ import {
 } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { logError } from "@/lib/logger";
+import { ERROR_IDS } from "@/constants/errorIds";
 
 export const LoginForm = ({
   className,
   ...props
 }: ComponentPropsWithoutRef<"div">) => {
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<string | null>(null);
+
   const handleGithubSignIn = async () => {
-    await authClient.signIn.social({
-      provider: "github",
-      callbackURL: "/studio/posts",
-    });
+    setError(null);
+    setIsLoading("github");
+
+    try {
+      await authClient.signIn.social({
+        provider: "github",
+        callbackURL: "/studio/posts",
+      });
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to sign in with GitHub";
+      logError(ERROR_IDS.OAUTH_GITHUB_FAILED, err);
+      setError(errorMessage);
+    } finally {
+      setIsLoading(null);
+    }
   };
 
   const handleGoogleSignIn = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/studio/posts",
-    });
+    setError(null);
+    setIsLoading("google");
+
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/studio/posts",
+      });
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to sign in with Google";
+      logError(ERROR_IDS.OAUTH_GOOGLE_FAILED, err);
+      setError(errorMessage);
+    } finally {
+      setIsLoading(null);
+    }
   };
 
   return (
@@ -40,12 +70,18 @@ export const LoginForm = ({
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <div className="mb-4 rounded-lg border border-destructive bg-destructive/10 p-3">
+              <p className="text-destructive text-sm">{error}</p>
+            </div>
+          )}
           <div className="grid gap-6">
             <div className="flex flex-col gap-4">
               <Button
                 variant="outline"
                 className="w-full"
                 onClick={handleGithubSignIn}
+                disabled={isLoading !== null}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -57,12 +93,13 @@ export const LoginForm = ({
                     fill="currentColor"
                   />
                 </svg>
-                Login with GitHub
+                {isLoading === "github" ? "Signing in..." : "Login with GitHub"}
               </Button>
               <Button
                 variant="outline"
                 className="w-full"
                 onClick={handleGoogleSignIn}
+                disabled={isLoading !== null}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -74,7 +111,7 @@ export const LoginForm = ({
                     fill="currentColor"
                   />
                 </svg>
-                Login with Google
+                {isLoading === "google" ? "Signing in..." : "Login with Google"}
               </Button>
             </div>
           </div>
