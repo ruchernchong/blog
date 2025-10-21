@@ -1,8 +1,8 @@
 import { betterFetch } from "@better-fetch/fetch";
 import type { Session } from "better-auth/types";
 import { type NextRequest, NextResponse } from "next/server";
-import { logError } from "@/lib/logger";
 import { ERROR_IDS } from "@/constants/errorIds";
+import { logError } from "@/lib/logger";
 
 /**
  * Next.js middleware for protecting the Content Studio routes.

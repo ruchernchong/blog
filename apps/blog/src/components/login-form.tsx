@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import type { ComponentPropsWithoutRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,10 +10,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { authClient } from "@/lib/auth-client";
-import { cn } from "@/lib/utils";
-import { logError } from "@/lib/logger";
 import { ERROR_IDS } from "@/constants/errorIds";
+import { authClient } from "@/lib/auth-client";
+import { logError } from "@/lib/logger";
+import { cn } from "@/lib/utils";
 
 export const LoginForm = ({
   className,

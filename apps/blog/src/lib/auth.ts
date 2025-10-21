@@ -39,9 +39,10 @@ const validateEnv = (key: string): string => {
  * - DATABASE_URL: PostgreSQL connection string (via db import)
  */
 export const auth = betterAuth({
+  baseURL: `https://${process.env.VERCEL_URL}` || "http://localhost:3000",
+  trustedOrigins: ["*.vercel.app"],
   database: drizzleAdapter(db, { provider: "pg" }),
   secret: validateEnv("BETTER_AUTH_SECRET"),
-  baseURL: validateEnv("BETTER_AUTH_URL"),
   account: {
     accountLinking: {
       enabled: true,
