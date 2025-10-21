@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { lastLoginMethod } from "better-auth/plugins";
+import { lastLoginMethod, oAuthProxy } from "better-auth/plugins";
 import { ERROR_IDS } from "@/constants/errorIds";
 import { logError } from "@/lib/logger";
 import { db } from "@/schema";
@@ -39,7 +39,6 @@ const validateEnv = (key: string): string => {
  * - DATABASE_URL: PostgreSQL connection string (via db import)
  */
 export const auth = betterAuth({
-  baseURL: `https://${process.env.VERCEL_URL}` || "http://localhost:3000",
   trustedOrigins: ["*.vercel.app"],
   database: drizzleAdapter(db, { provider: "pg" }),
   secret: validateEnv("BETTER_AUTH_SECRET"),
@@ -55,15 +54,18 @@ export const auth = betterAuth({
     github: {
       clientId: validateEnv("GITHUB_CLIENT_ID"),
       clientSecret: validateEnv("GITHUB_CLIENT_SECRET"),
+      redirectURI: `https://${process.env.VERCEL_URL}/api/auth/callback/github`,
     },
     google: {
       clientId: validateEnv("GOOGLE_CLIENT_ID"),
       clientSecret: validateEnv("GOOGLE_CLIENT_SECRET"),
+      redirectURI: `https://${process.env.VERCEL_URL}/api/auth/callback/google`,
     },
   },
   plugins: [
     lastLoginMethod({
       storeInDatabase: true,
     }),
+    oAuthProxy(),
   ],
 });
