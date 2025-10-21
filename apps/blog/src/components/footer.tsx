@@ -1,10 +1,10 @@
-import Icon from "@/app/icon.png";
+import Image from "next/image";
+import Link from "next/link";
+import Icon from "@/app/(blog)/icon.png";
 import ExternalLink from "@/components/external-link";
 import * as Icons from "@/components/Icons";
 import { navLinks } from "@/config";
 import socials from "@/data/socials";
-import Image from "next/image";
-import Link from "next/link";
 
 export const Footer = () => (
   <div className="mx-auto flex w-full max-w-4xl justify-center px-4 pb-6">
@@ -16,7 +16,7 @@ export const Footer = () => (
             <div className="flex flex-col gap-3">
               <Link
                 href="/"
-                className="text-sm font-medium text-gray-400 transition-colors duration-300 hover:text-white"
+                className="font-medium text-gray-400 text-sm transition-colors duration-300 hover:text-white"
               >
                 Home
               </Link>
@@ -25,7 +25,7 @@ export const Footer = () => (
                   <Link
                     key={title}
                     href={href}
-                    className="text-sm font-medium text-gray-400 transition-colors duration-300 hover:text-white"
+                    className="font-medium text-gray-400 text-sm transition-colors duration-300 hover:text-white"
                   >
                     {title}
                   </Link>
@@ -37,7 +37,7 @@ export const Footer = () => (
                 <div key={name}>
                   <ExternalLink
                     href={link}
-                    className="text-sm font-medium text-gray-400 transition-colors duration-300 hover:text-pink-500"
+                    className="font-medium text-gray-400 text-sm transition-colors duration-300 hover:text-pink-500"
                     title={name}
                   >
                     <div className="inline-flex items-center gap-x-2">
@@ -50,7 +50,7 @@ export const Footer = () => (
             </div>
           </div>
         </div>
-        <div className="text-center text-sm text-gray-400 md:text-left">
+        <div className="text-center text-gray-400 text-sm md:text-left">
           &copy; {new Date().getFullYear()} Chong Ru Chern. All Rights Reserved.
         </div>
       </div>

@@ -3,7 +3,7 @@
 import { HeartIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import { useOptimistic } from "react";
-import { incrementLikes } from "@/app/actions/stats";
+import { incrementLikes } from "@/app/(blog)/actions/stats";
 import { MAX_LIKES_PER_USER } from "@/config";
 import type { Likes } from "@/types";
 
@@ -42,6 +42,7 @@ const LikeButton = ({
 
   return (
     <button
+      type="button"
       onClick={handleClick}
       className={`transform transition-all duration-300 hover:scale-110 ${
         optimisticLikes.likesByUser > 0 ? "text-pink-500" : "text-zinc-400"

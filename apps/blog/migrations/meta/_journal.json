@@ -15,6 +15,20 @@
       "when": 1736793201489,
       "tag": "0001_cold_wonder_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1760947318834,
+      "tag": "0002_third_mongoose",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1760983010157,
+      "tag": "0003_glossy_gideon",
+      "breakpoints": true
     }
   ]
 }

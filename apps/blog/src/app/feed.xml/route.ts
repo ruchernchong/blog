@@ -1,6 +1,6 @@
-import RSS from "rss";
-import { NextResponse } from "next/server";
 import { allDocuments } from "contentlayer/generated";
+import { NextResponse } from "next/server";
+import RSS from "rss";
 import { BASE_URL } from "@/config";
 
 export const GET = () => {

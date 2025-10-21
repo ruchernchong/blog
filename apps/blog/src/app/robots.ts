@@ -1,5 +1,5 @@
-import { BASE_URL } from "@/config";
 import type { MetadataRoute } from "next";
+import { BASE_URL } from "@/config";
 
 const robots = (): MetadataRoute.Robots => {
   return {

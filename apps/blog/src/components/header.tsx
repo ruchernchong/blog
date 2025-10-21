@@ -1,12 +1,12 @@
 "use client";
 
-import { type PropsWithChildren } from "react";
-import { Link } from "next-view-transitions";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { navLinks } from "@/config";
 import Image from "next/image";
-import Icon from "@/app/icon.png";
+import { usePathname } from "next/navigation";
+import { Link } from "next-view-transitions";
+import type { PropsWithChildren } from "react";
+import Icon from "@/app/(blog)/icon.png";
+import { navLinks } from "@/config";
+import { cn } from "@/lib/utils";
 
 interface NavItemProps extends PropsWithChildren {
   href: string;
@@ -18,17 +18,17 @@ export const Header = () => {
   const pathname = usePathname();
 
   return (
-    <div className="fixed top-6 left-1/2 z-50 w-full -translate-x-1/2 px-4 md:max-w-4xl">
+    <div className="-translate-x-1/2 fixed top-6 left-1/2 z-50 w-full px-4 md:max-w-4xl">
       <header className="w-full rounded-2xl border border-white/10 bg-black/20 px-8 py-3 shadow-2xl backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <NavItem
             href="/"
-            className="text-lg font-bold text-white transition-colors duration-300 hover:text-pink-500"
+            className="font-bold text-lg text-white transition-colors duration-300 hover:text-pink-500"
             title="Ru Chern"
           >
             <div className="flex items-center gap-2">
               <Image src={Icon} width={32} height={32} alt="Logo" />
-              <span className="rounded-full border border-pink-500/30 bg-pink-500/20 px-2 py-0.5 text-xs font-medium text-pink-400">
+              <span className="rounded-full border border-pink-500/30 bg-pink-500/20 px-2 py-0.5 font-medium text-pink-400 text-xs">
                 beta
               </span>
             </div>
@@ -44,7 +44,7 @@ export const Header = () => {
                   key={title}
                   href={href}
                   className={cn(
-                    "text-sm font-medium transition-all duration-300 ease-out",
+                    "font-medium text-sm transition-all duration-300 ease-out",
                     isActive ? "text-white" : "text-gray-400 hover:text-white",
                   )}
                   title={title}
