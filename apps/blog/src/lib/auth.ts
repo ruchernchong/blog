@@ -39,6 +39,7 @@ const validateEnv = (key: string): string => {
  * - DATABASE_URL: PostgreSQL connection string (via db import)
  */
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL,
   trustedOrigins: ["*.vercel.app"],
   database: drizzleAdapter(db, { provider: "pg" }),
   secret: validateEnv("BETTER_AUTH_SECRET"),
@@ -54,12 +55,12 @@ export const auth = betterAuth({
     github: {
       clientId: validateEnv("GITHUB_CLIENT_ID"),
       clientSecret: validateEnv("GITHUB_CLIENT_SECRET"),
-      redirectURI: `https://${process.env.VERCEL_URL}/api/auth/callback/github`,
+      redirectURI: `${process.env.BETTER_AUTH_URL}/api/auth/callback/github`,
     },
     google: {
       clientId: validateEnv("GOOGLE_CLIENT_ID"),
       clientSecret: validateEnv("GOOGLE_CLIENT_SECRET"),
-      redirectURI: `https://${process.env.VERCEL_URL}/api/auth/callback/google`,
+      redirectURI: `${process.env.BETTER_AUTH_URL}/api/auth/callback/google`,
     },
   },
   plugins: [
