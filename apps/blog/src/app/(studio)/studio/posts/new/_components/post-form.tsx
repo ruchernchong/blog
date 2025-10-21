@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -56,6 +56,7 @@ type NewPostFormValues = z.infer<typeof newPostSchema>;
 export const PostForm = () => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   // Generate unique IDs for form fields
   const titleId = useId();
@@ -91,44 +92,45 @@ export const PostForm = () => {
   }, [form, titleValue]);
 
   const contentValue = form.watch("content");
-  const { isSubmitting } = form.formState;
 
   const handleSubmit = async (values: NewPostFormValues) => {
-    setError(null);
+    startTransition(async () => {
+      setError(null);
 
-    const data = {
-      title: values.title,
-      slug:
-        values.slug ||
-        slugify(values.title, { lower: true, strict: true }) ||
-        values.title.toLowerCase().replace(/\s+/g, "-"),
-      summary: values.summary ?? "",
-      content: values.content,
-      status: values.status,
-      tags: (values.tags ?? "")
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter(Boolean),
-      coverImage: values.coverImage || null,
-    };
+      const data = {
+        title: values.title,
+        slug:
+          values.slug ||
+          slugify(values.title, { lower: true, strict: true }) ||
+          values.title.toLowerCase().replace(/\s+/g, "-"),
+        summary: values.summary ?? "",
+        content: values.content,
+        status: values.status,
+        tags: (values.tags ?? "")
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean),
+        coverImage: values.coverImage || null,
+      };
 
-    try {
-      const response = await fetch("/api/studio/posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      try {
+        const response = await fetch("/api/studio/posts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to create post");
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Failed to create post");
+        }
+
+        router.push("/studio/posts");
+        router.refresh();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to create post");
       }
-
-      router.push("/studio/posts");
-      router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create post");
-    }
+    });
   };
 
   return (
@@ -392,8 +394,8 @@ Start writing your blog post using Markdown syntax."
             <Button type="button" variant="outline" asChild>
               <Link href="/studio/posts">Cancel</Link>
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Create Post"}
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Creating..." : "Create Post"}
             </Button>
           </div>
         </form>

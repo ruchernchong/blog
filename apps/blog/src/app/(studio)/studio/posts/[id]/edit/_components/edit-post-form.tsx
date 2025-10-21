@@ -3,7 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { type FormEvent, useEffect, useId, useState } from "react";
+import {
+  type FormEvent,
+  useEffect,
+  useId,
+  useState,
+  useTransition,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -36,8 +42,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
   const router = useRouter();
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
@@ -86,64 +91,65 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
 
-    const data = {
-      title: formData.title,
-      slug: formData.slug,
-      summary: formData.summary,
-      content: formData.content,
-      status: formData.status,
-      tags: formData.tags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter(Boolean),
-      coverImage: formData.coverImage || null,
-    };
+    startTransition(async () => {
+      setError(null);
 
-    try {
-      const response = await fetch(`/api/studio/posts/${postId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const data = {
+        title: formData.title,
+        slug: formData.slug,
+        summary: formData.summary,
+        content: formData.content,
+        status: formData.status,
+        tags: formData.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean),
+        coverImage: formData.coverImage || null,
+      };
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to update post");
+      try {
+        const response = await fetch(`/api/studio/posts/${postId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Failed to update post");
+        }
+
+        router.push("/studio/posts");
+        router.refresh();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to update post");
       }
-
-      router.push("/studio/posts");
-      router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update post");
-      setIsSubmitting(false);
-    }
+    });
   };
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this post?")) return;
 
-    setIsDeleting(true);
-    setError(null);
+    startTransition(async () => {
+      setError(null);
 
-    try {
-      const response = await fetch(`/api/studio/posts/${postId}`, {
-        method: "DELETE",
-      });
+      try {
+        const response = await fetch(`/api/studio/posts/${postId}`, {
+          method: "DELETE",
+        });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to delete post");
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Failed to delete post");
+        }
+
+        router.push("/studio/posts");
+        router.refresh();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to delete post");
       }
-
-      router.push("/studio/posts");
-      router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete post");
-      setIsDeleting(false);
-    }
+    });
   };
 
   if (isLoading) {
@@ -328,17 +334,17 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
             type="button"
             variant="destructive"
             onClick={handleDelete}
-            disabled={isDeleting}
+            disabled={isPending}
           >
-            {isDeleting ? "Deleting..." : "Delete Post"}
+            {isPending ? "Deleting..." : "Delete Post"}
           </Button>
 
           <div className="flex gap-3">
             <Button type="button" variant="outline" asChild>
               <Link href="/studio/posts">Cancel</Link>
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save Changes"}
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </div>

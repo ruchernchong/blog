@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,14 +38,12 @@ export const PostsTable = () => {
   const router = useRouter();
   const [allPosts, setAllPosts] = useState<SelectPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "all" | "draft" | "published"
   >("all");
   const [selectedPosts, setSelectedPosts] = useState<Set<string>>(new Set());
-  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
-  const [isBulkPublishing, setIsBulkPublishing] = useState(false);
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -66,26 +64,25 @@ export const PostsTable = () => {
   }, [fetchPosts]);
 
   const handleDelete = async (postId: string) => {
-    setDeletingId(postId);
-    try {
-      const response = await fetch(`/api/studio/posts/${postId}`, {
-        method: "DELETE",
-      });
+    startTransition(async () => {
+      try {
+        const response = await fetch(`/api/studio/posts/${postId}`, {
+          method: "DELETE",
+        });
 
-      if (response.ok) {
-        setAllPosts((prev) => prev.filter((post) => post.id !== postId));
-        router.refresh();
-      } else {
-        const error = await response.json();
+        if (response.ok) {
+          setAllPosts((prev) => prev.filter((post) => post.id !== postId));
+          router.refresh();
+        } else {
+          const error = await response.json();
+          console.error("Failed to delete post:", error);
+          alert(`Failed to delete post: ${error.message || "Unknown error"}`);
+        }
+      } catch (error) {
         console.error("Failed to delete post:", error);
-        alert(`Failed to delete post: ${error.message || "Unknown error"}`);
+        alert("Failed to delete post");
       }
-    } catch (error) {
-      console.error("Failed to delete post:", error);
-      alert("Failed to delete post");
-    } finally {
-      setDeletingId(null);
-    }
+    });
   };
 
   const togglePostSelection = (postId: string) => {
@@ -117,70 +114,68 @@ export const PostsTable = () => {
       return;
     }
 
-    setIsBulkDeleting(true);
-    try {
-      const deletePromises = Array.from(selectedPosts).map((postId) =>
-        fetch(`/api/studio/posts/${postId}`, { method: "DELETE" }),
-      );
-
-      const results = await Promise.all(deletePromises);
-      const failedDeletes = results.filter((res) => !res.ok);
-
-      if (failedDeletes.length > 0) {
-        alert(
-          `Failed to delete ${failedDeletes.length} post(s). Please try again.`,
+    startTransition(async () => {
+      try {
+        const deletePromises = Array.from(selectedPosts).map((postId) =>
+          fetch(`/api/studio/posts/${postId}`, { method: "DELETE" }),
         );
-      }
 
-      await fetchPosts();
-      setSelectedPosts(new Set());
-      router.refresh();
-    } catch (error) {
-      console.error("Failed to delete posts:", error);
-      alert("Failed to delete posts");
-    } finally {
-      setIsBulkDeleting(false);
-    }
+        const results = await Promise.all(deletePromises);
+        const failedDeletes = results.filter((res) => !res.ok);
+
+        if (failedDeletes.length > 0) {
+          alert(
+            `Failed to delete ${failedDeletes.length} post(s). Please try again.`,
+          );
+        }
+
+        await fetchPosts();
+        setSelectedPosts(new Set());
+        router.refresh();
+      } catch (error) {
+        console.error("Failed to delete posts:", error);
+        alert("Failed to delete posts");
+      }
+    });
   };
 
   const handleBulkPublish = async () => {
     if (selectedPosts.size === 0) return;
 
-    setIsBulkPublishing(true);
-    try {
-      const updatePromises = Array.from(selectedPosts).map(async (postId) => {
-        const post = allPosts.find((p) => p.id === postId);
-        if (!post) return null;
+    startTransition(async () => {
+      try {
+        const updatePromises = Array.from(selectedPosts).map(async (postId) => {
+          const post = allPosts.find((p) => p.id === postId);
+          if (!post) return null;
 
-        return fetch(`/api/studio/posts/${postId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...post,
-            status: "published",
-            tags: post.tags || [],
-          }),
+          return fetch(`/api/studio/posts/${postId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...post,
+              status: "published",
+              tags: post.tags || [],
+            }),
+          });
         });
-      });
 
-      const results = await Promise.all(updatePromises);
-      const failedUpdates = results.filter((res) => res && !res.ok);
+        const results = await Promise.all(updatePromises);
+        const failedUpdates = results.filter((res) => res && !res.ok);
 
-      if (failedUpdates.length > 0) {
-        alert(
-          `Failed to publish ${failedUpdates.length} post(s). Please try again.`,
-        );
+        if (failedUpdates.length > 0) {
+          alert(
+            `Failed to publish ${failedUpdates.length} post(s). Please try again.`,
+          );
+        }
+
+        await fetchPosts();
+        setSelectedPosts(new Set());
+        router.refresh();
+      } catch (error) {
+        console.error("Failed to publish posts:", error);
+        alert("Failed to publish posts");
       }
-
-      await fetchPosts();
-      setSelectedPosts(new Set());
-      router.refresh();
-    } catch (error) {
-      console.error("Failed to publish posts:", error);
-      alert("Failed to publish posts");
-    } finally {
-      setIsBulkPublishing(false);
-    }
+    });
   };
 
   const filteredPosts = allPosts.filter((post) => {
@@ -287,17 +282,17 @@ export const PostsTable = () => {
                   variant="outline"
                   size="sm"
                   onClick={handleBulkPublish}
-                  disabled={isBulkPublishing || isBulkDeleting}
+                  disabled={isPending}
                 >
-                  {isBulkPublishing ? "Publishing..." : "Publish Selected"}
+                  {isPending ? "Publishing..." : "Publish Selected"}
                 </Button>
                 <Button
                   variant="destructive"
                   size="sm"
                   onClick={handleBulkDelete}
-                  disabled={isBulkDeleting || isBulkPublishing}
+                  disabled={isPending}
                 >
-                  {isBulkDeleting ? "Deleting..." : "Delete Selected"}
+                  {isPending ? "Deleting..." : "Delete Selected"}
                 </Button>
                 <Button
                   variant="ghost"
@@ -457,11 +452,9 @@ export const PostsTable = () => {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    disabled={deletingId === post.id}
+                                    disabled={isPending}
                                   >
-                                    {deletingId === post.id
-                                      ? "Deleting..."
-                                      : "Delete"}
+                                    Delete
                                   </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
