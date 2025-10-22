@@ -1,6 +1,6 @@
-import ExternalLink from "@/components/external-link";
-import * as Icons from "@/components/icons";
-import { PageTitle } from "@/components/page-title";
+import ExternalLink from "@/components/shared/external-link";
+import * as Icons from "@/components/shared/icons";
+import { PageTitle } from "@/components/shared/page-title";
 import socials from "@/data/socials";
 
 interface Props {

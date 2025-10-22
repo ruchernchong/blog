@@ -1,7 +1,7 @@
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { format, formatISO, parseISO } from "date-fns";
 import Link from "next/link";
-import { Typography } from "@/components/typography";
+import { Typography } from "@/components/shared/typography";
 
 interface BlogPostProps {
   title: string;

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Card, CardContent } from "@/components/card";
+import { Card, CardContent } from "@/components/shared/card";
 import { cn } from "@/lib/utils";
 
 interface MetricCardProps {

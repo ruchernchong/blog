@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { LikeCounter } from "../like-counter";
+import { LikeCounter } from "@/app/(blog)/blog/_components/like-counter";
 
 vi.mock("@/app/(blog)/actions/stats", () => ({
   incrementLikes: vi.fn(() =>

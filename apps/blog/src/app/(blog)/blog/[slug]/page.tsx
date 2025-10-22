@@ -7,10 +7,10 @@ import { format, formatISO } from "date-fns";
 import { and, eq } from "drizzle-orm";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Mdx } from "@/components/mdx";
-import StatsBar from "@/components/stats-bar";
-import { StructuredData } from "@/components/structured-data";
-import { Typography } from "@/components/typography";
+import { Mdx } from "@/app/(blog)/blog/_components/mdx";
+import StatsBar from "@/app/(blog)/analytics/_components/stats-bar";
+import { StructuredData } from "@/app/(blog)/_components/structured-data";
+import { Typography } from "@/components/shared/typography";
 import { db, posts } from "@/schema";
 
 type Params = Promise<{ slug: string }>;

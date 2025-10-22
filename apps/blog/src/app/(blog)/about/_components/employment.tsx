@@ -1,7 +1,7 @@
 import { BriefcaseIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
-import ExternalLink from "@/components/external-link";
-import { ItemOverlay } from "@/components/item-overlay";
+import ExternalLink from "@/components/shared/external-link";
+import { ItemOverlay } from "@/components/shared/item-overlay";
 import { cn } from "@/lib/utils";
 import type { Company } from "@/types";
 

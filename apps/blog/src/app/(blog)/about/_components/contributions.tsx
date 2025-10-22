@@ -1,8 +1,8 @@
 import { UsersIcon } from "@heroicons/react/24/solid";
 import { Fragment } from "react";
-import { Card } from "@/components/card";
-import { LinkWithIcon } from "@/components/link-with-icon";
-import { Typography } from "@/components/typography";
+import { Card } from "@/components/shared/card";
+import { LinkWithIcon } from "@/components/shared/link-with-icon";
+import { Typography } from "@/components/shared/typography";
 import type { GitHubProfile } from "@/lib/github";
 import { cn } from "@/lib/utils";
 import type { StackOverflowProfile } from "@/utils/stackoverflow";

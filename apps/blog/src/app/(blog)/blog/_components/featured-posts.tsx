@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/card";
+} from "@/components/shared/card";
 import type { SelectPost } from "@/schema";
 
 interface FeaturedPostsProps {

@@ -1,4 +1,4 @@
-import { EditPostForm } from "./_components/edit-post-form";
+import { EditPostForm } from "@/app/(studio)/studio/posts/[id]/edit/_components/edit-post-form";
 
 const EditPostPage = async ({
   params,

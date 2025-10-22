@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import type { Visit } from "@/app/(blog)/analytics/_actions/visits";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   type ChartConfig,
@@ -11,7 +11,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import type { Visit } from "../actions/analytics/visits";
 
 interface Props {
   data: Visit[];

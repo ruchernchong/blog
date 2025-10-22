@@ -1,7 +1,7 @@
 import { EyeIcon } from "@heroicons/react/24/outline";
-import { getLikesByUser, getTotalLikes } from "@/app/(blog)/actions/stats";
-import { LikeCounter } from "./like-counter";
-import { ViewCounter } from "./view-counter";
+import { getLikesByUser, getTotalLikes } from "@/app/(blog)/_actions/stats";
+import { LikeCounter } from "@/app/(blog)/blog/_components/like-counter";
+import { ViewCounter } from "@/app/(blog)/blog/_components/view-counter";
 
 interface StatsBarProps {
   slug: string;

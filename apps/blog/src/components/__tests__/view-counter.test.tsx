@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { ViewCounter } from "../view-counter";
+import { ViewCounter } from "@/app/(blog)/blog/_components/view-counter";
 
 vi.mock("@/app/(blog)/actions/stats", () => ({
   incrementViews: vi.fn(() => Promise.resolve({ views: 42 })),

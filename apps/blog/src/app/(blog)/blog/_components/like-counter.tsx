@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Likes } from "@/types";
-import LikeButton from "./like-button";
+import LikeButton from "@/app/(blog)/blog/_components/like-button";
 
 interface Props {
   slug: string;

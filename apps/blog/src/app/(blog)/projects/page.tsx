@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import type { WebPage, WithContext } from "schema-dts";
 import globalMetadata from "@/app/(blog)/metadata";
 import { openGraphImage, twitterImage } from "@/app/(blog)/shared-metadata";
-import { PageTitle } from "@/components/page-title";
-import ProjectCard from "@/components/project-card";
-import { StructuredData } from "@/components/structured-data";
+import { PageTitle } from "@/components/shared/page-title";
+import ProjectCard from "@/app/(blog)/projects/_components/project-card";
+import { StructuredData } from "@/app/(blog)/_components/structured-data";
 import { BASE_URL } from "@/config";
 import projects from "@/data/projects";
 
