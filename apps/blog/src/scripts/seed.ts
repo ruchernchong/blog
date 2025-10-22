@@ -37,7 +37,9 @@ const generateMetadata = (
   content: string,
 ): PostMetadata => {
   const { text: readingTimeText } = readingTime(content);
-  const siteUrl = "https://ruchern.xyz";
+  const siteUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000";
   const postUrl = `${siteUrl}/blog/${slug}`;
   const now = new Date().toISOString();
 
