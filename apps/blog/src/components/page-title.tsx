@@ -15,7 +15,7 @@ export const PageTitle = ({
   className,
   animate = true,
 }: PageTitleProps) => (
-  <div className={cn("space-y-2", className)}>
+  <div className={cn("flex flex-col gap-2", className)}>
     <h1
       className={cn(
         "text-foreground text-3xl font-bold tracking-tight sm:text-4xl",

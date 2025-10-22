@@ -21,11 +21,11 @@ const Dashboard = () => {
     trpc.github.getContributions.useQuery();
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8">
+    <div className="mx-auto max-w-4xl flex flex-col gap-8">
       <PageTitle
         title="Dashboard"
         description="📊 Just sharing a quick snapshot of a few personal wins and milestones I've hit along the way—it's been a fun ride so far!"
-        className="space-y-4"
+        className="flex flex-col gap-4"
       />
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

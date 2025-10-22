@@ -135,11 +135,11 @@ export const PostForm = () => {
 
   return (
     <Form {...form}>
-      <div className="flex h-[calc(100vh-4rem)] flex-col space-y-4">
+      <div className="flex h-[calc(100vh-4rem)] flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-bold text-3xl">Create New Post</h1>
-            <p className="mt-1 text-muted-foreground">
+            <p className="mb-2 text-muted-foreground">
               Write and publish a new blog post
             </p>
           </div>
@@ -235,7 +235,7 @@ Start writing your blog post using Markdown syntax."
                   <h2 className="font-semibold text-lg">Post Details</h2>
                 </div>
                 <ScrollArea className="flex-1">
-                  <div className="space-y-4 p-4">
+                  <div className="flex flex-col gap-4 p-4">
                     <FormField
                       control={form.control}
                       name="title"
@@ -368,7 +368,7 @@ Start writing your blog post using Markdown syntax."
                           </FormDescription>
                           <FormMessage />
                           {field.value && (
-                            <div className="mt-2">
+                            <div className="mb-4">
                               <Image
                                 src={field.value}
                                 alt="Cover preview"
@@ -390,7 +390,7 @@ Start writing your blog post using Markdown syntax."
             </ResizablePanel>
           </ResizablePanelGroup>
 
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" asChild>
               <Link href="/studio/posts">Cancel</Link>
             </Button>

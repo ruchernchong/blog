@@ -13,7 +13,7 @@ export const Footer = () => (
         <div className="flex flex-col gap-y-6 md:flex-row md:items-start md:justify-between">
           <Image src={Icon} width={48} height={48} alt="Logo" />
           <div className="flex gap-x-12 md:gap-x-16">
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               <Link
                 href="/"
                 className="font-medium text-gray-400 text-sm transition-colors duration-300 hover:text-white"
@@ -32,7 +32,7 @@ export const Footer = () => (
                 );
               })}
             </div>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               {socials.map(({ name, link }) => (
                 <div key={name}>
                   <ExternalLink

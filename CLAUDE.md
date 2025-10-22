@@ -156,3 +156,106 @@ All blog content is managed through the database-backed Content Studio:
 - Protected routes using `(auth)` route group
 - Login page at `/login` with OAuth buttons
 - Session management and last login method tracking
+
+## Tailwind CSS Guidelines
+
+### Spacing Standards
+
+#### 1. **Primary Rule: Use gap-* Instead of Space Utilities**
+- Replace all `space-y-*` and `space-x-*` with `flex gap-*`
+- Use only even numbers: `gap-2, gap-4, gap-6, gap-8, gap-10, gap-12`
+- **Avoid**: `gap-1, gap-3, gap-5, gap-7` and fractions like `gap-1.5`
+
+```tsx
+// ❌ Before - space utilities
+<div className="space-y-4">
+  <div>Content 1</div>
+  <div>Content 2</div>
+</div>
+
+// ✅ After - gap utilities
+<div className="flex flex-col gap-4">
+  <div>Content 1</div>
+  <div>Content 2</div>
+</div>
+```
+
+#### 2. **Margin Rules**
+- **Avoid margin-top** for layout spacing
+- **Prefer margin-bottom** for creating separation between elements
+- **Use margin-y** sparingly for vertical rhythm
+- **Use margin-x** for horizontal adjustments
+
+```tsx
+// ❌ Before - margin-top for spacing
+<div className="mt-6">
+  <h2>Title</h2>
+</div>
+
+// ✅ After - margin-bottom on previous element
+<div>Previous content</div>
+<div className="mb-6">
+  <h2>Title</h2>
+</div>
+```
+
+#### 3. **Spacing Priority Order**
+1. **`gap*`** - For container element spacing (highest priority)
+2. **`margin-bottom`** - For element separation
+3. **`margin-y`** - For symmetrical vertical spacing
+4. **`margin-top`** - Only for specific UI adjustments
+
+#### 4. **Spacing Scale Reference**
+Even numbers only for consistent spacing:
+- `gap-2`/`mb-2` = 0.5rem (8px) - Small gaps
+- `gap-4`/`mb-4` = 1rem (16px) - Standard gaps
+- `gap-6`/`mb-6` = 1.5rem (24px) - Medium gaps
+- `gap-8`/`mb-8` = 2rem (32px) - Large gaps
+- `gap-12`/`mb-12` = 3rem (48px) - Extra large gaps
+
+#### 5. **Component Architecture**
+- Use `cn()` utility for conditional class merging
+- Class Variance Authority (CVA) for component variants
+- Consistent prop interfaces with `className?: string`
+- Atomic component composition
+
+```tsx
+import { cn } from "@/lib/utils";
+
+interface ComponentProps {
+  className?: string;
+}
+
+export const Component = ({ className, ...props }: ComponentProps) => (
+  <div className={cn("base-classes", className)} {...props} />
+);
+```
+
+#### 6. **Theming System**
+- Use semantic color tokens: `foreground`, `muted`, `accent`, `border`, `background`
+- Dark mode via `.dark` class on parent elements
+- CSS custom properties for design tokens
+- OKLCH color space for modern color control
+
+```tsx
+// ✅ Semantic colors
+<div className="bg-background text-foreground border-border">
+  <h2 className="text-primary">Title</h2>
+  <p className="text-muted-foreground">Description</p>
+</div>
+```
+
+#### 7. **Exception Cases**
+- `mt-px` allowed for checkbox/radio alignment
+- Negative margins for specific layout corrections
+- Fractional values in UI components for fine-tuning
+- Space utilities in external libraries (shadcn/ui, HeroUI)
+
+#### 8. **Migration Checklist**
+For converting existing components:
+- [ ] Replace `space-y-N` → `flex flex-col gap-N`
+- [ ] Replace `space-x-N` → `flex gap-N`
+- [ ] Check for odd gap values and convert to even
+- [ ] Replace layout `mt-N` → preceding element `mb-N`
+- [ ] Validate responsive behavior after changes
+- [ ] Test component boundaries and overflow

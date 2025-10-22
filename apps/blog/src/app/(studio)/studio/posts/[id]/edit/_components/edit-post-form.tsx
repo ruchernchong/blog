@@ -180,11 +180,11 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-4xl flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-3xl">Edit Post</h1>
-          <p className="mt-1 text-muted-foreground">
+          <p className="mb-2 text-muted-foreground">
             Update your blog post details
           </p>
         </div>
@@ -201,14 +201,14 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
         </Card>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <Card>
           <CardHeader>
             <CardTitle>Post Details</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="flex flex-col gap-4">
             <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor={titleId}>
                   Title <span className="text-destructive">*</span>
                 </Label>
@@ -223,7 +223,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor={slugId}>
                   Slug <span className="text-destructive">*</span>
                 </Label>
@@ -239,7 +239,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <Label htmlFor={summaryId}>Summary</Label>
               <Textarea
                 id={summaryId}
@@ -253,7 +253,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor={statusId}>Status</Label>
                 <Select
                   value={formData.status}
@@ -271,7 +271,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
                 </Select>
               </div>
 
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor={tagsId}>Tags</Label>
                 <Input
                   id={tagsId}
@@ -287,7 +287,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <Label htmlFor={coverImageId}>Cover Image URL</Label>
               <Input
                 id={coverImageId}
@@ -310,7 +310,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
             <CardTitle>Content</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <Label htmlFor={contentId}>
                 MDX Content <span className="text-destructive">*</span>
               </Label>
@@ -339,7 +339,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
             {isPending ? "Deleting..." : "Delete Post"}
           </Button>
 
-          <div className="flex gap-3">
+          <div className="flex gap-4">
             <Button type="button" variant="outline" asChild>
               <Link href="/studio/posts">Cancel</Link>
             </Button>

@@ -192,11 +192,11 @@ export const PostsTable = () => {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-6xl space-y-6">
+      <div className="mx-auto max-w-6xl flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-bold text-3xl">Content Studio</h1>
-            <p className="mt-1 text-muted-foreground">Manage your blog posts</p>
+            <p className="mb-2 text-muted-foreground">Manage your blog posts</p>
           </div>
           <Button asChild>
             <Link href="/studio/posts/new">Create Post</Link>
@@ -214,11 +214,11 @@ export const PostsTable = () => {
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="mx-auto max-w-6xl flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-3xl">Content Studio</h1>
-          <p className="mt-1 text-muted-foreground">Manage your blog posts</p>
+          <p className="mb-2 text-muted-foreground">Manage your blog posts</p>
         </div>
         <Button asChild>
           <Link href="/studio/posts/new">Create Post</Link>
@@ -273,11 +273,11 @@ export const PostsTable = () => {
           </div>
 
           {selectedPosts.size > 0 && (
-            <div className="flex items-center gap-2 rounded-lg border bg-muted p-4">
+            <div className="flex items-center gap-4 rounded-lg border bg-muted p-4">
               <span className="text-sm">
                 {selectedPosts.size} post(s) selected
               </span>
-              <div className="ml-auto flex gap-2">
+              <div className="ml-auto flex gap-4">
                 <Button
                   variant="outline"
                   size="sm"
@@ -441,7 +441,7 @@ export const PostsTable = () => {
                             )}
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-2">
+                            <div className="flex items-center justify-end gap-4">
                               <Button variant="ghost" size="sm" asChild>
                                 <Link href={`/studio/posts/${post.id}/edit`}>
                                   Edit

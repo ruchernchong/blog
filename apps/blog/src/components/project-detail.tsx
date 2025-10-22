@@ -13,8 +13,8 @@ export const ProjectDetail = ({ project }: Props) => {
   const { coverImage, description, skills, links } = project;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap gap-3">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap gap-4">
         {links.map((link) => (
           <Button
             key={link}

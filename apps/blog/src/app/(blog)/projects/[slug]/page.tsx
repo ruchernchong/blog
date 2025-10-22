@@ -68,7 +68,7 @@ const ProjectPage = async ({ params }: Props) => {
   return (
     <>
       <StructuredData data={structuredData} />
-      <section className="space-y-8">
+      <section className="flex flex-col gap-8">
         <PageTitle title={project.name} />
         <ProjectDetail project={project} />
       </section>

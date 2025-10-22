@@ -49,7 +49,7 @@ export const CardTitle = ({ children, className }: CardTitleProps) => {
 
 export const CardHeader = ({ children, className }: CardHeaderProps) => {
   return (
-    <div className={cn("flex flex-col space-y-1.5 p-6", className)}>
+    <div className={cn("flex flex-col gap-2 p-6", className)}>
       {children}
     </div>
   );
