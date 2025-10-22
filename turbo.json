@@ -22,8 +22,7 @@
     },
     "test:coverage": {
       "inputs": ["src/**", "**/*.test.ts", "**/*.test.tsx", "vitest.config.ts"],
-      "outputs": ["coverage/**"],
-      "cache": false
+      "outputs": ["coverage/**"]
     },
     "lint": {
       "dependsOn": ["^lint"],

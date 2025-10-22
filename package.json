@@ -5,6 +5,7 @@
     "build": "turbo run build",
     "start": "turbo run start",
     "test": "turbo run test",
+    "test:coverage": "turbo test:coverage",
     "lint": "turbo run lint",
     "lint:blog": "turbo run @ruchernchong/portfolio#lint",
     "db:drop": "turbo run @ruchernchong/portfolio#drop",
