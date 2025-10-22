@@ -15,7 +15,7 @@ import { logError } from "@/lib/logger";
  *
  * @see {@link https://better-auth.com/docs/concepts/session Better Auth Sessions}
  */
-export const middleware = async (request: NextRequest) => {
+export const proxy = async (request: NextRequest) => {
   try {
     const { data: session, error } = await betterFetch<Session>(
       "/api/auth/get-session",

@@ -54,7 +54,7 @@ const nextConfig: NextConfig = {
     },
   },
   experimental: {
-    devtoolSegmentExplorer: true,
+    turbopackFileSystemCacheForDev: true,
   },
 };
 

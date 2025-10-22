@@ -1,6 +1,6 @@
 import { geolocation } from "@vercel/functions";
-import { NextRequest, NextResponse } from "next/server";
-import { db, sessions, type InsertSession } from "@/schema";
+import { type NextRequest, NextResponse } from "next/server";
+import { db, type InsertSession, sessions } from "@/schema";
 
 interface RequestData {
   path: string;
@@ -12,10 +12,6 @@ interface RequestData {
   language: string;
   isBot: boolean;
 }
-
-export const config = {
-  runtime: "edge",
-};
 
 export const POST = async (request: NextRequest) => {
   try {
