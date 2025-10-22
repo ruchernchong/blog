@@ -1,4 +1,5 @@
 {
+  "version": "1.4.9",
   "private": true,
   "scripts": {
     "dev": "turbo run dev",
@@ -17,21 +18,22 @@
     "db:up": "turbo run @ruchernchong/portfolio#up",
     "db:studio": "turbo run @ruchernchong/portfolio#studio",
     "db:seed": "turbo run @ruchernchong/portfolio#seed",
-    "release": "turbo run release",
-    "release:blog": "cd apps/blog && npx semantic-release"
+    "prepare": "husky",
+    "release": "semantic-release"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.6",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^11.0.3",
-    "@semantic-release/npm": "^12.0.2",
-    "@semantic-release/release-notes-generator": "^14.0.3",
+    "@semantic-release/github": "^11.0.0",
+    "@semantic-release/release-notes-generator": "^14.0.1",
+    "conventional-changelog-conventionalcommits": "^9.1.0",
+    "husky": "^9.1.6",
     "semantic-release": "^24.2.7",
-    "semantic-release-monorepo": "^8.0.2",
     "turbo": "^2.5.8"
   },
   "packageManager": "pnpm@10.2.0"

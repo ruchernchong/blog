@@ -36,10 +36,6 @@
       ],
       "cache": false
     },
-    "check-types": {
-      "inputs": ["src/**", "tsconfig.json"],
-      "outputs": []
-    },
     "generate": {
       "inputs": ["src/schema/**", "drizzle.config.ts"],
       "outputs": ["migrations/**"],
@@ -78,10 +74,6 @@
     "seed": {
       "inputs": ["src/scripts/seed.ts", "src/schema/**"],
       "env": ["DATABASE_URL", "NODE_ENV"],
-      "cache": false
-    },
-    "release": {
-      "dependsOn": ["build", "test", "lint", "check-types"],
       "cache": false
     },
     "drop": {
