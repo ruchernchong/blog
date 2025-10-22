@@ -1,21 +1,21 @@
 import { z } from "zod";
-import { getBrowsers } from "@/app/(blog)/actions/analytics/browsers";
-import { getCountries } from "@/app/(blog)/actions/analytics/countries";
-import { getDevices } from "@/app/(blog)/actions/analytics/devices";
-import { getOS } from "@/app/(blog)/actions/analytics/os";
-import { getPages } from "@/app/(blog)/actions/analytics/pages";
-import { getReferrers } from "@/app/(blog)/actions/analytics/referrers";
+import { getBrowsers } from "@/app/(blog)/analytics/_actions/browsers";
+import { getCountries } from "@/app/(blog)/analytics/_actions/countries";
+import { getDevices } from "@/app/(blog)/analytics/_actions/devices";
+import { getOS } from "@/app/(blog)/analytics/_actions/os";
+import { getPages } from "@/app/(blog)/analytics/_actions/pages";
+import { getReferrers } from "@/app/(blog)/analytics/_actions/referrers";
 import {
   getTotalVisits,
   getVisits,
-} from "@/app/(blog)/actions/analytics/visits";
+} from "@/app/(blog)/analytics/_actions/visits";
 import {
   getLikesByUser,
   getPostStats,
   getTotalLikes,
   incrementLikes,
   incrementViews,
-} from "@/app/(blog)/actions/stats";
+} from "@/app/(blog)/_actions/stats";
 import { publicProcedure, router } from "../trpc";
 
 export const analyticsRouter = router({

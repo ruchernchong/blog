@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import BlogPost from "../blog-post";
+import BlogPost from "@/app/(blog)/blog/_components/blog-post";
 
 const mockProps = {
   title: "test blog post",

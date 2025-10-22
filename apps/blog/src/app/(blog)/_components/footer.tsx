@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/app/(blog)/icon.png";
-import ExternalLink from "@/components/external-link";
-import * as Icons from "@/components/icons";
+import ExternalLink from "@/components/shared/external-link";
+import * as Icons from "@/components/shared/icons";
 import { navLinks } from "@/config";
 import socials from "@/data/socials";
 

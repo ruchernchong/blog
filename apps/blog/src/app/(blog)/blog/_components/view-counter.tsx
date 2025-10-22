@@ -1,4 +1,4 @@
-import { incrementViews } from "@/app/(blog)/actions/stats";
+import { incrementViews } from "@/app/(blog)/_actions/stats";
 
 interface Props {
   slug: string;

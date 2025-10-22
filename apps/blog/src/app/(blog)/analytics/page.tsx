@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { Fragment } from "react";
-import { getBrowsers } from "@/app/(blog)/actions/analytics/browsers";
-import { getCountries } from "@/app/(blog)/actions/analytics/countries";
-import { getDevices } from "@/app/(blog)/actions/analytics/devices";
-import { getOS } from "@/app/(blog)/actions/analytics/os";
-import { getPages } from "@/app/(blog)/actions/analytics/pages";
-import { getReferrers } from "@/app/(blog)/actions/analytics/referrers";
-import { getVisits } from "@/app/(blog)/actions/analytics/visits";
+import { getBrowsers } from "@/app/(blog)/analytics/_actions/browsers";
+import { getCountries } from "@/app/(blog)/analytics/_actions/countries";
+import { getDevices } from "@/app/(blog)/analytics/_actions/devices";
+import { getOS } from "@/app/(blog)/analytics/_actions/os";
+import { getPages } from "@/app/(blog)/analytics/_actions/pages";
+import { getReferrers } from "@/app/(blog)/analytics/_actions/referrers";
+import { getVisits } from "@/app/(blog)/analytics/_actions/visits";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import TotalVisitsChart from "./total-visits-chart";
+import TotalVisitsChart from "@/app/(blog)/analytics/_components/total-visits-chart";
 
 export const dynamic = "force-dynamic";
 

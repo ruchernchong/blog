@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import type { WebPage, WithContext } from "schema-dts";
 import globalMetadata from "@/app/(blog)/metadata";
 import { openGraphImage, twitterImage } from "@/app/(blog)/shared-metadata";
-import Author from "@/components/author";
-import Employment from "@/components/employment";
-import { StructuredData } from "@/components/structured-data";
+import Author from "@/components/shared/author";
+import Employment from "@/app/(blog)/about/_components/employment";
+import { StructuredData } from "@/app/(blog)/_components/structured-data";
 import { BASE_URL } from "@/config";
 import companies from "@/data/companies";
 

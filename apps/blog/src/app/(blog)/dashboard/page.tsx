@@ -4,10 +4,10 @@ import { CodeBracketIcon, StarIcon } from "@heroicons/react/24/solid";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import { ChartColumnIncreasing } from "lucide-react";
 import React from "react";
-import { Referrers } from "@/components/analytics/referrers";
-import { MetricCard } from "@/components/metric-card";
-import { PageTitle } from "@/components/page-title";
-import VisitsChart from "@/components/visits-chart";
+import { Referrers } from "@/app/(blog)/analytics/_components/referrers";
+import { MetricCard } from "@/app/(blog)/analytics/_components/metric-card";
+import { PageTitle } from "@/components/shared/page-title";
+import VisitsChart from "@/app/(blog)/analytics/_components/visits-chart";
 import { trpc } from "@/trpc/client";
 
 const Dashboard = () => {

@@ -2,8 +2,8 @@
 
 import { Button } from "@heroui/react";
 import Link from "next/link";
-import { ExperienceCard } from "@/components/experience-card";
-import { LocationCard } from "@/components/location-card";
+import { ExperienceCard } from "@/app/(blog)/about/_components/experience-card";
+import { LocationCard } from "@/app/(blog)/about/_components/location-card";
 
 export const AboutCard = () => {
   return (

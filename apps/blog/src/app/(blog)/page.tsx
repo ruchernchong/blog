@@ -1,9 +1,9 @@
 import type { WebSite, WithContext } from "schema-dts";
-import { AboutCard } from "@/components/about-card";
-import Author from "@/components/author";
-import { ExperienceCard } from "@/components/experience-card";
-import { LocationCard } from "@/components/location-card";
-import { StructuredData } from "@/components/structured-data";
+import { AboutCard } from "@/app/(blog)/about/_components/about-card";
+import Author from "@/components/shared/author";
+import { ExperienceCard } from "@/app/(blog)/about/_components/experience-card";
+import { LocationCard } from "@/app/(blog)/about/_components/location-card";
+import { StructuredData } from "@/app/(blog)/_components/structured-data";
 import { BASE_URL } from "@/config";
 
 const HomePage = async () => {

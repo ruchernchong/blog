@@ -10,8 +10,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
-import { Loader } from "@/components/loader";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/shared/card";
+import { Loader } from "@/components/shared/loader";
 import { trpc } from "@/trpc/client";
 
 const formatDate = (date: string) =>
