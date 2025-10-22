@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useMDXComponent } from "next-contentlayer2/hooks";
 import type { MDXComponents } from "mdx/types";
 import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
 import { Typography } from "@/components/Typography";
+import { compileMDXContent } from "@/lib/compile-mdx";
 
 const CustomLink = ({ href, children, ...props }: any) => {
   const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
@@ -79,12 +79,12 @@ const components: MDXComponents = {
   img: ImageComponent,
 };
 
-export const Mdx = ({ code }: { code: string }) => {
-  const Component = useMDXComponent(code);
+export const Mdx = async ({ content }: { content: string }) => {
+  const mdxContent = await compileMDXContent(content, components);
 
   return (
-    <div>
-      <Component components={components} />
-    </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <div>{mdxContent}</div>
+    </Suspense>
   );
 };

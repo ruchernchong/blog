@@ -1,18 +1,22 @@
-import { format, formatISO, parseISO } from "date-fns";
+import { format, formatISO } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
 import Link from "next/link";
-import { sortByLatest } from "@/utils/sortByLatest";
-import { allPosts } from "contentlayer/generated";
 import { PageTitle } from "@/components/page-title";
 import type { Metadata } from "next";
+import { db, posts } from "@/schema";
+import { eq, desc } from "drizzle-orm";
 
 export const metadata: Metadata = {
   title: "Blog",
   description: "My blog posts on coding, tech, and random thoughts.",
 };
 
-const BlogPage = () => {
-  const posts = allPosts.filter(({ isDraft }) => !isDraft).sort(sortByLatest);
+const BlogPage = async () => {
+  const publishedPosts = await db
+    .select()
+    .from(posts)
+    .where(eq(posts.status, "published"))
+    .orderBy(desc(posts.publishedAt));
 
   return (
     <>
@@ -22,27 +26,26 @@ const BlogPage = () => {
         className="mb-8"
       />
       <div className="flex flex-col gap-4">
-        {posts.length > 0 &&
-          posts.map(({ title, canonical, excerpt, publishedAt }) => {
-            const formattedDate = format(
-              parseISO(publishedAt),
-              "iiii, dd MMMM yyyy",
-            );
+        {publishedPosts.length > 0 &&
+          publishedPosts.map((post) => {
+            if (!post.publishedAt) return null;
+
+            const formattedDate = format(post.publishedAt, "iiii, dd MMMM yyyy");
 
             return (
-              <Card key={title}>
-                <Link href={canonical} className="flex h-full flex-col">
+              <Card key={post.id}>
+                <Link href={post.metadata.canonical} className="flex h-full flex-col">
                   <CardHeader>
                     <time
-                      dateTime={formatISO(parseISO(publishedAt))}
+                      dateTime={formatISO(post.publishedAt)}
                       title={formattedDate}
                       className="text-sm text-zinc-400 italic"
                     >
                       {formattedDate}
                     </time>
-                    <CardTitle className="capitalize">{title}</CardTitle>
+                    <CardTitle className="capitalize">{post.title}</CardTitle>
                   </CardHeader>
-                  <CardContent>{excerpt}</CardContent>
+                  <CardContent>{post.summary}</CardContent>
                 </Link>
               </Card>
             );

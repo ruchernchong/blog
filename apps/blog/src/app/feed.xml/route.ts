@@ -1,23 +1,35 @@
-import { allDocuments } from "contentlayer/generated";
 import { NextResponse } from "next/server";
 import RSS from "rss";
 import { BASE_URL } from "@/config";
+import { db, posts } from "@/schema";
+import { eq, desc } from "drizzle-orm";
 
-export const GET = () => {
+export const GET = async () => {
+  const publishedPosts = await db
+    .select({
+      title: posts.title,
+      publishedAt: posts.publishedAt,
+      summary: posts.summary,
+      metadata: posts.metadata,
+    })
+    .from(posts)
+    .where(eq(posts.status, "published"))
+    .orderBy(desc(posts.publishedAt));
+
   const feed = new RSS({
     title: "Ru Chern",
     site_url: BASE_URL,
     feed_url: `${BASE_URL}/feed.xml`,
   });
 
-  allDocuments.map(({ title, publishedAt, excerpt, canonical }) =>
+  publishedPosts.forEach((post) => {
     feed.item({
-      title,
-      url: canonical,
-      date: publishedAt,
-      description: excerpt ?? title,
-    }),
-  );
+      title: post.title,
+      url: post.metadata.canonical,
+      date: post.publishedAt || new Date(),
+      description: post.summary ?? post.title,
+    });
+  });
 
   return new NextResponse(feed.xml({ indent: true }), {
     headers: {
