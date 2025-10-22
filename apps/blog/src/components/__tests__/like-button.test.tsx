@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import LikeButton from "../like-button";
 
-vi.mock("@/app/actions/stats", () => ({
+vi.mock("@/app/(blog)/actions/stats", () => ({
   incrementLikes: vi.fn(() =>
     Promise.resolve({ totalLikes: 5, likesByUser: 1 }),
   ),
