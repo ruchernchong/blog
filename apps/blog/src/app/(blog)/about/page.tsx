@@ -3,13 +3,10 @@ import type { WebPage, WithContext } from "schema-dts";
 import globalMetadata from "@/app/(blog)/metadata";
 import { openGraphImage, twitterImage } from "@/app/(blog)/shared-metadata";
 import Author from "@/components/Author";
-// import Contributions from "@/components/contributions";
 import Employment from "@/components/employment";
 import { StructuredData } from "@/components/StructuredData";
 import { BASE_URL } from "@/config";
 import companies from "@/data/companies";
-import { getGitHubContributions } from "@/lib/github";
-import { getStackOverflowProfile } from "@/utils/stackoverflow";
 
 const title = "About";
 const description =
@@ -38,9 +35,6 @@ export const metadata: Metadata = {
 };
 
 const AboutPage = async () => {
-  const githubProfile = await getGitHubContributions();
-  const stackOverflowProfile = await getStackOverflowProfile();
-
   const sortedCompanies = companies.toSorted(
     (a, b) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime(),
   );
