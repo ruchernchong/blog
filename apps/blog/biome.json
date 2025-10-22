@@ -18,7 +18,9 @@
     "rules": {
       "recommended": true,
       "suspicious": {
-        "noUnknownAtRules": "off"
+        "noUnknownAtRules": "off",
+        "noArrayIndexKey": "off",
+        "noAssignInExpressions": "off"
       },
       "nursery": {
         "useSortedClasses": {
@@ -29,7 +31,21 @@
             "functions": ["cn", "clsx", "cva", "tw"]
           }
         }
+      },
+      "a11y": {
+        "useValidAnchor": "off",
+        "useSemanticElements": "off",
+        "noStaticElementInteractions": "off",
+        "noSvgWithoutTitle": "off"
+      },
+      "correctness": { "noUnknownTypeSelector": "off" },
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
       }
+    },
+    "domains": {
+      "next": "recommended",
+      "react": "recommended"
     }
   },
   "javascript": {

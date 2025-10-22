@@ -2,7 +2,12 @@ import { format, formatISO } from "date-fns";
 import { desc, eq } from "drizzle-orm";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/shared/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/shared/card";
 import { PageTitle } from "@/components/shared/page-title";
 import { db, posts } from "@/schema";
 

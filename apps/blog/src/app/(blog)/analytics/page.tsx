@@ -7,8 +7,8 @@ import { getOS } from "@/app/(blog)/analytics/_actions/os";
 import { getPages } from "@/app/(blog)/analytics/_actions/pages";
 import { getReferrers } from "@/app/(blog)/analytics/_actions/referrers";
 import { getVisits } from "@/app/(blog)/analytics/_actions/visits";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TotalVisitsChart from "@/app/(blog)/analytics/_components/total-visits-chart";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const dynamic = "force-dynamic";
 

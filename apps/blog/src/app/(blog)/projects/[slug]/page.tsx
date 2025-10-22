@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { WebPage, WithContext } from "schema-dts";
+import { StructuredData } from "@/app/(blog)/_components/structured-data";
 import globalMetadata from "@/app/(blog)/metadata";
+import { ProjectDetail } from "@/app/(blog)/projects/_components/project-detail";
 import { openGraphImage, twitterImage } from "@/app/(blog)/shared-metadata";
 import { PageTitle } from "@/components/shared/page-title";
-import { ProjectDetail } from "@/app/(blog)/projects/_components/project-detail";
-import { StructuredData } from "@/app/(blog)/_components/structured-data";
 import { BASE_URL } from "@/config";
 import { getProjectBySlug } from "@/utils/get-project-by-slug";
 

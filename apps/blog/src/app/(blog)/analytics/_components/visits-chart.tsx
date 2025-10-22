@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
   CartesianGrid,
   Line,
@@ -10,7 +9,12 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/shared/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/shared/card";
 import { Loader } from "@/components/shared/loader";
 import { trpc } from "@/trpc/client";
 

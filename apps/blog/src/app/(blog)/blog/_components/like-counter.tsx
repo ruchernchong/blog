@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { Likes } from "@/types";
 import LikeButton from "@/app/(blog)/blog/_components/like-button";
+import type { Likes } from "@/types";
 
 interface Props {
   slug: string;

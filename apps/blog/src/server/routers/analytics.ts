@@ -1,4 +1,11 @@
 import { z } from "zod";
+import {
+  getLikesByUser,
+  getPostStats,
+  getTotalLikes,
+  incrementLikes,
+  incrementViews,
+} from "@/app/(blog)/_actions/stats";
 import { getBrowsers } from "@/app/(blog)/analytics/_actions/browsers";
 import { getCountries } from "@/app/(blog)/analytics/_actions/countries";
 import { getDevices } from "@/app/(blog)/analytics/_actions/devices";
@@ -9,13 +16,6 @@ import {
   getTotalVisits,
   getVisits,
 } from "@/app/(blog)/analytics/_actions/visits";
-import {
-  getLikesByUser,
-  getPostStats,
-  getTotalLikes,
-  incrementLikes,
-  incrementViews,
-} from "@/app/(blog)/_actions/stats";
 import { publicProcedure, router } from "../trpc";
 
 export const analyticsRouter = router({

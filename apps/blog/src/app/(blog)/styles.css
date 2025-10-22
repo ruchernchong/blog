@@ -241,7 +241,7 @@
   @media (prefers-reduced-motion: reduce) {
     ::view-transition-old(root),
     ::view-transition-new(root) {
-      animation: none !important;
+      animation: none;
     }
   }
 }
@@ -282,7 +282,7 @@
   @media (prefers-reduced-motion: reduce) {
     .animate-slide-in-left,
     .animate-slide-in-left-delayed {
-      animation: none !important;
+      animation: none;
     }
   }
 }

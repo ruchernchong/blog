@@ -8,7 +8,7 @@ import { db, posts } from "@/schema";
 import { postIdSchema, updatePostSchema } from "@/types/api";
 
 export const GET = async (
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
   let postId: string;
@@ -228,7 +228,7 @@ export const PATCH = async (
 };
 
 export const DELETE = async (
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
   let postId: string;

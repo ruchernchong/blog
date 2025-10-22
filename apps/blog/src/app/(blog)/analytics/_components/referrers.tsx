@@ -1,7 +1,11 @@
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/shared/card";
-import { trpc } from "@/trpc/client";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/shared/card";
 import { Loader } from "@/components/shared/loader";
+import { trpc } from "@/trpc/client";
 
 export const Referrers = () => {
   const { data = [], isLoading } = trpc.analytics.getReferrers.useQuery();
