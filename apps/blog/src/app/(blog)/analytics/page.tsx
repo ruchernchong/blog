@@ -8,7 +8,7 @@ import { getPages } from "@/app/(blog)/actions/analytics/pages";
 import { getReferrers } from "@/app/(blog)/actions/analytics/referrers";
 import { getVisits } from "@/app/(blog)/actions/analytics/visits";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import TotalVisitsChart from "./TotalVisitsChart";
+import TotalVisitsChart from "./total-visits-chart";
 
 export const dynamic = "force-dynamic";
 

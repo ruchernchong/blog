@@ -1,5 +1,5 @@
 import ExternalLink from "@/components/external-link";
-import * as Icons from "@/components/Icons";
+import * as Icons from "@/components/icons";
 import { PageTitle } from "@/components/page-title";
 import socials from "@/data/socials";
 

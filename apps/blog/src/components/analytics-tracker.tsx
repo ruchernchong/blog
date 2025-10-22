@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import parseUserAgent from "@/utils/parseUserAgent";
+import { useEffect } from "react";
+import parseUserAgent from "@/utils/parse-user-agent";
 
 const Analytics = () => {
   const pathname = usePathname();

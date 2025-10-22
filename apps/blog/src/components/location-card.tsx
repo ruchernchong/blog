@@ -1,6 +1,6 @@
-import { Globe } from "@/components/globe";
 import { MapPinIcon } from "@heroicons/react/24/outline";
 import { Card, CardBody, CardHeader } from "@heroui/react";
+import { Globe } from "@/components/globe";
 
 export const LocationCard = () => (
   <Card className="h-full border border-zinc-700/50 bg-zinc-900/50 backdrop-blur-sm">

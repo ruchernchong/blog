@@ -1,4 +1,4 @@
-import type { ErrorId } from "@/constants/errorIds";
+import type { ErrorId } from "@/constants/error-ids";
 
 /**
  * Log levels for different types of messages

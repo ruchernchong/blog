@@ -18,7 +18,7 @@ export const PageTitle = ({
   <div className={cn("flex flex-col gap-2", className)}>
     <h1
       className={cn(
-        "text-foreground text-3xl font-bold tracking-tight sm:text-4xl",
+        "font-bold text-3xl text-foreground tracking-tight sm:text-4xl",
         animate && "animate-slide-in-left",
       )}
     >

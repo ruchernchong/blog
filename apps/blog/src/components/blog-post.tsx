@@ -1,7 +1,7 @@
-import { Typography } from "@/components/Typography";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { format, formatISO, parseISO } from "date-fns";
 import Link from "next/link";
+import { Typography } from "@/components/typography";
 
 interface BlogPostProps {
   title: string;
@@ -22,22 +22,17 @@ const BlogPost = ({
     <div className="group relative cursor-pointer">
       <div className="mb-4 flex flex-col-reverse md:flex-row md:justify-between">
         <div className="w-full basis-2/3">
-          <Link
-            href={canonical}
-            className="group-hover:text-pink-500"
-          >
+          <Link href={canonical} className="group-hover:text-pink-500">
             <Typography variant="h3" className="capitalize">
               {title}
             </Typography>
           </Link>
-          <p className="line-clamp-2 text-zinc-400">
-            {excerpt}
-          </p>
+          <p className="line-clamp-2 text-zinc-400">{excerpt}</p>
         </div>
         <time
           dateTime={formatISO(parseISO(publishedAt))}
           title={formattedDate}
-          className="italic text-zinc-400"
+          className="text-zinc-400 italic"
         >
           {formattedDate}
         </time>

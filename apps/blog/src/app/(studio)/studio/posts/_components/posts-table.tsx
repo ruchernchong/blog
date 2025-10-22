@@ -192,7 +192,7 @@ export const PostsTable = () => {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-6xl flex flex-col gap-6">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-bold text-3xl">Content Studio</h1>
@@ -214,7 +214,7 @@ export const PostsTable = () => {
   }
 
   return (
-    <div className="mx-auto max-w-6xl flex flex-col gap-6">
+    <div className="mx-auto flex max-w-6xl flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-3xl">Content Studio</h1>

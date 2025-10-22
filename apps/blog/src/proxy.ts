@@ -1,7 +1,7 @@
 import { betterFetch } from "@better-fetch/fetch";
 import type { Session } from "better-auth/types";
 import { type NextRequest, NextResponse } from "next/server";
-import { ERROR_IDS } from "@/constants/errorIds";
+import { ERROR_IDS } from "@/constants/error-ids";
 import { logError } from "@/lib/logger";
 
 /**

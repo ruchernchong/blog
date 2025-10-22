@@ -2,8 +2,8 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
-import { useState } from "react";
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { trpc } from "./client";
 
 const getBaseUrl = () => {

@@ -1,5 +1,5 @@
-import { BASE_URL, SITE_DESCRIPTION } from "@/config";
 import type { Metadata } from "next";
+import { BASE_URL, SITE_DESCRIPTION } from "@/config";
 
 const title = {
   default: "Ru Chern",

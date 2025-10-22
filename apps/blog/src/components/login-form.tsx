@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ERROR_IDS } from "@/constants/errorIds";
+import { ERROR_IDS } from "@/constants/error-ids";
 import { authClient } from "@/lib/auth-client";
 import { logError } from "@/lib/logger";
 import { cn } from "@/lib/utils";

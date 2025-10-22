@@ -1,4 +1,3 @@
-import type { SocialMedia } from "@/types";
 import {
   type IconType,
   SiBluesky,
@@ -9,6 +8,7 @@ import {
   SiX,
 } from "@icons-pack/react-simple-icons";
 import { cn } from "@/lib/utils";
+import type { SocialMedia } from "@/types";
 
 type SocialIcon = {
   [key in SocialMedia]: IconType;

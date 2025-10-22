@@ -1,9 +1,9 @@
 "use client";
 
-import type { Project } from "@/types";
-import Image from "next/image";
-import { Chip, Button, Link } from "@heroui/react";
+import { Button, Chip, Link } from "@heroui/react";
 import { ExternalLinkIcon } from "lucide-react";
+import Image from "next/image";
+import type { Project } from "@/types";
 
 type Props = {
   project: Project;
@@ -43,13 +43,13 @@ export const ProjectDetail = ({ project }: Props) => {
 
       <div>
         {description && (
-          <p className="text-lg leading-relaxed text-zinc-300">{description}</p>
+          <p className="text-lg text-zinc-300 leading-relaxed">{description}</p>
         )}
       </div>
 
       {skills.length > 0 && (
         <>
-          <h3 className="mb-3 text-sm font-semibold tracking-wider text-zinc-400 uppercase">
+          <h3 className="mb-3 font-semibold text-sm text-zinc-400 uppercase tracking-wider">
             Technologies
           </h3>
           <div className="flex flex-wrap gap-2">

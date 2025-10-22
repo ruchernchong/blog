@@ -1,17 +1,17 @@
-import { Mdx } from "@/components/mdx";
-import { StructuredData } from "@/components/StructuredData";
-import { Typography } from "@/components/Typography";
-import StatsBar from "@/components/StatsBar";
 import {
   BookOpenIcon,
   CalendarDaysIcon,
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { format, formatISO } from "date-fns";
+import { and, eq } from "drizzle-orm";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Mdx } from "@/components/mdx";
+import StatsBar from "@/components/stats-bar";
+import { StructuredData } from "@/components/structured-data";
+import { Typography } from "@/components/typography";
 import { db, posts } from "@/schema";
-import { eq, and } from "drizzle-orm";
 
 type Params = Promise<{ slug: string }>;
 
@@ -66,7 +66,7 @@ const PostPage = async (props: { params: Params }) => {
   return (
     <>
       <StructuredData data={post.metadata.structuredData} />
-      <article className="prose prose-invert prose-a:text-pink-500 prose-img:rounded-2xl mx-auto mb-16 max-w-4xl">
+      <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-img:rounded-2xl prose-a:text-pink-500">
         <div className="flex flex-col items-center gap-y-4 text-center">
           <StatsBar slug={post.slug} />
           <div className="flex gap-x-2 text-zinc-400 md:flex-row">
@@ -88,7 +88,7 @@ const PostPage = async (props: { params: Params }) => {
           <Typography variant="h1">{post.title}</Typography>
         </div>
         <aside className="relative rounded-md border-l-4 border-l-pink-500 bg-zinc-800 p-6">
-          <div className="absolute top-0 left-0 -translate-x-[50%] -translate-y-[50%] rounded-full bg-zinc-900 p-2 text-pink-500">
+          <div className="-translate-x-[50%] -translate-y-[50%] absolute top-0 left-0 rounded-full bg-zinc-900 p-2 text-pink-500">
             <InformationCircleIcon width={32} height={32} />
           </div>
           {post.summary}

@@ -1,9 +1,9 @@
-import { publicProcedure, router } from "../trpc";
 import {
+  getGitHubContributions,
   getGitHubFollowers,
   getGitHubStars,
-  getGitHubContributions,
 } from "@/lib/github";
+import { publicProcedure, router } from "../trpc";
 
 export const githubRouter = router({
   getFollowers: publicProcedure.query(() => getGitHubFollowers()),

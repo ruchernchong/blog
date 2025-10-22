@@ -1,11 +1,11 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
+import { ERROR_IDS } from "@/constants/error-ids";
+import { logError } from "@/lib/logger";
 import { generatePostMetadata } from "@/lib/post-metadata";
 import { db, posts } from "@/schema";
-import { updatePostSchema, postIdSchema } from "@/types/api";
-import { logError } from "@/lib/logger";
-import { ERROR_IDS } from "@/constants/errorIds";
+import { postIdSchema, updatePostSchema } from "@/types/api";
 
 export const GET = async (
   request: Request,
@@ -130,13 +130,22 @@ export const PATCH = async (
     }
 
     // Merge updates with existing post
-    const { title, slug, summary, content, status, tags, coverImage, featured } =
-      validatedData;
+    const {
+      title,
+      slug,
+      summary,
+      content,
+      status,
+      tags,
+      coverImage,
+      featured,
+    } = validatedData;
 
     const updatedTitle = title ?? existingPost.title;
     const updatedSlug = slug ?? existingPost.slug;
     const updatedContent = content ?? existingPost.content;
-    const updatedSummary = summary !== undefined ? summary : existingPost.summary;
+    const updatedSummary =
+      summary !== undefined ? summary : existingPost.summary;
     const updatedStatus = status ?? existingPost.status;
 
     // Preserve original publish date when re-publishing, but set new date for first-time publishes
@@ -166,8 +175,14 @@ export const PATCH = async (
         summary: updatedSummary,
         content: updatedContent,
         status: updatedStatus,
-        tags: tags !== undefined ? (Array.isArray(tags) ? tags : []) : existingPost.tags,
-        coverImage: coverImage !== undefined ? coverImage : existingPost.coverImage,
+        tags:
+          tags !== undefined
+            ? Array.isArray(tags)
+              ? tags
+              : []
+            : existingPost.tags,
+        coverImage:
+          coverImage !== undefined ? coverImage : existingPost.coverImage,
         featured: featured !== undefined ? featured : existingPost.featured,
         metadata,
         publishedAt,
@@ -180,7 +195,10 @@ export const PATCH = async (
   } catch (error) {
     // Check for specific database errors
     if (error instanceof Error && error.message.includes("unique constraint")) {
-      logError(ERROR_IDS.POST_DUPLICATE_SLUG, error, { postId, slug: validatedData.slug });
+      logError(ERROR_IDS.POST_DUPLICATE_SLUG, error, {
+        postId,
+        slug: validatedData.slug,
+      });
       return NextResponse.json(
         {
           message: `A post with slug "${validatedData.slug}" already exists. Please use a different slug.`,

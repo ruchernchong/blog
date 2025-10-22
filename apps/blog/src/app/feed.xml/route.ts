@@ -1,8 +1,8 @@
+import { desc, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import RSS from "rss";
 import { BASE_URL } from "@/config";
 import { db, posts } from "@/schema";
-import { eq, desc } from "drizzle-orm";
 
 export const GET = async () => {
   const publishedPosts = await db

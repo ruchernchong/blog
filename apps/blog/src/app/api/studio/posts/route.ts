@@ -1,7 +1,7 @@
 import { desc } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
-import { ERROR_IDS } from "@/constants/errorIds";
+import { ERROR_IDS } from "@/constants/error-ids";
 import { logError } from "@/lib/logger";
 import { generatePostMetadata } from "@/lib/post-metadata";
 import { db, type InsertPost, posts } from "@/schema";

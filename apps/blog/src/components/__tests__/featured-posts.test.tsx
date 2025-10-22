@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import FeaturedPosts from "../featured-posts";
 import type { SelectPost } from "@/schema";
+import FeaturedPosts from "../featured-posts";
 
 const createMockPost = (
   id: string,

@@ -1,18 +1,18 @@
 "use client";
 
+import React from "react";
 import {
   CartesianGrid,
   Line,
   LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts";
-import { trpc } from "@/trpc/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
-import React from "react";
 import { Loader } from "@/components/loader";
+import { trpc } from "@/trpc/client";
 
 const formatDate = (date: string) =>
   new Date(date).toLocaleDateString("en-SG", {

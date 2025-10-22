@@ -1,9 +1,9 @@
 "use client";
 
-import companies from "@/data/companies";
 import { BriefcaseIcon } from "@heroicons/react/24/outline";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import Image from "next/image";
+import companies from "@/data/companies";
 
 export const ExperienceCard = () => {
   const recentCompanies = companies

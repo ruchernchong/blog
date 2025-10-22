@@ -1,4 +1,3 @@
-import { Octokit } from "@octokit/rest";
 import {
   ApolloClient,
   createHttpLink,
@@ -6,6 +5,7 @@ import {
   InMemoryCache,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { Octokit } from "@octokit/rest";
 
 const GITHUB_USERNAME = "ruchernchong";
 

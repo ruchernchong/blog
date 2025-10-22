@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/app/(blog)/icon.png";
 import ExternalLink from "@/components/external-link";
-import * as Icons from "@/components/Icons";
+import * as Icons from "@/components/icons";
 import { navLinks } from "@/config";
 import socials from "@/data/socials";
 

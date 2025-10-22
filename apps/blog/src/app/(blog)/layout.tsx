@@ -6,7 +6,7 @@ import { Inter } from "next/font/google";
 import Script from "next/script";
 import { ViewTransitions } from "next-view-transitions";
 import type { ReactNode } from "react";
-import Analytics from "@/components/Analytics";
+import Analytics from "@/components/analytics-tracker";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";

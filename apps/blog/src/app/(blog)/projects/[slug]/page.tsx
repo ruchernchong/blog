@@ -5,9 +5,9 @@ import globalMetadata from "@/app/(blog)/metadata";
 import { openGraphImage, twitterImage } from "@/app/(blog)/shared-metadata";
 import { PageTitle } from "@/components/page-title";
 import { ProjectDetail } from "@/components/project-detail";
-import { StructuredData } from "@/components/StructuredData";
+import { StructuredData } from "@/components/structured-data";
 import { BASE_URL } from "@/config";
-import { getProjectBySlug } from "@/utils/getProjectBySlug";
+import { getProjectBySlug } from "@/utils/get-project-by-slug";
 
 interface Props {
   params: Promise<{ slug: string }>;

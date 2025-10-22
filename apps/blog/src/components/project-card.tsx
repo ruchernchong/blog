@@ -1,10 +1,10 @@
 "use client";
 
 import { Chip } from "@heroui/react";
-import type { Project } from "@/types";
-import Link from "next/link";
 import Image from "next/image";
-import { useRef, useState, type MouseEvent } from "react";
+import Link from "next/link";
+import { type MouseEvent, useRef, useState } from "react";
+import type { Project } from "@/types";
 
 interface Props {
   project: Project;
@@ -38,7 +38,7 @@ const ProjectCard = ({ project }: Props) => {
     <Link href={`/projects/${slug}`}>
       <div
         ref={cardRef}
-        className="group border-foreground/10 hover:border-foreground/20 relative cursor-pointer overflow-hidden rounded-xl border bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 transition-all hover:shadow-lg"
+        className="group relative cursor-pointer overflow-hidden rounded-xl border border-foreground/10 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 transition-all hover:border-foreground/20 hover:shadow-lg"
         onMouseMove={handleMouseMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -63,7 +63,7 @@ const ProjectCard = ({ project }: Props) => {
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-2xl font-bold text-white/60">{name}</div>
+              <div className="font-bold text-2xl text-white/60">{name}</div>
             </div>
           )}
         </div>
@@ -71,7 +71,7 @@ const ProjectCard = ({ project }: Props) => {
         {/* Content */}
         <div className="relative z-10 p-6">
           <div className="mb-4">
-            <h3 className="mb-2 text-xl font-bold text-white">{name}</h3>
+            <h3 className="mb-2 font-bold text-white text-xl">{name}</h3>
             <p className="line-clamp-1 text-sm text-zinc-400">{description}</p>
           </div>
 

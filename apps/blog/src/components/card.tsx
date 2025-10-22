@@ -1,4 +1,4 @@
-import type { PropsWithChildren, HTMLAttributes } from "react";
+import type { HTMLAttributes, PropsWithChildren } from "react";
 import { cn } from "@/lib/utils";
 
 interface CardProps extends PropsWithChildren, HTMLAttributes<HTMLDivElement> {
@@ -41,7 +41,12 @@ export const Card = ({ children, className, ...props }: CardProps) => {
 
 export const CardTitle = ({ children, className }: CardTitleProps) => {
   return (
-    <h3 className={cn("text-lg font-semibold leading-none tracking-tight", className)}>
+    <h3
+      className={cn(
+        "font-semibold text-lg leading-none tracking-tight",
+        className,
+      )}
+    >
       {children}
     </h3>
   );
@@ -49,25 +54,20 @@ export const CardTitle = ({ children, className }: CardTitleProps) => {
 
 export const CardHeader = ({ children, className }: CardHeaderProps) => {
   return (
-    <div className={cn("flex flex-col gap-2 p-6", className)}>
-      {children}
-    </div>
+    <div className={cn("flex flex-col gap-2 p-6", className)}>{children}</div>
   );
 };
 
 export const CardContent = ({ children, className }: CardContentProps) => {
-  return (
-    <div className={cn("p-6 pt-0", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("p-6 pt-0", className)}>{children}</div>;
 };
 
-export const CardDescription = ({ children, className }: CardDescriptionProps) => {
+export const CardDescription = ({
+  children,
+  className,
+}: CardDescriptionProps) => {
   return (
-    <p className={cn("text-sm text-muted-foreground", className)}>
-      {children}
-    </p>
+    <p className={cn("text-muted-foreground text-sm", className)}>{children}</p>
   );
 };
 

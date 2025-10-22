@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import LikeButton from "./like-button";
 import type { Likes } from "@/types";
+import LikeButton from "./like-button";
 
 interface Props {
   slug: string;
@@ -31,7 +31,7 @@ export const LikeCounter = ({
         likesByUser={likesByUser}
         onLikeUpdateAction={handleLikeUpdate}
       />
-      <div className="text-sm text-neutral-400">
+      <div className="text-neutral-400 text-sm">
         {totalLikes.toLocaleString()}
       </div>
     </div>

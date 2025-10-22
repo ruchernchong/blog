@@ -1,11 +1,11 @@
+import { UsersIcon } from "@heroicons/react/24/solid";
 import { Fragment } from "react";
-import { cn } from "@/lib/utils";
 import { Card } from "@/components/card";
 import { LinkWithIcon } from "@/components/link-with-icon";
-import { Typography } from "@/components/Typography";
-import type { StackOverflowProfile } from "@/utils/stackoverflow";
+import { Typography } from "@/components/typography";
 import type { GitHubProfile } from "@/lib/github";
-import { UsersIcon } from "@heroicons/react/24/solid";
+import { cn } from "@/lib/utils";
+import type { StackOverflowProfile } from "@/utils/stackoverflow";
 
 const STACK_OVERFLOW_BADGES: Record<string, string> = {
   bronze: "bg-[#D1A684]",

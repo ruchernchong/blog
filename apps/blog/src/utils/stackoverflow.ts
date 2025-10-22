@@ -17,7 +17,7 @@ export const getStackOverflowProfile =
     });
 
     const { items } = await fetch(
-      `${STACK_OVERFLOW_API_URL}/users/${USER_ID}?${params}`
+      `${STACK_OVERFLOW_API_URL}/users/${USER_ID}?${params}`,
     ).then((res) => res.json());
 
     return items[0];

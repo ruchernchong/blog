@@ -2,13 +2,13 @@
 
 import { CodeBracketIcon, StarIcon } from "@heroicons/react/24/solid";
 import { SiGithub } from "@icons-pack/react-simple-icons";
-import { MetricCard } from "@/components/metric-card";
-import { PageTitle } from "@/components/page-title";
-import { trpc } from "@/trpc/client";
 import { ChartColumnIncreasing } from "lucide-react";
-import VisitsChart from "@/components/visits-chart";
 import React from "react";
 import { Referrers } from "@/components/analytics/referrers";
+import { MetricCard } from "@/components/metric-card";
+import { PageTitle } from "@/components/page-title";
+import VisitsChart from "@/components/visits-chart";
+import { trpc } from "@/trpc/client";
 
 const Dashboard = () => {
   const { data: totalVisits, isLoading: totalVisitsLoading } =
@@ -21,7 +21,7 @@ const Dashboard = () => {
     trpc.github.getContributions.useQuery();
 
   return (
-    <div className="mx-auto max-w-4xl flex flex-col gap-8">
+    <div className="mx-auto flex max-w-4xl flex-col gap-8">
       <PageTitle
         title="Dashboard"
         description="📊 Just sharing a quick snapshot of a few personal wins and milestones I've hit along the way—it's been a fun ride so far!"

@@ -1,7 +1,7 @@
 import readingTime from "reading-time";
 import { BASE_URL, SITE_NAME } from "@/config";
-import truncate from "@/utils/truncate";
 import type { PostMetadata } from "@/schema";
+import truncate from "@/utils/truncate";
 
 export function generatePostMetadata(
   title: string,
@@ -13,7 +13,9 @@ export function generatePostMetadata(
   const description = summary ? truncate(summary) : "";
   const postUrl = `${BASE_URL}/blog/${slug}`;
   const ogImageUrl = `${BASE_URL}/og?title=${encodeURIComponent(title)}`;
-  const publishedTime = publishedAt ? publishedAt.toISOString() : new Date().toISOString();
+  const publishedTime = publishedAt
+    ? publishedAt.toISOString()
+    : new Date().toISOString();
 
   return {
     readingTime: readingTime(content).text,

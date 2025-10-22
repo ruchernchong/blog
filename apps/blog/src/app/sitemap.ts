@@ -1,8 +1,8 @@
+import { eq } from "drizzle-orm";
+import type { MetadataRoute } from "next";
 import { BASE_URL, navLinks } from "@/config";
 import projects from "@/data/projects";
-import type { MetadataRoute } from "next";
 import { db, posts } from "@/schema";
-import { eq } from "drizzle-orm";
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
   const publishedPosts = await db

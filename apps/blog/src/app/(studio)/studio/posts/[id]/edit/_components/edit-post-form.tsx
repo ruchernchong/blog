@@ -180,7 +180,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
   }
 
   return (
-    <div className="mx-auto max-w-4xl flex flex-col gap-6">
+    <div className="mx-auto flex max-w-4xl flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-3xl">Edit Post</h1>

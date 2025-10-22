@@ -1,8 +1,8 @@
+import { BriefcaseIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import ExternalLink from "@/components/external-link";
+import { ItemOverlay } from "@/components/item-overlay";
 import { cn } from "@/lib/utils";
-import { ItemOverlay } from "@/components/ItemOverlay";
-import { BriefcaseIcon } from "@heroicons/react/24/solid";
 import type { Company } from "@/types";
 
 interface EmploymentProps {
@@ -15,7 +15,7 @@ const Employment = ({ companies }: EmploymentProps) => {
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
           <BriefcaseIcon width={32} height={32} className="fill-pink-500" />
-          <h2 className="text-4xl font-bold">Work</h2>
+          <h2 className="font-bold text-4xl">Work</h2>
         </div>
         <p>
           Some cool companies I have worked with. Feel free to connect with me
@@ -69,7 +69,7 @@ const Employment = ({ companies }: EmploymentProps) => {
                     className="z-20 no-underline"
                   >
                     <ItemOverlay />
-                    <div className="text-xl font-bold group-hover:text-pink-500">
+                    <div className="font-bold text-xl group-hover:text-pink-500">
                       {name}
                     </div>
                   </a>

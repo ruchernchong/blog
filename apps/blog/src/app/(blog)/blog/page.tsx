@@ -1,10 +1,10 @@
 import { format, formatISO } from "date-fns";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
-import Link from "next/link";
-import { PageTitle } from "@/components/page-title";
+import { desc, eq } from "drizzle-orm";
 import type { Metadata } from "next";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
+import { PageTitle } from "@/components/page-title";
 import { db, posts } from "@/schema";
-import { eq, desc } from "drizzle-orm";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -30,11 +30,17 @@ const BlogPage = async () => {
           publishedPosts.map((post) => {
             if (!post.publishedAt) return null;
 
-            const formattedDate = format(post.publishedAt, "iiii, dd MMMM yyyy");
+            const formattedDate = format(
+              post.publishedAt,
+              "iiii, dd MMMM yyyy",
+            );
 
             return (
               <Card key={post.id}>
-                <Link href={post.metadata.canonical} className="flex h-full flex-col">
+                <Link
+                  href={post.metadata.canonical}
+                  className="flex h-full flex-col"
+                >
                   <CardHeader>
                     <time
                       dateTime={formatISO(post.publishedAt)}

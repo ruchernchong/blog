@@ -1,7 +1,7 @@
 "use client";
 
-import { Chip } from "@heroui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { Chip } from "@heroui/react";
 
 interface AnnouncementProps {
   message: string;
