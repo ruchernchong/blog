@@ -42,7 +42,6 @@ export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   trustedOrigins: ["*.vercel.app"],
   database: drizzleAdapter(db, { provider: "pg" }),
-  secret: validateEnv("BETTER_AUTH_SECRET"),
   account: {
     accountLinking: {
       enabled: true,
