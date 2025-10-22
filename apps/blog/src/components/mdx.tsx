@@ -1,10 +1,17 @@
-import { Suspense } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import type { MDXComponents } from "mdx/types";
 import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
+import type { MDXComponents } from "mdx/types";
+import Image from "next/image";
+import Link from "next/link";
+import { compileMDX } from "next-mdx-remote/rsc";
+import { Suspense } from "react";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypePrettyCode, {
+  type Options as PrettyCodeOptions,
+} from "rehype-pretty-code";
+import rehypeSlug from "rehype-slug";
+import remarkGfm from "remark-gfm";
+import remarkUnwrapImages from "remark-unwrap-images";
 import { Typography } from "@/components/Typography";
-import { compileMDXContent } from "@/lib/compile-mdx";
 
 const CustomLink = ({ href, children, ...props }: any) => {
   const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
@@ -50,7 +57,7 @@ const ImageComponent = ({ alt, ...props }: any) => (
       />
     </Suspense>
     {alt && (
-      <figcaption className="text-center text-xs font-bold text-zinc-50 italic">
+      <figcaption className="text-center font-bold text-xs text-zinc-50 italic">
         {alt}
       </figcaption>
     )}
@@ -59,9 +66,7 @@ const ImageComponent = ({ alt, ...props }: any) => (
 
 const components: MDXComponents = {
   a: CustomLink,
-  h1: (props) => (
-    <Typography variant="h1" {...props} />
-  ),
+  h1: (props) => <Typography variant="h1" {...props} />,
   h2: (props) => (
     <Typography
       variant="h2"
@@ -70,17 +75,40 @@ const components: MDXComponents = {
     />
   ),
   h3: (props) => (
-    <Typography
-      variant="h3"
-      className="mt-16 text-2xl"
-      {...props}
-    />
+    <Typography variant="h3" className="mt-16 text-2xl" {...props} />
   ),
   img: ImageComponent,
 };
 
 export const Mdx = async ({ content }: { content: string }) => {
-  const mdxContent = await compileMDXContent(content, components);
+  const { content: mdxContent } = await compileMDX({
+    source: content,
+    components,
+    options: {
+      parseFrontmatter: false, // We use database fields instead of frontmatter
+      mdxOptions: {
+        remarkPlugins: [remarkGfm, remarkUnwrapImages],
+        rehypePlugins: [
+          rehypeSlug,
+          [
+            rehypePrettyCode,
+            {
+              theme: "github-dark-dimmed",
+            } satisfies PrettyCodeOptions,
+          ],
+          [
+            rehypeAutolinkHeadings,
+            {
+              behavior: "append",
+              properties: {
+                className: ["permalink"],
+              },
+            },
+          ],
+        ],
+      },
+    },
+  });
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
