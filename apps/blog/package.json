@@ -10,7 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "lint": "next lint",
+    "lint": "biome check",
     "drop": "drizzle-kit drop",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",

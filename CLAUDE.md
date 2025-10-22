@@ -11,8 +11,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm build` - Build all apps for production (uses Turbo)
 - `pnpm start` - Start production server (uses Turbo)
 - `pnpm test` - Run tests across all apps (uses Turbo)
-- `pnpm lint` - Run linting across all apps (uses Turbo)
-- `pnpm lint:blog` - Run linting for blog app specifically
+- `pnpm lint` - Run linting across all apps with Biome (uses Turbo)
+- `pnpm lint:blog` - Run linting for blog app with Biome
 
 #### Database Management
 - `pnpm db:drop` - Drop database (interactive, requires confirmation)
