@@ -1,9 +1,18 @@
 import { BASE_URL, navLinks } from "@/config";
 import projects from "@/data/projects";
-import { allDocuments } from "contentlayer/generated";
 import type { MetadataRoute } from "next";
+import { db, posts } from "@/schema";
+import { eq } from "drizzle-orm";
 
-const sitemap = (): MetadataRoute.Sitemap => {
+const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
+  const publishedPosts = await db
+    .select({
+      publishedAt: posts.publishedAt,
+      metadata: posts.metadata,
+    })
+    .from(posts)
+    .where(eq(posts.status, "published"));
+
   return [
     { url: BASE_URL, lastModified: formatLastModified() },
     ...navLinks
@@ -16,13 +25,11 @@ const sitemap = (): MetadataRoute.Sitemap => {
       url: `${BASE_URL}/projects/${slug}`,
       lastModified: formatLastModified(),
     })),
-    ...allDocuments
-      .filter(({ isDraft }) => !isDraft)
-      .map(({ publishedAt, canonical }) => ({
-        url: canonical,
-        lastModified: formatLastModified(publishedAt),
-        changeFrequency: "daily",
-      })),
+    ...publishedPosts.map((post) => ({
+      url: post.metadata.canonical,
+      lastModified: formatLastModified(post.publishedAt || new Date()),
+      changeFrequency: "daily" as const,
+    })),
   ];
 };
 

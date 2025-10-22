@@ -5,12 +5,12 @@ import {
   CardContent,
   CardDescription,
 } from "@/components/card";
-import type { Post } from "contentlayer/generated";
-import { format, formatISO, parseISO } from "date-fns";
+import type { SelectPost } from "@/schema";
+import { format, formatISO } from "date-fns";
 import Link from "next/link";
 
 interface FeaturedPostsProps {
-  featuredPosts: Post[];
+  featuredPosts: SelectPost[];
 }
 
 const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
@@ -22,32 +22,34 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
       <div className="grid gap-4 md:auto-cols-fr md:grid-flow-col">
         {featuredPosts
           .slice(0, 3)
-          .map(({ title, canonical, excerpt, publishedAt }) => {
+          .map((post) => {
+            if (!post.publishedAt) return null;
+
             const formattedDate = format(
-              parseISO(publishedAt),
+              post.publishedAt,
               "iiii, dd MMMM yyyy",
             );
 
             return (
-              <Card key={title}>
+              <Card key={post.id}>
                 <Link
-                  href={canonical}
+                  href={post.metadata.canonical}
                   className="flex h-full flex-col"
                 >
                   <CardHeader>
                     <time
-                      dateTime={formatISO(parseISO(publishedAt))}
+                      dateTime={formatISO(post.publishedAt)}
                       title={formattedDate}
                       className="text-sm text-zinc-400 italic"
                     >
                       {formattedDate}
                     </time>
                     <CardTitle className="capitalize">
-                      {title}
+                      {post.title}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {excerpt}
+                    {post.summary}
                   </CardContent>
                 </Link>
               </Card>

@@ -1,32 +1,39 @@
 import { render, screen } from "@testing-library/react";
 import FeaturedPosts from "../featured-posts";
-import type { Post } from "contentlayer/generated";
+import type { SelectPost } from "@/schema";
 
-const mockPosts: Post[] = [
-  {
-    title: "first post",
-    canonical: "/posts/first-post",
-    excerpt: "This is the first post excerpt",
-    publishedAt: "2024-01-01T00:00:00Z",
-  } as Post,
-  {
-    title: "second post",
-    canonical: "/posts/second-post",
-    excerpt: "This is the second post excerpt",
-    publishedAt: "2024-01-02T00:00:00Z",
-  } as Post,
-  {
-    title: "third post",
-    canonical: "/posts/third-post",
-    excerpt: "This is the third post excerpt",
-    publishedAt: "2024-01-03T00:00:00Z",
-  } as Post,
-  {
-    title: "fourth post",
-    canonical: "/posts/fourth-post",
-    excerpt: "This is the fourth post excerpt",
-    publishedAt: "2024-01-04T00:00:00Z",
-  } as Post,
+const createMockPost = (
+  id: string,
+  index: number,
+  name: string,
+): SelectPost => ({
+  id,
+  slug: `${name}-post`,
+  title: `${name} post`,
+  summary: `This is the ${name} post excerpt`,
+  content: "Mock content",
+  status: "published" as const,
+  tags: [],
+  featured: true,
+  coverImage: null,
+  publishedAt: new Date(`2024-01-0${index}T00:00:00Z`),
+  createdAt: new Date(`2024-01-0${index}T00:00:00Z`),
+  updatedAt: new Date(`2024-01-0${index}T00:00:00Z`),
+  metadata: {
+    readingTime: "1 min read",
+    description: `This is the ${name} post excerpt`,
+    canonical: `/posts/${name}-post`,
+    openGraph: {} as any,
+    twitter: {} as any,
+    structuredData: {} as any,
+  },
+});
+
+const mockPosts: SelectPost[] = [
+  createMockPost("1", 1, "first"),
+  createMockPost("2", 2, "second"),
+  createMockPost("3", 3, "third"),
+  createMockPost("4", 4, "fourth"),
 ];
 
 describe("FeaturedPosts", () => {
