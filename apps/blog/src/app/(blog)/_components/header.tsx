@@ -28,9 +28,6 @@ export const Header = () => {
           >
             <div className="flex items-center gap-2">
               <Image src={Icon} width={32} height={32} alt="Logo" />
-              <span className="rounded-full border border-pink-500/30 bg-pink-500/20 px-2 py-0.5 font-medium text-pink-400 text-xs">
-                beta
-              </span>
             </div>
           </NavItem>
           <nav className="flex items-center gap-x-6">
