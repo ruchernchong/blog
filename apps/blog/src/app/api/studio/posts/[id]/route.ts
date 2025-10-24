@@ -212,8 +212,8 @@ export const PATCH = async (
     // If tags changed, invalidate related posts caches
     const tagsChanged =
       tags !== undefined &&
-      JSON.stringify([...tags].sort()) !==
-        JSON.stringify([...existingPost.tags].sort());
+      JSON.stringify([...tags].sort((a, b) => a.localeCompare(b))) !==
+        JSON.stringify([...existingPost.tags].sort((a, b) => a.localeCompare(b)));
 
     if (tagsChanged) {
       const allAffectedTags = [
