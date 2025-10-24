@@ -213,7 +213,9 @@ export const PATCH = async (
     const tagsChanged =
       tags !== undefined &&
       JSON.stringify([...tags].sort((a, b) => a.localeCompare(b))) !==
-        JSON.stringify([...existingPost.tags].sort((a, b) => a.localeCompare(b)));
+        JSON.stringify(
+          [...existingPost.tags].sort((a, b) => a.localeCompare(b)),
+        );
 
     if (tagsChanged) {
       const allAffectedTags = [
