@@ -124,7 +124,64 @@ Required environment variables (see `apps/blog/.env.example`):
 - `GOOGLE_CLIENT_ID` - Google OAuth app client ID
 - `GOOGLE_CLIENT_SECRET` - Google OAuth app client secret
 
+## Documentation & Learning Resources
+
+### Using Context7 for Library Documentation
+
+When working with libraries in this project, use the Context7 MCP server to retrieve up-to-date documentation and code examples. This is especially important for rapidly evolving libraries.
+
+**Priority Libraries for Context7**:
+- **Next.js** (`/vercel/next.js`) - Framework APIs, routing, data fetching
+- **React** (`/facebook/react`) - Hooks, components, server components
+- **Drizzle ORM** (`/drizzle-team/drizzle-orm`) - Database queries, schema, migrations
+- **Better Auth** (`/better-auth/better-auth`) - Authentication setup, providers, session management
+- **Tailwind CSS** (`/tailwindlabs/tailwindcss`) - Styling utilities, configuration
+- **tRPC** (`/trpc/trpc`) - API routes, client setup, type safety
+- **Vitest** (`/vitest-dev/vitest`) - Testing patterns, assertions, mocking
+- **next-mdx-remote** (`/hashicorp/next-mdx-remote`) - MDX compilation, components
+- **Recharts** (`/recharts/recharts`) - Chart components, data visualization
+
+**When to Use Context7**:
+1. Before implementing new features using these libraries
+2. When encountering API changes or deprecation warnings
+3. For troubleshooting library-specific issues
+4. When learning best practices for library usage
+5. Before upgrading library versions
+
+**How to Use**:
+```
+Claude, using Context7, how do I implement [feature] with [library]?
+```
+
+Example queries:
+- "Using Context7, show me how to set up OAuth providers in Better Auth"
+- "Using Context7, what's the best way to handle dynamic routes in Next.js 16?"
+- "Using Context7, how do I create a custom middleware with tRPC?"
+
 ## Code Conventions
+
+### Language & Writing Style
+
+**Use English (Singapore) for all content, documentation, and user-facing text**:
+- **Spelling**: British English variants (e.g., "colour", "optimise", "centre", "analyse")
+- **Date Format**: DD/MM/YYYY or DD Month YYYY (e.g., 24/10/2025 or 24 October 2025)
+- **Time Format**: 24-hour format (e.g., 14:30 instead of 2:30 PM)
+- **Currency**: Singapore Dollar (SGD) when applicable
+- **Tone**: Professional yet approachable, clear and concise
+- **Terminology**: Use Singapore English terms where appropriate (e.g., "lorry" instead of "truck", "flat" instead of "apartment" for HDB context)
+
+**Examples**:
+```tsx
+// ✅ Correct - English (Singapore)
+const message = "Your profile has been optimised for better performance";
+const date = "24 October 2025";
+const time = "14:30";
+
+// ❌ Incorrect - American English
+const message = "Your profile has been optimized for better performance";
+const date = "October 24, 2025";
+const time = "2:30 PM";
+```
 
 ### File Structure
 - TypeScript with strict mode and path aliases (`@/*` maps to app root)
