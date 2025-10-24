@@ -18,16 +18,16 @@
       "cache": false
     },
     "test": {
-      "inputs": ["src/**", "**/*.test.ts", "**/*.test.tsx", "vitest.config.ts"],
+      "inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.test.tsx", "vitest.config.ts"],
       "cache": false
     },
     "test:coverage": {
-      "inputs": ["src/**", "**/*.test.ts", "**/*.test.tsx", "vitest.config.ts"],
+      "inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.test.tsx", "vitest.config.ts"],
       "outputs": ["coverage/**"]
     },
     "lint": {
       "dependsOn": ["^lint"],
-      "inputs": ["src/**", "*.config.js", "*.config.ts", "biome.json"],
+      "inputs": ["$TURBO_DEFAULT$", "*.config.js", "*.config.ts", "biome.json"],
       "cache": false
     },
     "generate": {
