@@ -1,3 +1,9 @@
+## [1.10.2](https://github.com/ruchernchong/portfolio/compare/v1.10.1...v1.10.2) (2025-10-24)
+
+### Bug Fixes
+
+* blog posts links in sitemap ([25a87d8](https://github.com/ruchernchong/portfolio/commit/25a87d82b4b9add9ac2a197584360b9450f66146))
+
 ## [1.10.1](https://github.com/ruchernchong/portfolio/compare/v1.10.0...v1.10.1) (2025-10-24)
 
 ### Bug Fixes
