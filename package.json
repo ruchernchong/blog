@@ -2,7 +2,7 @@
   "version": "1.8.0",
   "private": true,
   "scripts": {
-    "dev": "turbo dev",
+    "dev": "turbo dev studio",
     "build": "turbo build",
     "start": "turbo start",
     "test": "turbo test",

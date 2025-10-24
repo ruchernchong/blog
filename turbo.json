@@ -27,12 +27,7 @@
     },
     "lint": {
       "dependsOn": ["^lint"],
-      "inputs": [
-        "src/**",
-        "*.config.js",
-        "*.config.ts",
-        "biome.json"
-      ],
+      "inputs": ["src/**", "*.config.js", "*.config.ts", "biome.json"],
       "cache": false
     },
     "generate": {
