@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { cache, cacheSignal } from "react";
 import redis from "@/config/redis";
 import type { PostStats } from "@/types";
 import { generateUserHash } from "@/utils/hash";
@@ -17,8 +18,18 @@ const getIpAddress = async (): Promise<string> => {
   return realIp ?? DEFAULT_IP;
 };
 
-export const getPostStats = async (slug: string): Promise<PostStats> => {
+// Cached post stats fetching with cacheSignal
+export const getPostStats = cache(async (slug: string): Promise<PostStats> => {
+  const signal = cacheSignal();
   const key = `post:${slug}`;
+
+  // Listen for cache expiration
+  if (signal) {
+    signal.addEventListener("abort", () => {
+      console.log(`[cacheSignal] Stats cache expired for post: ${slug}`);
+    });
+  }
+
   const stats = await redis.get<PostStats>(key);
 
   if (!stats) {
@@ -32,7 +43,7 @@ export const getPostStats = async (slug: string): Promise<PostStats> => {
   }
 
   return stats;
-};
+});
 
 export const incrementViews = async (slug: string): Promise<PostStats> => {
   const stats = await getPostStats(slug);

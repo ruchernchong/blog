@@ -1,20 +1,20 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import parseUserAgent from "@/utils/parse-user-agent";
 
 const Analytics = () => {
   const pathname = usePathname();
 
-  useEffect(() => {
+  const sendAnalytics = useEffectEvent((path: string) => {
     try {
       const userAgent = navigator.userAgent;
       const parsedUA = parseUserAgent(userAgent);
 
       const url = "/api/analytics";
       const body = JSON.stringify({
-        path: pathname,
+        path,
         referrer: document.referrer,
         ...parsedUA,
       });
@@ -27,6 +27,11 @@ const Analytics = () => {
     } catch (error) {
       console.error("Failed to record analytics:", error);
     }
+  });
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: useEffectEvent should not be in deps
+  useEffect(() => {
+    sendAnalytics(pathname);
   }, [pathname]);
 
   return null;

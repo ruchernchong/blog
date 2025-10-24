@@ -4,7 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useState, useTransition } from "react";
+import {
+  useEffect,
+  useEffectEvent,
+  useId,
+  useState,
+  useTransition,
+} from "react";
 import { useForm } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -81,15 +87,21 @@ export const PostForm = () => {
   });
 
   const titleValue = form.watch("title");
-  useEffect(() => {
-    const generatedSlug = titleValue
-      ? slugify(titleValue, { lower: true, strict: true })
+
+  const updateSlugFromTitle = useEffectEvent((title: string) => {
+    const generatedSlug = title
+      ? slugify(title, { lower: true, strict: true })
       : "";
 
     if (form.getValues("slug") !== generatedSlug) {
       form.setValue("slug", generatedSlug);
     }
-  }, [form, titleValue]);
+  });
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: useEffectEvent should not be in deps
+  useEffect(() => {
+    updateSlugFromTitle(titleValue);
+  }, [titleValue]);
 
   const contentValue = form.watch("content");
 

@@ -1,13 +1,14 @@
 "use client";
 
 import createGlobe from "cobe";
-import { useEffect, useRef } from "react";
+import { useEffect, useEffectEvent, useRef } from "react";
 import { useSpring } from "react-spring";
 
 export const Globe = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointerInteracting = useRef<number | null>(null);
   const pointerInteractionMovement = useRef(0);
+  const widthRef = useRef(0);
 
   const [{ r }, api] = useSpring(() => ({
     r: 0,
@@ -19,20 +20,23 @@ export const Globe = () => {
     },
   }));
 
-  useEffect(() => {
-    let width = 0;
+  const handleResize = useEffectEvent(() => {
+    if (canvasRef.current) {
+      widthRef.current = canvasRef.current.offsetWidth;
+    }
+  });
 
-    const onResize = () =>
-      canvasRef.current && (width = canvasRef.current.offsetWidth);
-    window.addEventListener("resize", onResize);
-    onResize();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: useEffectEvent should not be in deps
+  useEffect(() => {
+    handleResize();
+    window.addEventListener("resize", handleResize);
 
     if (!canvasRef.current) return;
 
     const globe = createGlobe(canvasRef.current, {
       devicePixelRatio: 2,
-      width: width * 2,
-      height: width * 2,
+      width: widthRef.current * 2,
+      height: widthRef.current * 2,
       phi: 0,
       theta: 0.3,
       dark: 1,
@@ -48,16 +52,16 @@ export const Globe = () => {
       ],
       onRender: (state) => {
         state.phi = 2.9 + r.get();
-        state.width = width * 2;
-        state.height = width * 2;
+        state.width = widthRef.current * 2;
+        state.height = widthRef.current * 2;
       },
     });
 
     return () => {
       globe.destroy();
-      window.removeEventListener("resize", onResize);
+      window.removeEventListener("resize", handleResize);
     };
-  }, [r]);
+  }, []);
 
   return (
     <div className="relative mx-auto aspect-[2/1] w-full max-w-2xl">

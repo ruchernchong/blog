@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useEffect, useEffectEvent, useState, useTransition } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,7 +45,7 @@ export const PostsTable = () => {
   >("all");
   const [selectedPosts, setSelectedPosts] = useState<Set<string>>(new Set());
 
-  const fetchPosts = useCallback(async () => {
+  const fetchPosts = useEffectEvent(async () => {
     try {
       const response = await fetch("/api/studio/posts");
       if (response.ok) {
@@ -57,11 +57,12 @@ export const PostsTable = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: useEffectEvent should not be in deps
   useEffect(() => {
     fetchPosts();
-  }, [fetchPosts]);
+  }, []);
 
   const handleDelete = async (postId: string) => {
     startTransition(async () => {

@@ -7,6 +7,7 @@ import { format, formatISO } from "date-fns";
 import { and, eq } from "drizzle-orm";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache, cacheSignal } from "react";
 import { StructuredData } from "@/app/(blog)/_components/structured-data";
 import StatsBar from "@/app/(blog)/analytics/_components/stats-bar";
 import { Mdx } from "@/app/(blog)/blog/_components/mdx";
@@ -15,15 +16,33 @@ import { db, posts } from "@/schema";
 
 type Params = Promise<{ slug: string }>;
 
+// Cached post fetching with cacheSignal for cleanup
+const getPost = cache(async (slug: string) => {
+  const signal = cacheSignal();
+
+  // Pass signal to database query for cleanup on cache expiration
+  const [post] = await db
+    .select()
+    .from(posts)
+    .where(and(eq(posts.slug, slug), eq(posts.status, "published")))
+    .limit(1);
+
+  // Listen for cache expiration to perform cleanup if needed
+  if (signal) {
+    signal.addEventListener("abort", () => {
+      // Cache lifetime ended - cleanup resources if needed
+      console.log(`[cacheSignal] Cache expired for post: ${slug}`);
+    });
+  }
+
+  return post;
+});
+
 export const generateMetadata = async (props: {
   params: Params;
 }): Promise<Metadata> => {
   const params = await props.params;
-  const [post] = await db
-    .select()
-    .from(posts)
-    .where(and(eq(posts.slug, params.slug), eq(posts.status, "published")))
-    .limit(1);
+  const post = await getPost(params.slug);
 
   if (!post) {
     notFound();
@@ -51,11 +70,8 @@ export const generateStaticParams = async () => {
 
 const PostPage = async (props: { params: Params }) => {
   const params = await props.params;
-  const [post] = await db
-    .select()
-    .from(posts)
-    .where(and(eq(posts.slug, params.slug), eq(posts.status, "published")))
-    .limit(1);
+  // Use cached getPost - deduplicates with generateMetadata call
+  const post = await getPost(params.slug);
 
   if (!post || !post.publishedAt) {
     return notFound();

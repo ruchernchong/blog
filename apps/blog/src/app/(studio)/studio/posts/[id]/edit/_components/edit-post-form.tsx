@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   type FormEvent,
   useEffect,
+  useEffectEvent,
   useId,
   useState,
   useTransition,
@@ -62,30 +63,31 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
   const tagsId = useId();
   const coverImageId = useId();
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await fetch(`/api/studio/posts/${postId}`);
-        if (!response.ok) throw new Error("Failed to fetch post");
-        const data = await response.json();
-        setPost(data);
-        setFormData({
-          title: data.title,
-          slug: data.slug,
-          summary: data.summary || "",
-          content: data.content,
-          status: data.status,
-          tags: Array.isArray(data.tags) ? data.tags.join(", ") : "",
-          coverImage: data.coverImage || "",
-        });
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load post");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchPost = useEffectEvent(async (id: string) => {
+    try {
+      const response = await fetch(`/api/studio/posts/${id}`);
+      if (!response.ok) throw new Error("Failed to fetch post");
+      const data = await response.json();
+      setPost(data);
+      setFormData({
+        title: data.title,
+        slug: data.slug,
+        summary: data.summary || "",
+        content: data.content,
+        status: data.status,
+        tags: Array.isArray(data.tags) ? data.tags.join(", ") : "",
+        coverImage: data.coverImage || "",
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load post");
+    } finally {
+      setIsLoading(false);
+    }
+  });
 
-    fetchPost();
+  // biome-ignore lint/correctness/useExhaustiveDependencies: useEffectEvent should not be in deps
+  useEffect(() => {
+    fetchPost(postId);
   }, [postId]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
