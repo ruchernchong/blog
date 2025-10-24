@@ -4,7 +4,6 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { format, formatISO } from "date-fns";
-import { and, eq, isNull } from "drizzle-orm";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache, cacheSignal } from "react";
@@ -13,7 +12,10 @@ import StatsBar from "@/app/(blog)/analytics/_components/stats-bar";
 import { Mdx } from "@/app/(blog)/blog/_components/mdx";
 import { RelatedPosts } from "@/app/(blog)/blog/_components/related-posts";
 import { Typography } from "@/components/shared/typography";
-import { db, posts, user } from "@/schema";
+import {
+  getPublishedPostBySlug,
+  getPublishedPostSlugs,
+} from "@/lib/queries/posts";
 
 type Params = Promise<{ slug: string }>;
 
@@ -21,41 +23,8 @@ type Params = Promise<{ slug: string }>;
 const getPost = cache(async (slug: string) => {
   const signal = cacheSignal();
 
-  // Pass signal to database query for cleanup on cache expiration
-  const [post] = await db
-    .select({
-      id: posts.id,
-      slug: posts.slug,
-      title: posts.title,
-      summary: posts.summary,
-      metadata: posts.metadata,
-      content: posts.content,
-      status: posts.status,
-      tags: posts.tags,
-      featured: posts.featured,
-      coverImage: posts.coverImage,
-      authorId: posts.authorId,
-      publishedAt: posts.publishedAt,
-      createdAt: posts.createdAt,
-      updatedAt: posts.updatedAt,
-      deletedAt: posts.deletedAt,
-      author: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        image: user.image,
-      },
-    })
-    .from(posts)
-    .leftJoin(user, eq(posts.authorId, user.id))
-    .where(
-      and(
-        eq(posts.slug, slug),
-        eq(posts.status, "published"),
-        isNull(posts.deletedAt),
-      ),
-    )
-    .limit(1);
+  // Fetch post using query function
+  const post = await getPublishedPostBySlug(slug);
 
   // Listen for cache expiration to perform cleanup if needed
   if (signal) {
@@ -90,10 +59,7 @@ export const generateMetadata = async (props: {
 };
 
 export const generateStaticParams = async () => {
-  const publishedPosts = await db
-    .select({ slug: posts.slug })
-    .from(posts)
-    .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)));
+  const publishedPosts = await getPublishedPostSlugs();
 
   return publishedPosts.map(({ slug }) => ({ slug }));
 };

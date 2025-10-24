@@ -119,14 +119,58 @@ The codebase follows a clean 3-layer architecture pattern for maintainability an
 - Easy to test and maintain
 
 #### 2. Service Layer (`lib/services/`)
-**Business logic and data orchestration**
-- Redis caching strategies and TTL management
-- Data transformations and calculations (e.g., Jaccard similarity)
-- Orchestration of multiple database queries
-- Examples:
-  - `popular-posts.ts`: Fetches from Redis sorted sets, merges with DB data
-  - `related-posts.ts`: Calculates tag similarity, implements caching
-  - `post-stats.ts`: Manages Redis stats operations (views, likes)
+**Business logic and data orchestration with class-based architecture**
+
+The service layer uses classes for better testability, dependency injection, and error handling:
+
+**Core Services:**
+- `CacheService` - Redis wrapper with error handling and graceful degradation
+  - Wraps all Redis operations (get, set, del, zadd, zrange, zrem)
+  - Returns null/defaults on failures instead of crashing
+  - Logs errors with ERROR_IDS for monitoring
+  - Health check method for Redis availability
+
+- `PostStatsService` - Post statistics management (views, likes)
+  - Tracks view counts and like counts per user
+  - Updates both cache and popular posts sorted set
+  - Uses React cache() for request-level deduplication
+  - Aggregates likes across all users
+
+- `PopularPostsService` - Popular posts tracking via Redis sorted set
+  - Fetches top N posts by view count from sorted set
+  - Merges Redis scores with database post data
+  - Falls back to recent published posts if Redis unavailable
+  - Maintains sorted set operations (add, remove, update)
+
+- `RelatedPostsCalculator` - Tag-based post recommendations
+  - Implements Jaccard similarity algorithm for tag matching
+  - Caches results for 24 hours to reduce computation
+  - Filters posts below minimum similarity threshold (0.1)
+  - Returns posts sorted by similarity score
+
+- `CacheInvalidationService` - Cache management on mutations
+  - Invalidates post caches on updates/deletes
+  - Clears related post caches when tags change
+  - Removes posts from popular sorted set on deletion
+  - Invalidates all posts with overlapping tags
+
+**Service Container** (`lib/services/index.ts`):
+- Exports singleton instances of all services
+- Provides dependency injection for testing
+- Centralizes service initialization
+
+**Configuration** (`lib/config/cache.config.ts`):
+- Centralized cache configuration (TTLs, limits, Redis keys)
+- Popular posts limit: 5, fallback: 10
+- Related posts limit: 4, TTL: 24 hours
+- Min similarity threshold: 0.1
+
+**Benefits:**
+- Error resilience: Redis failures don't crash the app
+- Testability: Dependency injection enables easy mocking
+- Maintainability: Clear class boundaries and responsibilities
+- Type safety: Full TypeScript support with proper types
+- Observability: Structured error logging for monitoring
 
 #### 3. Action Layer (`app/(blog)/_actions/`)
 **Server actions for mutations only**

@@ -2,7 +2,7 @@ import { EyeIcon } from "@heroicons/react/24/outline";
 import { headers } from "next/headers";
 import { LikeCounter } from "@/app/(blog)/blog/_components/like-counter";
 import { ViewCounter } from "@/app/(blog)/blog/_components/view-counter";
-import { getLikesByUser, getTotalLikes } from "@/lib/services/post-stats";
+import { postStatsService } from "@/lib/services";
 import { generateUserHash } from "@/utils/hash";
 
 interface StatsBarProps {
@@ -21,8 +21,8 @@ const getIpAddress = async (): Promise<string> => {
 
 const StatsBar = async ({ slug }: StatsBarProps) => {
   const userHash = generateUserHash(await getIpAddress());
-  const totalLikes = await getTotalLikes(slug);
-  const likesByUser = await getLikesByUser(slug, userHash);
+  const totalLikes = await postStatsService.getTotalLikes(slug);
+  const likesByUser = await postStatsService.getLikesByUser(slug, userHash);
 
   return (
     <div className="md:-translate-y-1/2 sticky top-0 z-50 md:fixed md:top-1/2 md:right-0 md:bottom-auto md:left-auto">

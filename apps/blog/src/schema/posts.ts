@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
@@ -43,6 +44,13 @@ export const posts = pgTable(
     ];
   },
 );
+
+export const postsRelations = relations(posts, ({ one }) => ({
+  author: one(user, {
+    fields: [posts.authorId],
+    references: [user.id],
+  }),
+}));
 
 export interface PostMetadata {
   readingTime: string;

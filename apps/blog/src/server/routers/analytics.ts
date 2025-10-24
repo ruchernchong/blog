@@ -8,13 +8,9 @@ import { getPages } from "@/app/(blog)/analytics/_actions/pages";
 import { getReferrers } from "@/app/(blog)/analytics/_actions/referrers";
 import {
   getTotalVisits,
-  getVisits
+  getVisits,
 } from "@/app/(blog)/analytics/_actions/visits";
-import {
-  getLikesByUser,
-  getPostStats,
-  getTotalLikes
-} from "@/lib/services/post-stats";
+import { postStatsService } from "@/lib/services";
 import { publicProcedure, router } from "../trpc";
 
 export const analyticsRouter = router({
@@ -27,7 +23,7 @@ export const analyticsRouter = router({
   getReferrers: publicProcedure.query(() => getReferrers()),
   getPostStats: publicProcedure
     .input(z.object({ slug: z.string() }))
-    .query(({ input }) => getPostStats(input.slug)),
+    .query(({ input }) => postStatsService.getStats(input.slug)),
   incrementViews: publicProcedure
     .input(z.object({ slug: z.string() }))
     .mutation(({ input }) => incrementViews(input.slug)),
@@ -36,9 +32,11 @@ export const analyticsRouter = router({
     .mutation(({ input }) => incrementLikes(input.slug)),
   getLikesByUser: publicProcedure
     .input(z.object({ slug: z.string(), userHash: z.string().optional() }))
-    .query(({ input }) => getLikesByUser(input.slug)),
+    .query(({ input }) =>
+      postStatsService.getLikesByUser(input.slug, input.userHash),
+    ),
   getTotalLikes: publicProcedure
     .input(z.object({ slug: z.string() }))
-    .query(({ input }) => getTotalLikes(input.slug)),
-  getTotalVisits: publicProcedure.query(() => getTotalVisits())
+    .query(({ input }) => postStatsService.getTotalLikes(input.slug)),
+  getTotalVisits: publicProcedure.query(() => getTotalVisits()),
 });

@@ -1,4 +1,4 @@
-import { and, arrayOverlaps, eq, inArray, isNull, ne } from "drizzle-orm";
+import { and, arrayOverlaps, desc, eq, inArray, isNull, ne } from "drizzle-orm";
 import { db, posts } from "@/schema";
 
 export const getPostBySlug = async (slug: string) => {
@@ -9,6 +9,34 @@ export const getPostBySlug = async (slug: string) => {
     .limit(1);
 
   return post;
+};
+
+export const getPublishedPosts = async () => {
+  return db
+    .select()
+    .from(posts)
+    .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)))
+    .orderBy(desc(posts.publishedAt));
+};
+
+export const getPublishedPostBySlug = async (slug: string) => {
+  return db.query.posts.findFirst({
+    with: {
+      author: true,
+    },
+    where: and(
+      eq(posts.slug, slug),
+      eq(posts.status, "published"),
+      isNull(posts.deletedAt),
+    ),
+  });
+};
+
+export const getPublishedPostSlugs = async () => {
+  return db
+    .select({ slug: posts.slug })
+    .from(posts)
+    .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)));
 };
 
 export const getPublishedPostsBySlugs = async (slugs: string[]) => {

@@ -7,14 +7,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/shared/card";
-import { getRelatedPosts } from "@/lib/services/related-posts";
+import { relatedPostsCalculator } from "@/lib/services";
 
 interface RelatedPostsProps {
   slug: string;
 }
 
 export const RelatedPosts = async ({ slug }: RelatedPostsProps) => {
-  const relatedPosts = await getRelatedPosts(slug, 4);
+  const relatedPosts = await relatedPostsCalculator.getRelatedPosts(slug, 4);
 
   if (!relatedPosts.length) return null;
 

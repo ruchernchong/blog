@@ -7,10 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/shared/card";
-import { getPopularPosts } from "@/lib/services/popular-posts";
+import { popularPostsService } from "@/lib/services";
 
 export const PopularPosts = async () => {
-  const popularPosts = await getPopularPosts(5);
+  const popularPosts = await popularPostsService.getPopularPosts(5);
 
   if (!popularPosts.length) return null;
 

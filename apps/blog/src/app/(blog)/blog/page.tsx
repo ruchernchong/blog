@@ -1,5 +1,4 @@
 import { format, formatISO } from "date-fns";
-import { and, desc, eq, isNull } from "drizzle-orm";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PopularPosts } from "@/app/(blog)/blog/_components/popular-posts";
@@ -10,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/shared/card";
 import { PageTitle } from "@/components/shared/page-title";
-import { db, posts } from "@/schema";
+import { getPublishedPosts } from "@/lib/queries/posts";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -18,11 +17,7 @@ export const metadata: Metadata = {
 };
 
 const BlogPage = async () => {
-  const publishedPosts = await db
-    .select()
-    .from(posts)
-    .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)))
-    .orderBy(desc(posts.publishedAt));
+  const publishedPosts = await getPublishedPosts();
 
   return (
     <>
