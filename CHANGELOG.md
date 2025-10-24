@@ -1,3 +1,13 @@
+## [1.8.0](https://github.com/ruchernchong/portfolio/compare/v1.7.0...v1.8.0) (2025-10-24)
+
+### Features
+
+* link blog posts to user authors ([03c10a1](https://github.com/ruchernchong/portfolio/commit/03c10a1f2539417bd8ff99ac8ecba2a541149201))
+
+### Bug Fixes
+
+* resolve hydration error in UserMenu component ([6162544](https://github.com/ruchernchong/portfolio/commit/6162544540c67c3fbe3dc3aa2e746758637b5aa1))
+
 ## [1.7.0](https://github.com/ruchernchong/portfolio/compare/v1.6.0...v1.7.0) (2025-10-24)
 
 ### Features
