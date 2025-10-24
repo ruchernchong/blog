@@ -1,3 +1,9 @@
+## [1.7.0](https://github.com/ruchernchong/portfolio/compare/v1.6.0...v1.7.0) (2025-10-24)
+
+### Features
+
+* implement soft-delete for blog posts with restore functionality ([e994e50](https://github.com/ruchernchong/portfolio/commit/e994e507213be540e8371ed1f8a3d21807f0fcbe))
+
 ## [1.6.0](https://github.com/ruchernchong/portfolio/compare/v1.5.0...v1.6.0) (2025-10-24)
 
 ### Features
