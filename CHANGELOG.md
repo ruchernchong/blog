@@ -1,3 +1,9 @@
+## [1.9.0](https://github.com/ruchernchong/portfolio/compare/v1.8.0...v1.9.0) (2025-10-24)
+
+### Features
+
+* include studio in dev script for content management ([0dec186](https://github.com/ruchernchong/portfolio/commit/0dec1860da6b1c5aa9d2e11f087d6167234be266))
+
 ## [1.8.0](https://github.com/ruchernchong/portfolio/compare/v1.7.0...v1.8.0) (2025-10-24)
 
 ### Features
