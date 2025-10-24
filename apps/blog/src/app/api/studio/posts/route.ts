@@ -1,17 +1,42 @@
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { ERROR_IDS } from "@/constants/error-ids";
+import { auth } from "@/lib/auth";
 import { logError } from "@/lib/logger";
 import { generatePostMetadata } from "@/lib/post-metadata";
-import { db, type InsertPost, posts } from "@/schema";
+import { db, type InsertPost, posts, user } from "@/schema";
 import { createPostSchema } from "@/types/api";
 
 export const GET = async () => {
   try {
     const allPosts = await db
-      .select()
+      .select({
+        id: posts.id,
+        slug: posts.slug,
+        title: posts.title,
+        summary: posts.summary,
+        metadata: posts.metadata,
+        content: posts.content,
+        status: posts.status,
+        tags: posts.tags,
+        featured: posts.featured,
+        coverImage: posts.coverImage,
+        authorId: posts.authorId,
+        publishedAt: posts.publishedAt,
+        createdAt: posts.createdAt,
+        updatedAt: posts.updatedAt,
+        deletedAt: posts.deletedAt,
+        author: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+        },
+      })
       .from(posts)
+      .leftJoin(user, eq(posts.authorId, user.id))
       .orderBy(desc(posts.updatedAt));
 
     return NextResponse.json(allPosts);
@@ -34,6 +59,18 @@ export const GET = async () => {
 };
 
 export const POST = async (request: Request) => {
+  // Check authentication
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    return NextResponse.json(
+      { message: "Unauthorized. Please sign in to create posts." },
+      { status: 401 },
+    );
+  }
+
   let body: unknown;
 
   // Parse JSON request body
@@ -93,6 +130,7 @@ export const POST = async (request: Request) => {
       featured,
       metadata,
       publishedAt,
+      authorId: session.user.id,
     };
 
     const [createdPost] = await db.insert(posts).values(newPost).returning();

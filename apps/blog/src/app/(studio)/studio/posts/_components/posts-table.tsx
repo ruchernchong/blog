@@ -34,9 +34,18 @@ import {
 } from "@/components/ui/select";
 import type { SelectPost } from "@/schema";
 
+type PostWithAuthor = SelectPost & {
+  author: {
+    id: string;
+    name: string;
+    email: string;
+    image: string | null;
+  } | null;
+};
+
 export const PostsTable = () => {
   const router = useRouter();
-  const [allPosts, setAllPosts] = useState<SelectPost[]>([]);
+  const [allPosts, setAllPosts] = useState<PostWithAuthor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
   const [searchQuery, setSearchQuery] = useState("");
@@ -51,6 +60,8 @@ export const PostsTable = () => {
       if (response.ok) {
         const posts = await response.json();
         setAllPosts(posts);
+      } else if (response.status === 401) {
+        console.error("Unauthorized: Please sign in");
       }
     } catch (error) {
       console.error("Failed to fetch posts:", error);
@@ -386,6 +397,9 @@ export const PostsTable = () => {
                           Title
                         </th>
                         <th className="px-6 py-3 text-left font-medium text-sm">
+                          Author
+                        </th>
+                        <th className="px-6 py-3 text-left font-medium text-sm">
                           Status
                         </th>
                         <th className="px-6 py-3 text-left font-medium text-sm">
@@ -423,6 +437,11 @@ export const PostsTable = () => {
                                 {post.slug}
                               </span>
                             </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-sm">
+                              {post.author?.name ?? "Unknown"}
+                            </span>
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex flex-wrap gap-2">

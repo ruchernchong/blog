@@ -1,7 +1,9 @@
 import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { ERROR_IDS } from "@/constants/error-ids";
+import { auth } from "@/lib/auth";
 import { logError } from "@/lib/logger";
 import { db, posts } from "@/schema";
 import { postIdSchema } from "@/types/api";
@@ -10,6 +12,18 @@ export const POST = async (
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
+  // Check authentication
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    return NextResponse.json(
+      { message: "Unauthorized. Please sign in to restore posts." },
+      { status: 401 },
+    );
+  }
+
   let postId: string;
 
   // Validate params

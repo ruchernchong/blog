@@ -7,6 +7,7 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
+import { user } from "./auth";
 
 export const posts = pgTable(
   "posts",
@@ -23,6 +24,9 @@ export const posts = pgTable(
     tags: text().array().notNull().default([]),
     featured: boolean().notNull().default(false),
     coverImage: text(),
+    authorId: text().references(() => user.id, {
+      onDelete: "cascade",
+    }),
     publishedAt: timestamp({ withTimezone: true }),
     createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
@@ -35,6 +39,7 @@ export const posts = pgTable(
       index().on(table.featured),
       index().on(table.publishedAt),
       index().on(table.deletedAt),
+      index().on(table.authorId),
     ];
   },
 );

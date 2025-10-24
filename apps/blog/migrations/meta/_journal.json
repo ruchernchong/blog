@@ -36,6 +36,13 @@
       "when": 1761289471314,
       "tag": "0004_fair_wolfsbane",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1761295005229,
+      "tag": "0005_equal_bloodaxe",
+      "breakpoints": true
     }
   ]
 }

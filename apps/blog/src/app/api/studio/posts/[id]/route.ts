@@ -1,7 +1,9 @@
 import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { ERROR_IDS } from "@/constants/error-ids";
+import { auth } from "@/lib/auth";
 import { logError } from "@/lib/logger";
 import { generatePostMetadata } from "@/lib/post-metadata";
 import { db, posts } from "@/schema";
@@ -64,6 +66,18 @@ export const PATCH = async (
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
+  // Check authentication
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    return NextResponse.json(
+      { message: "Unauthorized. Please sign in to edit posts." },
+      { status: 401 },
+    );
+  }
+
   let postId: string;
 
   // Validate params
@@ -231,6 +245,18 @@ export const DELETE = async (
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
+  // Check authentication
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    return NextResponse.json(
+      { message: "Unauthorized. Please sign in to delete posts." },
+      { status: 401 },
+    );
+  }
+
   let postId: string;
 
   // Validate params

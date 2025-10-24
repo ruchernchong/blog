@@ -12,7 +12,7 @@ import { StructuredData } from "@/app/(blog)/_components/structured-data";
 import StatsBar from "@/app/(blog)/analytics/_components/stats-bar";
 import { Mdx } from "@/app/(blog)/blog/_components/mdx";
 import { Typography } from "@/components/shared/typography";
-import { db, posts } from "@/schema";
+import { db, posts, user } from "@/schema";
 
 type Params = Promise<{ slug: string }>;
 
@@ -22,8 +22,31 @@ const getPost = cache(async (slug: string) => {
 
   // Pass signal to database query for cleanup on cache expiration
   const [post] = await db
-    .select()
+    .select({
+      id: posts.id,
+      slug: posts.slug,
+      title: posts.title,
+      summary: posts.summary,
+      metadata: posts.metadata,
+      content: posts.content,
+      status: posts.status,
+      tags: posts.tags,
+      featured: posts.featured,
+      coverImage: posts.coverImage,
+      authorId: posts.authorId,
+      publishedAt: posts.publishedAt,
+      createdAt: posts.createdAt,
+      updatedAt: posts.updatedAt,
+      deletedAt: posts.deletedAt,
+      author: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        image: user.image,
+      },
+    })
     .from(posts)
+    .leftJoin(user, eq(posts.authorId, user.id))
     .where(
       and(
         eq(posts.slug, slug),
@@ -106,6 +129,12 @@ const PostPage = async (props: { params: Params }) => {
               <BookOpenIcon className="h-6 w-6" />
               <div>{post.metadata.readingTime}</div>
             </div>
+            {post.author && (
+              <div className="flex items-center justify-center gap-x-2">
+                <span>&middot;</span>
+                <span>By {post.author.name}</span>
+              </div>
+            )}
           </div>
           <Typography variant="h1">{post.title}</Typography>
         </div>

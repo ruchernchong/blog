@@ -16,6 +16,7 @@ const createMockPost = (
   tags: [],
   featured: true,
   coverImage: null,
+  authorId: null,
   publishedAt: new Date(`2024-01-0${index}T00:00:00Z`),
   createdAt: new Date(`2024-01-0${index}T00:00:00Z`),
   updatedAt: new Date(`2024-01-0${index}T00:00:00Z`),

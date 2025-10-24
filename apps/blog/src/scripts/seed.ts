@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { reset, seed } from "drizzle-seed";
 import readingTime from "reading-time";
 import * as schema from "@/schema";
-import { db, type PostMetadata, posts } from "@/schema";
+import { db, type PostMetadata, posts, user } from "@/schema";
 
 // Safety check: Only allow seeding in development
 const checkEnvironment = () => {
@@ -94,6 +94,20 @@ const main = async () => {
     await reset(db, schema);
     console.log("✅ Database reset complete\n");
 
+    // Create a seed user for post authorship
+    console.log("👤 Creating seed user...");
+    const [seedUser] = await db
+      .insert(user)
+      .values({
+        id: "seed-user-dev",
+        name: "Ru Chern Chong",
+        email: "hello@ruchern.dev",
+        emailVerified: true,
+        image: null,
+      })
+      .returning();
+    console.log(`✅ Created seed user: ${seedUser.name} (${seedUser.email})\n`);
+
     // Seed the database with generated data
     console.log("📝 Generating and inserting sample posts...\n");
 
@@ -159,10 +173,12 @@ const main = async () => {
             })(),
           }),
           featured: f.boolean(),
+          authorId: f.default({ defaultValue: seedUser.id }),
           publishedAt: f.date({
             minDate: "2024-01-01",
             maxDate: "2024-12-31",
           }),
+          deletedAt: f.default({ defaultValue: null }),
           metadata: f.default({
             defaultValue: generateMetadata(
               "Placeholder Title",
@@ -200,10 +216,12 @@ const main = async () => {
     const featured = allPosts.filter((p) => p.featured).length;
 
     console.log(`📊 Seeding Summary:`);
+    console.log(`   Seed user: ${seedUser.name} (${seedUser.email})`);
     console.log(`   Total posts: ${allPosts.length}`);
     console.log(`   - Published: ${published}`);
     console.log(`   - Draft: ${draft}`);
     console.log(`   - Featured: ${featured}`);
+    console.log(`   - All posts authored by: ${seedUser.name}`);
 
     process.exit(0);
   } catch (error) {
