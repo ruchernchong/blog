@@ -190,7 +190,6 @@ portfolio/
 │       │   │   ├── sessions.ts # Analytics sessions
 │       │   │   └── auth.ts    # Better Auth tables
 │       │   └── utils/         # Helper functions with tests
-│       ├── content/           # Legacy MDX blog posts
 │       ├── migrations/        # Database migration files
 │       └── drizzle.config.ts  # Drizzle configuration
 ├── packages/                  # Shared packages (currently empty)

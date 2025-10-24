@@ -164,18 +164,19 @@ All blog content is managed through the database-backed Content Studio:
 ### Spacing Standards
 
 #### 1. **Primary Rule: Use gap-* Instead of Space Utilities**
-- Replace all `space-y-*` and `space-x-*` with `flex gap-*`
+- **Always use `flex gap-*` for spacing** between child elements
 - Use only even numbers: `gap-2, gap-4, gap-6, gap-8, gap-10, gap-12`
 - **Avoid**: `gap-1, gap-3, gap-5, gap-7` and fractions like `gap-1.5`
+- **Never use `space-y-*` or `space-x-*`** in custom components
 
 ```tsx
-// ❌ Before - space utilities
+// ❌ Never - space utilities in custom code
 <div className="space-y-4">
   <div>Content 1</div>
   <div>Content 2</div>
 </div>
 
-// ✅ After - gap utilities
+// ✅ Always - gap utilities
 <div className="flex flex-col gap-4">
   <div>Content 1</div>
   <div>Content 2</div>
@@ -251,13 +252,4 @@ export const Component = ({ className, ...props }: ComponentProps) => (
 - `mt-px` allowed for checkbox/radio alignment
 - Negative margins for specific layout corrections
 - Fractional values in UI components for fine-tuning
-- Space utilities in external libraries (shadcn/ui, HeroUI)
-
-#### 8. **Migration Checklist**
-For converting existing components:
-- [ ] Replace `space-y-N` → `flex flex-col gap-N`
-- [ ] Replace `space-x-N` → `flex gap-N`
-- [ ] Check for odd gap values and convert to even
-- [ ] Replace layout `mt-N` → preceding element `mb-N`
-- [ ] Validate responsive behavior after changes
-- [ ] Test component boundaries and overflow
+- **Do not modify files in `apps/blog/src/components/ui/`** (shadcn/ui components)
