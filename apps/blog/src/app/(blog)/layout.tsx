@@ -1,4 +1,3 @@
-import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
@@ -65,7 +64,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BlogLayout({ children }: { children: ReactNode }) {
+const BlogLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
     <html
       lang="en"
@@ -91,22 +90,13 @@ export default function BlogLayout({ children }: { children: ReactNode }) {
         </ViewTransitions>
         <Script
           defer
-          src="https://analytics.ahrefs.com/analytics.js"
-          data-key="IbuEg0lrqdkez2MoPQhVXQ"
-        />
-        <Script
-          defer
           src="https://analytics.ruchern.dev/script.js"
           data-website-id="23a07b6c-093c-4831-840e-9d2998eba9e9"
           data-domains="ruchern.dev"
         />
-        <Script
-          defer
-          data-site-id="ruchern.dev"
-          src="https://assets.onedollarstats.com/tracker.js"
-        />
       </body>
-      <GoogleAnalytics gaId="G-RM5T37E098" />
     </html>
   );
-}
+};
+
+export default BlogLayout;
