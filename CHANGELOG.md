@@ -1,3 +1,13 @@
+## [1.10.0](https://github.com/ruchernchong/portfolio/compare/v1.9.0...v1.10.0) (2025-10-24)
+
+### Features
+
+* implement popular and related posts with Upstash Redis ([5f9b374](https://github.com/ruchernchong/portfolio/commit/5f9b3742dedccef2e0a8414226ee31b316bd07db))
+
+### Bug Fixes
+
+* add explicit compare function for tag sorting ([ef4e52b](https://github.com/ruchernchong/portfolio/commit/ef4e52ba0c9809928a83e44ad74363af36080247))
+
 ## [1.9.0](https://github.com/ruchernchong/portfolio/compare/v1.8.0...v1.9.0) (2025-10-24)
 
 ### Features
