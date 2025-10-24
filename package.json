@@ -1,6 +1,6 @@
 {
+  "name": "portfolio",
   "version": "1.8.0",
-  "private": true,
   "scripts": {
     "dev": "turbo dev studio",
     "build": "turbo build",
