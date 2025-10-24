@@ -5,7 +5,8 @@ export interface NavLink {
   href: string;
 }
 
-export const DOMAIN_NAME = process.env.VERCEL_URL ?? "ruchern.dev";
+export const DOMAIN_NAME =
+  process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
 export const BASE_URL =
   process.env.NEXT_PUBLIC_BASE_URL ?? `https://${DOMAIN_NAME}`;
 
