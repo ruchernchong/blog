@@ -24,7 +24,7 @@ This portfolio is built with modern web technologies:
 
 ### Content & Data
 
-- **Contentlayer2** - Content SDK for MDX processing
+- **Database-backed MDX** - next-mdx-remote for MDX compilation
 - **MDX** - Markdown with JSX components
 - **Neon PostgreSQL** - Serverless Postgres database
 - **Drizzle ORM** - Type-safe database toolkit

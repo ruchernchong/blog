@@ -6,7 +6,7 @@
     "build": {
       "dependsOn": ["migrate", "^build"],
       "env": ["GH_ACCESS_TOKEN", "DATABASE_URL", "SITE_URL", "UPSTASH_REDIS_*"],
-      "outputs": [".next/**", "!.next/cache/**", ".contentlayer/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "start": {
       "dependsOn": ["^build"],

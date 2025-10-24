@@ -13,7 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### App-specific commands (run from `/apps/blog/`)
 
-- `pnpm dev` - Start blog dev server (contentlayer2 dev & next dev --turbopack)
+- `pnpm dev` - Start blog dev server (next dev)
 - `pnpm build` - Build blog app for production
 - `pnpm test` - Run Vitest tests with coverage
 - `pnpm test -- utils/__tests__/truncate.test.ts` - Run single test file
@@ -40,7 +40,7 @@ This is a Turborepo monorepo containing a Next.js 15 portfolio website with an i
 ### Tech Stack
 
 - **Framework**: Next.js 15 with App Router and React 19
-- **Content**: Contentlayer2 for MDX blog processing
+- **Content**: Database-backed MDX with next-mdx-remote for compilation
 - **Database**: Neon PostgreSQL with Drizzle ORM
 - **Cache**: Upstash Redis for analytics and caching
 - **Styling**: Tailwind CSS v4
@@ -85,7 +85,13 @@ This is a Turborepo monorepo containing a Next.js 15 portfolio website with an i
 
 ### Content Management
 
-- Blog posts as MDX files in `apps/blog/content/blog/`
-- Contentlayer2 processes MDX with automatic slug generation
-- Support for draft posts via `isDraft` field
-- Automatic OpenGraph image generation for posts
+All blog content is managed through the database-backed Content Studio:
+
+- **Content Studio CMS**: Access at `/studio` route (isolated route group with own layout)
+- **Database Storage**: All blog posts stored in Neon PostgreSQL
+- **Posts Schema**: `src/schema/posts.ts` - MDX content, metadata, tags, publish status
+- **MDX Compilation**: Uses `next-mdx-remote` with rehype/remark plugins for rendering
+- **Automatic Metadata**: Reading time, SEO tags, OpenGraph images generated automatically
+- **API Routes**: `/api/studio/posts` for CRUD operations
+- **Management UI**: Post listing, creation, editing, and publishing workflows
+- **Draft Support**: Posts can be saved as drafts before publishing

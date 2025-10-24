@@ -5,7 +5,7 @@ This is a Turborepo monorepo containing a Next.js 15 portfolio website with an i
 ## Architecture
 
 - **Framework**: Next.js 15 with App Router and React 19
-- **Content**: Contentlayer2 for MDX blog processing
+- **Content**: Database-backed MDX with next-mdx-remote for compilation
 - **Database**: Neon PostgreSQL with Drizzle ORM
 - **Cache**: Upstash Redis for analytics and caching
 - **Styling**: Tailwind CSS v4
