@@ -1,17 +1,10 @@
-import { and, eq, isNull } from "drizzle-orm";
 import type { MetadataRoute } from "next";
 import { BASE_URL, navLinks } from "@/config";
 import projects from "@/data/projects";
-import { db, posts } from "@/schema";
+import { getPublishedPosts } from "@/lib/queries/posts";
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
-  const publishedPosts = await db
-    .select({
-      publishedAt: posts.publishedAt,
-      metadata: posts.metadata,
-    })
-    .from(posts)
-    .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)));
+  const publishedPosts = await getPublishedPosts();
 
   return [
     { url: BASE_URL, lastModified: formatLastModified() },
@@ -26,7 +19,7 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
       lastModified: formatLastModified(),
     })),
     ...publishedPosts.map((post) => ({
-      url: post.metadata.canonical,
+      url: `${BASE_URL}${post.metadata.canonical}`,
       lastModified: formatLastModified(post.publishedAt || new Date()),
       changeFrequency: "daily" as const,
     })),
