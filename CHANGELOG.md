@@ -1,3 +1,10 @@
+## [1.6.0](https://github.com/ruchernchong/portfolio/compare/v1.5.0...v1.6.0) (2025-10-24)
+
+### Features
+
+* add dynamic llms.txt route for LLM SEO ([7b79c6e](https://github.com/ruchernchong/portfolio/commit/7b79c6e04852a90bfcfb53332f09e96e083541c9))
+* add React 19.2 features ([b87e3e3](https://github.com/ruchernchong/portfolio/commit/b87e3e34917e2a9707854f9734dd5394bc4e87b1))
+
 ## [1.5.0](https://github.com/ruchernchong/portfolio/compare/v1.4.9...v1.5.0) (2025-10-22)
 
 ### Features
