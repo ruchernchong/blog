@@ -1,5 +1,5 @@
 import readingTime from "reading-time";
-import { BASE_URL, SITE_NAME } from "@/config";
+import { SITE_NAME } from "@/config";
 import type { PostMetadata } from "@/schema";
 import truncate from "@/utils/truncate";
 
@@ -11,8 +11,8 @@ export function generatePostMetadata(
   publishedAt: Date | null,
 ): PostMetadata {
   const description = summary ? truncate(summary) : "";
-  const postUrl = `${BASE_URL}/blog/${slug}`;
-  const ogImageUrl = `${BASE_URL}/og?title=${encodeURIComponent(title)}`;
+  const postUrl = `/blog/${slug}`;
+  const ogImageUrl = `/og?title=${encodeURIComponent(title)}`;
   const publishedTime = publishedAt
     ? publishedAt.toISOString()
     : new Date().toISOString();
@@ -50,7 +50,7 @@ export function generatePostMetadata(
       author: {
         "@type": "Person",
         name: "Ru Chern Chong",
-        url: BASE_URL,
+        url: "/",
       },
     },
   };

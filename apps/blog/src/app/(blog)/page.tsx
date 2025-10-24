@@ -1,6 +1,7 @@
 import type { WebSite, WithContext } from "schema-dts";
 import { StructuredData } from "@/app/(blog)/_components/structured-data";
 import { AboutCard } from "@/app/(blog)/about/_components/about-card";
+import { PopularPosts } from "@/app/(blog)/blog/_components/popular-posts";
 import Author from "@/components/shared/author";
 import { BASE_URL } from "@/config";
 
@@ -33,6 +34,7 @@ const HomePage = async () => {
       <div className="flex flex-col justify-center gap-8">
         <Author title="Chong Ru Chern" />
         <AboutCard />
+        <PopularPosts />
       </div>
     </>
   );

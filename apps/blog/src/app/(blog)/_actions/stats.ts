@@ -1,9 +1,8 @@
 "use server";
 
 import { headers } from "next/headers";
-import { cache, cacheSignal } from "react";
-import redis from "@/config/redis";
-import type { PostStats } from "@/types";
+import { postStatsService } from "@/lib/services";
+import type { Likes, PostStats } from "@/types";
 import { generateUserHash } from "@/utils/hash";
 
 const DEFAULT_IP = "127.0.0.1";
@@ -18,80 +17,14 @@ const getIpAddress = async (): Promise<string> => {
   return realIp ?? DEFAULT_IP;
 };
 
-// Cached post stats fetching with cacheSignal
-export const getPostStats = cache(async (slug: string): Promise<PostStats> => {
-  const signal = cacheSignal();
-  const key = `post:${slug}`;
-
-  // Listen for cache expiration
-  if (signal) {
-    signal.addEventListener("abort", () => {
-      console.log(`[cacheSignal] Stats cache expired for post: ${slug}`);
-    });
-  }
-
-  const stats = await redis.get<PostStats>(key);
-
-  if (!stats) {
-    const defaultStats: PostStats = {
-      slug,
-      likesByUser: {},
-      views: 0,
-    };
-    await redis.set(key, defaultStats);
-    return defaultStats;
-  }
-
-  return stats;
-});
-
 export const incrementViews = async (slug: string): Promise<PostStats> => {
-  const stats = await getPostStats(slug);
-  const updatedStats: PostStats = {
-    ...stats,
-    views: stats.views + 1,
-  };
-  await redis.set(`post:${slug}`, updatedStats);
-  return updatedStats;
+  return postStatsService.incrementViews(slug);
 };
 
-export const getLikesByUser = async (slug: string): Promise<number> => {
-  const stats = await getPostStats(slug);
-  const userHash = generateUserHash(await getIpAddress());
-  return stats.likesByUser[userHash] || 0;
-};
-
-export const getTotalLikes = async (slug: string): Promise<number> => {
-  const stats = await getPostStats(slug);
-  return Object.values(stats.likesByUser).reduce(
-    (sum, likes) => sum + likes,
-    0,
-  );
-};
-
-export const incrementLikes = async (slug: string) => {
+export const incrementLikes = async (slug: string): Promise<Likes> => {
   try {
     const userHash = generateUserHash(await getIpAddress());
-    const stats = await getPostStats(slug);
-    const userLikes = stats.likesByUser[userHash] ?? 0;
-
-    const updatedStats: PostStats = {
-      ...stats,
-      likesByUser: {
-        ...stats.likesByUser,
-        [userHash]: userLikes + 1,
-      },
-    };
-
-    await redis.set(`post:${slug}`, updatedStats);
-
-    return {
-      totalLikes: Object.values(updatedStats.likesByUser).reduce(
-        (sum, likes) => sum + likes,
-        0,
-      ),
-      likesByUser: updatedStats.likesByUser[userHash],
-    };
+    return postStatsService.incrementLikes(slug, userHash);
   } catch (error) {
     console.error("Error adding like:", error);
     throw error;

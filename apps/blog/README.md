@@ -179,12 +179,15 @@ portfolio/
 │       │   ├── app/            # Next.js App Router pages and API routes
 │       │   │   ├── (auth)/     # Authentication routes (login)
 │       │   │   ├── (blog)/     # Main blog routes
+│       │   │   │   └── _actions/ # Server actions (mutations only)
 │       │   │   ├── (studio)/   # CMS routes at /studio
 │       │   │   ├── api/        # API routes (studio, auth)
 │       │   │   ├── feed.xml/   # RSS feed route handler
 │       │   │   └── llms.txt/   # LLM SEO route handler
 │       │   ├── components/     # Reusable React components
 │       │   ├── lib/           # Utility functions and integrations
+│       │   │   ├── queries/   # Pure database queries (Drizzle)
+│       │   │   └── services/  # Business logic & caching
 │       │   ├── schema/        # Drizzle database schema
 │       │   │   ├── posts.ts   # Blog posts table
 │       │   │   ├── sessions.ts # Analytics sessions
@@ -196,10 +199,86 @@ portfolio/
 └── turbo.json                # Turborepo configuration
 ```
 
+## 🏗️ Architecture
+
+### Service Layer Design
+
+This application follows a **class-based service architecture** for better testability, maintainability, and error resilience:
+
+#### Core Services (`lib/services/`)
+
+**`CacheService`** - Redis Operations Wrapper
+- Wraps all Redis operations with error handling
+- Returns null/defaults on failures (graceful degradation)
+- Logs errors with structured ERROR_IDS for monitoring
+- Provides health check for Redis availability
+- Methods: `get`, `set`, `del`, `zadd`, `zrange`, `zrem`, `isHealthy`
+
+**`PostStatsService`** - Statistics Management
+- Tracks view counts and likes per user
+- Updates cache and popular posts sorted set atomically
+- Uses React `cache()` for request-level deduplication
+- Aggregates total likes across all users
+- Integrates with analytics dashboard
+
+**`PopularPostsService`** - Popular Posts Tracking
+- Maintains Redis sorted set of posts by view count
+- Fetches top N posts with scores
+- Merges Redis data with database post details
+- Falls back to recent published posts if Redis unavailable
+- Handles sorted set operations (add, remove, update score)
+
+**`RelatedPostsCalculator`** - Smart Recommendations
+- Implements **Jaccard similarity algorithm** for tag matching
+- Formula: `J(A,B) = |A ∩ B| / |A ∪ B|` (intersection over union)
+- Caches results for 24 hours to reduce computation
+- Filters posts below minimum similarity threshold (0.1)
+- Returns posts sorted by similarity score (0.0 to 1.0)
+
+**`CacheInvalidationService`** - Cache Management
+- Invalidates post caches on content updates
+- Clears related post caches when tags change
+- Removes posts from popular sorted set on deletion
+- Invalidates all posts with overlapping tags
+- Integrated into studio API PATCH/DELETE handlers
+
+#### Configuration (`lib/config/cache.config.ts`)
+
+Centralized cache settings:
+```typescript
+POPULAR_POSTS: { LIMIT: 5, FALLBACK_LIMIT: 10 }
+RELATED_POSTS: { LIMIT: 4, TTL: 86400, MIN_SIMILARITY: 0.1 }
+POST_STATS: { TTL: 3600 }
+REDIS_KEYS: {
+  POPULAR_SET: "posts:popular",
+  POST_STATS: (slug) => `post:${slug}`,
+  RELATED_CACHE: (slug) => `post:${slug}:related`
+}
+```
+
+#### Architecture Benefits
+
+- **Error Resilience**: Redis failures don't crash the app
+- **Testability**: 57 unit tests with dependency injection
+- **Maintainability**: Clear class boundaries and single responsibilities
+- **Type Safety**: Full TypeScript support with proper interfaces
+- **Observability**: Structured error logging for monitoring
+- **Performance**: Request-level caching and fallback strategies
+
+### Layered Architecture
+
+The codebase follows a **3-layer architecture** for separation of concerns:
+
+1. **Database Layer** (`lib/queries/`) - Pure Drizzle ORM queries, no business logic
+2. **Service Layer** (`lib/services/`) - Business logic, caching, data transformations
+3. **Action Layer** (`app/(blog)/_actions/`) - Server actions for mutations only
+
 ## 🎯 Key Features
 
 - **📝 Blog System**: MDX-powered blog with syntax highlighting
 - **✏️ Content Studio**: Web-based CMS at `/studio` for managing blog posts
+- **🔥 Popular Posts**: Real-time view tracking with Redis sorted sets, showing top posts by popularity
+- **🔗 Related Posts**: Smart tag-based recommendations using Jaccard similarity algorithm with Redis caching
 - **🔐 Authentication**: OAuth login with GitHub and Google via Better Auth
 - **📊 Analytics Dashboard**: Custom privacy-focused visitor analytics
 - **🤖 LLM SEO**: Dynamic `/llms.txt` endpoint for AI crawler discovery (llmstxt.org standard)

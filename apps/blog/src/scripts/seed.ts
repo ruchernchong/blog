@@ -39,10 +39,7 @@ const generateMetadata = (
   content: string,
 ): PostMetadata => {
   const { text: readingTimeText } = readingTime(content);
-  const siteUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000";
-  const postUrl = `${siteUrl}/blog/${slug}`;
+  const postUrl = `/blog/${slug}`;
   const now = new Date().toISOString();
 
   return {
@@ -56,7 +53,7 @@ const generateMetadata = (
       type: "article",
       publishedTime: now,
       url: postUrl,
-      images: [`${siteUrl}/api/og?title=${encodeURIComponent(title)}`],
+      images: [`/api/og?title=${encodeURIComponent(title)}`],
       locale: "en_US",
     },
     twitter: {
@@ -64,7 +61,7 @@ const generateMetadata = (
       site: "@ruchernchong",
       title,
       description: summary,
-      images: [`${siteUrl}/api/og?title=${encodeURIComponent(title)}`],
+      images: [`/api/og?title=${encodeURIComponent(title)}`],
     },
     structuredData: {
       "@context": "https://schema.org",
@@ -73,12 +70,12 @@ const generateMetadata = (
       dateModified: now,
       datePublished: now,
       description: summary,
-      image: [`${siteUrl}/api/og?title=${encodeURIComponent(title)}`],
+      image: [`/api/og?title=${encodeURIComponent(title)}`],
       url: postUrl,
       author: {
         "@type": "Person",
         name: "Ru Chern Chong",
-        url: siteUrl,
+        url: "/",
       },
     },
   };

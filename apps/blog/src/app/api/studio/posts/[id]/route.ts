@@ -6,6 +6,7 @@ import { ERROR_IDS } from "@/constants/error-ids";
 import { auth } from "@/lib/auth";
 import { logError } from "@/lib/logger";
 import { generatePostMetadata } from "@/lib/post-metadata";
+import { cacheInvalidationService } from "@/lib/services";
 import { db, posts } from "@/schema";
 import { postIdSchema, updatePostSchema } from "@/types/api";
 
@@ -205,6 +206,25 @@ export const PATCH = async (
       .where(eq(posts.id, postId))
       .returning();
 
+    // Invalidate caches after successful update
+    await cacheInvalidationService.invalidatePost(updatedSlug);
+
+    // If tags changed, invalidate related posts caches
+    const tagsChanged =
+      tags !== undefined &&
+      JSON.stringify([...tags].sort((a, b) => a.localeCompare(b))) !==
+        JSON.stringify([...existingPost.tags].sort((a, b) => a.localeCompare(b)));
+
+    if (tagsChanged) {
+      const allAffectedTags = [
+        ...new Set([...existingPost.tags, ...(tags || [])]),
+      ];
+      await cacheInvalidationService.invalidateRelatedByTags(
+        allAffectedTags,
+        updatedSlug,
+      );
+    }
+
     return NextResponse.json(updatedPost);
   } catch (error) {
     // Check for specific database errors
@@ -287,6 +307,17 @@ export const DELETE = async (
 
     if (!deletedPost) {
       return NextResponse.json({ message: "Post not found" }, { status: 404 });
+    }
+
+    // Invalidate caches and remove from popular after successful deletion
+    await cacheInvalidationService.invalidatePopularPost(deletedPost.slug);
+
+    // Invalidate related posts caches for posts with similar tags
+    if (deletedPost.tags.length > 0) {
+      await cacheInvalidationService.invalidateRelatedByTags(
+        deletedPost.tags,
+        deletedPost.slug,
+      );
     }
 
     return NextResponse.json({ message: "Post deleted successfully" });

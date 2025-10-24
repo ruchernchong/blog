@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Root-level Commands (run from project root)
 
 #### Development
+
 - `pnpm dev` - Start development server with hot reload (uses Turbo)
 - `pnpm build` - Build all apps for production (uses Turbo)
 - `pnpm start` - Start production server (uses Turbo)
@@ -15,6 +16,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm lint:blog` - Run linting for blog app with Biome
 
 #### Database Management
+
 - `pnpm db:drop` - Drop database (interactive, requires confirmation)
 - `pnpm db:generate` - Generate database migrations from schema
 - `pnpm db:migrate` - Run database migrations
@@ -26,12 +28,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm db:seed` - Seed database with test data
 
 #### Quality & Release
+
 - `pnpm release` - Create semantic release (runs build, test, lint, check-types)
 - `pnpm release:blog` - Release blog app specifically
 
 ### App-specific Commands (run from `/apps/blog/`)
 
 #### Development
+
 - `pnpm dev` - Start blog dev server (next dev --turbopack)
 - `pnpm build` - Build blog app for production
 - `pnpm start` - Start production server
@@ -42,6 +46,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm vercel-build` - Production build with migrations (for Vercel)
 
 #### Database (App-level)
+
 - `pnpm drop` - Drop database tables
 - `pnpm generate` - Generate migrations from schema
 - `pnpm migrate` - Run database migrations
@@ -57,10 +62,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a Turborepo monorepo containing a Next.js 16 portfolio website with an integrated blog system.
 
 ### Monorepo Structure
+
 - **Root**: Turborepo configuration with shared tooling (Biome, commitlint, semantic-release)
 - **apps/blog**: Main Next.js application with blog functionality and integrated CMS at `/studio`
 
 ### Tech Stack
+
 - **Framework**: Next.js 16 with App Router and React 19.2
 - **Content**: Database-backed MDX with next-mdx-remote for compilation
 - **Database**: Neon PostgreSQL with Drizzle ORM
@@ -72,8 +79,11 @@ This is a Turborepo monorepo containing a Next.js 16 portfolio website with an i
 - **Deployment**: Vercel with automated migrations
 
 ### Key Features
+
 - **Custom Analytics**: Privacy-focused visitor tracking with IP hashing
 - **Blog System**: Database-backed MDX blog posts with automatic metadata generation (reading time, SEO metadata)
+- **Popular Posts**: Real-time tracking via Redis sorted sets, displaying top posts by view count
+- **Related Posts**: Tag-based recommendations using Jaccard similarity algorithm with Redis caching
 - **Content Studio**: Built-in CMS at `/studio` for managing blog posts directly in the database
 - **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers (following llmstxt.org standard)
 - **RSS Feed**: Dynamic `/feed.xml` endpoint with latest published posts
@@ -81,44 +91,133 @@ This is a Turborepo monorepo containing a Next.js 16 portfolio website with an i
 - **SEO**: Structured data, sitemaps, OpenGraph image generation
 
 ### Database Architecture
+
 - Schema in `apps/blog/src/schema/` using Drizzle ORM
-  - `posts.ts`: Blog posts with MDX content, metadata, tags, and publish status
-  - `sessions.ts`: Session tracking for analytics (visits, geolocation, device info)
-  - `auth.ts`: Better Auth authentication tables (users, accounts, sessions, verification)
-  - `index.ts`: Database client export
+    - `posts.ts`: Blog posts with MDX content, metadata, tags, and publish status
+    - `sessions.ts`: Session tracking for analytics (visits, geolocation, device info)
+    - `auth.ts`: Better Auth authentication tables (users, accounts, sessions, verification)
+    - `index.ts`: Database client export
 - Configuration in `apps/blog/drizzle.config.ts`
 - Migrations in `apps/blog/migrations/` managed by drizzle-kit
 
 ### Analytics System
+
 - Real-time visitor statistics (browsers, countries, devices, OS, pages, referrers)
 - Data visualization with Recharts components in `/analytics` dashboard
 - Privacy protection through IP address hashing
+
+### Layered Architecture
+
+The codebase follows a clean 3-layer architecture pattern for maintainability and testability:
+
+#### 1. Database Layer (`lib/queries/`)
+**Pure database access with Drizzle ORM**
+- Contains only database queries with no business logic
+- Type-safe queries using Drizzle's query builder
+- Examples: `getPostBySlug()`, `getPublishedPostsBySlugs()`, `getPostsWithOverlappingTags()`
+- No Redis, no calculations, no external dependencies
+- Easy to test and maintain
+
+#### 2. Service Layer (`lib/services/`)
+**Business logic and data orchestration with class-based architecture**
+
+The service layer uses classes for better testability, dependency injection, and error handling:
+
+**Core Services:**
+- `CacheService` - Redis wrapper with error handling and graceful degradation
+  - Wraps all Redis operations (get, set, del, zadd, zrange, zrem)
+  - Returns null/defaults on failures instead of crashing
+  - Logs errors with ERROR_IDS for monitoring
+  - Health check method for Redis availability
+
+- `PostStatsService` - Post statistics management (views, likes)
+  - Tracks view counts and like counts per user
+  - Updates both cache and popular posts sorted set
+  - Uses React cache() for request-level deduplication
+  - Aggregates likes across all users
+
+- `PopularPostsService` - Popular posts tracking via Redis sorted set
+  - Fetches top N posts by view count from sorted set
+  - Merges Redis scores with database post data
+  - Falls back to recent published posts if Redis unavailable
+  - Maintains sorted set operations (add, remove, update)
+
+- `RelatedPostsCalculator` - Tag-based post recommendations
+  - Implements Jaccard similarity algorithm for tag matching
+  - Caches results for 24 hours to reduce computation
+  - Filters posts below minimum similarity threshold (0.1)
+  - Returns posts sorted by similarity score
+
+- `CacheInvalidationService` - Cache management on mutations
+  - Invalidates post caches on updates/deletes
+  - Clears related post caches when tags change
+  - Removes posts from popular sorted set on deletion
+  - Invalidates all posts with overlapping tags
+
+**Service Container** (`lib/services/index.ts`):
+- Exports singleton instances of all services
+- Provides dependency injection for testing
+- Centralizes service initialization
+
+**Configuration** (`lib/config/cache.config.ts`):
+- Centralized cache configuration (TTLs, limits, Redis keys)
+- Popular posts limit: 5, fallback: 10
+- Related posts limit: 4, TTL: 24 hours
+- Min similarity threshold: 0.1
+
+**Benefits:**
+- Error resilience: Redis failures don't crash the app
+- Testability: Dependency injection enables easy mocking
+- Maintainability: Clear class boundaries and responsibilities
+- Type safety: Full TypeScript support with proper types
+- Observability: Structured error logging for monitoring
+
+#### 3. Action Layer (`app/(blog)/_actions/`)
+**Server actions for mutations only**
+- Contains only write operations (no reads)
+- Examples: `incrementViews()`, `incrementLikes()`
+- Uses React Server Actions for client-side mutations
+- Never used for data fetching (use services directly in components)
+
+**Architecture Benefits**:
+- Clear separation of concerns
+- Easy to unit test each layer independently
+- Reusable queries across multiple services
+- Business logic isolated from data access
+- Follows Next.js 15+ best practices (server actions for writes only)
 
 ## Environment Variables
 
 Required environment variables (see `apps/blog/.env.example`):
 
 ### Core Configuration
+
 - `NEXT_PUBLIC_BASE_URL` - Base URL for the application (e.g., http://localhost:3000)
 
 ### Database
+
 - `DATABASE_URL` - Neon PostgreSQL connection string
 
 ### GitHub Integration
+
 - `GH_ACCESS_TOKEN` - GitHub personal access token for API access
 
 ### Redis (Upstash)
+
 - `UPSTASH_REDIS_REST_URL` - Upstash Redis REST URL
 - `UPSTASH_REDIS_REST_TOKEN` - Upstash Redis REST token
 
 ### Analytics
+
 - `IP_SALT` - Salt for IP address hashing (privacy protection)
 
 ### Authentication (Better Auth)
+
 - `BETTER_AUTH_SECRET` - Secret key for Better Auth
 - `BETTER_AUTH_URL` - Base URL for auth callbacks (e.g., http://localhost:3000)
 
 ### OAuth Providers
+
 - `GITHUB_CLIENT_ID` - GitHub OAuth app client ID
 - `GITHUB_CLIENT_SECRET` - GitHub OAuth app client secret
 - `GOOGLE_CLIENT_ID` - Google OAuth app client ID
@@ -128,9 +227,11 @@ Required environment variables (see `apps/blog/.env.example`):
 
 ### Using Context7 for Library Documentation
 
-When working with libraries in this project, use the Context7 MCP server to retrieve up-to-date documentation and code examples. This is especially important for rapidly evolving libraries.
+When working with libraries in this project, use the Context7 MCP server to retrieve up-to-date documentation and code
+examples. This is especially important for rapidly evolving libraries.
 
 **Priority Libraries for Context7**:
+
 - **Next.js** (`/vercel/next.js`) - Framework APIs, routing, data fetching
 - **React** (`/facebook/react`) - Hooks, components, server components
 - **Drizzle ORM** (`/drizzle-team/drizzle-orm`) - Database queries, schema, migrations
@@ -142,6 +243,7 @@ When working with libraries in this project, use the Context7 MCP server to retr
 - **Recharts** (`/recharts/recharts`) - Chart components, data visualization
 
 **When to Use Context7**:
+
 1. Before implementing new features using these libraries
 2. When encountering API changes or deprecation warnings
 3. For troubleshooting library-specific issues
@@ -149,11 +251,13 @@ When working with libraries in this project, use the Context7 MCP server to retr
 5. Before upgrading library versions
 
 **How to Use**:
+
 ```
 Claude, using Context7, how do I implement [feature] with [library]?
 ```
 
 Example queries:
+
 - "Using Context7, show me how to set up OAuth providers in Better Auth"
 - "Using Context7, what's the best way to handle dynamic routes in Next.js 16?"
 - "Using Context7, how do I create a custom middleware with tRPC?"
@@ -163,14 +267,17 @@ Example queries:
 ### Language & Writing Style
 
 **Use English (Singapore) for all content, documentation, and user-facing text**:
+
 - **Spelling**: British English variants (e.g., "colour", "optimise", "centre", "analyse")
 - **Date Format**: DD/MM/YYYY or DD Month YYYY (e.g., 24/10/2025 or 24 October 2025)
 - **Time Format**: 24-hour format (e.g., 14:30 instead of 2:30 PM)
 - **Currency**: Singapore Dollar (SGD) when applicable
 - **Tone**: Professional yet approachable, clear and concise
-- **Terminology**: Use Singapore English terms where appropriate (e.g., "lorry" instead of "truck", "flat" instead of "apartment" for HDB context)
+- **Terminology**: Use Singapore English terms where appropriate (e.g., "lorry" instead of "truck", "flat" instead of "
+  apartment" for HDB context)
 
 **Examples**:
+
 ```tsx
 // ✅ Correct - English (Singapore)
 const message = "Your profile has been optimised for better performance";
@@ -184,12 +291,14 @@ const time = "2:30 PM";
 ```
 
 ### File Structure
+
 - TypeScript with strict mode and path aliases (`@/*` maps to app root)
 - Use kebab-case for filenames
 - Tests in `__tests__/` directories alongside components
 - Named exports preferred over default exports
 
 ### Styling & Components
+
 - Tailwind CSS v4 with utility-first approach
 - Component variants using class-variance-authority
 - Functional components with hooks
@@ -209,6 +318,7 @@ All blog content is managed through the database-backed Content Studio:
 - **Draft Support**: Posts can be saved as drafts before publishing
 
 ### Authentication System
+
 - Better Auth configuration in `src/lib/auth.ts`
 - OAuth providers: GitHub and Google
 - Account linking enabled for trusted providers
@@ -221,6 +331,7 @@ All blog content is managed through the database-backed Content Studio:
 ### Spacing Standards
 
 #### 1. **Primary Rule: Use gap-* Instead of Space Utilities**
+
 - **Always use `flex gap-*` for spacing** between child elements
 - Use only even numbers: `gap-2, gap-4, gap-6, gap-8, gap-10, gap-12`
 - **Avoid**: `gap-1, gap-3, gap-5, gap-7` and fractions like `gap-1.5`
@@ -241,6 +352,7 @@ All blog content is managed through the database-backed Content Studio:
 ```
 
 #### 2. **Margin Rules**
+
 - **Avoid margin-top** for layout spacing
 - **Prefer margin-bottom** for creating separation between elements
 - **Use margin-y** sparingly for vertical rhythm
@@ -260,13 +372,16 @@ All blog content is managed through the database-backed Content Studio:
 ```
 
 #### 3. **Spacing Priority Order**
+
 1. **`gap*`** - For container element spacing (highest priority)
 2. **`margin-bottom`** - For element separation
 3. **`margin-y`** - For symmetrical vertical spacing
 4. **`margin-top`** - Only for specific UI adjustments
 
 #### 4. **Spacing Scale Reference**
+
 Even numbers only for consistent spacing:
+
 - `gap-2`/`mb-2` = 0.5rem (8px) - Small gaps
 - `gap-4`/`mb-4` = 1rem (16px) - Standard gaps
 - `gap-6`/`mb-6` = 1.5rem (24px) - Medium gaps
@@ -274,6 +389,7 @@ Even numbers only for consistent spacing:
 - `gap-12`/`mb-12` = 3rem (48px) - Extra large gaps
 
 #### 5. **Component Architecture**
+
 - Use `cn()` utility for conditional class merging
 - Class Variance Authority (CVA) for component variants
 - Consistent prop interfaces with `className?: string`
@@ -292,6 +408,7 @@ export const Component = ({ className, ...props }: ComponentProps) => (
 ```
 
 #### 6. **Theming System**
+
 - Use semantic color tokens: `foreground`, `muted`, `accent`, `border`, `background`
 - Dark mode via `.dark` class on parent elements
 - CSS custom properties for design tokens
@@ -306,6 +423,7 @@ export const Component = ({ className, ...props }: ComponentProps) => (
 ```
 
 #### 7. **Exception Cases**
+
 - `mt-px` allowed for checkbox/radio alignment
 - Negative margins for specific layout corrections
 - Fractional values in UI components for fine-tuning

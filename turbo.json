@@ -18,11 +18,21 @@
       "cache": false
     },
     "test": {
-      "inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.test.tsx", "vitest.config.ts"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "vitest.config.ts"
+      ],
       "cache": false
     },
     "test:coverage": {
-      "inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.test.tsx", "vitest.config.ts"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "vitest.config.ts"
+      ],
       "outputs": ["coverage/**"]
     },
     "lint": {
