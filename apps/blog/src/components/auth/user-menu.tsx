@@ -7,7 +7,7 @@ import { authClient } from "@/lib/auth-client";
 
 export const UserMenu = () => {
   const router = useRouter();
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
 
   const handleSignOut = async () => {
     await authClient.signOut({
@@ -19,11 +19,9 @@ export const UserMenu = () => {
     });
   };
 
-  if (!session) {
-    return null;
+  if (isPending || !session) {
+    return <div className="size-8" />;
   }
-
-  console.log(session);
 
   return (
     <div className="flex items-center gap-4">
