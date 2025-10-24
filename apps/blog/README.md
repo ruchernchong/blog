@@ -11,8 +11,8 @@ This portfolio is built with modern web technologies:
 
 ### Core Framework
 
-- **Next.js 15** - React framework with App Router
-- **React 19** - Latest React with concurrent features
+- **Next.js 16** - React framework with App Router
+- **React 19.2** - Latest React with concurrent features
 - **TypeScript** - Type-safe JavaScript with strict mode
 
 ### Styling & UI
@@ -54,7 +54,7 @@ This portfolio is built with modern web technologies:
 
 ### Prerequisites
 
-- **Node.js 18.x or higher** - JavaScript runtime
+- **Node.js 18.x or higher** - JavaScript runtime (tested with v22.20.0)
 - **pnpm 10.2.0 or higher** - Fast, disk space efficient package manager
 - **Git** - Version control system
 - **Neon PostgreSQL database** - Serverless database (sign up at [neon.tech](https://neon.tech))
@@ -180,7 +180,9 @@ portfolio/
 │       │   │   ├── (auth)/     # Authentication routes (login)
 │       │   │   ├── (blog)/     # Main blog routes
 │       │   │   ├── (studio)/   # CMS routes at /studio
-│       │   │   └── api/        # API routes (studio, auth)
+│       │   │   ├── api/        # API routes (studio, auth)
+│       │   │   ├── feed.xml/   # RSS feed route handler
+│       │   │   └── llms.txt/   # LLM SEO route handler
 │       │   ├── components/     # Reusable React components
 │       │   ├── lib/           # Utility functions and integrations
 │       │   ├── schema/        # Drizzle database schema
@@ -201,12 +203,14 @@ portfolio/
 - **✏️ Content Studio**: Web-based CMS at `/studio` for managing blog posts
 - **🔐 Authentication**: OAuth login with GitHub and Google via Better Auth
 - **📊 Analytics Dashboard**: Custom privacy-focused visitor analytics
+- **🤖 LLM SEO**: Dynamic `/llms.txt` endpoint for AI crawler discovery (llmstxt.org standard)
+- **📡 RSS Feed**: Auto-generated `/feed.xml` with latest posts
 - **🎨 Dark/Light Mode**: Tailwind CSS theming support
 - **📱 Responsive Design**: Mobile-first responsive layout
 - **🔍 SEO Optimized**: Structured data, sitemaps, and meta tags
 - **⚡ Performance**: Optimized images, caching, and core web vitals
 - **🔒 Privacy-First**: IP hashing and minimal data collection
-- **🚀 Modern Stack**: Latest Next.js, React, and TypeScript features
+- **🚀 Modern Stack**: Latest Next.js 16, React 19.2, and TypeScript features
 
 ## 🤝 Contributing
 

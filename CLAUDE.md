@@ -54,14 +54,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture Overview
 
-This is a Turborepo monorepo containing a Next.js 15 portfolio website with an integrated blog system.
+This is a Turborepo monorepo containing a Next.js 16 portfolio website with an integrated blog system.
 
 ### Monorepo Structure
 - **Root**: Turborepo configuration with shared tooling (Biome, commitlint, semantic-release)
 - **apps/blog**: Main Next.js application with blog functionality and integrated CMS at `/studio`
 
 ### Tech Stack
-- **Framework**: Next.js 15 with App Router and React 19
+- **Framework**: Next.js 16 with App Router and React 19.2
 - **Content**: Database-backed MDX with next-mdx-remote for compilation
 - **Database**: Neon PostgreSQL with Drizzle ORM
 - **Authentication**: Better Auth with OAuth providers (GitHub, Google)
@@ -75,6 +75,8 @@ This is a Turborepo monorepo containing a Next.js 15 portfolio website with an i
 - **Custom Analytics**: Privacy-focused visitor tracking with IP hashing
 - **Blog System**: Database-backed MDX blog posts with automatic metadata generation (reading time, SEO metadata)
 - **Content Studio**: Built-in CMS at `/studio` for managing blog posts directly in the database
+- **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers (following llmstxt.org standard)
+- **RSS Feed**: Dynamic `/feed.xml` endpoint with latest published posts
 - **Performance**: Optimized images, caching, and core web vitals tracking
 - **SEO**: Structured data, sitemaps, OpenGraph image generation
 
