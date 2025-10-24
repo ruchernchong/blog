@@ -179,12 +179,15 @@ portfolio/
 │       │   ├── app/            # Next.js App Router pages and API routes
 │       │   │   ├── (auth)/     # Authentication routes (login)
 │       │   │   ├── (blog)/     # Main blog routes
+│       │   │   │   └── _actions/ # Server actions (mutations only)
 │       │   │   ├── (studio)/   # CMS routes at /studio
 │       │   │   ├── api/        # API routes (studio, auth)
 │       │   │   ├── feed.xml/   # RSS feed route handler
 │       │   │   └── llms.txt/   # LLM SEO route handler
 │       │   ├── components/     # Reusable React components
 │       │   ├── lib/           # Utility functions and integrations
+│       │   │   ├── queries/   # Pure database queries (Drizzle)
+│       │   │   └── services/  # Business logic & caching
 │       │   ├── schema/        # Drizzle database schema
 │       │   │   ├── posts.ts   # Blog posts table
 │       │   │   ├── sessions.ts # Analytics sessions
@@ -200,6 +203,8 @@ portfolio/
 
 - **📝 Blog System**: MDX-powered blog with syntax highlighting
 - **✏️ Content Studio**: Web-based CMS at `/studio` for managing blog posts
+- **🔥 Popular Posts**: Real-time view tracking with Redis sorted sets, showing top posts by popularity
+- **🔗 Related Posts**: Smart tag-based recommendations using Jaccard similarity algorithm with Redis caching
 - **🔐 Authentication**: OAuth login with GitHub and Google via Better Auth
 - **📊 Analytics Dashboard**: Custom privacy-focused visitor analytics
 - **🤖 LLM SEO**: Dynamic `/llms.txt` endpoint for AI crawler discovery (llmstxt.org standard)
