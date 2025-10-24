@@ -10,9 +10,11 @@ import {
 import { popularPostsService } from "@/lib/services";
 
 export const PopularPosts = async () => {
-  const popularPosts = await popularPostsService.getPopularPosts(5);
+  const popularPosts = await popularPostsService.getPopularPosts(3);
 
-  if (!popularPosts.length) return null;
+  if (!popularPosts.length) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -20,10 +22,12 @@ export const PopularPosts = async () => {
         Popular Posts
       </div>
       <div className="grid gap-4 md:auto-cols-fr md:grid-flow-col">
-        {popularPosts.slice(0, 3).map((post) => {
-          if (!post.publishedAt) return null;
+        {popularPosts.map((post) => {
+          if (!post.publishedAt) {
+            return null;
+          }
 
-          const formattedDate = format(post.publishedAt, "iiii, dd MMMM yyyy");
+          const formattedDate = format(post.publishedAt, "EEEE, dd MMMM yyyy");
 
           return (
             <Card key={post.id}>

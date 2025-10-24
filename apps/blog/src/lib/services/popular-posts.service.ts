@@ -1,4 +1,4 @@
-import { desc, isNull } from "drizzle-orm";
+import { and, desc, eq, isNotNull, isNull } from "drizzle-orm";
 import { cache } from "react";
 import { CacheConfig } from "@/lib/config/cache.config";
 import { getPublishedPostsBySlugs } from "@/lib/queries/posts";
@@ -28,8 +28,6 @@ export interface PopularPost {
  * ```
  */
 export class PopularPostsService {
-  constructor(private readonly cache: CacheService) {}
-
   /**
    * Get top N popular posts by view count
    *
@@ -90,6 +88,8 @@ export class PopularPostsService {
     },
   );
 
+  constructor(private readonly cache: CacheService) {}
+
   /**
    * Update popular score for a post
    *
@@ -117,16 +117,15 @@ export class PopularPostsService {
    */
   private async getFallbackPosts(limit: number): Promise<PopularPost[]> {
     const recentPosts = await db
-      .select({
-        id: posts.id,
-        slug: posts.slug,
-        title: posts.title,
-        summary: posts.summary,
-        publishedAt: posts.publishedAt,
-        metadata: posts.metadata,
-      })
+      .select()
       .from(posts)
-      .where(isNull(posts.deletedAt))
+      .where(
+        and(
+          eq(posts.status, "published"),
+          isNotNull(posts.publishedAt),
+          isNull(posts.deletedAt),
+        ),
+      )
       .orderBy(desc(posts.publishedAt))
       .limit(limit);
 

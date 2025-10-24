@@ -1,4 +1,13 @@
-import { and, arrayOverlaps, desc, eq, inArray, isNull, ne } from "drizzle-orm";
+import {
+  and,
+  arrayOverlaps,
+  desc,
+  eq,
+  inArray,
+  isNotNull,
+  isNull,
+  ne,
+} from "drizzle-orm";
 import { db, posts } from "@/schema";
 
 export const getPostBySlug = async (slug: string) => {
@@ -47,6 +56,7 @@ export const getPublishedPostsBySlugs = async (slugs: string[]) => {
       and(
         inArray(posts.slug, slugs),
         eq(posts.status, "published"),
+        isNotNull(posts.publishedAt),
         isNull(posts.deletedAt),
       ),
     );
