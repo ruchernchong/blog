@@ -1,3 +1,9 @@
+## [1.10.1](https://github.com/ruchernchong/portfolio/compare/v1.10.0...v1.10.1) (2025-10-24)
+
+### Bug Fixes
+
+* base url ([b1705ef](https://github.com/ruchernchong/portfolio/commit/b1705efb5bd78ad81a9086d775a8d8ff735330e5))
+
 ## [1.10.0](https://github.com/ruchernchong/portfolio/compare/v1.9.0...v1.10.0) (2025-10-24)
 
 ### Features
