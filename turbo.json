@@ -31,7 +31,6 @@
         "src/**",
         "*.config.js",
         "*.config.ts",
-        ".eslintrc*",
         "biome.json"
       ],
       "cache": false
