@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { randomInt } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { reset, seed } from "drizzle-seed";
 import readingTime from "reading-time";
@@ -165,10 +166,13 @@ const main = async () => {
           tags: f.default({
             defaultValue: (() => {
               // Randomly select 2-4 tags
-              const numTags = Math.floor(Math.random() * 3) + 2; // 2-4 tags
-              const shuffled = [...availableTags].sort(
-                () => Math.random() - 0.5,
-              );
+              const numTags = randomInt(2, 5); // 2-4 tags
+              // Fisher-Yates shuffle using crypto.randomInt
+              const shuffled = [...availableTags];
+              for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = randomInt(0, i + 1);
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+              }
               return shuffled.slice(0, numTags);
             })(),
           }),
