@@ -2,6 +2,7 @@ import { format, formatISO } from "date-fns";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PopularPosts } from "@/app/(blog)/blog/_components/popular-posts";
 import {
   Card,
   CardContent,
@@ -30,37 +31,40 @@ const BlogPage = async () => {
         description="My blog posts on coding, tech, and random thoughts."
         className="mb-8"
       />
-      <div className="flex flex-col gap-4">
-        {publishedPosts.length > 0 &&
-          publishedPosts.map((post) => {
-            if (!post.publishedAt) return null;
+      <div className="flex flex-col gap-8">
+        <PopularPosts />
+        <div className="flex flex-col gap-4">
+          {publishedPosts.length > 0 &&
+            publishedPosts.map((post) => {
+              if (!post.publishedAt) return null;
 
-            const formattedDate = format(
-              post.publishedAt,
-              "iiii, dd MMMM yyyy",
-            );
+              const formattedDate = format(
+                post.publishedAt,
+                "iiii, dd MMMM yyyy",
+              );
 
-            return (
-              <Card key={post.id}>
-                <Link
-                  href={post.metadata.canonical}
-                  className="flex h-full flex-col"
-                >
-                  <CardHeader>
-                    <time
-                      dateTime={formatISO(post.publishedAt)}
-                      title={formattedDate}
-                      className="text-sm text-zinc-400 italic"
-                    >
-                      {formattedDate}
-                    </time>
-                    <CardTitle className="capitalize">{post.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>{post.summary}</CardContent>
-                </Link>
-              </Card>
-            );
-          })}
+              return (
+                <Card key={post.id}>
+                  <Link
+                    href={post.metadata.canonical}
+                    className="flex h-full flex-col"
+                  >
+                    <CardHeader>
+                      <time
+                        dateTime={formatISO(post.publishedAt)}
+                        title={formattedDate}
+                        className="text-sm text-zinc-400 italic"
+                      >
+                        {formattedDate}
+                      </time>
+                      <CardTitle className="capitalize">{post.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>{post.summary}</CardContent>
+                  </Link>
+                </Card>
+              );
+            })}
+        </div>
       </div>
     </>
   );

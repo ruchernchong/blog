@@ -1,15 +1,28 @@
 import { EyeIcon } from "@heroicons/react/24/outline";
-import { getLikesByUser, getTotalLikes } from "@/app/(blog)/_actions/stats";
+import { headers } from "next/headers";
 import { LikeCounter } from "@/app/(blog)/blog/_components/like-counter";
 import { ViewCounter } from "@/app/(blog)/blog/_components/view-counter";
+import { getLikesByUser, getTotalLikes } from "@/lib/services/post-stats";
+import { generateUserHash } from "@/utils/hash";
 
 interface StatsBarProps {
   slug: string;
 }
 
+const getIpAddress = async (): Promise<string> => {
+  const headersList = headers();
+  const forwardedFor = (await headersList).get("x-forwarded-for");
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0];
+  }
+  const realIp = (await headersList).get("x-real-ip");
+  return realIp ?? "127.0.0.1";
+};
+
 const StatsBar = async ({ slug }: StatsBarProps) => {
+  const userHash = generateUserHash(await getIpAddress());
   const totalLikes = await getTotalLikes(slug);
-  const likesByUser = await getLikesByUser(slug);
+  const likesByUser = await getLikesByUser(slug, userHash);
 
   return (
     <div className="md:-translate-y-1/2 sticky top-0 z-50 md:fixed md:top-1/2 md:right-0 md:bottom-auto md:left-auto">

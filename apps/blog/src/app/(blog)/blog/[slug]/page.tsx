@@ -11,6 +11,7 @@ import { cache, cacheSignal } from "react";
 import { StructuredData } from "@/app/(blog)/_components/structured-data";
 import StatsBar from "@/app/(blog)/analytics/_components/stats-bar";
 import { Mdx } from "@/app/(blog)/blog/_components/mdx";
+import { RelatedPosts } from "@/app/(blog)/blog/_components/related-posts";
 import { Typography } from "@/components/shared/typography";
 import { db, posts, user } from "@/schema";
 
@@ -147,6 +148,7 @@ const PostPage = async (props: { params: Params }) => {
         <div>
           <Mdx content={post.content} />
         </div>
+        <RelatedPosts slug={post.slug} />
       </article>
     </>
   );
