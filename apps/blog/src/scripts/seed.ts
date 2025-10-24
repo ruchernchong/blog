@@ -1,7 +1,8 @@
 import "dotenv/config";
 import { eq } from "drizzle-orm";
-import { seed } from "drizzle-seed";
+import { reset, seed } from "drizzle-seed";
 import readingTime from "reading-time";
+import * as schema from "@/schema";
 import { db, type PostMetadata, posts } from "@/schema";
 
 // Safety check: Only allow seeding in development
@@ -88,10 +89,10 @@ const main = async () => {
   checkEnvironment();
 
   try {
-    // Clear existing posts
-    console.log("🗑️  Clearing existing posts...");
-    await db.delete(posts);
-    console.log("✅ Cleared existing posts\n");
+    // Clear existing data from all tables
+    console.log("🗑️  Resetting database (clearing all tables)...");
+    await reset(db, schema);
+    console.log("✅ Database reset complete\n");
 
     // Seed the database with generated data
     console.log("📝 Generating and inserting sample posts...\n");
