@@ -8,7 +8,7 @@ import {
   useEffectEvent,
   useId,
   useState,
-  useTransition,
+  useTransition
 } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,7 +19,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -32,6 +32,7 @@ interface Post {
   status: "draft" | "published";
   tags: string[];
   coverImage: string | null;
+  deletedAt: Date | null;
 }
 
 interface EditPostFormProps {
@@ -51,7 +52,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
     content: "",
     status: "draft" as "draft" | "published",
     tags: "",
-    coverImage: "",
+    coverImage: ""
   });
 
   // Generate unique IDs for form fields
@@ -76,7 +77,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
         content: data.content,
         status: data.status,
         tags: Array.isArray(data.tags) ? data.tags.join(", ") : "",
-        coverImage: data.coverImage || "",
+        coverImage: data.coverImage || ""
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load post");
@@ -106,14 +107,14 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
           .split(",")
           .map((tag) => tag.trim())
           .filter(Boolean),
-        coverImage: formData.coverImage || null,
+        coverImage: formData.coverImage || null
       };
 
       try {
         const response = await fetch(`/api/studio/posts/${postId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: JSON.stringify(data)
         });
 
         if (!response.ok) {
@@ -137,7 +138,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
 
       try {
         const response = await fetch(`/api/studio/posts/${postId}`, {
-          method: "DELETE",
+          method: "DELETE"
         });
 
         if (!response.ok) {
@@ -149,6 +150,29 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
         router.refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to delete post");
+      }
+    });
+  };
+
+  const handleRestore = async () => {
+    startTransition(async () => {
+      setError(null);
+
+      try {
+        const response = await fetch(`/api/studio/posts/${postId}/restore`, {
+          method: "POST"
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Failed to restore post");
+        }
+
+        // Refetch the post to update UI
+        await fetchPost(postId);
+        router.refresh();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to restore post");
       }
     });
   };
@@ -193,6 +217,17 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
           <Link href="/studio/posts">Back to Posts</Link>
         </Button>
       </div>
+
+      {post.deletedAt && (
+        <Card className="border-red-500 bg-red-50">
+          <CardContent className="pt-6">
+            <p className="font-medium text-red-800 text-sm">
+              This post has been deleted. Restore it to make edits or view it on
+              the public site.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {error && (
         <Card className="border-destructive">
@@ -331,20 +366,33 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
         </Card>
 
         <div className="flex items-center justify-between">
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={isPending}
-          >
-            {isPending ? "Deleting..." : "Delete Post"}
-          </Button>
+          <div className="flex gap-4">
+            {post.deletedAt ? (
+              <Button
+                type="button"
+                variant="default"
+                onClick={handleRestore}
+                disabled={isPending}
+              >
+                {isPending ? "Restoring..." : "Restore Post"}
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={isPending}
+              >
+                {isPending ? "Deleting..." : "Delete Post"}
+              </Button>
+            )}
+          </div>
 
           <div className="flex gap-4">
             <Button type="button" variant="outline" asChild>
               <Link href="/studio/posts">Cancel</Link>
             </Button>
-            <Button type="submit" disabled={isPending}>
+            <Button type="submit" disabled={isPending || !!post.deletedAt}>
               {isPending ? "Saving..." : "Save Changes"}
             </Button>
           </div>

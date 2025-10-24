@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import RSS from "rss";
 import { BASE_URL } from "@/config";
@@ -13,7 +13,7 @@ export const GET = async () => {
       metadata: posts.metadata,
     })
     .from(posts)
-    .where(eq(posts.status, "published"))
+    .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)))
     .orderBy(desc(posts.publishedAt));
 
   const feed = new RSS({

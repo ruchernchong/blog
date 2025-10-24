@@ -1,5 +1,5 @@
 import { format, formatISO } from "date-fns";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
@@ -20,7 +20,7 @@ const BlogPage = async () => {
   const publishedPosts = await db
     .select()
     .from(posts)
-    .where(eq(posts.status, "published"))
+    .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)))
     .orderBy(desc(posts.publishedAt));
 
   return (

@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import type { MetadataRoute } from "next";
 import { BASE_URL, navLinks } from "@/config";
 import projects from "@/data/projects";
@@ -11,7 +11,7 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
       metadata: posts.metadata,
     })
     .from(posts)
-    .where(eq(posts.status, "published"));
+    .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)));
 
   return [
     { url: BASE_URL, lastModified: formatLastModified() },

@@ -26,6 +26,7 @@ export const posts = pgTable(
     publishedAt: timestamp({ withTimezone: true }),
     createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+    deletedAt: timestamp({ withTimezone: true }),
   },
   (table) => {
     return [
@@ -33,6 +34,7 @@ export const posts = pgTable(
       index().on(table.status),
       index().on(table.featured),
       index().on(table.publishedAt),
+      index().on(table.deletedAt),
     ];
   },
 );

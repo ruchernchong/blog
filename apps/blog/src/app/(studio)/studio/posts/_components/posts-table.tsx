@@ -41,7 +41,7 @@ export const PostsTable = () => {
   const [isPending, startTransition] = useTransition();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<
-    "all" | "draft" | "published"
+    "all" | "draft" | "published" | "deleted"
   >("all");
   const [selectedPosts, setSelectedPosts] = useState<Set<string>>(new Set());
 
@@ -72,7 +72,7 @@ export const PostsTable = () => {
         });
 
         if (response.ok) {
-          setAllPosts((prev) => prev.filter((post) => post.id !== postId));
+          await fetchPosts();
           router.refresh();
         } else {
           const error = await response.json();
@@ -82,6 +82,28 @@ export const PostsTable = () => {
       } catch (error) {
         console.error("Failed to delete post:", error);
         alert("Failed to delete post");
+      }
+    });
+  };
+
+  const handleRestore = async (postId: string) => {
+    startTransition(async () => {
+      try {
+        const response = await fetch(`/api/studio/posts/${postId}/restore`, {
+          method: "POST",
+        });
+
+        if (response.ok) {
+          await fetchPosts();
+          router.refresh();
+        } else {
+          const error = await response.json();
+          console.error("Failed to restore post:", error);
+          alert(`Failed to restore post: ${error.message || "Unknown error"}`);
+        }
+      } catch (error) {
+        console.error("Failed to restore post:", error);
+        alert("Failed to restore post");
       }
     });
   };
@@ -186,7 +208,11 @@ export const PostsTable = () => {
       post.slug.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesStatus =
-      statusFilter === "all" || post.status === statusFilter;
+      statusFilter === "all" ||
+      (statusFilter === "deleted" && post.deletedAt) ||
+      (statusFilter !== "deleted" &&
+        !post.deletedAt &&
+        post.status === statusFilter);
 
     return matchesSearch && matchesStatus;
   });
@@ -258,9 +284,9 @@ export const PostsTable = () => {
             </div>
             <Select
               value={statusFilter}
-              onValueChange={(value: "all" | "draft" | "published") =>
-                setStatusFilter(value)
-              }
+              onValueChange={(
+                value: "all" | "draft" | "published" | "deleted",
+              ) => setStatusFilter(value)}
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Filter by status" />
@@ -269,6 +295,7 @@ export const PostsTable = () => {
                 <SelectItem value="all">All Posts</SelectItem>
                 <SelectItem value="draft">Draft</SelectItem>
                 <SelectItem value="published">Published</SelectItem>
+                <SelectItem value="deleted">Deleted</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -376,7 +403,9 @@ export const PostsTable = () => {
                       {filteredPosts.map((post) => (
                         <tr
                           key={post.id}
-                          className="border-b last:border-0 hover:bg-muted/50"
+                          className={`border-b last:border-0 hover:bg-muted/50 ${
+                            post.deletedAt ? "opacity-60" : ""
+                          }`}
                         >
                           <td className="px-6 py-4">
                             <Checkbox
@@ -396,15 +425,23 @@ export const PostsTable = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <span
-                              className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-medium text-xs ${
-                                post.status === "published"
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-yellow-100 text-yellow-800"
-                              }`}
-                            >
-                              {post.status}
-                            </span>
+                            <div className="flex flex-wrap gap-2">
+                              {post.deletedAt ? (
+                                <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 font-medium text-red-800 text-xs">
+                                  deleted
+                                </span>
+                              ) : (
+                                <span
+                                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-medium text-xs ${
+                                    post.status === "published"
+                                      ? "bg-green-100 text-green-800"
+                                      : "bg-yellow-100 text-yellow-800"
+                                  }`}
+                                >
+                                  {post.status}
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex flex-wrap gap-1">
@@ -443,45 +480,60 @@ export const PostsTable = () => {
                           </td>
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-4">
-                              <Button variant="ghost" size="sm" asChild>
-                                <Link href={`/studio/posts/${post.id}/edit`}>
-                                  Edit
-                                </Link>
-                              </Button>
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    disabled={isPending}
-                                  >
-                                    Delete
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      Are you sure?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      This action cannot be undone. This will
-                                      permanently delete the post &ldquo;
-                                      {post.title}&rdquo;.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                      Cancel
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={() => handleDelete(post.id)}
-                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              {post.deletedAt ? (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleRestore(post.id)}
+                                  disabled={isPending}
+                                >
+                                  {isPending ? "Restoring..." : "Restore"}
+                                </Button>
+                              ) : (
+                                <>
+                                  <Button variant="ghost" size="sm" asChild>
+                                    <Link
+                                      href={`/studio/posts/${post.id}/edit`}
                                     >
-                                      Delete
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
+                                      Edit
+                                    </Link>
+                                  </Button>
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        disabled={isPending}
+                                      >
+                                        Delete
+                                      </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                          Are you sure?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          This will delete the post &ldquo;
+                                          {post.title}&rdquo;. You can restore
+                                          it later from the Deleted filter.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>
+                                          Cancel
+                                        </AlertDialogCancel>
+                                        <AlertDialogAction
+                                          onClick={() => handleDelete(post.id)}
+                                          className="bg-destructive hover:bg-destructive/90"
+                                        >
+                                          Delete
+                                        </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                </>
+                              )}
                             </div>
                           </td>
                         </tr>

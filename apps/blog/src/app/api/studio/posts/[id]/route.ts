@@ -252,8 +252,10 @@ export const DELETE = async (
   }
 
   try {
+    // Soft-delete: set deletedAt timestamp instead of hard delete
     const [deletedPost] = await db
-      .delete(posts)
+      .update(posts)
+      .set({ deletedAt: new Date() })
       .where(eq(posts.id, postId))
       .returning();
 

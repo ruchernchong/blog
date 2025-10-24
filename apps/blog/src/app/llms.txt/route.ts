@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { db, posts } from "@/schema";
@@ -11,7 +11,7 @@ export const GET = async () => {
       metadata: posts.metadata,
     })
     .from(posts)
-    .where(eq(posts.status, "published"))
+    .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)))
     .orderBy(desc(posts.publishedAt))
     .limit(10);
 

@@ -29,6 +29,13 @@
       "when": 1760983010157,
       "tag": "0003_glossy_gideon",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1761289471314,
+      "tag": "0004_fair_wolfsbane",
+      "breakpoints": true
     }
   ]
 }

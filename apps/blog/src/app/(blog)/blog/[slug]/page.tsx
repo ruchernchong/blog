@@ -4,7 +4,7 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { format, formatISO } from "date-fns";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache, cacheSignal } from "react";
@@ -24,7 +24,13 @@ const getPost = cache(async (slug: string) => {
   const [post] = await db
     .select()
     .from(posts)
-    .where(and(eq(posts.slug, slug), eq(posts.status, "published")))
+    .where(
+      and(
+        eq(posts.slug, slug),
+        eq(posts.status, "published"),
+        isNull(posts.deletedAt),
+      ),
+    )
     .limit(1);
 
   // Listen for cache expiration to perform cleanup if needed
@@ -63,7 +69,7 @@ export const generateStaticParams = async () => {
   const publishedPosts = await db
     .select({ slug: posts.slug })
     .from(posts)
-    .where(eq(posts.status, "published"));
+    .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)));
 
   return publishedPosts.map(({ slug }) => ({ slug }));
 };
