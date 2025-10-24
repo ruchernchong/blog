@@ -7,7 +7,8 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": true
+    "ignoreUnknown": true,
+    "includes": ["**", "!migrations"]
   },
   "formatter": {
     "enabled": true,
