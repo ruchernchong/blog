@@ -103,6 +103,7 @@
     "@types/ws": "^8.5.12",
     "@vitejs/plugin-react": "^5.1.0",
     "@vitest/coverage-v8": "4.0.3",
+    "babel-plugin-react-compiler": "^1.0.0",
     "drizzle-kit": "^0.30.1",
     "drizzle-seed": "^0.3.1",
     "jsdom": "^26.1.0",

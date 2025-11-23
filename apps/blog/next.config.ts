@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  reactCompiler: true,
   images: {
     remotePatterns: [
       {
@@ -15,6 +16,14 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
+  },
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
+  experimental: {
+    turbopackFileSystemCacheForDev: true,
   },
   async headers() {
     return [
@@ -52,14 +61,6 @@ const nextConfig: NextConfig = {
         ],
       },
     ];
-  },
-  logging: {
-    fetches: {
-      fullUrl: true,
-    },
-  },
-  experimental: {
-    turbopackFileSystemCacheForDev: true,
   },
 };
 
