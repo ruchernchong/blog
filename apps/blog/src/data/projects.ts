@@ -2,29 +2,50 @@ import type { Project } from "@/types";
 
 const projects: Project[] = [
   {
-    name: "Singtel eShop",
-    slug: "singtel-eshop",
-    coverImage: "/projects/singtel-eshop.png",
+    name: "SG Cars Trends",
+    slug: "sgcarstrends",
     description:
-      "Online e-commerce shop for mobile phones and mobile plans for Singapore's largest telecommunication company. Built with React and Gatsby. Hosted on AWS.",
+      "Statistics and analytics platform for car trends in Singapore. Data sourced from Land Transport Authority (LTA).",
     skills: [
-      "Gatsby",
+      "Next.js",
+      "TypeScript",
+      "Hono",
+      "SST",
+      "AWS Lambda",
+      "Neon Postgres",
+      "Upstash Redis",
+    ],
+    links: [
+      "https://sgcarstrends.com",
+      "https://github.com/sgcarstrends/sgcarstrends",
+    ],
+  },
+  {
+    name: "Is Leap Year",
+    slug: "isleapyear",
+    description:
+      'A satirical "enterprise-grade" leap year detection API built with modern web technologies.',
+    skills: [
+      "Next.js",
       "React",
       "TypeScript",
-      "Styled Components",
-      "AWS S3",
-      "AWS CloudFront",
+      "Tailwind CSS",
+      "DaisyUI",
+      "Vercel",
     ],
-    links: ["https://shop.singtel.com"],
+    links: [
+      "https://isleapyear.app",
+      "https://github.com/ruchernchong/is-leap-year",
+    ],
   },
-  // {
-  //   name: "Singapore Motor Trends",
-  //   slug: "singapore-motor-trends",
-  //   description:
-  //     "Statistics for car trends in Singapore. Data provided by Land Transport Authority (LTA)",
-  //   skills: ["next.js", "typescript", "react", "tailwind css", "sst", "aws"],
-  //   links: ["https://sgmotortrends.com", "https://api.sgmotortrends.com"],
-  // },
+  {
+    name: "Agentic Slash Commands",
+    slug: "agentic-slash-commands",
+    description:
+      "Intelligent agentic slash commands for Claude Code, Codex, and Gemini CLI. Smart detection for JS/TS workflows with auto package manager detection.",
+    skills: ["Shell", "TypeScript", "Claude Code", "Codex", "Gemini CLI"],
+    links: ["https://github.com/ruchernchong/agentic-slash-commands"],
+  },
 ];
 
 export default projects;
