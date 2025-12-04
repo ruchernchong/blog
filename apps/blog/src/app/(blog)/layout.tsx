@@ -10,7 +10,6 @@ import { Header } from "@/app/(blog)/_components/header";
 import Analytics from "@/components/analytics-tracker";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { cn } from "@/lib/utils";
-import { TRPCProvider } from "@/trpc/provider";
 import "@/app/(blog)/styles.css";
 import { Providers } from "@/app/(blog)/providers";
 
@@ -74,18 +73,16 @@ const BlogLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
       <body className="bg-zinc-900 text-zinc-50" suppressHydrationWarning>
         <ViewTransitions>
           <Providers>
-            <TRPCProvider>
-              <div className="flex min-h-screen flex-col">
-                <Header />
-                <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24">
-                  {children}
-                </main>
-                <Footer />
-              </div>
-              <Analytics />
-              <VercelAnalytics />
-              <SpeedInsights />
-            </TRPCProvider>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24">
+                {children}
+              </main>
+              <Footer />
+            </div>
+            <Analytics />
+            <VercelAnalytics />
+            <SpeedInsights />
           </Providers>
         </ViewTransitions>
         <Script
