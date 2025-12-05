@@ -16,6 +16,7 @@ export interface Project {
   skills: string[];
   links: string[];
   previewImage?: string;
+  featured?: boolean;
 }
 
 export type SocialMedia =

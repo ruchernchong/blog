@@ -1,60 +1,166 @@
-import type { Metadata } from "next";
-import type { WebPage, WithContext } from "schema-dts";
-import { StructuredData } from "@/app/(blog)/_components/structured-data";
-import globalMetadata from "@/app/(blog)/metadata";
-import ProjectCard from "@/app/(blog)/projects/_components/project-card";
-import { openGraphImage, twitterImage } from "@/app/(blog)/shared-metadata";
-import { PageTitle } from "@/components/shared/page-title";
-import { BASE_URL } from "@/config";
+"use client";
+
+import { ExternalLink, Github, Sparkles } from "lucide-react";
+import { Geist } from "next/font/google";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 import projects from "@/data/projects";
+import { cn } from "@/lib/utils";
+import type { Project } from "@/types";
 
-const title = "Projects";
-const description =
-  "This space serves as both a showcase of my completed projects and playground for experimenting new technologies.";
-const canonical = "/projects";
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+});
 
-export const metadata: Metadata = {
-  title,
-  description,
-  openGraph: {
-    ...globalMetadata.openGraph,
-    title,
-    description,
-    url: canonical,
-    ...openGraphImage,
-  },
-  twitter: {
-    ...globalMetadata.twitter,
-    title,
-    description,
-    ...twitterImage,
-  },
-  alternates: {
-    canonical,
-  },
-};
-
-const ProjectsPage = async () => {
-  const structuredData: WithContext<WebPage> = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    name: title,
-    description,
-    url: `${BASE_URL}/${canonical}`,
-  };
+const ProjectCard = ({ project, index }: { project: Project; index: number }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const projectNumber = String(index + 1).padStart(2, "0");
+  const featured = project.featured;
+  const hasImage = project.coverImage || project.previewImage;
 
   return (
-    <>
-      <StructuredData data={structuredData} />
-      <div>
-        <PageTitle title={title} description={description} className="mb-8" />
+    <article
+      className={cn(
+        "group relative overflow-hidden rounded-3xl bg-zinc-950 transition-all duration-700 ease-out",
+        "border border-white/5 shadow-lg shadow-black/40",
+        "hover:border-pink-500/20 hover:shadow-2xl hover:shadow-pink-500/10 hover:-translate-y-1",
+        featured ? "col-span-1 md:col-span-2" : "col-span-1"
+      )}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className={cn("relative flex", featured ? "flex-col md:flex-row" : "flex-col")}>
+        {/* Image Section - Diagonal clip */}
+        {hasImage && (
+          <div
+            className={cn(
+              "relative overflow-hidden transition-all duration-700",
+              featured ? "h-64 md:h-auto md:w-1/2" : "h-48"
+            )}
+            style={{
+              clipPath: featured
+                ? isHovered
+                  ? "polygon(0 0, 100% 0, 85% 100%, 0 100%)"
+                  : "polygon(0 0, 95% 0, 80% 100%, 0 100%)"
+                : "polygon(0 0, 100% 0, 100% 85%, 0 100%)",
+            }}
+          >
+            <Image
+              src={project.coverImage || project.previewImage || ""}
+              alt={project.name}
+              fill
+              className={cn(
+                "object-cover transition-all duration-700",
+                isHovered ? "scale-110 brightness-110 contrast-105" : "brightness-90"
+              )}
+            />
+            {/* Colour overlay */}
+            <div
+              className={cn(
+                "absolute inset-0 bg-gradient-to-br from-pink-500/20 to-pink-900/30 mix-blend-overlay transition-opacity duration-500",
+                isHovered ? "opacity-60" : "opacity-30"
+              )}
+            />
+          </div>
+        )}
+
+        {/* Content Section */}
+        <div className={cn("relative flex flex-col gap-4 p-8", featured && hasImage && "md:w-1/2 md:pl-4")}>
+          {/* Number accent */}
+          <span
+            className={cn(
+              "absolute -top-2 right-6 text-7xl font-black transition-all duration-500",
+              isHovered ? "text-pink-500/30" : "text-pink-500/10"
+            )}
+            style={{
+              WebkitTextStroke: "1px currentColor",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            {projectNumber}
+          </span>
+
+          {featured && (
+            <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-pink-500/20 bg-pink-500/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-pink-500">
+              <Sparkles className="h-3 w-3" />
+              Featured
+            </span>
+          )}
+
+          <h3 className="text-2xl font-bold tracking-tight text-white/90">
+            {project.name}
+          </h3>
+
+          {project.description && (
+            <p className="text-base leading-relaxed text-white/50">
+              {project.description}
+            </p>
+          )}
+
+          <div className="mt-auto flex flex-wrap gap-2 pt-2">
+            {project.skills.slice(0, featured ? 6 : 4).map((skill) => (
+              <span
+                key={skill}
+                className="rounded border border-pink-500/20 bg-pink-500/10 px-2.5 py-1 text-xs font-medium text-pink-500"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            {project.links.map((link) => (
+              <Link
+                key={link}
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-lg bg-white/5 px-4 py-2.5 text-sm font-semibold text-white/70 transition-all duration-300 hover:bg-pink-500/15 hover:text-pink-500"
+              >
+                {link.includes("github.com") ? <Github className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
+                {link.includes("github.com") ? "Source" : "Live"}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+};
+
+const ProjectsPage = () => {
+  const sorted = [...projects.filter((p) => p.featured), ...projects.filter((p) => !p.featured)];
+
+  return (
+    <div className={cn(geist.variable, "font-[family-name:var(--font-geist)]")}>
+      {/* Background */}
+      <div className="fixed inset-0 -z-10 bg-zinc-950" />
+
+      {/* Glow effect */}
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute right-0 top-0 h-[600px] w-[600px] translate-x-1/3 -translate-y-1/3 rounded-full bg-pink-500/5 blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto max-w-5xl px-6 py-8">
+        <header className="mb-16">
+          <div className="mb-4 h-1 w-16 rounded-full bg-gradient-to-r from-pink-500 to-pink-500/40" />
+          <h1 className="mb-6 text-5xl font-black tracking-tight text-white/95 md:text-7xl">
+            Projects
+          </h1>
+          <p className="max-w-lg text-xl leading-relaxed text-white/40">
+            A showcase of completed projects and experiments with new technologies.
+          </p>
+        </header>
+
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {projects.map((project) => (
-            <ProjectCard key={project.name} project={project} />
+          {sorted.map((project, index) => (
+            <ProjectCard key={project.slug} project={project} index={index} />
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
