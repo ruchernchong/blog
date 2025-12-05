@@ -1,5 +1,5 @@
-import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { betterAuth } from "better-auth/minimal";
 import { lastLoginMethod, oAuthProxy } from "better-auth/plugins";
 import { ERROR_IDS } from "@/constants/error-ids";
 import { logError } from "@/lib/logger";
