@@ -1,8 +1,7 @@
-import { Badge } from "@heroui/badge";
 import { Card, CardBody, CardFooter } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { SiGithub } from "@icons-pack/react-simple-icons";
-import { ExternalLink, Sparkles } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import projects from "@/data/projects";
@@ -123,22 +122,7 @@ export default function ProjectsPage() {
           </h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {featuredProjects.map((project) => {
-              return (
-                <Badge
-                  key={project.slug}
-                  content={
-                    <Chip classNames={{ base: "bg-pink-500 text-white" }}>
-                      <span className="flex items-center gap-1">
-                        <Sparkles size={14} />
-                        Featured
-                      </span>
-                    </Chip>
-                  }
-                  placement="top-right"
-                >
-                  <ProjectCard project={project} />
-                </Badge>
-              );
+              return <ProjectCard key={project.slug} project={project} />;
             })}
           </div>
         </section>
