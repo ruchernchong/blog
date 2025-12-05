@@ -14,6 +14,15 @@ const geist = Geist({
   variable: "--font-geist",
 });
 
+16a: // Helper to robustly check if a link is actually github.com
+16b: function isGitHubLink(link: string): boolean {
+16c:   try {
+16d:     const url = new URL(link);
+16e:     return url.hostname === "github.com";
+16f:   } catch {
+16g:     return false;
+16h:   }
+16i: }
 const ProjectCard = ({ project, index }: { project: Project; index: number }) => {
   const [isHovered, setIsHovered] = useState(false);
   const projectNumber = String(index + 1).padStart(2, "0");
@@ -119,8 +128,8 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 rounded-lg bg-white/5 px-4 py-2.5 text-sm font-semibold text-white/70 transition-all duration-300 hover:bg-pink-500/15 hover:text-pink-500"
               >
-                {link.includes("github.com") ? <Github className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
-                {link.includes("github.com") ? "Source" : "Live"}
+                {isGitHubLink(link) ? <Github className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
+                {isGitHubLink(link) ? "Source" : "Live"}
               </Link>
             ))}
           </div>
