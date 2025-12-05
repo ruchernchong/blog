@@ -1,5 +1,6 @@
 import { EyeIcon } from "@heroicons/react/24/outline";
 import { format, formatISO } from "date-fns";
+import type { Route } from "next";
 import Link from "next/link";
 import {
   Card,
@@ -32,7 +33,7 @@ export const PopularPosts = async () => {
           return (
             <Card key={post.id}>
               <Link
-                href={post.metadata.canonical}
+                href={post.metadata.canonical as Route}
                 className="flex h-full flex-col"
               >
                 <CardHeader>

@@ -1,4 +1,5 @@
 import { format, formatISO } from "date-fns";
+import type { Route } from "next";
 import Link from "next/link";
 import {
   Card,
@@ -27,7 +28,7 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
           return (
             <Card key={post.id}>
               <Link
-                href={post.metadata.canonical}
+                href={post.metadata.canonical as Route}
                 className="flex h-full flex-col"
               >
                 <CardHeader>

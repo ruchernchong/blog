@@ -1,5 +1,5 @@
 import { format, formatISO } from "date-fns";
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { PopularPosts } from "@/app/(blog)/blog/_components/popular-posts";
 import {
@@ -41,7 +41,7 @@ const BlogPage = async () => {
               return (
                 <Card key={post.id}>
                   <Link
-                    href={post.metadata.canonical}
+                    href={post.metadata.canonical as Route}
                     className="flex h-full flex-col"
                   >
                     <CardHeader>

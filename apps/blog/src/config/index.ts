@@ -1,8 +1,10 @@
+import type { Route } from "next";
+
 import "dotenv/config";
 
 export interface NavLink {
   title: string;
-  href: string;
+  href: Route;
 }
 
 export const DOMAIN_NAME =
@@ -19,7 +21,6 @@ export const navLinks: NavLink[] = [
   { title: "Dashboard", href: "/dashboard" },
   { title: "About", href: "/about" },
   { title: "Projects", href: "/projects" },
-  // { title: "Resume", href: "/resume" },
 ];
 
 export const MAX_LIKES_PER_USER = 50;

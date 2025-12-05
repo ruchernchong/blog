@@ -1,3 +1,5 @@
+import type { Route } from "next";
+
 export interface Company {
   name: string;
   title: string;
@@ -14,7 +16,7 @@ export interface Project {
   coverImage?: string;
   description?: string;
   skills: string[];
-  links: string[];
+  links: Route[];
   previewImage?: string;
   featured?: boolean;
 }

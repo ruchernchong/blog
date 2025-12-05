@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import Link from "next/link";
 import { Fragment } from "react";
 import { getBrowsers } from "@/app/(blog)/analytics/_actions/browsers";
@@ -95,7 +96,7 @@ const AnalyticsPage = async () => {
               <Fragment key={path}>
                 <div className="flex gap-1">
                   <Link
-                    href={path}
+                    href={path as Route}
                     className="relative flex-1 px-2 hover:underline"
                   >
                     <div

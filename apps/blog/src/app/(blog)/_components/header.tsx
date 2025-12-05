@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Link } from "next-view-transitions";
@@ -9,7 +10,7 @@ import { navLinks } from "@/config";
 import { cn } from "@/lib/utils";
 
 interface NavItemProps extends PropsWithChildren {
-  href: string;
+  href: Route;
   className?: string;
   title?: string;
 }
@@ -57,7 +58,7 @@ export const Header = () => {
   );
 };
 
-const NavItem = ({ href, className, children, title }: NavItemProps) => {
+const NavItem = ({ href, className, children }: NavItemProps) => {
   return (
     <Link href={href} className={className}>
       {children}

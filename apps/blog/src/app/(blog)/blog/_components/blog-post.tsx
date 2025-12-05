@@ -1,11 +1,12 @@
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { format, formatISO, parseISO } from "date-fns";
+import type { Route } from "next";
 import Link from "next/link";
 import { Typography } from "@/components/shared/typography";
 
 interface BlogPostProps {
   title: string;
-  canonical: string;
+  canonical: Route;
   excerpt: string;
   publishedAt: string;
 }
