@@ -14,16 +14,25 @@ const geist = Geist({
   variable: "--font-geist",
 });
 
-16a: // Helper to robustly check if a link is actually github.com
-16b: function isGitHubLink(link: string): boolean {
-16c:   try {
-16d:     const url = new URL(link);
-16e:     return url.hostname === "github.com";
-16f:   } catch {
-16g:     return false;
-16h:   }
-16i: }
-const ProjectCard = ({ project, index }: { project: Project; index: number }) => {
+const isGitHubLink = (url: string): boolean => {
+  try {
+    const parsed = new URL(url);
+    return (
+      parsed.hostname === "github.com" ||
+      parsed.hostname.endsWith(".github.com")
+    );
+  } catch {
+    return false;
+  }
+};
+
+const ProjectCard = ({
+  project,
+  index,
+}: {
+  project: Project;
+  index: number;
+}) => {
   const [isHovered, setIsHovered] = useState(false);
   const projectNumber = String(index + 1).padStart(2, "0");
   const featured = project.featured;
@@ -33,20 +42,25 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
     <article
       className={cn(
         "group relative overflow-hidden rounded-3xl bg-zinc-950 transition-all duration-700 ease-out",
-        "border border-white/5 shadow-lg shadow-black/40",
-        "hover:border-pink-500/20 hover:shadow-2xl hover:shadow-pink-500/10 hover:-translate-y-1",
-        featured ? "col-span-1 md:col-span-2" : "col-span-1"
+        "border border-white/5 shadow-black/40 shadow-lg",
+        "hover:-translate-y-1 hover:border-pink-500/20 hover:shadow-2xl hover:shadow-pink-500/10",
+        featured ? "col-span-1 md:col-span-2" : "col-span-1",
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={cn("relative flex", featured ? "flex-col md:flex-row" : "flex-col")}>
+      <div
+        className={cn(
+          "relative flex",
+          featured ? "flex-col md:flex-row" : "flex-col",
+        )}
+      >
         {/* Image Section - Diagonal clip */}
         {hasImage && (
           <div
             className={cn(
               "relative overflow-hidden transition-all duration-700",
-              featured ? "h-64 md:h-auto md:w-1/2" : "h-48"
+              featured ? "h-64 md:h-auto md:w-1/2" : "h-48",
             )}
             style={{
               clipPath: featured
@@ -62,26 +76,33 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
               fill
               className={cn(
                 "object-cover transition-all duration-700",
-                isHovered ? "scale-110 brightness-110 contrast-105" : "brightness-90"
+                isHovered
+                  ? "scale-110 brightness-110 contrast-105"
+                  : "brightness-90",
               )}
             />
             {/* Colour overlay */}
             <div
               className={cn(
                 "absolute inset-0 bg-gradient-to-br from-pink-500/20 to-pink-900/30 mix-blend-overlay transition-opacity duration-500",
-                isHovered ? "opacity-60" : "opacity-30"
+                isHovered ? "opacity-60" : "opacity-30",
               )}
             />
           </div>
         )}
 
         {/* Content Section */}
-        <div className={cn("relative flex flex-col gap-4 p-8", featured && hasImage && "md:w-1/2 md:pl-4")}>
+        <div
+          className={cn(
+            "relative flex flex-col gap-4 p-8",
+            featured && hasImage && "md:w-1/2 md:pl-4",
+          )}
+        >
           {/* Number accent */}
           <span
             className={cn(
-              "absolute -top-2 right-6 text-7xl font-black transition-all duration-500",
-              isHovered ? "text-pink-500/30" : "text-pink-500/10"
+              "-top-2 absolute right-6 font-black text-7xl transition-all duration-500",
+              isHovered ? "text-pink-500/30" : "text-pink-500/10",
             )}
             style={{
               WebkitTextStroke: "1px currentColor",
@@ -92,18 +113,18 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
           </span>
 
           {featured && (
-            <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-pink-500/20 bg-pink-500/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-pink-500">
+            <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-pink-500/20 bg-pink-500/10 px-3 py-1 font-bold text-pink-500 text-xs uppercase tracking-wider">
               <Sparkles className="h-3 w-3" />
               Featured
             </span>
           )}
 
-          <h3 className="text-2xl font-bold tracking-tight text-white/90">
+          <h3 className="font-bold text-2xl text-white/90 tracking-tight">
             {project.name}
           </h3>
 
           {project.description && (
-            <p className="text-base leading-relaxed text-white/50">
+            <p className="text-base text-white/50 leading-relaxed">
               {project.description}
             </p>
           )}
@@ -112,7 +133,7 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
             {project.skills.slice(0, featured ? 6 : 4).map((skill) => (
               <span
                 key={skill}
-                className="rounded border border-pink-500/20 bg-pink-500/10 px-2.5 py-1 text-xs font-medium text-pink-500"
+                className="rounded border border-pink-500/20 bg-pink-500/10 px-2.5 py-1 font-medium text-pink-500 text-xs"
               >
                 {skill}
               </span>
@@ -126,9 +147,13 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
                 href={link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-lg bg-white/5 px-4 py-2.5 text-sm font-semibold text-white/70 transition-all duration-300 hover:bg-pink-500/15 hover:text-pink-500"
+                className="flex items-center gap-2 rounded-lg bg-white/5 px-4 py-2.5 font-semibold text-sm text-white/70 transition-all duration-300 hover:bg-pink-500/15 hover:text-pink-500"
               >
-                {isGitHubLink(link) ? <Github className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
+                {isGitHubLink(link) ? (
+                  <Github className="h-4 w-4" />
+                ) : (
+                  <ExternalLink className="h-4 w-4" />
+                )}
                 {isGitHubLink(link) ? "Source" : "Live"}
               </Link>
             ))}
@@ -140,26 +165,30 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
 };
 
 const ProjectsPage = () => {
-  const sorted = [...projects.filter((p) => p.featured), ...projects.filter((p) => !p.featured)];
+  const sorted = [
+    ...projects.filter((p) => p.featured),
+    ...projects.filter((p) => !p.featured),
+  ];
 
   return (
     <div className={cn(geist.variable, "font-[family-name:var(--font-geist)]")}>
       {/* Background */}
-      <div className="fixed inset-0 -z-10 bg-zinc-950" />
+      <div className="-z-10 fixed inset-0 bg-zinc-950" />
 
       {/* Glow effect */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute right-0 top-0 h-[600px] w-[600px] translate-x-1/3 -translate-y-1/3 rounded-full bg-pink-500/5 blur-3xl" />
+      <div className="-z-10 pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="-translate-y-1/3 absolute top-0 right-0 h-[600px] w-[600px] translate-x-1/3 rounded-full bg-pink-500/5 blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-5xl px-6 py-8">
         <header className="mb-16">
           <div className="mb-4 h-1 w-16 rounded-full bg-gradient-to-r from-pink-500 to-pink-500/40" />
-          <h1 className="mb-6 text-5xl font-black tracking-tight text-white/95 md:text-7xl">
+          <h1 className="mb-6 font-black text-5xl text-white/95 tracking-tight md:text-7xl">
             Projects
           </h1>
-          <p className="max-w-lg text-xl leading-relaxed text-white/40">
-            A showcase of completed projects and experiments with new technologies.
+          <p className="max-w-lg text-white/40 text-xl leading-relaxed">
+            A showcase of completed projects and experiments with new
+            technologies.
           </p>
         </header>
 
