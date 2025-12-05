@@ -27,8 +27,11 @@ const nextConfig: NextConfig = {
       fullUrl: true,
     },
   },
+  typedRoutes: true,
   experimental: {
+    mcpServer: true,
     turbopackFileSystemCacheForDev: true,
+    typedEnv: true,
   },
   async headers() {
     return [
