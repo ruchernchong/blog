@@ -2,53 +2,37 @@
 
 import { HeartIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
-import { useOptimistic } from "react";
-import { incrementLikes } from "@/app/(blog)/_actions/stats";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "../../../../../convex/_generated/api";
 import { MAX_LIKES_PER_USER } from "@/config";
-import type { Likes } from "@/types";
 
-interface Props extends Likes {
+interface Props {
   slug: string;
-  onLikeUpdateAction: (likes: Likes) => void;
+  userHash: string;
 }
 
-const LikeButton = ({
-  slug,
-  totalLikes,
-  likesByUser,
-  onLikeUpdateAction,
-}: Props) => {
-  const initialState: Likes = { totalLikes, likesByUser };
+const LikeButton = ({ slug, userHash }: Props) => {
+  const likesByUser = useQuery(api.likes.getByUser, { slug, userHash });
+  const increment = useMutation(api.likes.increment);
 
-  const updateLikesState = (state: Likes) => ({
-    totalLikes: state.totalLikes + 1,
-    likesByUser: state.likesByUser + 1,
-  });
-
-  const [optimisticLikes, addOptimisticLike] = useOptimistic(
-    initialState,
-    updateLikesState,
-  );
-
-  const handleClick = async () => {
-    if (optimisticLikes.likesByUser >= MAX_LIKES_PER_USER) {
+  const handleClick = () => {
+    if (likesByUser !== undefined && likesByUser >= MAX_LIKES_PER_USER) {
       return;
     }
-
-    addOptimisticLike(optimisticLikes);
-    const stats = await incrementLikes(slug);
-    onLikeUpdateAction(stats);
+    increment({ slug, userHash });
   };
+
+  const hasLiked = likesByUser !== undefined && likesByUser > 0;
 
   return (
     <button
       type="button"
       onClick={handleClick}
       className={`transform transition-all duration-300 hover:scale-110 ${
-        optimisticLikes.likesByUser > 0 ? "text-pink-500" : "text-zinc-400"
+        hasLiked ? "text-pink-500" : "text-zinc-400"
       }`}
     >
-      {optimisticLikes.likesByUser > 0 ? (
+      {hasLiked ? (
         <HeartSolidIcon className="h-6 w-6" />
       ) : (
         <HeartIcon className="h-6 w-6" />

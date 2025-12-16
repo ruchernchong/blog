@@ -8,13 +8,19 @@
  * @module
  */
 
+import type * as likes from "../likes.js";
+import type * as views from "../views.js";
+
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
 
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  likes: typeof likes;
+  views: typeof views;
+}>;
 
 /**
  * A utility for referencing Convex functions in your app's public API.

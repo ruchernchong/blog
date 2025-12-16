@@ -29,17 +29,3 @@ export type SocialMedia =
   | "Bluesky"
   | "Threads";
 
-export interface LikesByUser {
-  [key: string]: number;
-}
-
-export interface PostStats {
-  slug: string;
-  likesByUser: LikesByUser;
-  views: number;
-}
-
-export type Likes = {
-  totalLikes: number;
-  likesByUser: number;
-};
