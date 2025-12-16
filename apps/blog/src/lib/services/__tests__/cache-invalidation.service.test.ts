@@ -3,7 +3,6 @@ import { CacheConfig } from "@/lib/config/cache.config";
 import * as postsQueries from "@/lib/queries/posts";
 import type { CacheService } from "../cache.service";
 import { CacheInvalidationService } from "../cache-invalidation.service";
-import type { PopularPostsService } from "../popular-posts.service";
 
 vi.mock("@/lib/queries/posts", () => ({
   getPostsWithOverlappingTags: vi.fn(),
@@ -12,9 +11,6 @@ vi.mock("@/lib/queries/posts", () => ({
 describe("CacheInvalidationService", () => {
   let mockCache: {
     del: Mock;
-  };
-  let mockPopularService: {
-    removeFromPopular: Mock;
   };
   let cacheInvalidationService: CacheInvalidationService;
 
@@ -25,24 +21,18 @@ describe("CacheInvalidationService", () => {
       del: vi.fn(),
     };
 
-    mockPopularService = {
-      removeFromPopular: vi.fn(),
-    };
-
     cacheInvalidationService = new CacheInvalidationService(
       mockCache as unknown as CacheService,
-      mockPopularService as unknown as PopularPostsService,
     );
   });
 
   describe("invalidatePost", () => {
-    it("deletes both stats and related cache for a post", async () => {
+    it("deletes related cache for a post", async () => {
       mockCache.del.mockResolvedValue(undefined);
 
       await cacheInvalidationService.invalidatePost("test-post");
 
       expect(mockCache.del).toHaveBeenCalledWith([
-        CacheConfig.REDIS_KEYS.POST_STATS("test-post"),
         CacheConfig.REDIS_KEYS.RELATED_CACHE("test-post"),
       ]);
     });
@@ -115,41 +105,23 @@ describe("CacheInvalidationService", () => {
     });
   });
 
-  describe("invalidatePopularPost", () => {
-    it("removes from popular and invalidates post caches", async () => {
-      mockPopularService.removeFromPopular.mockResolvedValue(undefined);
+  describe("invalidateDeletedPost", () => {
+    it("invalidates post cache", async () => {
       mockCache.del.mockResolvedValue(undefined);
 
-      await cacheInvalidationService.invalidatePopularPost("test-post");
-
-      expect(mockPopularService.removeFromPopular).toHaveBeenCalledWith(
-        "test-post",
-      );
+      await cacheInvalidationService.invalidateDeletedPost("test-post");
 
       expect(mockCache.del).toHaveBeenCalledWith([
-        CacheConfig.REDIS_KEYS.POST_STATS("test-post"),
         CacheConfig.REDIS_KEYS.RELATED_CACHE("test-post"),
       ]);
-    });
-
-    it("operations run in parallel", async () => {
-      const removePromise = Promise.resolve();
-      const delPromise = Promise.resolve();
-
-      mockPopularService.removeFromPopular.mockReturnValue(removePromise);
-      mockCache.del.mockReturnValue(delPromise);
-
-      await cacheInvalidationService.invalidatePopularPost("test-post");
-
-      // Both should be called (parallel execution)
-      expect(mockPopularService.removeFromPopular).toHaveBeenCalled();
-      expect(mockCache.del).toHaveBeenCalled();
     });
   });
 
   describe("invalidateAll", () => {
     it("logs warning when called", async () => {
-      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation();
+      const consoleWarnSpy = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
 
       await cacheInvalidationService.invalidateAll();
 

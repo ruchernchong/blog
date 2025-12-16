@@ -5,7 +5,13 @@
   "tasks": {
     "build": {
       "dependsOn": ["migrate", "^build"],
-      "env": ["GH_ACCESS_TOKEN", "DATABASE_URL", "SITE_URL", "UPSTASH_REDIS_*"],
+      "env": [
+        "GH_ACCESS_TOKEN",
+        "DATABASE_URL",
+        "SITE_URL",
+        "UPSTASH_REDIS_*",
+        "NEXT_PUBLIC_CONVEX_URL"
+      ],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "start": {
@@ -14,6 +20,11 @@
       "cache": false
     },
     "dev": {
+      "with": ["convex:dev"],
+      "persistent": true,
+      "cache": false
+    },
+    "convex:dev": {
       "persistent": true,
       "cache": false
     },
@@ -39,6 +50,9 @@
       "dependsOn": ["^lint"],
       "inputs": ["$TURBO_DEFAULT$", "*.config.js", "*.config.ts", "biome.json"],
       "cache": false
+    },
+    "format": {
+      "inputs": ["$TURBO_DEFAULT$"]
     },
     "generate": {
       "inputs": ["src/schema/**", "drizzle.config.ts"],

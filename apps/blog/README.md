@@ -28,7 +28,8 @@ This portfolio is built with modern web technologies:
 - **MDX** - Markdown with JSX components
 - **Neon PostgreSQL** - Serverless Postgres database
 - **Drizzle ORM** - Type-safe database toolkit
-- **Upstash Redis** - Serverless Redis for caching
+- **Convex** - Real-time database for likes, views, and reactions
+- **Upstash Redis** - Serverless Redis for related posts and analytics
 - **Better Auth** - Authentication with OAuth providers (GitHub, Google)
 
 ### Analytics & Monitoring
@@ -58,6 +59,7 @@ This portfolio is built with modern web technologies:
 - **pnpm 10.2.0 or higher** - Fast, disk space efficient package manager
 - **Git** - Version control system
 - **Neon PostgreSQL database** - Serverless database (sign up at [neon.tech](https://neon.tech))
+- **Convex account** - Real-time database (sign up at [convex.dev](https://convex.dev))
 - **Upstash Redis** - Serverless Redis (sign up at [upstash.com](https://upstash.com))
 - **GitHub/Google OAuth apps** - For authentication (optional, for `/studio` CMS access)
 
@@ -98,24 +100,37 @@ cp .env.example .env
      - `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`
      - `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
 
-6. Return to project root and set up the database
+6. Initialize Convex
+
+```bash
+npx convex dev
+```
+
+This will:
+- Create a new Convex project (if needed)
+- Generate `NEXT_PUBLIC_CONVEX_URL` - add this to your `.env` file
+- Set up the Convex schema and functions
+
+7. Return to project root and set up the database
 
 ```bash
 cd ../..
 pnpm db:migrate
 ```
 
-7. (Optional) Seed the database with sample data
+8. (Optional) Seed the database with sample data
 
 ```bash
 pnpm db:seed
 ```
 
-8. Start the development server
+9. Start the development server
 
 ```bash
 pnpm dev
 ```
+
+This automatically runs both Next.js and Convex dev servers in parallel.
 
 Your site should now be running at `http://localhost:3000`!
 
@@ -175,6 +190,10 @@ This is a Turborepo monorepo with the following structure:
 portfolio/
 ├── apps/
 │   └── blog/                    # Main Next.js application
+│       ├── convex/             # Convex real-time database
+│       │   ├── schema.ts       # Convex schema (likes, viewCounts)
+│       │   ├── likes.ts        # Like queries and mutations
+│       │   └── views.ts        # View queries and mutations
 │       ├── src/
 │       │   ├── app/            # Next.js App Router pages and API routes
 │       │   │   ├── (auth)/     # Authentication routes (login)
@@ -194,6 +213,7 @@ portfolio/
 │       │   │   └── auth.ts    # Better Auth tables
 │       │   └── utils/         # Helper functions with tests
 │       ├── migrations/        # Database migration files
+│       ├── convex.json        # Convex configuration
 │       └── drizzle.config.ts  # Drizzle configuration
 ├── packages/                  # Shared packages (currently empty)
 └── turbo.json                # Turborepo configuration
@@ -214,20 +234,6 @@ This application follows a **class-based service architecture** for better testa
 - Provides health check for Redis availability
 - Methods: `get`, `set`, `del`, `zadd`, `zrange`, `zrem`, `isHealthy`
 
-**`PostStatsService`** - Statistics Management
-- Tracks view counts and likes per user
-- Updates cache and popular posts sorted set atomically
-- Uses React `cache()` for request-level deduplication
-- Aggregates total likes across all users
-- Integrates with analytics dashboard
-
-**`PopularPostsService`** - Popular Posts Tracking
-- Maintains Redis sorted set of posts by view count
-- Fetches top N posts with scores
-- Merges Redis data with database post details
-- Falls back to recent published posts if Redis unavailable
-- Handles sorted set operations (add, remove, update score)
-
 **`RelatedPostsCalculator`** - Smart Recommendations
 - Implements **Jaccard similarity algorithm** for tag matching
 - Formula: `J(A,B) = |A ∩ B| / |A ∪ B|` (intersection over union)
@@ -236,22 +242,22 @@ This application follows a **class-based service architecture** for better testa
 - Returns posts sorted by similarity score (0.0 to 1.0)
 
 **`CacheInvalidationService`** - Cache Management
-- Invalidates post caches on content updates
-- Clears related post caches when tags change
-- Removes posts from popular sorted set on deletion
+- Invalidates related post caches when tags change
 - Invalidates all posts with overlapping tags
 - Integrated into studio API PATCH/DELETE handlers
+
+**Convex Functions** (`convex/`)
+- **Likes** (`likes.ts`) - Per-user like tracking with 50 likes/user limit
+- **Views** (`views.ts`) - View counting and popular posts ranking
+- Real-time queries and mutations for instant UI updates
+- Uses indexes for efficient lookups by slug and user
 
 #### Configuration (`lib/config/cache.config.ts`)
 
 Centralized cache settings:
 ```typescript
-POPULAR_POSTS: { LIMIT: 5, FALLBACK_LIMIT: 10 }
 RELATED_POSTS: { LIMIT: 4, TTL: 86400, MIN_SIMILARITY: 0.1 }
-POST_STATS: { TTL: 3600 }
 REDIS_KEYS: {
-  POPULAR_SET: "posts:popular",
-  POST_STATS: (slug) => `post:${slug}`,
   RELATED_CACHE: (slug) => `post:${slug}:related`
 }
 ```
@@ -277,7 +283,8 @@ The codebase follows a **3-layer architecture** for separation of concerns:
 
 - **📝 Blog System**: MDX-powered blog with syntax highlighting
 - **✏️ Content Studio**: Web-based CMS at `/studio` for managing blog posts
-- **🔥 Popular Posts**: Real-time view tracking with Redis sorted sets, showing top posts by popularity
+- **❤️ Real-time Reactions**: Live likes and views powered by Convex with per-user tracking
+- **🔥 Popular Posts**: Real-time view tracking displaying top posts by popularity (Convex-powered)
 - **🔗 Related Posts**: Smart tag-based recommendations using Jaccard similarity algorithm with Redis caching
 - **🔐 Authentication**: OAuth login with GitHub and Google via Better Auth
 - **📊 Analytics Dashboard**: Custom privacy-focused visitor analytics
@@ -288,7 +295,7 @@ The codebase follows a **3-layer architecture** for separation of concerns:
 - **🔍 SEO Optimized**: Structured data, sitemaps, and meta tags
 - **⚡ Performance**: Optimized images, caching, and core web vitals
 - **🔒 Privacy-First**: IP hashing and minimal data collection
-- **🚀 Modern Stack**: Latest Next.js 16, React 19.2, and TypeScript features
+- **🚀 Modern Stack**: Latest Next.js 16, React 19.2, TypeScript, and Convex
 
 ## 🤝 Contributing
 

@@ -1,20 +1,25 @@
 "use client";
 
 import { HeroUIProvider } from "@heroui/react";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import type { ReactNode } from "react";
 
+const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+
 export const Providers = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
-    <HeroUIProvider>
-      <NextThemesProvider
-        attribute="class"
-        defaultTheme="dark"
-        enableSystem={false}
-        disableTransitionOnChange
-      >
-        {children}
-      </NextThemesProvider>
-    </HeroUIProvider>
+    <ConvexProvider client={convex}>
+      <HeroUIProvider>
+        <NextThemesProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          {children}
+        </NextThemesProvider>
+      </HeroUIProvider>
+    </ConvexProvider>
   );
 };

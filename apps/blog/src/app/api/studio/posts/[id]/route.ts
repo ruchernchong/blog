@@ -311,8 +311,8 @@ export const DELETE = async (
       return NextResponse.json({ message: "Post not found" }, { status: 404 });
     }
 
-    // Invalidate caches and remove from popular after successful deletion
-    await cacheInvalidationService.invalidatePopularPost(deletedPost.slug);
+    // Invalidate caches after successful deletion
+    await cacheInvalidationService.invalidateDeletedPost(deletedPost.slug);
 
     // Invalidate related posts caches for posts with similar tags
     if (deletedPost.tags.length > 0) {

@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "biome check",
+    "format": "biome format --write",
     "drop": "drizzle-kit drop",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
@@ -20,7 +21,9 @@
     "up": "drizzle-kit up",
     "studio": "drizzle-kit studio",
     "seed": "NODE_ENV=development tsx src/scripts/seed.ts",
-    "release": "semantic-release"
+    "release": "semantic-release",
+    "convex:dev": "convex dev",
+    "convex:deploy": "convex deploy"
   },
   "dependencies": {
     "@apollo/client": "^3.12.2",
@@ -52,6 +55,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cobe": "^0.6.4",
+    "convex": "^1.31.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.3",
