@@ -23,8 +23,10 @@
 import redis from "@/config/redis";
 import { CacheService } from "@/lib/services/cache.service";
 import { CacheInvalidationService } from "@/lib/services/cache-invalidation.service";
+import { MediaService } from "@/lib/services/media.service";
 import { PopularPostsService } from "@/lib/services/popular-posts.service";
 import { PostStatsService } from "@/lib/services/post-stats.service";
+import { R2Service } from "@/lib/services/r2.service";
 import { RelatedPostsCalculator } from "@/lib/services/related-posts.service";
 
 // Initialize base cache service
@@ -41,9 +43,15 @@ export const cacheInvalidationService = new CacheInvalidationService(
   popularPostsService,
 );
 
+// Initialize R2 and media services
+export const r2Service = new R2Service();
+export const mediaService = new MediaService(r2Service, cacheService);
+
 // Re-export service classes for testing purposes
 export { CacheService } from "@/lib/services/cache.service";
 export { CacheInvalidationService } from "@/lib/services/cache-invalidation.service";
+export { MediaService } from "@/lib/services/media.service";
 export { PopularPostsService } from "@/lib/services/popular-posts.service";
 export { PostStatsService } from "@/lib/services/post-stats.service";
+export { R2Service } from "@/lib/services/r2.service";
 export { RelatedPostsCalculator } from "@/lib/services/related-posts.service";

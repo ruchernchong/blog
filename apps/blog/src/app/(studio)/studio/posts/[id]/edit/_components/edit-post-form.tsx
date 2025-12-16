@@ -1,9 +1,11 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   type FormEvent,
+  Suspense,
   useEffect,
   useEffectEvent,
   useId,
@@ -22,6 +24,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
+
+const ContentEditor = dynamic(
+  () => import("@/components/studio/content-editor"),
+  { ssr: false }
+);
 
 interface Post {
   id: string;
@@ -59,7 +67,6 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
   const titleId = useId();
   const slugId = useId();
   const summaryId = useId();
-  const contentId = useId();
   const statusId = useId();
   const tagsId = useId();
   const coverImageId = useId();
@@ -325,15 +332,29 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
 
             <div className="flex flex-col gap-2">
               <Label htmlFor={coverImageId}>Cover Image URL</Label>
-              <Input
-                id={coverImageId}
-                type="url"
-                value={formData.coverImage}
-                onChange={(e) =>
-                  setFormData({ ...formData, coverImage: e.target.value })
-                }
-                placeholder="https://example.com/image.jpg"
-              />
+              <div className="flex gap-2">
+                <Input
+                  id={coverImageId}
+                  type="url"
+                  value={formData.coverImage}
+                  onChange={(e) =>
+                    setFormData({ ...formData, coverImage: e.target.value })
+                  }
+                  placeholder="https://example.com/image.jpg"
+                />
+                <Suspense fallback={null}>
+                  <ImagePickerDialog
+                    onSelect={(url) =>
+                      setFormData({ ...formData, coverImage: url })
+                    }
+                    trigger={
+                      <Button type="button" variant="outline" size="sm">
+                        Browse
+                      </Button>
+                    }
+                  />
+                </Suspense>
+              </div>
               <p className="text-muted-foreground text-xs">
                 Optional cover image URL
               </p>
@@ -346,21 +367,16 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
             <CardTitle>Content</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor={contentId}>
-                MDX Content <span className="text-destructive">*</span>
-              </Label>
-              <Textarea
-                id={contentId}
-                value={formData.content}
-                onChange={(e) =>
-                  setFormData({ ...formData, content: e.target.value })
-                }
-                placeholder="# Your MDX content here..."
-                rows={20}
-                className="font-mono text-sm"
-                required
-              />
+            <div className="h-[600px]">
+              <Suspense fallback={null}>
+                <ContentEditor
+                  markdown={formData.content}
+                  onChange={(content) =>
+                    setFormData({ ...formData, content })
+                  }
+                  slug={formData.slug}
+                />
+              </Suspense>
             </div>
           </CardContent>
         </Card>
