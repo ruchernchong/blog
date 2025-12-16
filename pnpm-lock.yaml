@@ -137,6 +137,9 @@ importers:
       cobe:
         specifier: ^0.6.4
         version: 0.6.4
+      convex:
+        specifier: ^1.31.0
+        version: 1.31.0(react@19.2.1)
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -4848,6 +4851,22 @@ packages:
 
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
+
+  convex@1.31.0:
+    resolution: {integrity: sha512-ht3dtpWQmxX62T8PT3p/5PDlRzSW5p2IDTP4exKjQ5dqmvhtn1wLFakJAX4CCeu1s0Ch0dKY5g2dk/wETTRAOw==}
+    engines: {node: '>=18.0.0', npm: '>=7.0.0'}
+    hasBin: true
+    peerDependencies:
+      '@auth0/auth0-react': ^2.0.1
+      '@clerk/clerk-react': ^4.12.8 || ^5.0.0
+      react: ^18.0.0 || ^19.0.0-0 || ^19.0.0
+    peerDependenciesMeta:
+      '@auth0/auth0-react':
+        optional: true
+      '@clerk/clerk-react':
+        optional: true
+      react:
+        optional: true
 
   cookie-signature@1.2.2:
     resolution: {integrity: sha512-D76uU73ulSXrD1UXF4KE2TMxVVwhsnCgfAyTg9k8P6KGZjlXKrOLe4dJQKI3Bxi5wjesZoFXJWElNWBjPZMbhg==}
@@ -14074,6 +14093,13 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
+  convex@1.31.0(react@19.2.1):
+    dependencies:
+      esbuild: 0.25.4
+      prettier: 3.7.4
+    optionalDependencies:
+      react: 19.2.1
+
   cookie-signature@1.2.2: {}
 
   cookie@0.7.2: {}
@@ -16762,8 +16788,7 @@ snapshots:
 
   prettier@3.4.2: {}
 
-  prettier@3.7.4:
-    optional: true
+  prettier@3.7.4: {}
 
   pretty-format@27.5.1:
     dependencies:

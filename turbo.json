@@ -5,7 +5,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["migrate", "^build"],
-      "env": ["GH_ACCESS_TOKEN", "DATABASE_URL", "SITE_URL", "UPSTASH_REDIS_*"],
+      "env": ["GH_ACCESS_TOKEN", "DATABASE_URL", "SITE_URL", "UPSTASH_REDIS_*", "NEXT_PUBLIC_CONVEX_URL"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "start": {
