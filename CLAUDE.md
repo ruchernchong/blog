@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 #### Development
 
-- `pnpm dev` - Start development server with hot reload (uses Turbo)
+- `pnpm dev` - Start development server with hot reload (uses Turbo, runs Next.js + Convex dev in parallel)
 - `pnpm build` - Build all apps for production (uses Turbo)
 - `pnpm start` - Start production server (uses Turbo)
 - `pnpm test` - Run tests across all apps (uses Turbo)
@@ -57,6 +57,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm studio` - Open Drizzle Studio
 - `pnpm seed` - Seed database with development data
 
+#### Convex (App-level)
+
+- `pnpm convex:dev` - Start Convex development server (automatically runs with `pnpm dev` at root)
+- `pnpm convex:deploy` - Deploy Convex functions to production
+
 ## Architecture Overview
 
 This is a Turborepo monorepo containing a Next.js 16 portfolio website with an integrated blog system.
@@ -71,8 +76,9 @@ This is a Turborepo monorepo containing a Next.js 16 portfolio website with an i
 - **Framework**: Next.js 16 with App Router and React 19.2
 - **Content**: Database-backed MDX with next-mdx-remote for compilation
 - **Database**: Neon PostgreSQL with Drizzle ORM
+- **Real-time**: Convex for live likes, views, and reactions
 - **Authentication**: Better Auth with OAuth providers (GitHub, Google)
-- **Cache**: Upstash Redis for analytics and caching
+- **Cache**: Upstash Redis for related posts and analytics
 - **Styling**: Tailwind CSS v4
 - **Testing**: Vitest with React Testing Library
 - **Code Quality**: Biome for linting/formatting, TypeScript strict mode
@@ -82,7 +88,8 @@ This is a Turborepo monorepo containing a Next.js 16 portfolio website with an i
 
 - **Custom Analytics**: Privacy-focused visitor tracking with IP hashing
 - **Blog System**: Database-backed MDX blog posts with automatic metadata generation (reading time, SEO metadata)
-- **Popular Posts**: Real-time tracking via Redis sorted sets, displaying top posts by view count
+- **Real-time Reactions**: Live likes and views powered by Convex with per-user tracking
+- **Popular Posts**: Real-time view tracking displaying top posts by popularity (Convex-powered)
 - **Related Posts**: Tag-based recommendations using Jaccard similarity algorithm with Redis caching
 - **Content Studio**: Built-in CMS at `/studio` for managing blog posts directly in the database
 - **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers (following llmstxt.org standard)
@@ -92,6 +99,7 @@ This is a Turborepo monorepo containing a Next.js 16 portfolio website with an i
 
 ### Database Architecture
 
+#### PostgreSQL (Neon + Drizzle ORM)
 - Schema in `apps/blog/src/schema/` using Drizzle ORM
     - `posts.ts`: Blog posts with MDX content, metadata, tags, and publish status
     - `sessions.ts`: Session tracking for analytics (visits, geolocation, device info)
@@ -99,6 +107,15 @@ This is a Turborepo monorepo containing a Next.js 16 portfolio website with an i
     - `index.ts`: Database client export
 - Configuration in `apps/blog/drizzle.config.ts`
 - Migrations in `apps/blog/migrations/` managed by drizzle-kit
+
+#### Convex (Real-time Database)
+- Schema in `apps/blog/convex/schema.ts`
+    - `likes`: Per-user like tracking (slug, userHash, count) with compound indexes
+    - `viewCounts`: Post view aggregation (slug, count) with slug index
+- Functions in `apps/blog/convex/`
+    - `likes.ts`: Like queries and mutations (get, getByUser, increment)
+    - `views.ts`: View queries and mutations (get, getTop, increment, remove)
+- Configuration in `apps/blog/convex.json`
 
 ### Analytics System
 
@@ -130,18 +147,6 @@ The service layer uses classes for better testability, dependency injection, and
   - Logs errors with ERROR_IDS for monitoring
   - Health check method for Redis availability
 
-- `PostStatsService` - Post statistics management (views, likes)
-  - Tracks view counts and like counts per user
-  - Updates both cache and popular posts sorted set
-  - Uses React cache() for request-level deduplication
-  - Aggregates likes across all users
-
-- `PopularPostsService` - Popular posts tracking via Redis sorted set
-  - Fetches top N posts by view count from sorted set
-  - Merges Redis scores with database post data
-  - Falls back to recent published posts if Redis unavailable
-  - Maintains sorted set operations (add, remove, update)
-
 - `RelatedPostsCalculator` - Tag-based post recommendations
   - Implements Jaccard similarity algorithm for tag matching
   - Caches results for 24 hours to reduce computation
@@ -149,10 +154,9 @@ The service layer uses classes for better testability, dependency injection, and
   - Returns posts sorted by similarity score
 
 - `CacheInvalidationService` - Cache management on mutations
-  - Invalidates post caches on updates/deletes
-  - Clears related post caches when tags change
-  - Removes posts from popular sorted set on deletion
+  - Invalidates related post caches when tags change
   - Invalidates all posts with overlapping tags
+  - Integrated into studio API handlers
 
 **Service Container** (`lib/services/index.ts`):
 - Exports singleton instances of all services
@@ -161,9 +165,8 @@ The service layer uses classes for better testability, dependency injection, and
 
 **Configuration** (`lib/config/cache.config.ts`):
 - Centralized cache configuration (TTLs, limits, Redis keys)
-- Popular posts limit: 5, fallback: 10
-- Related posts limit: 4, TTL: 24 hours
-- Min similarity threshold: 0.1
+- Related posts: limit 4, TTL 24 hours, min similarity 0.1
+- Redis keys: `post:{slug}:related` for related posts cache
 
 **Benefits:**
 - Error resilience: Redis failures don't crash the app
@@ -175,9 +178,9 @@ The service layer uses classes for better testability, dependency injection, and
 #### 3. Action Layer (`app/(blog)/_actions/`)
 **Server actions for mutations only**
 - Contains only write operations (no reads)
-- Examples: `incrementViews()`, `incrementLikes()`
 - Uses React Server Actions for client-side mutations
-- Never used for data fetching (use services directly in components)
+- Never used for data fetching (use services or Convex queries directly in components)
+- Note: Likes and views are now handled by Convex mutations (not server actions)
 
 **Architecture Benefits**:
 - Clear separation of concerns
@@ -185,6 +188,30 @@ The service layer uses classes for better testability, dependency injection, and
 - Reusable queries across multiple services
 - Business logic isolated from data access
 - Follows Next.js 15+ best practices (server actions for writes only)
+
+### Convex Integration
+
+The application uses Convex for real-time features:
+
+**Client Components** - Use Convex React hooks
+- `useQuery(api.likes.get, { slug })` - Subscribe to real-time like counts
+- `useQuery(api.views.get, { slug })` - Subscribe to real-time view counts
+- `useMutation(api.likes.increment)` - Increment like count (max 50 per user)
+- `useMutation(api.views.increment)` - Increment view count
+
+**Server Components** - Use Convex server queries
+- `fetchQuery(api.views.getTop, { limit })` - Get popular posts by view count
+- Import from `convex/nextjs` for server-side data fetching
+
+**User Identification**
+- Authenticated users: Better Auth user ID
+- Anonymous users: Hashed IP address (SHA-256 with salt)
+- Same pattern as analytics for privacy protection
+
+**Development Workflow**
+- `pnpm dev` at root automatically runs both Next.js and Convex dev servers in parallel
+- Convex schema changes require restart or `--accept-data-loss` flag
+- Schema validation happens on function execution
 
 ## Environment Variables
 
@@ -197,6 +224,10 @@ Required environment variables (see `apps/blog/.env.example`):
 ### Database
 
 - `DATABASE_URL` - Neon PostgreSQL connection string
+
+### Convex
+
+- `NEXT_PUBLIC_CONVEX_URL` - Convex deployment URL (get from `npx convex dev` or Convex dashboard)
 
 ### GitHub Integration
 
@@ -234,6 +265,7 @@ examples. This is especially important for rapidly evolving libraries.
 
 - **Next.js** (`/vercel/next.js`) - Framework APIs, routing, data fetching
 - **React** (`/facebook/react`) - Hooks, components, server components
+- **Convex** (`/get-convex/convex-js`) - Real-time queries, mutations, schema, React hooks
 - **Drizzle ORM** (`/drizzle-team/drizzle-orm`) - Database queries, schema, migrations
 - **Better Auth** (`/better-auth/better-auth`) - Authentication setup, providers, session management
 - **Tailwind CSS** (`/tailwindlabs/tailwindcss`) - Styling utilities, configuration
