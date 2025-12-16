@@ -312,7 +312,7 @@ export const DELETE = async (
     }
 
     // Invalidate caches after successful deletion
-    await cacheInvalidationService.invalidateDeletedPost(deletedPost.slug);
+    await cacheInvalidationService.invalidatePopularPost(deletedPost.slug);
 
     // Invalidate related posts caches for posts with similar tags
     if (deletedPost.tags.length > 0) {
