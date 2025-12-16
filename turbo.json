@@ -14,6 +14,11 @@
       "cache": false
     },
     "dev": {
+      "with": ["convex:dev"],
+      "persistent": true,
+      "cache": false
+    },
+    "convex:dev": {
       "persistent": true,
       "cache": false
     },
