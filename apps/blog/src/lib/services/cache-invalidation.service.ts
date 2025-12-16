@@ -1,40 +1,51 @@
 import { CacheConfig } from "@/lib/config/cache.config";
 import { getPostsWithOverlappingTags } from "@/lib/queries/posts";
 import type { CacheService } from "@/lib/services/cache.service";
+import type { PopularPostsService } from "@/lib/services/popular-posts.service";
 
 /**
  * CacheInvalidationService - Manages cache invalidation for post-related caches.
  *
  * Handles:
- * - Single post cache invalidation (related)
+ * - Single post cache invalidation (stats, related)
  * - Tag-based invalidation (when tags change)
+ * - Popular posts removal (on delete)
  * - Bulk invalidation operations
  *
  * When to invalidate:
  * - Post update (especially tag changes) → invalidate related caches
- * - Post delete → invalidate related
+ * - Post delete → remove from popular, invalidate related
  * - Post publish/unpublish → invalidate related posts with same tags
  *
  * @example
  * ```typescript
- * const service = new CacheInvalidationService(cache);
+ * const service = new CacheInvalidationService(cache, popularService);
  * await service.invalidatePost('my-post-slug');
  * await service.invalidateRelatedByTags(['typescript', 'react']);
  * ```
  */
 export class CacheInvalidationService {
-  constructor(private readonly cache: CacheService) {}
+  constructor(
+    private readonly cache: CacheService,
+    private readonly popularService: PopularPostsService,
+  ) {}
 
   /**
    * Invalidate all caches for a single post
    *
    * Clears:
+   * - Post statistics (views, likes)
    * - Related posts cache
    *
    * @param slug - Post slug to invalidate
    */
   async invalidatePost(slug: string): Promise<void> {
-    await this.cache.del([CacheConfig.REDIS_KEYS.RELATED_CACHE(slug)]);
+    const keysToDelete = [
+      CacheConfig.REDIS_KEYS.POST_STATS(slug),
+      CacheConfig.REDIS_KEYS.RELATED_CACHE(slug),
+    ];
+
+    await this.cache.del(keysToDelete);
   }
 
   /**
@@ -69,12 +80,17 @@ export class CacheInvalidationService {
   }
 
   /**
-   * Invalidate caches when a post is deleted
+   * Remove post from popular sorted set and invalidate its caches
    *
-   * @param slug - Post slug to invalidate
+   * Used when a post is deleted or unpublished.
+   *
+   * @param slug - Post slug to remove
    */
-  async invalidateDeletedPost(slug: string): Promise<void> {
-    await this.invalidatePost(slug);
+  async invalidatePopularPost(slug: string): Promise<void> {
+    await Promise.all([
+      this.popularService.removeFromPopular(slug),
+      this.invalidatePost(slug),
+    ]);
   }
 
   /**
@@ -84,6 +100,8 @@ export class CacheInvalidationService {
    * - Testing/development
    * - Major data migrations
    * - Emergency cache clearing
+   *
+   * Does NOT clear the popular posts sorted set to preserve view counts.
    */
   async invalidateAll(): Promise<void> {
     // Note: Redis doesn't have a built-in way to delete by pattern

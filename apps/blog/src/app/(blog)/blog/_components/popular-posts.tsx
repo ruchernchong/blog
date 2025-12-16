@@ -1,5 +1,4 @@
 import { EyeIcon } from "@heroicons/react/24/outline";
-import { fetchQuery } from "convex/nextjs";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
@@ -9,28 +8,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/shared/card";
-import { getPublishedPostsBySlugs } from "@/lib/queries/posts";
-import { api } from "../../../../../convex/_generated/api";
+import { popularPostsService } from "@/lib/services";
 
 export const PopularPosts = async () => {
-  const topViews = await fetchQuery(api.views.getTop, { limit: 3 });
-
-  if (!topViews.length) {
-    return null;
-  }
-
-  const slugs = topViews.map((v) => v.slug);
-  const posts = await getPublishedPostsBySlugs(slugs);
-
-  // Create a Map for O(1) lookup of views by slug
-  const viewsBySlug = new Map(topViews.map((v) => [v.slug, v.views]));
-
-  const popularPosts = posts
-    .map((post) => ({
-      ...post,
-      views: viewsBySlug.get(post.slug) ?? 0,
-    }))
-    .sort((a, b) => b.views - a.views);
+  const popularPosts = await popularPostsService.getPopularPosts(3);
 
   if (!popularPosts.length) {
     return null;

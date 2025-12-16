@@ -1,22 +1,38 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { useState } from "react";
 import LikeButton from "@/app/(blog)/blog/_components/like-button";
-import { api } from "../../../../../convex/_generated/api";
+import type { Likes } from "@/types";
 
 interface Props {
   slug: string;
-  userHash: string;
+  initialTotalLikes: number;
+  initialLikesByUser: number;
 }
 
-export const LikeCounter = ({ slug, userHash }: Props) => {
-  const totalLikes = useQuery(api.likes.get, { slug });
+export const LikeCounter = ({
+  slug,
+  initialTotalLikes,
+  initialLikesByUser,
+}: Props) => {
+  const [totalLikes, setTotalLikes] = useState(initialTotalLikes);
+  const [likesByUser, setLikesByUser] = useState(initialLikesByUser);
+
+  const handleLikeUpdate = ({ totalLikes, likesByUser }: Likes) => {
+    setTotalLikes(totalLikes);
+    setLikesByUser(likesByUser);
+  };
 
   return (
     <div className="flex items-center gap-2 md:flex-col">
-      <LikeButton slug={slug} userHash={userHash} />
+      <LikeButton
+        slug={slug}
+        totalLikes={totalLikes}
+        likesByUser={likesByUser}
+        onLikeUpdateAction={handleLikeUpdate}
+      />
       <div className="text-neutral-400 text-sm">
-        {totalLikes?.toLocaleString() ?? "–"}
+        {totalLikes.toLocaleString()}
       </div>
     </div>
   );

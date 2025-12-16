@@ -1,28 +1,11 @@
-"use client";
-
-import { useMutation, useQuery } from "convex/react";
-import { useEffect, useRef } from "react";
-import { api } from "../../../../../convex/_generated/api";
+import { incrementViews } from "@/app/(blog)/_actions/stats";
 
 interface Props {
   slug: string;
 }
 
-export const ViewCounter = ({ slug }: Props) => {
-  const count = useQuery(api.views.get, { slug });
-  const increment = useMutation(api.views.increment);
-  const hasIncremented = useRef(false);
+export const ViewCounter = async ({ slug }: Props) => {
+  const stats = await incrementViews(slug);
 
-  useEffect(() => {
-    if (!hasIncremented.current) {
-      hasIncremented.current = true;
-      increment({ slug });
-    }
-  }, [slug, increment]);
-
-  return (
-    <div className="text-neutral-400 text-sm">
-      {count?.toLocaleString() ?? "–"}
-    </div>
-  );
+  return <div className="text-neutral-400 text-sm">{stats.views}</div>;
 };
