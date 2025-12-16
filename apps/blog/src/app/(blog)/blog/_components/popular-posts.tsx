@@ -22,10 +22,13 @@ export const PopularPosts = async () => {
   const slugs = topViews.map((v) => v.slug);
   const posts = await getPublishedPostsBySlugs(slugs);
 
+  // Create a Map for O(1) lookup of views by slug
+  const viewsBySlug = new Map(topViews.map((v) => [v.slug, v.views]));
+
   const popularPosts = posts
     .map((post) => ({
       ...post,
-      views: topViews.find((v) => v.slug === post.slug)?.views ?? 0,
+      views: viewsBySlug.get(post.slug) ?? 0,
     }))
     .sort((a, b) => b.views - a.views);
 

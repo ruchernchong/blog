@@ -73,7 +73,7 @@ export class CacheInvalidationService {
    *
    * @param slug - Post slug to invalidate
    */
-  async invalidatePopularPost(slug: string): Promise<void> {
+  async invalidateDeletedPost(slug: string): Promise<void> {
     await this.invalidatePost(slug);
   }
 

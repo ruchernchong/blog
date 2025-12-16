@@ -15,6 +15,9 @@ export const get = query({
 export const getTop = query({
   args: { limit: v.number() },
   handler: async (ctx, args) => {
+    // Note: Convex doesn't support ordering by non-indexed fields, so we fetch
+    // all records and sort in memory. This is acceptable for small datasets
+    // (< 1000 posts) but may need optimisation for larger scale.
     const records = await ctx.db.query("viewCounts").collect();
     return records
       .sort((a, b) => b.count - a.count)

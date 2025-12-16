@@ -1,7 +1,7 @@
 "use client";
 
-import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { HeroUIProvider } from "@heroui/react";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import type { ReactNode } from "react";
 

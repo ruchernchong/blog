@@ -105,11 +105,11 @@ describe("CacheInvalidationService", () => {
     });
   });
 
-  describe("invalidatePopularPost", () => {
+  describe("invalidateDeletedPost", () => {
     it("invalidates post cache", async () => {
       mockCache.del.mockResolvedValue(undefined);
 
-      await cacheInvalidationService.invalidatePopularPost("test-post");
+      await cacheInvalidationService.invalidateDeletedPost("test-post");
 
       expect(mockCache.del).toHaveBeenCalledWith([
         CacheConfig.REDIS_KEYS.RELATED_CACHE("test-post"),
@@ -119,7 +119,9 @@ describe("CacheInvalidationService", () => {
 
   describe("invalidateAll", () => {
     it("logs warning when called", async () => {
-      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const consoleWarnSpy = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
 
       await cacheInvalidationService.invalidateAll();
 

@@ -3,8 +3,8 @@
 import { HeartIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "../../../../../convex/_generated/api";
 import { MAX_LIKES_PER_USER } from "@/config";
+import { api } from "../../../../../convex/_generated/api";
 
 interface Props {
   slug: string;

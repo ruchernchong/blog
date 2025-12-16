@@ -1,6 +1,9 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+// Note: This constant is duplicated from @/config because Convex functions
+// run in an isolated environment and cannot import from the Next.js app.
+// Keep in sync with apps/blog/src/config/index.ts
 const MAX_LIKES_PER_USER = 50;
 
 export const get = query({
@@ -39,7 +42,7 @@ export const increment = mutation({
 
     if (existing) {
       if (existing.count >= MAX_LIKES_PER_USER) {
-        return { totalLikes: -1, likesByUser: existing.count };
+        return;
       }
       await ctx.db.patch(existing._id, { count: existing.count + 1 });
     } else {

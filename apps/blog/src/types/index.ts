@@ -28,4 +28,3 @@ export type SocialMedia =
   | "Twitter"
   | "Bluesky"
   | "Threads";
-
