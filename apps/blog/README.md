@@ -26,10 +26,11 @@ This portfolio is built with modern web technologies:
 
 - **Database-backed MDX** - next-mdx-remote for MDX compilation
 - **MDX** - Markdown with JSX components
+- **MDXEditor** - Rich text editing in Content Studio
 - **Neon PostgreSQL** - Serverless Postgres database
 - **Drizzle ORM** - Type-safe database toolkit
-- **Convex** - Real-time database for likes, views, and reactions
-- **Upstash Redis** - Serverless Redis for related posts and analytics
+- **Cloudflare R2** - Object storage for media assets
+- **Upstash Redis** - Serverless Redis for related posts, analytics, and post statistics
 - **Better Auth** - Authentication with OAuth providers (GitHub, Google)
 
 ### Analytics & Monitoring
@@ -59,7 +60,7 @@ This portfolio is built with modern web technologies:
 - **pnpm 10.2.0 or higher** - Fast, disk space efficient package manager
 - **Git** - Version control system
 - **Neon PostgreSQL database** - Serverless database (sign up at [neon.tech](https://neon.tech))
-- **Convex account** - Real-time database (sign up at [convex.dev](https://convex.dev))
+- **Cloudflare R2** - Object storage for media (create bucket at [cloudflare.com](https://cloudflare.com))
 - **Upstash Redis** - Serverless Redis (sign up at [upstash.com](https://upstash.com))
 - **GitHub/Google OAuth apps** - For authentication (optional, for `/studio` CMS access)
 
@@ -95,48 +96,43 @@ cp .env.example .env
    - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` - From Upstash
    - `GH_ACCESS_TOKEN` - GitHub personal access token
    - `IP_SALT` - Random string for IP hashing
+   - Cloudflare R2 credentials:
+     - `CLOUDFLARE_ACCOUNT_ID` - Your Cloudflare account ID
+     - `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY` - R2 API tokens
+     - `R2_BUCKET_NAME` - Your R2 bucket name
+     - `R2_PUBLIC_URL` - Public URL for R2 assets
    - OAuth credentials (optional, for `/studio` CMS):
      - `BETTER_AUTH_SECRET` - Random secret string
      - `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`
      - `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
 
-6. Initialize Convex
-
-```bash
-npx convex dev
-```
-
-This will:
-- Create a new Convex project (if needed)
-- Generate `NEXT_PUBLIC_CONVEX_URL` - add this to your `.env` file
-- Set up the Convex schema and functions
-
-7. Return to project root and set up the database
+6. Return to project root and set up the database
 
 ```bash
 cd ../..
 pnpm db:migrate
 ```
 
-8. (Optional) Seed the database with sample data
+7. (Optional) Seed the database with sample data
 
 ```bash
 pnpm db:seed
 ```
 
-9. Start the development server
+8. Start the development server
 
 ```bash
 pnpm dev
 ```
 
-This automatically runs both Next.js and Convex dev servers in parallel.
-
 Your site should now be running at `http://localhost:3000`!
 
 ### Accessing the CMS
 
-If you've configured OAuth providers, you can access the Content Studio at `http://localhost:3000/studio` to manage blog posts through the web interface.
+If you've configured OAuth providers, you can access the Content Studio at `http://localhost:3000/studio` to manage blog posts and media assets through the web interface:
+
+- `/studio/posts` - Create, edit, and publish blog posts with MDXEditor
+- `/studio/media` - Upload and manage media files with Cloudflare R2 storage
 
 ## 🧪 Development Workflow
 
@@ -190,30 +186,37 @@ This is a Turborepo monorepo with the following structure:
 portfolio/
 ├── apps/
 │   └── blog/                    # Main Next.js application
-│       ├── convex/             # Convex real-time database
-│       │   ├── schema.ts       # Convex schema (likes, viewCounts)
-│       │   ├── likes.ts        # Like queries and mutations
-│       │   └── views.ts        # View queries and mutations
 │       ├── src/
 │       │   ├── app/            # Next.js App Router pages and API routes
 │       │   │   ├── (auth)/     # Authentication routes (login)
 │       │   │   ├── (blog)/     # Main blog routes
 │       │   │   │   └── _actions/ # Server actions (mutations only)
 │       │   │   ├── (studio)/   # CMS routes at /studio
+│       │   │   │   ├── posts/  # Blog post management
+│       │   │   │   └── media/  # Media library
 │       │   │   ├── api/        # API routes (studio, auth)
+│       │   │   │   └── studio/ # Studio API endpoints
+│       │   │   │       ├── posts/ # Post CRUD operations
+│       │   │   │       └── media/ # Media upload & management
 │       │   │   ├── feed.xml/   # RSS feed route handler
 │       │   │   └── llms.txt/   # LLM SEO route handler
 │       │   ├── components/     # Reusable React components
 │       │   ├── lib/           # Utility functions and integrations
 │       │   │   ├── queries/   # Pure database queries (Drizzle)
 │       │   │   └── services/  # Business logic & caching
+│       │   │       ├── cache.service.ts # Redis operations
+│       │   │       ├── post-stats.service.ts # Likes & views
+│       │   │       ├── popular-posts.service.ts # Top posts
+│       │   │       ├── related-posts.service.ts # Recommendations
+│       │   │       ├── r2.service.ts # Cloudflare R2 storage
+│       │   │       └── media.service.ts # Media management
 │       │   ├── schema/        # Drizzle database schema
 │       │   │   ├── posts.ts   # Blog posts table
 │       │   │   ├── sessions.ts # Analytics sessions
+│       │   │   ├── media.ts   # Media assets table
 │       │   │   └── auth.ts    # Better Auth tables
 │       │   └── utils/         # Helper functions with tests
 │       ├── migrations/        # Database migration files
-│       ├── convex.json        # Convex configuration
 │       └── drizzle.config.ts  # Drizzle configuration
 ├── packages/                  # Shared packages (currently empty)
 └── turbo.json                # Turborepo configuration
@@ -234,6 +237,18 @@ This application follows a **class-based service architecture** for better testa
 - Provides health check for Redis availability
 - Methods: `get`, `set`, `del`, `zadd`, `zrange`, `zrem`, `isHealthy`
 
+**`PostStatsService`** - Post Statistics Management
+- Handles per-post like and view counts
+- Stores data in Redis with atomic operations
+- Supports per-user tracking and limits
+- Provides increment/decrement operations
+
+**`PopularPostsService`** - Popular Posts Ranking
+- Maintains sorted set of posts by view count
+- Provides top N popular posts queries
+- Integrates with post statistics for real-time updates
+- Redis-based for fast retrieval
+
 **`RelatedPostsCalculator`** - Smart Recommendations
 - Implements **Jaccard similarity algorithm** for tag matching
 - Formula: `J(A,B) = |A ∩ B| / |A ∪ B|` (intersection over union)
@@ -246,15 +261,21 @@ This application follows a **class-based service architecture** for better testa
 - Invalidates all posts with overlapping tags
 - Integrated into studio API PATCH/DELETE handlers
 
-**Convex Functions** (`convex/`)
-- **Likes** (`likes.ts`) - Per-user like tracking with 50 likes/user limit
-- **Views** (`views.ts`) - View counting and popular posts ranking
-- Real-time queries and mutations for instant UI updates
-- Uses indexes for efficient lookups by slug and user
+**`R2Service`** - Cloudflare R2 Storage
+- Generates presigned upload URLs for direct client uploads
+- Handles object deletion from R2 buckets
+- Configures S3-compatible client for R2 endpoints
+- Supports secure, scalable media storage
 
-#### Configuration (`lib/config/cache.config.ts`)
+**`MediaService`** - Media Asset Management
+- Coordinates uploads between database and R2 storage
+- Provides CRUD operations for media records
+- Supports soft deletes and metadata updates
+- Integrates search and pagination for media library
 
-Centralized cache settings:
+#### Configuration Files
+
+**Cache Configuration** (`lib/config/cache.config.ts`):
 ```typescript
 RELATED_POSTS: { LIMIT: 4, TTL: 86400, MIN_SIMILARITY: 0.1 }
 REDIS_KEYS: {
@@ -262,14 +283,20 @@ REDIS_KEYS: {
 }
 ```
 
+**R2 Configuration** (`lib/config/r2.config.ts`):
+- S3-compatible client configuration
+- Cloudflare R2 endpoint setup
+- Bucket and region settings
+
 #### Architecture Benefits
 
-- **Error Resilience**: Redis failures don't crash the app
-- **Testability**: 57 unit tests with dependency injection
+- **Error Resilience**: Redis and R2 failures don't crash the app
+- **Testability**: Comprehensive unit tests with dependency injection
 - **Maintainability**: Clear class boundaries and single responsibilities
 - **Type Safety**: Full TypeScript support with proper interfaces
 - **Observability**: Structured error logging for monitoring
 - **Performance**: Request-level caching and fallback strategies
+- **Scalability**: Cloudflare R2 for distributed media storage
 
 ### Layered Architecture
 
@@ -282,9 +309,11 @@ The codebase follows a **3-layer architecture** for separation of concerns:
 ## 🎯 Key Features
 
 - **📝 Blog System**: MDX-powered blog with syntax highlighting
-- **✏️ Content Studio**: Web-based CMS at `/studio` for managing blog posts
-- **❤️ Real-time Reactions**: Live likes and views powered by Convex with per-user tracking
-- **🔥 Popular Posts**: Real-time view tracking displaying top posts by popularity (Convex-powered)
+- **✏️ Content Studio**: Web-based CMS at `/studio` for managing blog posts and media
+- **🖼️ Media Library**: Cloudflare R2-backed media management with image optimization, metadata editing, and soft deletes
+- **✨ Rich Text Editing**: MDXEditor integration for enhanced content authoring experience
+- **❤️ Post Statistics**: Redis-powered likes and views tracking with per-user counting
+- **🔥 Popular Posts**: View tracking displaying top posts by popularity (Redis-powered)
 - **🔗 Related Posts**: Smart tag-based recommendations using Jaccard similarity algorithm with Redis caching
 - **🔐 Authentication**: OAuth login with GitHub and Google via Better Auth
 - **📊 Analytics Dashboard**: Custom privacy-focused visitor analytics
@@ -295,7 +324,7 @@ The codebase follows a **3-layer architecture** for separation of concerns:
 - **🔍 SEO Optimized**: Structured data, sitemaps, and meta tags
 - **⚡ Performance**: Optimized images, caching, and core web vitals
 - **🔒 Privacy-First**: IP hashing and minimal data collection
-- **🚀 Modern Stack**: Latest Next.js 16, React 19.2, TypeScript, and Convex
+- **🚀 Modern Stack**: Latest Next.js 16, React 19.2, TypeScript, and Cloudflare R2
 
 ## 🤝 Contributing
 
