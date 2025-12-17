@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 #### Development
 
-- `pnpm dev` - Start development server with hot reload (uses Turbo, runs Next.js + Convex dev in parallel)
+- `pnpm dev` - Start development server with hot reload (uses Turbo)
 - `pnpm build` - Build all apps for production (uses Turbo)
 - `pnpm start` - Start production server (uses Turbo)
 - `pnpm test` - Run tests across all apps (uses Turbo)
@@ -57,10 +57,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm studio` - Open Drizzle Studio
 - `pnpm seed` - Seed database with development data
 
-#### Convex (App-level)
-
-- `pnpm convex:dev` - Start Convex development server (automatically runs with `pnpm dev` at root)
-- `pnpm convex:deploy` - Deploy Convex functions to production
 
 ## Architecture Overview
 
@@ -76,9 +72,10 @@ This is a Turborepo monorepo containing a Next.js 16 portfolio website with an i
 - **Framework**: Next.js 16 with App Router and React 19.2
 - **Content**: Database-backed MDX with next-mdx-remote for compilation
 - **Database**: Neon PostgreSQL with Drizzle ORM
-- **Real-time**: Convex for live likes, views, and reactions
+- **Storage**: Cloudflare R2 for media assets
 - **Authentication**: Better Auth with OAuth providers (GitHub, Google)
-- **Cache**: Upstash Redis for related posts and analytics
+- **Cache**: Upstash Redis for related posts, analytics, and post statistics
+- **Editor**: MDXEditor for rich text editing in Content Studio
 - **Styling**: Tailwind CSS v4
 - **Testing**: Vitest with React Testing Library
 - **Code Quality**: Biome for linting/formatting, TypeScript strict mode
@@ -88,10 +85,12 @@ This is a Turborepo monorepo containing a Next.js 16 portfolio website with an i
 
 - **Custom Analytics**: Privacy-focused visitor tracking with IP hashing
 - **Blog System**: Database-backed MDX blog posts with automatic metadata generation (reading time, SEO metadata)
-- **Real-time Reactions**: Live likes and views powered by Convex with per-user tracking
-- **Popular Posts**: Real-time view tracking displaying top posts by popularity (Convex-powered)
+- **Post Statistics**: Redis-powered likes and views tracking with per-user counting
+- **Popular Posts**: View tracking displaying top posts by popularity (Redis-powered)
 - **Related Posts**: Tag-based recommendations using Jaccard similarity algorithm with Redis caching
-- **Content Studio**: Built-in CMS at `/studio` for managing blog posts directly in the database
+- **Content Studio**: Built-in CMS at `/studio` for managing blog posts and media assets
+- **Media Library**: Cloudflare R2-backed media management with image optimization, metadata editing, and soft deletes
+- **Rich Text Editing**: MDXEditor integration for enhanced content authoring experience
 - **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers (following llmstxt.org standard)
 - **RSS Feed**: Dynamic `/feed.xml` endpoint with latest published posts
 - **Performance**: Optimized images, caching, and core web vitals tracking
@@ -103,19 +102,17 @@ This is a Turborepo monorepo containing a Next.js 16 portfolio website with an i
 - Schema in `apps/blog/src/schema/` using Drizzle ORM
     - `posts.ts`: Blog posts with MDX content, metadata, tags, and publish status
     - `sessions.ts`: Session tracking for analytics (visits, geolocation, device info)
+    - `media.ts`: Media assets with R2 storage keys, metadata, and soft delete support
     - `auth.ts`: Better Auth authentication tables (users, accounts, sessions, verification)
     - `index.ts`: Database client export
 - Configuration in `apps/blog/drizzle.config.ts`
 - Migrations in `apps/blog/migrations/` managed by drizzle-kit
 
-#### Convex (Real-time Database)
-- Schema in `apps/blog/convex/schema.ts`
-    - `likes`: Per-user like tracking (slug, userHash, count) with compound indexes
-    - `viewCounts`: Post view aggregation (slug, count) with slug index
-- Functions in `apps/blog/convex/`
-    - `likes.ts`: Like queries and mutations (get, getByUser, increment)
-    - `views.ts`: View queries and mutations (get, getTop, increment, remove)
-- Configuration in `apps/blog/convex.json`
+#### Redis (Upstash)
+- Post statistics: likes and views per post
+- Popular posts: sorted set of posts by view count
+- Related posts cache: 24-hour TTL for Jaccard similarity results
+- Analytics data: visitor statistics and session tracking
 
 ### Analytics System
 
@@ -147,6 +144,16 @@ The service layer uses classes for better testability, dependency injection, and
   - Logs errors with ERROR_IDS for monitoring
   - Health check method for Redis availability
 
+- `PostStatsService` - Post statistics management (likes, views)
+  - Handles per-post like and view counts
+  - Stores data in Redis with atomic operations
+  - Supports per-user tracking and limits
+
+- `PopularPostsService` - Popular posts ranking
+  - Maintains sorted set of posts by view count
+  - Provides top N popular posts queries
+  - Integrates with post statistics for real-time updates
+
 - `RelatedPostsCalculator` - Tag-based post recommendations
   - Implements Jaccard similarity algorithm for tag matching
   - Caches results for 24 hours to reduce computation
@@ -157,6 +164,17 @@ The service layer uses classes for better testability, dependency injection, and
   - Invalidates related post caches when tags change
   - Invalidates all posts with overlapping tags
   - Integrated into studio API handlers
+
+- `R2Service` - Cloudflare R2 storage operations
+  - Generates presigned upload URLs for direct client uploads
+  - Handles object deletion from R2 buckets
+  - Configures S3-compatible client for R2 endpoints
+
+- `MediaService` - Media asset management
+  - Coordinates uploads between database and R2 storage
+  - Provides CRUD operations for media records
+  - Supports soft deletes and metadata updates
+  - Integrates search and pagination for media library
 
 **Service Container** (`lib/services/index.ts`):
 - Exports singleton instances of all services
@@ -179,39 +197,15 @@ The service layer uses classes for better testability, dependency injection, and
 **Server actions for mutations only**
 - Contains only write operations (no reads)
 - Uses React Server Actions for client-side mutations
-- Never used for data fetching (use services or Convex queries directly in components)
-- Note: Likes and views are now handled by Convex mutations (not server actions)
+- Never used for data fetching (use services directly in server components)
+- Post statistics (likes/views) handled through service layer
 
 **Architecture Benefits**:
 - Clear separation of concerns
 - Easy to unit test each layer independently
 - Reusable queries across multiple services
 - Business logic isolated from data access
-- Follows Next.js 15+ best practices (server actions for writes only)
-
-### Convex Integration
-
-The application uses Convex for real-time features:
-
-**Client Components** - Use Convex React hooks
-- `useQuery(api.likes.get, { slug })` - Subscribe to real-time like counts
-- `useQuery(api.views.get, { slug })` - Subscribe to real-time view counts
-- `useMutation(api.likes.increment)` - Increment like count (max 50 per user)
-- `useMutation(api.views.increment)` - Increment view count
-
-**Server Components** - Use Convex server queries
-- `fetchQuery(api.views.getTop, { limit })` - Get popular posts by view count
-- Import from `convex/nextjs` for server-side data fetching
-
-**User Identification**
-- Authenticated users: Better Auth user ID
-- Anonymous users: Hashed IP address (SHA-256 with salt)
-- Same pattern as analytics for privacy protection
-
-**Development Workflow**
-- `pnpm dev` at root automatically runs both Next.js and Convex dev servers in parallel
-- Convex schema changes require restart or `--accept-data-loss` flag
-- Schema validation happens on function execution
+- Follows Next.js 16 best practices (server actions for writes only)
 
 ## Environment Variables
 
@@ -224,10 +218,6 @@ Required environment variables (see `apps/blog/.env.example`):
 ### Database
 
 - `DATABASE_URL` - Neon PostgreSQL connection string
-
-### Convex
-
-- `NEXT_PUBLIC_CONVEX_URL` - Convex deployment URL (get from `npx convex dev` or Convex dashboard)
 
 ### GitHub Integration
 
@@ -254,6 +244,14 @@ Required environment variables (see `apps/blog/.env.example`):
 - `GOOGLE_CLIENT_ID` - Google OAuth app client ID
 - `GOOGLE_CLIENT_SECRET` - Google OAuth app client secret
 
+### Cloudflare R2 Storage
+
+- `CLOUDFLARE_ACCOUNT_ID` - Cloudflare account ID
+- `R2_ACCESS_KEY_ID` - R2 API access key
+- `R2_SECRET_ACCESS_KEY` - R2 API secret key
+- `R2_BUCKET_NAME` - R2 bucket name for media storage
+- `R2_PUBLIC_URL` - Public URL for accessing R2 assets (e.g., https://assets.ruchern.dev)
+
 ## Documentation & Learning Resources
 
 ### Using Context7 for Library Documentation
@@ -265,14 +263,14 @@ examples. This is especially important for rapidly evolving libraries.
 
 - **Next.js** (`/vercel/next.js`) - Framework APIs, routing, data fetching
 - **React** (`/facebook/react`) - Hooks, components, server components
-- **Convex** (`/get-convex/convex-js`) - Real-time queries, mutations, schema, React hooks
 - **Drizzle ORM** (`/drizzle-team/drizzle-orm`) - Database queries, schema, migrations
 - **Better Auth** (`/better-auth/better-auth`) - Authentication setup, providers, session management
 - **Tailwind CSS** (`/tailwindlabs/tailwindcss`) - Styling utilities, configuration
-- **tRPC** (`/trpc/trpc`) - API routes, client setup, type safety
+- **MDXEditor** (`/mdxeditor/editor`) - Rich text editing, MDX authoring
 - **Vitest** (`/vitest-dev/vitest`) - Testing patterns, assertions, mocking
 - **next-mdx-remote** (`/hashicorp/next-mdx-remote`) - MDX compilation, components
 - **Recharts** (`/recharts/recharts`) - Chart components, data visualization
+- **AWS SDK (S3)** - S3-compatible operations for Cloudflare R2
 
 **When to Use Context7**:
 
@@ -341,13 +339,20 @@ const time = "2:30 PM";
 All blog content is managed through the database-backed Content Studio:
 
 - **Content Studio CMS**: Access at `/studio` route (isolated route group with own layout)
-- **Database Storage**: All blog posts stored in Neon PostgreSQL
+  - `/studio/posts` - Blog post management
+  - `/studio/media` - Media library for asset management
+- **Database Storage**: All blog posts and media stored in Neon PostgreSQL
 - **Posts Schema**: `src/schema/posts.ts` - MDX content, metadata, tags, publish status
+- **Media Schema**: `src/schema/media.ts` - R2 storage keys, file metadata, soft deletes
+- **Rich Text Editor**: MDXEditor integration for enhanced content authoring
 - **MDX Compilation**: Uses `next-mdx-remote` with rehype/remark plugins for rendering
 - **Automatic Metadata**: Reading time, SEO tags, OpenGraph images generated automatically
-- **API Routes**: `/api/studio/posts` for CRUD operations
-- **Management UI**: Post listing, creation, editing, and publishing workflows
+- **API Routes**:
+  - `/api/studio/posts` - Blog post CRUD operations
+  - `/api/studio/media` - Media library operations (upload, list, update, delete)
+- **Management UI**: Post listing, creation, editing, publishing workflows, and media browser
 - **Draft Support**: Posts can be saved as drafts before publishing
+- **Media Features**: Image optimization, metadata editing, search, and soft deletes
 
 ### Authentication System
 
