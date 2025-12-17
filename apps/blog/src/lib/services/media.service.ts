@@ -3,8 +3,8 @@ import { ERROR_IDS } from "@/constants/error-ids";
 import { logError } from "@/lib/logger";
 import { db, media, type SelectMedia } from "@/schema";
 import type {
-  R2Service,
   PresignedUploadResult,
+  R2Service,
   UploadMetadata,
 } from "./r2.service";
 
@@ -26,12 +26,15 @@ export interface MediaListOptions {
   limit?: number;
   offset?: number;
   includeDeleted?: boolean;
+  verifyR2Existence?: boolean;
 }
 
 export class MediaService {
   constructor(private readonly r2: R2Service) {}
 
-  async requestUpload(metadata: UploadMetadata): Promise<PresignedUploadResult> {
+  async requestUpload(
+    metadata: UploadMetadata,
+  ): Promise<PresignedUploadResult> {
     return this.r2.createPresignedUpload(metadata);
   }
 
@@ -40,13 +43,21 @@ export class MediaService {
       const [created] = await db.insert(media).values(input).returning();
       return created;
     } catch (error) {
-      logError(ERROR_IDS.MEDIA_CREATE_FAILED, error, { filename: input.filename });
+      logError(ERROR_IDS.MEDIA_CREATE_FAILED, error, {
+        filename: input.filename,
+      });
       throw error;
     }
   }
 
   async getMediaList(options: MediaListOptions = {}): Promise<SelectMedia[]> {
-    const { search, limit = 50, offset = 0, includeDeleted = false } = options;
+    const {
+      search,
+      limit = 50,
+      offset = 0,
+      includeDeleted = false,
+      verifyR2Existence = true,
+    } = options;
 
     try {
       const conditions = includeDeleted ? [] : [isNull(media.deletedAt)];
@@ -60,20 +71,33 @@ export class MediaService {
         );
       }
 
-      return db
+      const mediaList = await db
         .select()
         .from(media)
         .where(conditions.length > 0 ? and(...conditions) : undefined)
         .orderBy(desc(media.createdAt))
         .limit(limit)
         .offset(offset);
+
+      if (!verifyR2Existence || mediaList.length === 0) {
+        return mediaList;
+      }
+
+      // Verify R2 existence and filter out orphaned records
+      const keys = mediaList.map((item) => item.key);
+      const existenceMap = await this.r2.checkObjectsExist(keys);
+
+      return mediaList.filter((item) => existenceMap.get(item.key) === true);
     } catch (error) {
       logError(ERROR_IDS.MEDIA_FETCH_FAILED, error);
       throw error;
     }
   }
 
-  async getMediaById(id: string): Promise<SelectMedia | null> {
+  async getMediaById(
+    id: string,
+    verifyR2Existence = true,
+  ): Promise<SelectMedia | null> {
     try {
       const [item] = await db
         .select()
@@ -81,7 +105,15 @@ export class MediaService {
         .where(and(eq(media.id, id), isNull(media.deletedAt)))
         .limit(1);
 
-      return item ?? null;
+      if (!item) return null;
+
+      // Verify R2 existence if enabled
+      if (verifyR2Existence) {
+        const exists = await this.r2.objectExists(item.key);
+        if (!exists) return null;
+      }
+
+      return item;
     } catch (error) {
       logError(ERROR_IDS.MEDIA_FETCH_FAILED, error, { id });
       throw error;
@@ -145,6 +177,46 @@ export class MediaService {
       return restored ?? null;
     } catch (error) {
       logError(ERROR_IDS.MEDIA_UPDATE_FAILED, error, { id });
+      throw error;
+    }
+  }
+
+  /**
+   * Removes database records for media that no longer exists in R2.
+   * This handles the edge case where files are deleted directly from R2.
+   * @returns Array of IDs that were cleaned up
+   */
+  async cleanupOrphanedRecords(): Promise<string[]> {
+    try {
+      // Get all non-deleted media records without verifying R2 existence
+      const allMedia = await this.getMediaList({
+        verifyR2Existence: false,
+        limit: 1000,
+      });
+
+      if (allMedia.length === 0) return [];
+
+      // Check which objects exist in R2
+      const keys = allMedia.map((item) => item.key);
+      const existenceMap = await this.r2.checkObjectsExist(keys);
+
+      // Find orphaned records (exist in DB but not in R2)
+      const orphanedIds = allMedia
+        .filter((item) => existenceMap.get(item.key) === false)
+        .map((item) => item.id);
+
+      if (orphanedIds.length === 0) return [];
+
+      // Delete orphaned records from database
+      for (const id of orphanedIds) {
+        await db.delete(media).where(eq(media.id, id));
+      }
+
+      return orphanedIds;
+    } catch (error) {
+      logError(ERROR_IDS.MEDIA_DELETE_FAILED, error, {
+        operation: "cleanupOrphanedRecords",
+      });
       throw error;
     }
   }

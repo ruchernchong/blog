@@ -1,5 +1,6 @@
 import {
   DeleteObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
@@ -103,5 +104,38 @@ export class R2Service {
 
   getPublicUrl(key: string): string {
     return `${this.publicUrl}/${key}`;
+  }
+
+  async objectExists(key: string): Promise<boolean> {
+    try {
+      const command = new HeadObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+      });
+      await this.client.send(command);
+      return true;
+    } catch (error) {
+      // NotFound error means object doesn't exist - this is expected
+      if (
+        error instanceof Error &&
+        (error.name === "NotFound" || error.name === "NoSuchKey")
+      ) {
+        return false;
+      }
+      // Log unexpected errors but return false to be safe
+      logError(ERROR_IDS.R2_HEAD_FAILED, error, { key });
+      return false;
+    }
+  }
+
+  async checkObjectsExist(keys: string[]): Promise<Map<string, boolean>> {
+    const results = new Map<string, boolean>();
+    await Promise.all(
+      keys.map(async (key) => {
+        const exists = await this.objectExists(key);
+        results.set(key, exists);
+      }),
+    );
+    return results;
   }
 }
