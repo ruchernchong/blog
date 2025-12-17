@@ -32,12 +32,12 @@ export class R2Service {
       region: "auto",
       endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
       credentials: {
-        accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+        accessKeyId: process.env.R2_ACCESS_KEY_ID as string,
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY as string,
       },
     });
-    this.bucketName = process.env.R2_BUCKET_NAME!;
-    this.publicUrl = process.env.R2_PUBLIC_URL!;
+    this.bucketName = process.env.R2_BUCKET_NAME as string;
+    this.publicUrl = process.env.R2_PUBLIC_URL as string;
   }
 
   generateKey(filename: string): string {
@@ -76,7 +76,9 @@ export class R2Service {
       );
     }
 
-    const key = isTemp ? this.generateTempKey(filename) : this.generateKey(filename);
+    const key = isTemp
+      ? this.generateTempKey(filename)
+      : this.generateKey(filename);
 
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
