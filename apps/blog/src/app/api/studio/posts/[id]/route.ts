@@ -1,9 +1,16 @@
 import { eq } from "drizzle-orm";
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { ZodError } from "zod";
 import { ERROR_IDS } from "@/constants/error-ids";
-import { auth } from "@/lib/auth";
+import {
+  databaseErrorResponse,
+  handleApiError,
+  isDatabaseError,
+  isUniqueConstraintError,
+  notFoundResponse,
+  parseAndValidateBody,
+  requireAuth,
+  validateRouteParam,
+} from "@/lib/api";
 import { logError } from "@/lib/logger";
 import { generatePostMetadata } from "@/lib/post-metadata";
 import { cacheInvalidationService } from "@/lib/services";
@@ -14,52 +21,28 @@ export const GET = async (
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
-  let postId: string;
-
-  // Validate params
-  try {
-    const resolvedParams = await params;
-    postId = postIdSchema.parse(resolvedParams.id);
-  } catch (error) {
-    if (error instanceof ZodError) {
-      return NextResponse.json(
-        { message: "Invalid post ID format" },
-        { status: 400 },
-      );
-    }
-    logError(ERROR_IDS.INVALID_PARAMS, error);
-    return NextResponse.json(
-      { message: "Invalid request parameters" },
-      { status: 400 },
-    );
-  }
+  const paramResult = await validateRouteParam(
+    params,
+    "id",
+    postIdSchema,
+    "post",
+  );
+  if (!paramResult.success) return paramResult.response;
 
   try {
     const [post] = await db
       .select()
       .from(posts)
-      .where(eq(posts.id, postId))
+      .where(eq(posts.id, paramResult.data))
       .limit(1);
 
-    if (!post) {
-      return NextResponse.json({ message: "Post not found" }, { status: 404 });
-    }
+    if (!post) return notFoundResponse("Post");
 
     return NextResponse.json(post);
   } catch (error) {
-    logError(ERROR_IDS.POST_FETCH_FAILED, error, { postId });
-
-    if (error instanceof Error && error.message.includes("database")) {
-      return NextResponse.json(
-        { message: "Database connection error. Please try again later." },
-        { status: 503 },
-      );
-    }
-
-    return NextResponse.json(
-      { message: "Failed to fetch post" },
-      { status: 500 },
-    );
+    return handleApiError(error, ERROR_IDS.POST_FETCH_FAILED, "fetch post", {
+      postId: paramResult.data,
+    });
   }
 };
 
@@ -67,94 +50,33 @@ export const PATCH = async (
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
-  // Check authentication
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const authResult = await requireAuth("edit posts");
+  if (!authResult.success) return authResult.response;
 
-  if (!session?.user) {
-    return NextResponse.json(
-      { message: "Unauthorized. Please sign in to edit posts." },
-      { status: 401 },
-    );
-  }
+  const paramResult = await validateRouteParam(
+    params,
+    "id",
+    postIdSchema,
+    "post",
+  );
+  if (!paramResult.success) return paramResult.response;
 
-  let postId: string;
+  const bodyResult = await parseAndValidateBody(request, updatePostSchema);
+  if (!bodyResult.success) return bodyResult.response;
 
-  // Validate params
-  try {
-    const resolvedParams = await params;
-    postId = postIdSchema.parse(resolvedParams.id);
-  } catch (error) {
-    if (error instanceof ZodError) {
-      return NextResponse.json(
-        { message: "Invalid post ID format" },
-        { status: 400 },
-      );
-    }
-    logError(ERROR_IDS.INVALID_PARAMS, error);
-    return NextResponse.json(
-      { message: "Invalid request parameters" },
-      { status: 400 },
-    );
-  }
-
-  let body: unknown;
-
-  // Parse JSON request body
-  try {
-    body = await request.json();
-  } catch (error) {
-    logError(ERROR_IDS.INVALID_JSON, error);
-    return NextResponse.json(
-      { message: "Invalid JSON in request body" },
-      { status: 400 },
-    );
-  }
-
-  // Validate request body with Zod
-  let validatedData: ReturnType<typeof updatePostSchema.parse>;
-  try {
-    validatedData = updatePostSchema.parse(body);
-  } catch (error) {
-    if (error instanceof ZodError) {
-      return NextResponse.json(
-        {
-          message: "Validation failed",
-          errors: error.errors.map((err) => ({
-            field: err.path.join("."),
-            message: err.message,
-          })),
-        },
-        { status: 400 },
-      );
-    }
-    throw error; // Re-throw unexpected errors
-  }
+  const postId = paramResult.data;
 
   try {
-    // Get existing post to check if it exists
     const [existingPost] = await db
       .select()
       .from(posts)
       .where(eq(posts.id, postId))
       .limit(1);
 
-    if (!existingPost) {
-      return NextResponse.json({ message: "Post not found" }, { status: 404 });
-    }
+    if (!existingPost) return notFoundResponse("Post");
 
-    // Merge updates with existing post
-    const {
-      title,
-      slug,
-      summary,
-      content,
-      status,
-      tags,
-      coverImage,
-      featured,
-    } = validatedData;
+    const { title, slug, summary, content, status, tags, coverImage, featured } =
+      bodyResult.data;
 
     const updatedTitle = title ?? existingPost.title;
     const updatedSlug = slug ?? existingPost.slug;
@@ -164,15 +86,13 @@ export const PATCH = async (
     const updatedStatus = status ?? existingPost.status;
 
     // Preserve original publish date when re-publishing, but set new date for first-time publishes
-    // This ensures that changing draft -> published -> draft -> published doesn't alter the original publish date
     let publishedAt = existingPost.publishedAt;
     if (updatedStatus === "published" && !existingPost.publishedAt) {
-      publishedAt = new Date(); // First time publishing
+      publishedAt = new Date();
     } else if (updatedStatus === "draft") {
-      publishedAt = null; // Unpublishing (draft)
+      publishedAt = null;
     }
 
-    // Generate updated metadata
     const metadata = generatePostMetadata(
       updatedTitle,
       updatedSlug,
@@ -181,7 +101,6 @@ export const PATCH = async (
       publishedAt,
     );
 
-    // Update post
     const [updatedPost] = await db
       .update(posts)
       .set({
@@ -206,10 +125,8 @@ export const PATCH = async (
       .where(eq(posts.id, postId))
       .returning();
 
-    // Invalidate caches after successful update
     await cacheInvalidationService.invalidatePost(updatedSlug);
 
-    // If tags changed, invalidate related posts caches
     const tagsChanged =
       tags !== undefined &&
       JSON.stringify([...tags].sort((a, b) => a.localeCompare(b))) !==
@@ -229,32 +146,27 @@ export const PATCH = async (
 
     return NextResponse.json(updatedPost);
   } catch (error) {
-    // Check for specific database errors
-    if (error instanceof Error && error.message.includes("unique constraint")) {
+    if (isUniqueConstraintError(error)) {
       logError(ERROR_IDS.POST_DUPLICATE_SLUG, error, {
         postId,
-        slug: validatedData.slug,
+        slug: bodyResult.data.slug,
       });
       return NextResponse.json(
         {
-          message: `A post with slug "${validatedData.slug}" already exists. Please use a different slug.`,
+          message: `A post with slug "${bodyResult.data.slug}" already exists. Please use a different slug.`,
         },
         { status: 409 },
       );
     }
 
-    if (error instanceof Error && error.message.includes("database")) {
+    if (isDatabaseError(error)) {
       logError(ERROR_IDS.DB_CONNECTION_FAILED, error, {
         operation: "update_post",
         postId,
       });
-      return NextResponse.json(
-        { message: "Database connection error. Please try again later." },
-        { status: 503 },
-      );
+      return databaseErrorResponse();
     }
 
-    // Unexpected error
     logError(ERROR_IDS.POST_UPDATE_FAILED, error, { postId });
     return NextResponse.json(
       { message: "Failed to update post" },
@@ -267,54 +179,28 @@ export const DELETE = async (
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
-  // Check authentication
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const authResult = await requireAuth("delete posts");
+  if (!authResult.success) return authResult.response;
 
-  if (!session?.user) {
-    return NextResponse.json(
-      { message: "Unauthorized. Please sign in to delete posts." },
-      { status: 401 },
-    );
-  }
-
-  let postId: string;
-
-  // Validate params
-  try {
-    const resolvedParams = await params;
-    postId = postIdSchema.parse(resolvedParams.id);
-  } catch (error) {
-    if (error instanceof ZodError) {
-      return NextResponse.json(
-        { message: "Invalid post ID format" },
-        { status: 400 },
-      );
-    }
-    logError(ERROR_IDS.INVALID_PARAMS, error);
-    return NextResponse.json(
-      { message: "Invalid request parameters" },
-      { status: 400 },
-    );
-  }
+  const paramResult = await validateRouteParam(
+    params,
+    "id",
+    postIdSchema,
+    "post",
+  );
+  if (!paramResult.success) return paramResult.response;
 
   try {
-    // Soft-delete: set deletedAt timestamp instead of hard delete
     const [deletedPost] = await db
       .update(posts)
       .set({ deletedAt: new Date() })
-      .where(eq(posts.id, postId))
+      .where(eq(posts.id, paramResult.data))
       .returning();
 
-    if (!deletedPost) {
-      return NextResponse.json({ message: "Post not found" }, { status: 404 });
-    }
+    if (!deletedPost) return notFoundResponse("Post");
 
-    // Invalidate caches after successful deletion
     await cacheInvalidationService.invalidatePopularPost(deletedPost.slug);
 
-    // Invalidate related posts caches for posts with similar tags
     if (deletedPost.tags.length > 0) {
       await cacheInvalidationService.invalidateRelatedByTags(
         deletedPost.tags,
@@ -324,18 +210,8 @@ export const DELETE = async (
 
     return NextResponse.json({ message: "Post deleted successfully" });
   } catch (error) {
-    logError(ERROR_IDS.POST_DELETE_FAILED, error, { postId });
-
-    if (error instanceof Error && error.message.includes("database")) {
-      return NextResponse.json(
-        { message: "Database connection error. Please try again later." },
-        { status: 503 },
-      );
-    }
-
-    return NextResponse.json(
-      { message: "Failed to delete post" },
-      { status: 500 },
-    );
+    return handleApiError(error, ERROR_IDS.POST_DELETE_FAILED, "delete post", {
+      postId: paramResult.data,
+    });
   }
 };

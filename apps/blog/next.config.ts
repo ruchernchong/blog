@@ -20,6 +20,16 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "*.r2.dev",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "assets.ruchern.dev",
+        pathname: "/**",
+      },
     ],
   },
   logging: {

@@ -115,3 +115,32 @@ export const validateRequestBody = <T>(
   schema: z.ZodSchema<T>,
   data: unknown,
 ): T => schema.parse(data);
+
+export const mediaIdSchema = z.string().uuid("Invalid media ID format");
+
+export const requestUploadSchema = z.object({
+  filename: z.string().min(1, "Filename is required"),
+  mimeType: z.string().min(1, "MIME type is required"),
+  size: z.number().positive("File size must be positive"),
+});
+
+export const confirmUploadSchema = z.object({
+  key: z.string().min(1, "Key is required"),
+  filename: z.string().min(1, "Filename is required"),
+  url: z.string().url("Must be a valid URL"),
+  mimeType: z.string().min(1, "MIME type is required"),
+  size: z.number().positive("File size must be positive"),
+  width: z.number().positive().optional(),
+  height: z.number().positive().optional(),
+  alt: z.string().optional(),
+  caption: z.string().optional(),
+});
+
+export const updateMediaSchema = z.object({
+  alt: z.string().optional(),
+  caption: z.string().optional(),
+});
+
+export type RequestUploadInput = z.infer<typeof requestUploadSchema>;
+export type ConfirmUploadInput = z.infer<typeof confirmUploadSchema>;
+export type UpdateMediaInput = z.infer<typeof updateMediaSchema>;

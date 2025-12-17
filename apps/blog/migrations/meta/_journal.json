@@ -43,6 +43,13 @@
       "when": 1761295005229,
       "tag": "0005_equal_bloodaxe",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1765718477164,
+      "tag": "0006_smiling_spectrum",
+      "breakpoints": true
     }
   ]
 }

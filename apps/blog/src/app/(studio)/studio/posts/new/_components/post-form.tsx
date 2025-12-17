@@ -1,10 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+  Suspense,
   useEffect,
   useEffectEvent,
   useId,
@@ -12,8 +14,6 @@ import {
   useTransition,
 } from "react";
 import { useForm } from "react-hook-form";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import slugify from "slugify";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
+
+const ContentEditor = dynamic(
+  () => import("@/components/studio/content-editor"),
+  { ssr: false }
+);
 
 const newPostSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -68,7 +74,6 @@ export const PostForm = () => {
   const titleId = useId();
   const slugId = useId();
   const summaryId = useId();
-  const contentId = useId();
   const statusId = useId();
   const tagsId = useId();
   const coverImageId = useId();
@@ -102,8 +107,6 @@ export const PostForm = () => {
   useEffect(() => {
     updateSlugFromTitle(titleValue);
   }, [titleValue]);
-
-  const contentValue = form.watch("content");
 
   const handleSubmit = async (values: NewPostFormValues) => {
     startTransition(async () => {
@@ -177,71 +180,32 @@ export const PostForm = () => {
             className="flex-1 rounded-lg border"
           >
             {/* Editor Panel */}
-            <ResizablePanel defaultSize={40} minSize={30}>
+            <ResizablePanel defaultSize={70} minSize={50}>
               <div className="flex h-full flex-col">
-                <div className="border-b p-4">
-                  <h2 className="font-semibold text-lg">Editor</h2>
-                </div>
-                <ScrollArea className="flex-1">
-                  <div className="p-4">
-                    <FormField
-                      control={form.control}
-                      name="content"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            MDX Content{" "}
-                            <span className="text-destructive">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea
-                              id={contentId}
-                              placeholder="# Your MDX content here...
-
-Start writing your blog post using Markdown syntax."
-                              className="min-h-[600px] font-mono text-sm"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </ScrollArea>
-              </div>
-            </ResizablePanel>
-
-            <ResizableHandle withHandle />
-
-            {/* Preview Panel */}
-            <ResizablePanel defaultSize={40} minSize={30}>
-              <div className="flex h-full flex-col">
-                <div className="border-b p-4">
-                  <h2 className="font-semibold text-lg">Preview</h2>
-                </div>
-                <ScrollArea className="flex-1">
-                  <div className="p-4">
-                    {contentValue ? (
-                      <article className="prose">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {contentValue}
-                        </ReactMarkdown>
-                      </article>
-                    ) : (
-                      <p className="text-muted-foreground text-sm">
-                        Preview will appear here as you type...
-                      </p>
-                    )}
-                  </div>
-                </ScrollArea>
+                <FormField
+                  control={form.control}
+                  name="content"
+                  render={({ field }) => (
+                    <FormItem className="flex h-full flex-col">
+                      <FormControl>
+                        <Suspense fallback={null}>
+                          <ContentEditor
+                            markdown={field.value}
+                            onChange={field.onChange}
+                          />
+                        </Suspense>
+                      </FormControl>
+                      <FormMessage className="px-4" />
+                    </FormItem>
+                  )}
+                />
               </div>
             </ResizablePanel>
 
             <ResizableHandle withHandle />
 
             {/* Post Details Sidebar */}
-            <ResizablePanel defaultSize={20} minSize={20} maxSize={30}>
+            <ResizablePanel defaultSize={30} minSize={25} maxSize={40}>
               <div className="flex h-full flex-col">
                 <div className="border-b p-4">
                   <h2 className="font-semibold text-lg">Post Details</h2>
@@ -366,15 +330,27 @@ Start writing your blog post using Markdown syntax."
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Cover Image URL</FormLabel>
-                          <FormControl>
-                            <Input
-                              id={coverImageId}
-                              type="url"
-                              placeholder="https://example.com/image.jpg"
-                              autoComplete="off"
-                              {...field}
-                            />
-                          </FormControl>
+                          <div className="flex gap-2">
+                            <FormControl>
+                              <Input
+                                id={coverImageId}
+                                type="url"
+                                placeholder="https://example.com/image.jpg"
+                                autoComplete="off"
+                                {...field}
+                              />
+                            </FormControl>
+                            <Suspense fallback={null}>
+                              <ImagePickerDialog
+                                onSelect={(url) => form.setValue("coverImage", url)}
+                                trigger={
+                                  <Button type="button" variant="outline" size="sm">
+                                    Browse
+                                  </Button>
+                                }
+                              />
+                            </Suspense>
+                          </div>
                           <FormDescription>
                             Optional cover image URL
                           </FormDescription>
