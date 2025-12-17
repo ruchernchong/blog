@@ -202,6 +202,12 @@ portfolio/
 │       │   │   └── llms.txt/   # LLM SEO route handler
 │       │   ├── components/     # Reusable React components
 │       │   ├── lib/           # Utility functions and integrations
+│       │   │   ├── api/       # API route utilities
+│       │   │   │   ├── types.ts # ApiResult<T> type
+│       │   │   │   ├── auth.ts # requireAuth() utility
+│       │   │   │   ├── validation.ts # JSON parsing & Zod validation
+│       │   │   │   ├── params.ts # Route parameter validation
+│       │   │   │   └── errors.ts # Standardized error responses
 │       │   │   ├── queries/   # Pure database queries (Drizzle)
 │       │   │   └── services/  # Business logic & caching
 │       │   │       ├── cache.service.ts # Redis operations
@@ -300,11 +306,19 @@ REDIS_KEYS: {
 
 ### Layered Architecture
 
-The codebase follows a **3-layer architecture** for separation of concerns:
+The codebase follows a **4-layer architecture** for separation of concerns:
 
 1. **Database Layer** (`lib/queries/`) - Pure Drizzle ORM queries, no business logic
 2. **Service Layer** (`lib/services/`) - Business logic, caching, data transformations
-3. **Action Layer** (`app/(blog)/_actions/`) - Server actions for mutations only
+3. **API Utilities Layer** (`lib/api/`) - Reusable utilities for type-safe API route handlers
+4. **Action Layer** (`app/(blog)/_actions/`) - Server actions for mutations only
+
+**API Utilities** provide standardized patterns for:
+- Authentication with `requireAuth()` (Better Auth integration)
+- Request validation with Zod schemas (`parseAndValidateBody()`)
+- Route parameter validation (`validateRouteParam()`)
+- Consistent error responses (404, 409, 500, 503)
+- Type-safe error handling with `ApiResult<T>`
 
 ## 🎯 Key Features
 

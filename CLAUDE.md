@@ -122,7 +122,7 @@ This is a Turborepo monorepo containing a Next.js 16 portfolio website with an i
 
 ### Layered Architecture
 
-The codebase follows a clean 3-layer architecture pattern for maintainability and testability:
+The codebase follows a clean 4-layer architecture pattern for maintainability and testability:
 
 #### 1. Database Layer (`lib/queries/`)
 **Pure database access with Drizzle ORM**
@@ -193,7 +193,56 @@ The service layer uses classes for better testability, dependency injection, and
 - Type safety: Full TypeScript support with proper types
 - Observability: Structured error logging for monitoring
 
-#### 3. Action Layer (`app/(blog)/_actions/`)
+#### 3. API Utilities Layer (`lib/api/`)
+**Reusable utilities for API route handlers**
+
+Provides standardized utilities for building consistent, type-safe API routes:
+
+**Core Utilities:**
+- `types.ts` - `ApiResult<T>` type for type-safe error handling in API routes
+- `auth.ts` - `requireAuth()` function for session validation with Better Auth
+- `validation.ts` - JSON parsing and Zod schema validation utilities
+  - `parseJsonBody()` - Safe JSON parsing with error handling
+  - `validateSchema()` - Zod schema validation with formatted errors
+  - `parseAndValidateBody()` - Combined parsing and validation
+- `params.ts` - `validateRouteParam()` for validating route parameters
+- `errors.ts` - Standardized error responses and handlers
+  - `notFoundResponse()` - 404 responses
+  - `conflictResponse()` - 409 conflict responses (unique constraints)
+  - `databaseErrorResponse()` - 503 database connection errors
+  - `internalErrorResponse()` - 500 internal errors
+  - `handleApiError()` - Unified error handling with logging
+
+**Usage Pattern:**
+```typescript
+// Example: POST /api/studio/media/upload
+export async function POST(request: Request) {
+  // 1. Authenticate
+  const authResult = await requireAuth("upload media");
+  if (!authResult.success) return authResult.response;
+
+  // 2. Parse and validate
+  const bodyResult = await parseAndValidateBody(request, uploadSchema);
+  if (!bodyResult.success) return bodyResult.response;
+
+  // 3. Business logic
+  try {
+    const result = await mediaService.createMedia(bodyResult.data);
+    return NextResponse.json(result);
+  } catch (error) {
+    return handleApiError(error, ERROR_IDS.MEDIA_UPLOAD_FAILED, "upload media");
+  }
+}
+```
+
+**Benefits:**
+- Consistent error responses across all API routes
+- Type-safe error handling with `ApiResult<T>`
+- Reduced boilerplate in route handlers
+- Centralized authentication and validation logic
+- Better error logging and monitoring
+
+#### 4. Action Layer (`app/(blog)/_actions/`)
 **Server actions for mutations only**
 - Contains only write operations (no reads)
 - Uses React Server Actions for client-side mutations
@@ -201,10 +250,11 @@ The service layer uses classes for better testability, dependency injection, and
 - Post statistics (likes/views) handled through service layer
 
 **Architecture Benefits**:
-- Clear separation of concerns
+- Clear separation of concerns across all layers
 - Easy to unit test each layer independently
-- Reusable queries across multiple services
-- Business logic isolated from data access
+- Reusable queries and utilities across multiple services
+- Business logic isolated from data access and HTTP handling
+- Type-safe error handling throughout the stack
 - Follows Next.js 16 best practices (server actions for writes only)
 
 ## Environment Variables
