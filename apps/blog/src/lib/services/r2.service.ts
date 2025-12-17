@@ -1,5 +1,4 @@
 import {
-  CopyObjectCommand,
   DeleteObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -19,7 +18,6 @@ export interface UploadMetadata {
   filename: string;
   mimeType: string;
   size: number;
-  isTemp?: boolean;
 }
 
 export class R2Service {
@@ -46,21 +44,10 @@ export class R2Service {
     return `media/${uuid}-${sanitisedFilename}`;
   }
 
-  generateTempKey(filename: string): string {
-    const uuid = crypto.randomUUID();
-    const sanitisedFilename = filename.replace(/[^a-zA-Z0-9.-]/g, "_");
-    return `media/tmp/${uuid}-${sanitisedFilename}`;
-  }
-
-  tempKeyToPermanent(tempKey: string): string {
-    // media/tmp/uuid-file.jpg → media/uuid-file.jpg
-    return tempKey.replace(/^media\/tmp\//, "media/");
-  }
-
   async createPresignedUpload(
     metadata: UploadMetadata,
   ): Promise<PresignedUploadResult> {
-    const { filename, mimeType, size, isTemp = false } = metadata;
+    const { filename, mimeType, size } = metadata;
 
     if (
       !R2Config.ALLOWED_MIME_TYPES.includes(
@@ -76,9 +63,7 @@ export class R2Service {
       );
     }
 
-    const key = isTemp
-      ? this.generateTempKey(filename)
-      : this.generateKey(filename);
+    const key = this.generateKey(filename);
 
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
@@ -112,33 +97,6 @@ export class R2Service {
       await this.client.send(command);
     } catch (error) {
       logError(ERROR_IDS.R2_DELETE_FAILED, error, { key });
-      throw error;
-    }
-  }
-
-  async copyToPermanent(
-    tempKey: string,
-  ): Promise<{ newKey: string; newUrl: string }> {
-    const newKey = this.tempKeyToPermanent(tempKey);
-
-    try {
-      // Copy to permanent location
-      const copyCommand = new CopyObjectCommand({
-        Bucket: this.bucketName,
-        CopySource: `${this.bucketName}/${tempKey}`,
-        Key: newKey,
-      });
-      await this.client.send(copyCommand);
-
-      // Delete temp file
-      await this.deleteObject(tempKey);
-
-      return {
-        newKey,
-        newUrl: this.getPublicUrl(newKey),
-      };
-    } catch (error) {
-      logError(ERROR_IDS.R2_COPY_FAILED, error, { tempKey, newKey });
       throw error;
     }
   }

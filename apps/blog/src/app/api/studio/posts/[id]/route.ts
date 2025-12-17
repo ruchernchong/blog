@@ -6,7 +6,7 @@ import { ERROR_IDS } from "@/constants/error-ids";
 import { auth } from "@/lib/auth";
 import { logError } from "@/lib/logger";
 import { generatePostMetadata } from "@/lib/post-metadata";
-import { cacheInvalidationService, mediaService } from "@/lib/services";
+import { cacheInvalidationService } from "@/lib/services";
 import { db, posts } from "@/schema";
 import { postIdSchema, updatePostSchema } from "@/types/api";
 
@@ -225,11 +225,6 @@ export const PATCH = async (
         allAffectedTags,
         updatedSlug,
       );
-    }
-
-    // Promote temp media when publishing for the first time
-    if (updatedStatus === "published" && !existingPost.publishedAt) {
-      await mediaService.promoteMedia(updatedSlug);
     }
 
     return NextResponse.json(updatedPost);

@@ -128,6 +128,63 @@ export class CacheService {
   }
 
   /**
+   * Add member to a set
+   *
+   * @param key - Set key
+   * @param member - Member to add
+   */
+  async sadd(key: string, member: string): Promise<void> {
+    try {
+      await this.redis.sadd(key, member);
+    } catch (error) {
+      logError(ERROR_IDS.CACHE_WRITE_FAILED, error, { key, member });
+    }
+  }
+
+  /**
+   * Remove member from a set
+   *
+   * @param key - Set key
+   * @param member - Member to remove
+   */
+  async srem(key: string, member: string): Promise<void> {
+    try {
+      await this.redis.srem(key, member);
+    } catch (error) {
+      logError(ERROR_IDS.CACHE_DELETE_FAILED, error, { key, member });
+    }
+  }
+
+  /**
+   * Get all members of a set
+   *
+   * @param key - Set key
+   * @returns Array of members or empty array on error
+   */
+  async smembers(key: string): Promise<string[]> {
+    try {
+      return (await this.redis.smembers(key)) ?? [];
+    } catch (error) {
+      logError(ERROR_IDS.CACHE_READ_FAILED, error, { key });
+      return [];
+    }
+  }
+
+  /**
+   * Set expiration on a key
+   *
+   * @param key - Key to set expiration on
+   * @param seconds - TTL in seconds
+   */
+  async expire(key: string, seconds: number): Promise<void> {
+    try {
+      await this.redis.expire(key, seconds);
+    } catch (error) {
+      logError(ERROR_IDS.CACHE_WRITE_FAILED, error, { key, seconds });
+    }
+  }
+
+  /**
    * Check if Redis connection is healthy
    *
    * @returns true if Redis is reachable, false otherwise

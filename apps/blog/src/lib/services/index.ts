@@ -45,7 +45,7 @@ export const cacheInvalidationService = new CacheInvalidationService(
 
 // Initialize R2 and media services
 export const r2Service = new R2Service();
-export const mediaService = new MediaService(r2Service, cacheService);
+export const mediaService = new MediaService(r2Service);
 
 // Re-export service classes for testing purposes
 export { CacheService } from "@/lib/services/cache.service";

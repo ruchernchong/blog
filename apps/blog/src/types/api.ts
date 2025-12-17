@@ -122,7 +122,6 @@ export const requestUploadSchema = z.object({
   filename: z.string().min(1, "Filename is required"),
   mimeType: z.string().min(1, "MIME type is required"),
   size: z.number().positive("File size must be positive"),
-  isTemp: z.boolean().optional().default(false),
 });
 
 export const confirmUploadSchema = z.object({
@@ -137,10 +136,6 @@ export const confirmUploadSchema = z.object({
   caption: z.string().optional(),
 });
 
-export const confirmTempUploadSchema = confirmUploadSchema.extend({
-  slug: z.string().min(1, "Slug is required for temp uploads"),
-});
-
 export const updateMediaSchema = z.object({
   alt: z.string().optional(),
   caption: z.string().optional(),
@@ -148,5 +143,4 @@ export const updateMediaSchema = z.object({
 
 export type RequestUploadInput = z.infer<typeof requestUploadSchema>;
 export type ConfirmUploadInput = z.infer<typeof confirmUploadSchema>;
-export type ConfirmTempUploadInput = z.infer<typeof confirmTempUploadSchema>;
 export type UpdateMediaInput = z.infer<typeof updateMediaSchema>;
