@@ -374,7 +374,6 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
                   onChange={(content) =>
                     setFormData({ ...formData, content })
                   }
-                  slug={formData.slug}
                 />
               </Suspense>
             </div>

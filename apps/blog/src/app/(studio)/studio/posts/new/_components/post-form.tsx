@@ -192,7 +192,6 @@ export const PostForm = () => {
                           <ContentEditor
                             markdown={field.value}
                             onChange={field.onChange}
-                            slug={form.watch("slug")}
                           />
                         </Suspense>
                       </FormControl>

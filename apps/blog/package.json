@@ -37,6 +37,7 @@
     "@heroui/react": "^2.8.1",
     "@hookform/resolvers": "^3.10.0",
     "@icons-pack/react-simple-icons": "^9.7.0",
+    "@mdxeditor/editor": "^3.52.1",
     "@neondatabase/serverless": "^0.10.4",
     "@octokit/rest": "^22.0.0",
     "@radix-ui/react-alert-dialog": "^1.1.15",
