@@ -106,7 +106,7 @@ const PostPage = async (props: { params: Params }) => {
           <Typography variant="h1">{post.title}</Typography>
         </div>
         <aside className="relative rounded-md border-l-4 border-l-pink-500 bg-zinc-800 p-6">
-          <div className="-translate-x-[50%] -translate-y-[50%] absolute top-0 left-0 rounded-full bg-zinc-900 p-2 text-pink-500">
+          <div className="absolute top-0 left-0 -translate-x-[50%] -translate-y-[50%] rounded-full bg-zinc-900 p-2 text-pink-500">
             <InformationCircleIcon width={32} height={32} />
           </div>
           {post.summary}

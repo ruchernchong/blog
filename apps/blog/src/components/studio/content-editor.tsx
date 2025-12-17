@@ -2,10 +2,7 @@
 
 import type { MutableRefObject } from "react";
 import { forwardRef, useImperativeHandle, useRef } from "react";
-import {
-  MarkdownEditor,
-  type MarkdownEditorMethods,
-} from "./markdown-editor";
+import { MarkdownEditor, type MarkdownEditorMethods } from "./markdown-editor";
 
 export interface ContentEditorMethods {
   getMarkdown: () => string;
@@ -34,11 +31,7 @@ export default function ContentEditor({
 
   return (
     <div className="flex h-full flex-col">
-      <MarkdownEditor
-        ref={innerRef}
-        markdown={markdown}
-        onChange={onChange}
-      />
+      <MarkdownEditor ref={innerRef} markdown={markdown} onChange={onChange} />
     </div>
   );
 }

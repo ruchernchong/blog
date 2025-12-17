@@ -55,13 +55,21 @@ export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
     setError(null);
     const file = files[0];
 
-    if (!R2Config.ALLOWED_MIME_TYPES.includes(file.type as typeof R2Config.ALLOWED_MIME_TYPES[number])) {
-      setError(`Invalid file type. Allowed: ${R2Config.ALLOWED_MIME_TYPES.join(", ")}`);
+    if (
+      !R2Config.ALLOWED_MIME_TYPES.includes(
+        file.type as (typeof R2Config.ALLOWED_MIME_TYPES)[number],
+      )
+    ) {
+      setError(
+        `Invalid file type. Allowed: ${R2Config.ALLOWED_MIME_TYPES.join(", ")}`,
+      );
       return;
     }
 
     if (file.size > R2Config.MAX_FILE_SIZE) {
-      setError(`File too large. Maximum size: ${R2Config.MAX_FILE_SIZE / 1024 / 1024}MB`);
+      setError(
+        `File too large. Maximum size: ${R2Config.MAX_FILE_SIZE / 1024 / 1024}MB`,
+      );
       return;
     }
 
@@ -135,7 +143,9 @@ export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
     });
   }
 
-  function getImageDimensions(file: File): Promise<{ width: number; height: number }> {
+  function getImageDimensions(
+    file: File,
+  ): Promise<{ width: number; height: number }> {
     return new Promise((resolve) => {
       const img = new window.Image();
       img.onload = () => {
@@ -201,9 +211,7 @@ export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
           </div>
         </div>
 
-        {error && (
-          <p className="text-destructive text-sm">{error}</p>
-        )}
+        {error && <p className="text-destructive text-sm">{error}</p>}
       </DialogContent>
     </Dialog>
   );

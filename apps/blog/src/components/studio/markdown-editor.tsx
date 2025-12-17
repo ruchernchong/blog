@@ -1,28 +1,28 @@
 "use client";
 
 import {
+  BlockTypeSelect,
+  BoldItalicUnderlineToggles,
+  CreateLink,
+  DiffSourceToggleWrapper,
+  diffSourcePlugin,
+  headingsPlugin,
+  InsertImage,
+  imagePlugin,
+  ListsToggle,
+  linkDialogPlugin,
+  linkPlugin,
+  listsPlugin,
   MDXEditor,
   type MDXEditorMethods,
-  headingsPlugin,
-  listsPlugin,
-  quotePlugin,
   markdownShortcutPlugin,
-  linkPlugin,
-  linkDialogPlugin,
-  imagePlugin,
-  diffSourcePlugin,
-  toolbarPlugin,
-  BoldItalicUnderlineToggles,
-  ListsToggle,
-  BlockTypeSelect,
-  CreateLink,
-  InsertImage,
+  quotePlugin,
   Separator,
-  DiffSourceToggleWrapper,
+  toolbarPlugin,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 import { forwardRef, useImperativeHandle, useRef } from "react";
-import { R2Config, type AllowedMimeType } from "@/lib/config/r2.config";
+import { type AllowedMimeType, R2Config } from "@/lib/config/r2.config";
 
 export interface MarkdownEditorMethods {
   getMarkdown: () => string;

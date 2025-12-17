@@ -19,7 +19,7 @@ export const Header = () => {
   const pathname = usePathname();
 
   return (
-    <div className="-translate-x-1/2 fixed top-6 left-1/2 z-50 w-full px-4 md:max-w-4xl">
+    <div className="fixed top-6 left-1/2 z-50 w-full -translate-x-1/2 px-4 md:max-w-4xl">
       <header className="w-full rounded-2xl border border-white/10 bg-black/20 px-8 py-3 shadow-2xl backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <NavItem

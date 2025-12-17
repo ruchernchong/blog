@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { ErrorId } from "@/constants/error-ids";
-import { logError, type LogContext } from "@/lib/logger";
+import { type LogContext, logError } from "@/lib/logger";
 
 /**
  * Standard API error response messages.
@@ -41,7 +41,10 @@ export function notFoundResponse(resource: string): NextResponse {
  * @param resource - Resource type (e.g., "media item", "post")
  * @param field - Field that caused the conflict (e.g., "key", "slug")
  */
-export function conflictResponse(resource: string, field: string): NextResponse {
+export function conflictResponse(
+  resource: string,
+  field: string,
+): NextResponse {
   return NextResponse.json(
     { message: API_ERROR_MESSAGES.UNIQUE_CONSTRAINT(resource, field) },
     { status: 409 },

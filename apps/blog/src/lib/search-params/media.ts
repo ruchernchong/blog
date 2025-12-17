@@ -1,8 +1,4 @@
-import {
-  createLoader,
-  parseAsInteger,
-  parseAsString,
-} from "nuqs/server";
+import { createLoader, parseAsInteger, parseAsString } from "nuqs/server";
 
 export const mediaSearchParams = {
   search: parseAsString,

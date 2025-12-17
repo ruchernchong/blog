@@ -12,6 +12,7 @@ import {
   useState,
   useTransition,
 } from "react";
+import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,11 +25,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
 
 const ContentEditor = dynamic(
   () => import("@/components/studio/content-editor"),
-  { ssr: false }
+  { ssr: false },
 );
 
 interface Post {
@@ -371,9 +371,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
               <Suspense fallback={null}>
                 <ContentEditor
                   markdown={formData.content}
-                  onChange={(content) =>
-                    setFormData({ ...formData, content })
-                  }
+                  onChange={(content) => setFormData({ ...formData, content })}
                 />
               </Suspense>
             </div>

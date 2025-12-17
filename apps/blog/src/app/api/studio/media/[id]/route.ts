@@ -59,9 +59,14 @@ export const PATCH = async (
     if (!updated) return notFoundResponse("Media");
     return NextResponse.json(updated);
   } catch (error) {
-    return handleApiError(error, ERROR_IDS.MEDIA_UPDATE_FAILED, "update media", {
-      mediaId: paramResult.data,
-    });
+    return handleApiError(
+      error,
+      ERROR_IDS.MEDIA_UPDATE_FAILED,
+      "update media",
+      {
+        mediaId: paramResult.data,
+      },
+    );
   }
 };
 
@@ -85,8 +90,13 @@ export const DELETE = async (
     if (!deleted) return notFoundResponse("Media");
     return NextResponse.json({ message: "Media deleted successfully" });
   } catch (error) {
-    return handleApiError(error, ERROR_IDS.MEDIA_DELETE_FAILED, "delete media", {
-      mediaId: paramResult.data,
-    });
+    return handleApiError(
+      error,
+      ERROR_IDS.MEDIA_DELETE_FAILED,
+      "delete media",
+      {
+        mediaId: paramResult.data,
+      },
+    );
   }
 };

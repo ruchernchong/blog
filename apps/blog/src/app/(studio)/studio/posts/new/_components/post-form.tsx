@@ -16,6 +16,7 @@ import {
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import { z } from "zod";
+import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -42,11 +43,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
 
 const ContentEditor = dynamic(
   () => import("@/components/studio/content-editor"),
-  { ssr: false }
+  { ssr: false },
 );
 
 const newPostSchema = z.object({
@@ -342,9 +342,15 @@ export const PostForm = () => {
                             </FormControl>
                             <Suspense fallback={null}>
                               <ImagePickerDialog
-                                onSelect={(url) => form.setValue("coverImage", url)}
+                                onSelect={(url) =>
+                                  form.setValue("coverImage", url)
+                                }
                                 trigger={
-                                  <Button type="button" variant="outline" size="sm">
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                  >
                                     Browse
                                   </Button>
                                 }

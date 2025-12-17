@@ -21,7 +21,10 @@ interface ImagePickerDialogProps {
   trigger?: ReactNode;
 }
 
-export function ImagePickerDialog({ onSelect, trigger }: ImagePickerDialogProps) {
+export function ImagePickerDialog({
+  onSelect,
+  trigger,
+}: ImagePickerDialogProps) {
   const [open, setOpen] = useState(false);
   const [media, setMedia] = useState<SelectMedia[]>([]);
   const [isPending, startTransition] = useTransition();
@@ -58,7 +61,11 @@ export function ImagePickerDialog({ onSelect, trigger }: ImagePickerDialogProps)
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {trigger || <Button type="button" variant="outline">Browse Media</Button>}
+        {trigger || (
+          <Button type="button" variant="outline">
+            Browse Media
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
@@ -115,11 +122,7 @@ export function ImagePickerDialog({ onSelect, trigger }: ImagePickerDialogProps)
             >
               Cancel
             </Button>
-            <Button
-              type="button"
-              onClick={handleSelect}
-              disabled={!selected}
-            >
+            <Button type="button" onClick={handleSelect} disabled={!selected}>
               Select
             </Button>
           </div>

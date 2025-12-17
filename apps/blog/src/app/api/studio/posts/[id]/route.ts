@@ -75,8 +75,16 @@ export const PATCH = async (
 
     if (!existingPost) return notFoundResponse("Post");
 
-    const { title, slug, summary, content, status, tags, coverImage, featured } =
-      bodyResult.data;
+    const {
+      title,
+      slug,
+      summary,
+      content,
+      status,
+      tags,
+      coverImage,
+      featured,
+    } = bodyResult.data;
 
     const updatedTitle = title ?? existingPost.title;
     const updatedSlug = slug ?? existingPost.slug;

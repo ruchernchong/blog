@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import { ERROR_IDS } from "@/constants/error-ids";
-import {
-  handleApiError,
-  parseAndValidateBody,
-  requireAuth,
-} from "@/lib/api";
+import { handleApiError, parseAndValidateBody, requireAuth } from "@/lib/api";
 import { mediaService } from "@/lib/services";
 import { requestUploadSchema } from "@/types/api";
 
