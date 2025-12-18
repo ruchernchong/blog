@@ -13,7 +13,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!migrations", "!!convex/_generated"]
+    "includes": ["**", "!migrations"]
   },
   "formatter": {
     "enabled": true,

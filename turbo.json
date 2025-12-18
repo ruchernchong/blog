@@ -9,8 +9,7 @@
         "GH_ACCESS_TOKEN",
         "DATABASE_URL",
         "SITE_URL",
-        "UPSTASH_REDIS_*",
-        "NEXT_PUBLIC_CONVEX_URL"
+        "UPSTASH_REDIS_*"
       ],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
@@ -20,11 +19,6 @@
       "cache": false
     },
     "dev": {
-      "with": ["convex:dev"],
-      "persistent": true,
-      "cache": false
-    },
-    "convex:dev": {
       "persistent": true,
       "cache": false
     },
