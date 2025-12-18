@@ -2,12 +2,7 @@
 
 import { BriefcaseIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import companies from "@/data/companies";
 
 export const ExperienceCard = () => {
@@ -21,7 +16,7 @@ export const ExperienceCard = () => {
   return (
     <Card className="border border-zinc-700/50 bg-zinc-900/50 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base font-medium">
+        <CardTitle className="flex items-center gap-2 font-medium text-base">
           <BriefcaseIcon className="size-4" />
           <span>Experience</span>
         </CardTitle>

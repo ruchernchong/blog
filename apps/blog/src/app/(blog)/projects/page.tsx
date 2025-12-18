@@ -53,7 +53,10 @@ function ProjectCard({ project }: { project: Project }) {
 
           <div className="flex flex-wrap gap-2">
             {displayedSkills.map((skill) => (
-              <Badge key={skill} className="bg-pink-500 text-white hover:bg-pink-600">
+              <Badge
+                key={skill}
+                className="bg-pink-500 text-white hover:bg-pink-600"
+              >
                 {skill}
               </Badge>
             ))}

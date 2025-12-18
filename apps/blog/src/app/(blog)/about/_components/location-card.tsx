@@ -1,16 +1,11 @@
 import { MapPinIcon } from "@heroicons/react/24/outline";
 import { Globe } from "@/app/(blog)/about/_components/globe";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const LocationCard = () => (
   <Card className="h-full border border-zinc-700/50 bg-zinc-900/50 backdrop-blur-sm">
     <CardHeader>
-      <CardTitle className="flex items-center gap-2 text-base font-medium">
+      <CardTitle className="flex items-center gap-2 font-medium text-base">
         <MapPinIcon className="size-4" />
         <span>Singapore</span>
       </CardTitle>
