@@ -33,13 +33,10 @@ const Employment = ({ companies }: EmploymentProps) => {
         {companies.map(
           ({ name, title, logo, dateStart, dateEnd, location, url }) => {
             return (
-              <div
-                key={name}
-                className="group relative flex items-center gap-4"
-              >
+              <div key={name} className="relative flex items-center gap-4">
                 <div
                   className={cn(
-                    "flex size-12 items-center rounded-2xl p-2 md:h-[72px] md:w-[72px]",
+                    "flex size-12 items-center rounded-2xl p-2 md:h-18 md:w-18",
                     logo ? "bg-zinc-50" : "bg-transparent",
                   )}
                 >
@@ -69,12 +66,10 @@ const Employment = ({ companies }: EmploymentProps) => {
                     className="z-20 no-underline"
                   >
                     <ItemOverlay />
-                    <div className="font-bold text-xl group-hover:text-muted-foreground">
-                      {name}
-                    </div>
+                    <div className="font-bold text-xl">{name}</div>
                   </a>
                   <div>{title}</div>
-                  <div className="text-sm text-muted-foreground italic">
+                  <div className="text-muted-foreground text-sm italic">
                     <div>
                       {dateStart} - {dateEnd ?? "Present"}
                     </div>

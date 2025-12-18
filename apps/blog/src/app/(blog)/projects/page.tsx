@@ -114,10 +114,10 @@ export default function ProjectsPage() {
       {/* Featured Section */}
       {featuredProjects.length > 0 && (
         <section className="mb-16">
-          <h2 className="mb-8 flex items-center gap-3 font-semibold text-xl text-muted-foreground">
-            <span className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
+          <h2 className="mb-8 flex items-center gap-3 font-semibold text-xl text-foreground">
+            <span className="h-px flex-1 bg-gradient-to-r from-muted-foreground to-transparent" />
             <span>Featured</span>
-            <span className="h-px flex-1 bg-gradient-to-l from-border to-transparent" />
+            <span className="h-px flex-1 bg-gradient-to-l from-muted-foreground to-transparent" />
           </h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {featuredProjects.map((project) => {
@@ -130,10 +130,10 @@ export default function ProjectsPage() {
       {/* Other Projects */}
       {otherProjects.length > 0 && (
         <section>
-          <h2 className="mb-8 flex items-center gap-3 font-semibold text-xl text-muted-foreground">
-            <span className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
+          <h2 className="mb-8 flex items-center gap-3 font-semibold text-xl text-foreground">
+            <span className="h-px flex-1 bg-gradient-to-r from-muted-foreground to-transparent" />
             <span>More Projects</span>
-            <span className="h-px flex-1 bg-gradient-to-l from-border to-transparent" />
+            <span className="h-px flex-1 bg-gradient-to-l from-muted-foreground to-transparent" />
           </h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {otherProjects.map((project) => {
