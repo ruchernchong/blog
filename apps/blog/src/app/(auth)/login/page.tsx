@@ -1,4 +1,5 @@
-import { Terminal } from "lucide-react";
+import { ComputerTerminal01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -18,7 +19,7 @@ export default function LoginPage() {
           className="flex items-center gap-2 self-center font-medium"
         >
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <Terminal className="size-4" />
+            <HugeiconsIcon icon={ComputerTerminal01Icon} size={16} strokeWidth={2} />
           </div>
           Portfolio
         </Link>

@@ -1,4 +1,5 @@
-import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO, parseISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
@@ -40,9 +41,10 @@ const BlogPost = ({
       </div>
       <div className="flex items-center gap-x-1">
         Read more
-        <ArrowRightIcon
-          width={20}
-          height={20}
+        <HugeiconsIcon
+          icon={ArrowRight01Icon}
+          size={20}
+          strokeWidth={2}
           className="hidden text-foreground group-hover:block"
         />
       </div>

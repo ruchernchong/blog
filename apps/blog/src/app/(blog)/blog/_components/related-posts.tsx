@@ -1,4 +1,5 @@
-import { TagIcon } from "@heroicons/react/24/outline";
+import { Tag01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import Link from "next/link";
 import {
@@ -43,7 +44,7 @@ export const RelatedPosts = async ({ slug }: RelatedPostsProps) => {
                       {formattedDate}
                     </time>
                     <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                      <TagIcon className="h-4 w-4" />
+                      <HugeiconsIcon icon={Tag01Icon} size={16} strokeWidth={2} />
                       <span>
                         {post.commonTagCount}{" "}
                         {post.commonTagCount === 1 ? "tag" : "tags"}

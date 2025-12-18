@@ -1,5 +1,5 @@
-import { HeartIcon } from "@heroicons/react/24/outline";
-import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
+import { FavouriteIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useOptimistic } from "react";
 import { incrementLikes } from "@/app/(blog)/_actions/stats";
 import { MAX_LIKES_PER_USER } from "@/config";
@@ -48,11 +48,12 @@ const LikeButton = ({
           : "text-muted-foreground"
       }`}
     >
-      {optimisticLikes.likesByUser > 0 ? (
-        <HeartSolidIcon className="size-6" />
-      ) : (
-        <HeartIcon className="size-6" />
-      )}
+      <HugeiconsIcon
+        icon={FavouriteIcon}
+        size={24}
+        strokeWidth={2}
+        className={optimisticLikes.likesByUser > 0 ? "fill-current" : ""}
+      />
     </button>
   );
 };

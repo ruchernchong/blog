@@ -1,5 +1,6 @@
+import { LinkSquare01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
-import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -82,7 +83,7 @@ function ProjectCard({ project }: { project: Project }) {
                   {isGitHubLink(link) ? (
                     <SiGithub className="size-4" />
                   ) : (
-                    <ExternalLink className="size-4" />
+                    <HugeiconsIcon icon={LinkSquare01Icon} size={16} strokeWidth={2} />
                   )}
                   {isGitHubLink(link) ? "Source" : "Live"}
                 </div>

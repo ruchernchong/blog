@@ -162,9 +162,7 @@ export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>Upload</Button>
-      </DialogTrigger>
+      <DialogTrigger render={<Button />}>Upload</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Upload Media</DialogTitle>

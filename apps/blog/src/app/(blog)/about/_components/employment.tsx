@@ -1,4 +1,5 @@
-import { BriefcaseIcon } from "@heroicons/react/24/solid";
+import { Briefcase01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import ExternalLink from "@/components/shared/external-link";
 import { ItemOverlay } from "@/components/shared/item-overlay";
@@ -14,7 +15,7 @@ const Employment = ({ companies }: EmploymentProps) => {
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
-          <BriefcaseIcon width={32} height={32} className="fill-foreground" />
+          <HugeiconsIcon icon={Briefcase01Icon} size={32} strokeWidth={2} className="fill-foreground" />
           <h2 className="font-bold text-4xl">Work</h2>
         </div>
         <p>
@@ -51,9 +52,10 @@ const Employment = ({ companies }: EmploymentProps) => {
                     />
                   )}
                   {!logo && (
-                    <BriefcaseIcon
-                      width="100%"
-                      height="100%"
+                    <HugeiconsIcon
+                      icon={Briefcase01Icon}
+                      size={48}
+                      strokeWidth={2}
                       className="fill-foreground"
                     />
                   )}

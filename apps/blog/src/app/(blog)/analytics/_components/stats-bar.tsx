@@ -1,4 +1,5 @@
-import { EyeIcon } from "@heroicons/react/24/outline";
+import { ViewIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { headers } from "next/headers";
 import { LikeCounter } from "@/app/(blog)/blog/_components/like-counter";
 import { ViewCounter } from "@/app/(blog)/blog/_components/view-counter";
@@ -33,7 +34,7 @@ const StatsBar = async ({ slug }: StatsBarProps) => {
           initialLikesByUser={likesByUser}
         />
         <div className="flex items-center gap-2 md:flex-col">
-          <EyeIcon className="h-6 w-6 text-muted-foreground" />
+          <HugeiconsIcon icon={ViewIcon} size={24} strokeWidth={2} className="text-muted-foreground" />
           <ViewCounter slug={slug} />
         </div>
       </div>

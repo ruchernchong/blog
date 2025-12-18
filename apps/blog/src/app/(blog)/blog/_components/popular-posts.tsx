@@ -1,4 +1,5 @@
-import { EyeIcon } from "@heroicons/react/24/outline";
+import { ViewIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
@@ -46,7 +47,7 @@ export const PopularPosts = async () => {
                       {formattedDate}
                     </time>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <EyeIcon className="h-4 w-4" />
+                      <HugeiconsIcon icon={ViewIcon} size={16} strokeWidth={2} />
                       <span>{post.views}</span>
                     </div>
                   </div>

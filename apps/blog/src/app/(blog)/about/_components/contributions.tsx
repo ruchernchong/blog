@@ -1,4 +1,5 @@
-import { UsersIcon } from "@heroicons/react/24/solid";
+import { UserMultipleIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { Fragment } from "react";
 import { Card } from "@/components/shared/card";
 import { LinkWithIcon } from "@/components/shared/link-with-icon";
@@ -24,7 +25,7 @@ const Contributions = ({
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-x-2">
-          <UsersIcon className="h-8 w-8 fill-foreground" />
+          <HugeiconsIcon icon={UserMultipleIcon} size={32} strokeWidth={2} className="fill-foreground" />
           <Typography variant="h2">Contributions</Typography>
         </div>
         <Typography variant="p" className="text-muted-foreground">

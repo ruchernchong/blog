@@ -13,21 +13,13 @@ import {
   useState,
   useTransition,
 } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import slugify from "slugify";
 import { z } from "zod";
 import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Field, FieldLabel, FieldDescription, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   ResizableHandle,
@@ -149,7 +141,7 @@ export const PostForm = () => {
   };
 
   return (
-    <Form {...form}>
+    <FormProvider {...form}>
       <div className="flex h-[calc(100vh-4rem)] flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
@@ -158,8 +150,8 @@ export const PostForm = () => {
               Write and publish a new blog post
             </p>
           </div>
-          <Button variant="outline" asChild>
-            <Link href="/studio/posts">Back to Posts</Link>
+          <Button variant="outline" render={<Link href="/studio/posts" />}>
+            Back to Posts
           </Button>
         </div>
 
@@ -182,21 +174,21 @@ export const PostForm = () => {
             {/* Editor Panel */}
             <ResizablePanel defaultSize={70} minSize={50}>
               <div className="flex h-full flex-col">
-                <FormField
+                <Controller
                   control={form.control}
                   name="content"
-                  render={({ field }) => (
-                    <FormItem className="flex h-full flex-col">
-                      <FormControl>
-                        <Suspense fallback={null}>
-                          <ContentEditor
-                            markdown={field.value}
-                            onChange={field.onChange}
-                          />
-                        </Suspense>
-                      </FormControl>
-                      <FormMessage className="px-4" />
-                    </FormItem>
+                  render={({ field, fieldState }) => (
+                    <Field className="flex h-full flex-col">
+                      <Suspense fallback={null}>
+                        <ContentEditor
+                          markdown={field.value}
+                          onChange={field.onChange}
+                        />
+                      </Suspense>
+                      {fieldState.error && (
+                        <FieldError className="px-4">{fieldState.error.message}</FieldError>
+                      )}
+                    </Field>
                   )}
                 />
               </div>
@@ -212,86 +204,85 @@ export const PostForm = () => {
                 </div>
                 <ScrollArea className="flex-1">
                   <div className="flex flex-col gap-4 p-4">
-                    <FormField
+                    <Controller
                       control={form.control}
                       name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={!!fieldState.error}>
+                          <FieldLabel htmlFor={titleId}>
                             Title <span className="text-destructive">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              id={titleId}
-                              placeholder="My Awesome Post"
-                              autoComplete="off"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
+                          </FieldLabel>
+                          <Input
+                            id={titleId}
+                            placeholder="My Awesome Post"
+                            autoComplete="off"
+                            aria-invalid={!!fieldState.error}
+                            {...field}
+                          />
+                          {fieldState.error && (
+                            <FieldError>{fieldState.error.message}</FieldError>
+                          )}
+                        </Field>
                       )}
                     />
 
-                    <FormField
+                    <Controller
                       control={form.control}
                       name="slug"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Slug</FormLabel>
-                          <FormControl>
-                            <Input
-                              id={slugId}
-                              placeholder="auto-generated-from-title"
-                              autoComplete="off"
-                              readOnly
-                              className="cursor-not-allowed bg-muted"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormDescription>
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={!!fieldState.error}>
+                          <FieldLabel htmlFor={slugId}>Slug</FieldLabel>
+                          <Input
+                            id={slugId}
+                            placeholder="auto-generated-from-title"
+                            autoComplete="off"
+                            readOnly
+                            className="cursor-not-allowed bg-muted"
+                            {...field}
+                          />
+                          <FieldDescription>
                             Auto-generated from the post title
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
+                          </FieldDescription>
+                          {fieldState.error && (
+                            <FieldError>{fieldState.error.message}</FieldError>
+                          )}
+                        </Field>
                       )}
                     />
 
-                    <FormField
+                    <Controller
                       control={form.control}
                       name="summary"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Summary</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              id={summaryId}
-                              placeholder="A brief description..."
-                              rows={3}
-                              autoComplete="off"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={!!fieldState.error}>
+                          <FieldLabel htmlFor={summaryId}>Summary</FieldLabel>
+                          <Textarea
+                            id={summaryId}
+                            placeholder="A brief description..."
+                            rows={3}
+                            autoComplete="off"
+                            {...field}
+                          />
+                          {fieldState.error && (
+                            <FieldError>{fieldState.error.message}</FieldError>
+                          )}
+                        </Field>
                       )}
                     />
 
-                    <FormField
+                    <Controller
                       control={form.control}
                       name="status"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Status</FormLabel>
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={!!fieldState.error}>
+                          <FieldLabel>Status</FieldLabel>
                           <Select
                             onValueChange={field.onChange}
                             value={field.value}
                           >
-                            <FormControl>
-                              <SelectTrigger id={statusId}>
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
+                            <SelectTrigger id={statusId}>
+                              <SelectValue />
+                            </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="draft">Draft</SelectItem>
                               <SelectItem value="published">
@@ -299,47 +290,47 @@ export const PostForm = () => {
                               </SelectItem>
                             </SelectContent>
                           </Select>
-                          <FormMessage />
-                        </FormItem>
+                          {fieldState.error && (
+                            <FieldError>{fieldState.error.message}</FieldError>
+                          )}
+                        </Field>
                       )}
                     />
 
-                    <FormField
+                    <Controller
                       control={form.control}
                       name="tags"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Tags</FormLabel>
-                          <FormControl>
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={!!fieldState.error}>
+                          <FieldLabel htmlFor={tagsId}>Tags</FieldLabel>
+                          <Input
+                            id={tagsId}
+                            placeholder="nextjs, react"
+                            autoComplete="off"
+                            {...field}
+                          />
+                          <FieldDescription>Comma-separated</FieldDescription>
+                          {fieldState.error && (
+                            <FieldError>{fieldState.error.message}</FieldError>
+                          )}
+                        </Field>
+                      )}
+                    />
+
+                    <Controller
+                      control={form.control}
+                      name="coverImage"
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={!!fieldState.error}>
+                          <FieldLabel htmlFor={coverImageId}>Cover Image URL</FieldLabel>
+                          <div className="flex gap-2">
                             <Input
-                              id={tagsId}
-                              placeholder="nextjs, react"
+                              id={coverImageId}
+                              type="url"
+                              placeholder="https://example.com/image.jpg"
                               autoComplete="off"
                               {...field}
                             />
-                          </FormControl>
-                          <FormDescription>Comma-separated</FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="coverImage"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Cover Image URL</FormLabel>
-                          <div className="flex gap-2">
-                            <FormControl>
-                              <Input
-                                id={coverImageId}
-                                type="url"
-                                placeholder="https://example.com/image.jpg"
-                                autoComplete="off"
-                                {...field}
-                              />
-                            </FormControl>
                             <Suspense fallback={null}>
                               <ImagePickerDialog
                                 onSelect={(url) =>
@@ -357,10 +348,12 @@ export const PostForm = () => {
                               />
                             </Suspense>
                           </div>
-                          <FormDescription>
+                          <FieldDescription>
                             Optional cover image URL
-                          </FormDescription>
-                          <FormMessage />
+                          </FieldDescription>
+                          {fieldState.error && (
+                            <FieldError>{fieldState.error.message}</FieldError>
+                          )}
                           {field.value && (
                             <div className="mb-4">
                               <Image
@@ -375,7 +368,7 @@ export const PostForm = () => {
                               />
                             </div>
                           )}
-                        </FormItem>
+                        </Field>
                       )}
                     />
                   </div>
@@ -385,8 +378,8 @@ export const PostForm = () => {
           </ResizablePanelGroup>
 
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" asChild>
-              <Link href="/studio/posts">Cancel</Link>
+            <Button type="button" variant="outline" render={<Link href="/studio/posts" />}>
+              Cancel
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending ? "Creating..." : "Create Post"}
@@ -394,6 +387,6 @@ export const PostForm = () => {
           </div>
         </form>
       </div>
-    </Form>
+    </FormProvider>
   );
 };

@@ -1,4 +1,5 @@
-import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
+import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import type { MDXComponents } from "mdx/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,7 +39,7 @@ const CustomLink = ({ href, children, ...props }: any) => {
     >
       <span>
         {children}
-        <ArrowUpRightIcon className="inline-flex h-4 w-4 align-super" />
+        <HugeiconsIcon icon={ArrowUpRight01Icon} size={16} strokeWidth={2} className="inline-flex align-super" />
       </span>
     </a>
   );

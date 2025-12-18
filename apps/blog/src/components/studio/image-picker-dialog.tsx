@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
-import type { ReactNode } from "react";
+import type { ReactElement } from "react";
 import { useEffect, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +18,7 @@ import type { SelectMedia } from "@/schema";
 
 interface ImagePickerDialogProps {
   onSelect: (url: string) => void;
-  trigger?: ReactNode;
+  trigger?: ReactElement;
 }
 
 export function ImagePickerDialog({
@@ -60,13 +60,13 @@ export function ImagePickerDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button type="button" variant="outline">
-            Browse Media
-          </Button>
-        )}
-      </DialogTrigger>
+      {trigger ? (
+        <DialogTrigger render={trigger}>{null}</DialogTrigger>
+      ) : (
+        <DialogTrigger render={<Button type="button" variant="outline" />}>
+          Browse Media
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle>Select Image</DialogTitle>
