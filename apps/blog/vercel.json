@@ -1,4 +1,5 @@
 {
   "regions": ["sin1"],
+  "bunVersion": "1.3.4",
   "buildCommand": "bun run migrate && bunx convex deploy --cmd 'bun run build'"
 }
