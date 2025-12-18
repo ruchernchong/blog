@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@heroui/react";
+import { cn } from "@/lib/utils";
 
 interface PageTitleProps {
   title: string;
@@ -27,7 +27,7 @@ export const PageTitle = ({
     {description && (
       <h2
         className={cn(
-          "text-foreground-500 text-lg",
+          "text-muted-foreground text-lg",
           animate && "animate-slide-in-left-delayed",
         )}
       >

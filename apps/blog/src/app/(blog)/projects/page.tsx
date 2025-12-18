@@ -1,9 +1,9 @@
-import { Card, CardBody, CardFooter } from "@heroui/card";
-import { Chip } from "@heroui/chip";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import projects from "@/data/projects";
 import type { Project } from "@/types";
 
@@ -24,7 +24,7 @@ function ProjectCard({ project }: { project: Project }) {
   const remainingCount = project.skills.length - 4;
 
   return (
-    <Card>
+    <Card className="overflow-hidden">
       <div className="relative h-56 w-full overflow-hidden">
         <Image
           fill
@@ -36,7 +36,7 @@ function ProjectCard({ project }: { project: Project }) {
           className="object-cover"
         />
       </div>
-      <CardBody>
+      <CardContent className="pt-6">
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
@@ -51,24 +51,20 @@ function ProjectCard({ project }: { project: Project }) {
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {displayedSkills.map((skill) => (
-              <Chip
-                key={skill}
-                size="sm"
-                classNames={{ base: "bg-pink-500 text-white" }}
-              >
+              <Badge key={skill} className="bg-pink-500 text-white hover:bg-pink-600">
                 {skill}
-              </Chip>
+              </Badge>
             ))}
             {remainingCount > 0 && (
-              <Chip size="sm" classNames={{ base: "bg-pink-500 text-white" }}>
+              <Badge className="bg-pink-500 text-white hover:bg-pink-600">
                 +{remainingCount}
-              </Chip>
+              </Badge>
             )}
           </div>
         </div>
-      </CardBody>
+      </CardContent>
       <CardFooter>
         <div className="flex gap-2">
           {project.links.map((link) => {

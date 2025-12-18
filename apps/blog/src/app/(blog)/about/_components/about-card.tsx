@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@heroui/react";
 import Link from "next/link";
 import { ExperienceCard } from "@/app/(blog)/about/_components/experience-card";
 import { LocationCard } from "@/app/(blog)/about/_components/location-card";
+import { Button } from "@/components/ui/button";
 
 export const AboutCard = () => {
   return (
@@ -18,8 +18,8 @@ export const AboutCard = () => {
         </div>
       </div>
       <div className="flex items-center justify-center">
-        <Button as={Link} href="/about" variant="ghost">
-          More About Me
+        <Button asChild variant="ghost">
+          <Link href="/about">More About Me</Link>
         </Button>
       </div>
     </div>
