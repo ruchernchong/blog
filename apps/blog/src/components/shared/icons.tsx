@@ -1,10 +1,7 @@
 import {
   type IconType,
-  SiBluesky,
   SiGithub,
   SiLinkedin,
-  SiStackoverflow,
-  SiThreads,
   SiX,
 } from "@icons-pack/react-simple-icons";
 import { cn } from "@/lib/utils";
@@ -17,10 +14,7 @@ type SocialIcon = {
 const SOCIAL_ICONS_MAP: SocialIcon = {
   Github: SiGithub,
   Linkedin: SiLinkedin,
-  Stackoverflow: SiStackoverflow,
   Twitter: SiX,
-  Bluesky: SiBluesky,
-  Threads: SiThreads,
 };
 
 type Props = {
