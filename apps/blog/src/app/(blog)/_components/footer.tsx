@@ -8,7 +8,7 @@ import socials from "@/data/socials";
 
 export const Footer = () => (
   <div className="mx-auto flex w-full max-w-4xl justify-center px-4 pb-6">
-    <footer className="w-full rounded-2xl border border-white/10 bg-black/20 px-8 py-6 shadow-2xl backdrop-blur-lg">
+    <footer className="w-full border-t border-border bg-background px-8 py-6">
       <div className="flex flex-col gap-y-6">
         <div className="flex flex-col gap-y-6 md:flex-row md:items-start md:justify-between">
           <Image src={Icon} width={48} height={48} alt="Logo" />

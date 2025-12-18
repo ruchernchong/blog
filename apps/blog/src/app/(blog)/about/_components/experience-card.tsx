@@ -14,7 +14,7 @@ export const ExperienceCard = () => {
     .slice(0, 3);
 
   return (
-    <Card className="border border-zinc-700/50 bg-zinc-900/50 backdrop-blur-sm">
+    <Card className="border border-border bg-card">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-medium text-base">
           <BriefcaseIcon className="size-4" />
