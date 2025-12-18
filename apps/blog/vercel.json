@@ -1,4 +1,4 @@
 {
   "regions": ["sin1"],
-  "buildCommand": "pnpm dlx convex deploy --cmd 'pnpm run build'"
+  "buildCommand": "pnpm migrate && pnpm dlx convex deploy --cmd 'pnpm run build'"
 }
