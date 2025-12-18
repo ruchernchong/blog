@@ -71,7 +71,7 @@ const components: MDXComponents = {
   h2: (props) => (
     <Typography
       variant="h2"
-      className="mt-24 text-3xl text-yellow-400"
+      className="mt-24 text-3xl text-primary"
       {...props}
     />
   ),
