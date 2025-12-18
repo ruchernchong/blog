@@ -8,12 +8,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 #### Development
 
-- `bun run dev` - Start development server with hot reload (uses Turbo)
+- `bun run dev` - Start development server AND Drizzle Studio simultaneously (uses Turbo)
 - `bun run build` - Build all apps for production (uses Turbo)
 - `bun run start` - Start production server (uses Turbo)
 - `bun run test` - Run tests across all apps (uses Turbo)
+- `bun run test:coverage` - Generate coverage report across all apps (uses Turbo)
 - `bun run lint` - Run linting across all apps with Biome (uses Turbo)
 - `bun run lint:blog` - Run linting for blog app with Biome
+- `bun run format` - Format code with Biome across all apps (uses Turbo)
 
 #### Database Management
 
@@ -32,6 +34,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `bun run release` - Create semantic release (runs build, test, lint, typecheck)
 - `bun run release:blog` - Release blog app specifically
 
+### Available Slash Commands
+
+This project includes custom slash commands for Claude Code:
+
+- `/setup` - Initial project setup and dependency installation
+- `/build` - Smart build command that detects and runs project builds
+- `/test` - Smart test runner that detects and runs tests
+- `/lint` - Run linters and formatters for the project
+- `/clean` - Clean up temporary files and build artifacts
+- `/commit` - Smart git commit with short, concise messages
+- `/create-branch` - Create and checkout a new git branch with smart validation and GitHub issue integration
+- `/create-issue` - Create a GitHub issue with title and description (auto-assigned)
+- `/create-pull-request` - Push branch and create GitHub pull request (auto-assigned)
+- `/update-issue` - Update a GitHub issue with new title, body, labels, or assignees
+- `/update-docs` - Update and maintain CLAUDE.md and README.md documentation
+
+**Usage**: Type `/command-name` in Claude Code to execute. Commands are located in `~/.claude/commands/`.
+
 ### App-specific Commands (run from `/apps/blog/`)
 
 #### Development
@@ -40,6 +60,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `bun run build` - Build blog app for production
 - `bun run start` - Start production server
 - `bun run test` - Run Vitest tests with coverage
+- `bun run test:watch` - Run Vitest in watch mode for development
 - `bun run test -- utils/__tests__/truncate.test.ts` - Run single test file
 - `bun run test:coverage` - Generate coverage report
 - `bun run typecheck` - TypeScript type checking
@@ -81,6 +102,37 @@ This is a Turborepo monorepo containing a Next.js 16 portfolio website with an i
 - **Code Quality**: Biome for linting/formatting, TypeScript strict mode
 - **Deployment**: Vercel with automated migrations
 
+### Next.js Experimental Features
+
+This project uses cutting-edge Next.js features:
+
+- **React Compiler** (`reactCompiler: true`) - Automatic React optimization at build time
+- **Typed Routes** (`typedRoutes: true`) - Type-safe routing with autocomplete
+- **MCP Server** (`experimental.mcpServer: true`) - Model Context Protocol server support
+- **Turbopack File System Cache** (`experimental.turbopackFileSystemCacheForDev: true`) - Persistent dev build cache
+- **Typed Environment Variables** (`experimental.typedEnv: true`) - Type-safe env var access
+
+**Note**: These features are experimental and may have breaking changes in future Next.js versions. Configuration in `apps/blog/next.config.ts`.
+
+### CI/CD Pipeline
+
+Automated workflows via GitHub Actions (`.github/workflows/release.yml`):
+
+**On push to `main` branch**:
+1. **Checks Job** (runs in parallel):
+   - Lint: `bun lint` with Biome
+   - Test: `bun test:coverage` with Vitest
+   - Build: `bun run build` with Next.js
+2. **Release Job** (after checks pass):
+   - Semantic versioning with semantic-release
+   - Automated changelog generation
+   - Git tagging and GitHub releases
+
+**Environment**:
+- Runner: Ubuntu latest
+- Package manager: Bun 1.3.4
+- Turbo cache enabled via TURBO_TOKEN/TURBO_TEAM secrets
+
 ### Key Features
 
 - **Custom Analytics**: Privacy-focused visitor tracking with IP hashing
@@ -95,6 +147,24 @@ This is a Turborepo monorepo containing a Next.js 16 portfolio website with an i
 - **RSS Feed**: Dynamic `/feed.xml` endpoint with latest published posts
 - **Performance**: Optimized images, caching, and core web vitals tracking
 - **SEO**: Structured data, sitemaps, OpenGraph image generation
+
+### Recent Architectural Changes
+
+**shadcn/ui Migration (December 2024)**:
+- Migrated to shadcn/ui components for consistent UI primitives
+- Component library located in `apps/blog/src/components/ui/`
+- **Do not modify shadcn/ui components directly** - use composition instead
+- 17 components installed: alert-dialog, badge, button, card, chart, checkbox, dialog, empty, field, form, input, label, resizable, scroll-area, select, separator, textarea
+
+**Semantic Color System**:
+- Migrated from hardcoded colors to semantic tokens
+- Tokens: `foreground`, `muted`, `accent`, `border`, `background`, `primary`, etc.
+- OKLCH color space for better perceptual accuracy
+- Dark mode support via `.dark` class with CSS custom properties
+
+**Glassmorphism Removal**:
+- Removed glassmorphism effects for cleaner, more accessible design
+- Simplified component styling with semantic colors
 
 ### Database Architecture
 
@@ -302,46 +372,6 @@ Required environment variables (see `apps/blog/.env.example`):
 - `R2_BUCKET_NAME` - R2 bucket name for media storage
 - `R2_PUBLIC_URL` - Public URL for accessing R2 assets (e.g., https://assets.ruchern.dev)
 
-## Documentation & Learning Resources
-
-### Using Context7 for Library Documentation
-
-When working with libraries in this project, use the Context7 MCP server to retrieve up-to-date documentation and code
-examples. This is especially important for rapidly evolving libraries.
-
-**Priority Libraries for Context7**:
-
-- **Next.js** (`/vercel/next.js`) - Framework APIs, routing, data fetching
-- **React** (`/facebook/react`) - Hooks, components, server components
-- **Drizzle ORM** (`/drizzle-team/drizzle-orm`) - Database queries, schema, migrations
-- **Better Auth** (`/better-auth/better-auth`) - Authentication setup, providers, session management
-- **Tailwind CSS** (`/tailwindlabs/tailwindcss`) - Styling utilities, configuration
-- **MDXEditor** (`/mdxeditor/editor`) - Rich text editing, MDX authoring
-- **Vitest** (`/vitest-dev/vitest`) - Testing patterns, assertions, mocking
-- **next-mdx-remote** (`/hashicorp/next-mdx-remote`) - MDX compilation, components
-- **Recharts** (`/recharts/recharts`) - Chart components, data visualization
-- **AWS SDK (S3)** - S3-compatible operations for Cloudflare R2
-
-**When to Use Context7**:
-
-1. Before implementing new features using these libraries
-2. When encountering API changes or deprecation warnings
-3. For troubleshooting library-specific issues
-4. When learning best practices for library usage
-5. Before upgrading library versions
-
-**How to Use**:
-
-```
-Claude, using Context7, how do I implement [feature] with [library]?
-```
-
-Example queries:
-
-- "Using Context7, show me how to set up OAuth providers in Better Auth"
-- "Using Context7, what's the best way to handle dynamic routes in Next.js 16?"
-- "Using Context7, how do I create a custom middleware with tRPC?"
-
 ## Code Conventions
 
 ### Language & Writing Style
@@ -383,6 +413,22 @@ const time = "2:30 PM";
 - Component variants using class-variance-authority
 - Functional components with hooks
 - Error handling with proper TypeScript types
+
+### Tailwind CSS v4 Configuration
+
+This project uses Tailwind CSS v4 with a **PostCSS-only configuration** approach:
+
+- **No traditional `tailwind.config.ts`** - Configuration moved to CSS
+- **CSS-based configuration** via `@import "tailwindcss"` in `styles.css`
+- **Theme tokens** defined with `@theme inline` directive in CSS
+- **OKLCH color space** for semantic color tokens (better perceptual uniformity)
+- **CSS custom properties** for design tokens with light/dark mode support
+
+**Key files**:
+- `apps/blog/src/app/(blog)/styles.css` - Main Tailwind configuration
+- `apps/blog/src/app/(studio)/styles.css` - Studio-specific styles
+
+**Migration note**: This is a breaking change from Tailwind v3. Theme customization now happens in CSS using `@theme inline` blocks instead of JavaScript configuration files.
 
 ### Content Management
 
@@ -515,3 +561,31 @@ export const Component = ({ className, ...props }: ComponentProps) => (
 - Negative margins for specific layout corrections
 - Fractional values in UI components for fine-tuning
 - **Do not modify files in `apps/blog/src/components/ui/`** (shadcn/ui components)
+
+## Documentation Maintenance
+
+### Keeping Documentation Synchronized
+
+To ensure documentation stays up-to-date:
+
+1. **When adding new commands**: Update CLAUDE.md Commands section
+2. **When changing architecture**: Update CLAUDE.md Architecture Overview
+3. **When modifying tech stack**: Update README.md Tech Stack section
+4. **When enabling experimental features**: Document in CLAUDE.md with warnings
+5. **Before each release**: Run `/update-docs` slash command to audit documentation
+
+### Documentation Structure
+
+- **CLAUDE.md** (root) - Comprehensive developer guide for Claude Code
+- **CLAUDE.md** (apps/blog) - Minimal redirect to root documentation
+- **README.md** (root) - Public-facing project overview and setup guide
+- **README.md** (apps/blog) - Minimal redirect to root documentation
+
+### Single Source of Truth
+
+- **Commands**: Root CLAUDE.md is authoritative
+- **Architecture**: Root CLAUDE.md is authoritative
+- **Setup/Getting Started**: Root README.md is authoritative
+- **Tech Stack**: Root README.md is authoritative
+
+**Never duplicate content across files** - use links to redirect to authoritative source.
