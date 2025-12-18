@@ -56,8 +56,7 @@ This portfolio is built with modern web technologies:
 
 ### Prerequisites
 
-- **Node.js 18.x or higher** - JavaScript runtime (tested with v22.20.0)
-- **pnpm 10.2.0 or higher** - Fast, disk space efficient package manager
+- **Bun 1.3.4 or higher** - Fast JavaScript runtime and package manager (download at [bun.sh](https://bun.sh))
 - **Git** - Version control system
 - **Neon PostgreSQL database** - Serverless database (sign up at [neon.tech](https://neon.tech))
 - **Cloudflare R2** - Object storage for media (create bucket at [cloudflare.com](https://cloudflare.com))
@@ -81,7 +80,7 @@ cd portfolio
 3. Install dependencies
 
 ```bash
-pnpm install
+bun install
 ```
 
 4. Set up environment variables
@@ -110,19 +109,19 @@ cp .env.example .env
 
 ```bash
 cd ../..
-pnpm db:migrate
+bun run db:migrate
 ```
 
 7. (Optional) Seed the database with sample data
 
 ```bash
-pnpm db:seed
+bun run db:seed
 ```
 
 8. Start the development server
 
 ```bash
-pnpm dev
+bun run dev
 ```
 
 Your site should now be running at `http://localhost:3000`!
@@ -140,26 +139,26 @@ If you've configured OAuth providers, you can access the Content Studio at `http
 
 #### Development (run from project root)
 ```bash
-pnpm dev              # Start development server with hot reload
-pnpm build            # Build all apps for production
-pnpm start            # Start production server
-pnpm test             # Run tests across all apps
-pnpm lint             # Run linting across all apps
+bun run dev              # Start development server with hot reload
+bun run build            # Build all apps for production
+bun run start            # Start production server
+bun run test             # Run tests across all apps
+bun run lint             # Run linting across all apps
 ```
 
 #### Database Management (run from project root)
 ```bash
-pnpm db:generate      # Generate migrations from schema
-pnpm db:migrate       # Run database migrations
-pnpm db:push          # Push schema changes to database
-pnpm db:studio        # Open Drizzle Studio for database management
-pnpm db:seed          # Seed database with test data
+bun run db:generate      # Generate migrations from schema
+bun run db:migrate       # Run database migrations
+bun run db:push          # Push schema changes to database
+bun run db:studio        # Open Drizzle Studio for database management
+bun run db:seed          # Seed database with test data
 ```
 
 #### Quality & Release
 ```bash
-pnpm release          # Create semantic release (runs build, test, lint, check-types)
-pnpm release:blog     # Release blog app specifically
+bun run release          # Create semantic release (runs build, test, lint, check-types)
+bun run release:blog     # Release blog app specifically
 ```
 
 For more commands, see the [CLAUDE.md](CLAUDE.md) file.
