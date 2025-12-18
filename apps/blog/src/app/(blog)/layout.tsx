@@ -11,7 +11,6 @@ import Analytics from "@/components/analytics-tracker";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { cn } from "@/lib/utils";
 import "@/app/(blog)/styles.css";
-import { Providers } from "@/app/(blog)/providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -65,25 +64,19 @@ export const metadata: Metadata = {
 
 const BlogLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
-    <html
-      lang="en"
-      className={cn("scroll-smooth", inter.className)}
-      suppressHydrationWarning
-    >
-      <body className="bg-zinc-900 text-zinc-50" suppressHydrationWarning>
+    <html lang="en" className={cn("scroll-smooth", inter.className)}>
+      <body className="bg-background text-foreground">
         <ViewTransitions>
-          <Providers>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24">
-                {children}
-              </main>
-              <Footer />
-            </div>
-            <Analytics />
-            <VercelAnalytics />
-            <SpeedInsights />
-          </Providers>
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24">
+              {children}
+            </main>
+            <Footer />
+          </div>
+          <Analytics />
+          <VercelAnalytics />
+          <SpeedInsights />
         </ViewTransitions>
         <Script
           defer

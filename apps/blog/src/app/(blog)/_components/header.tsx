@@ -24,7 +24,7 @@ export const Header = () => {
         <div className="flex items-center justify-between">
           <NavItem
             href="/"
-            className="font-bold text-lg text-white transition-colors duration-300 hover:text-pink-500"
+            className="font-bold text-lg text-foreground transition-colors duration-300 hover:text-muted-foreground"
             title="Ru Chern"
           >
             <div className="flex items-center gap-2">
@@ -43,7 +43,7 @@ export const Header = () => {
                   href={href}
                   className={cn(
                     "font-medium text-sm transition-all duration-300 ease-out",
-                    isActive ? "text-white" : "text-gray-400 hover:text-white",
+                    isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground",
                   )}
                   title={title}
                 >

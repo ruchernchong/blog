@@ -20,12 +20,8 @@ export const metadata: Metadata = {
 
 const StudioLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
-    <html
-      lang="en"
-      className={cn("scroll-smooth", geist.className)}
-      suppressHydrationWarning
-    >
-      <body className="bg-zinc-50 text-zinc-900" suppressHydrationWarning>
+    <html lang="en" className={cn("scroll-smooth", geist.className)}>
+      <body className="bg-background text-foreground">
         <ViewTransitions>
           <Providers>
             <div className="min-h-screen">

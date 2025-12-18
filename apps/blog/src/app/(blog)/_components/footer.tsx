@@ -16,7 +16,7 @@ export const Footer = () => (
             <div className="flex flex-col gap-4">
               <Link
                 href="/"
-                className="font-medium text-gray-400 text-sm transition-colors duration-300 hover:text-white"
+                className="font-medium text-muted-foreground text-sm transition-colors duration-300 hover:text-foreground"
               >
                 Home
               </Link>
@@ -25,7 +25,7 @@ export const Footer = () => (
                   <Link
                     key={title}
                     href={href}
-                    className="font-medium text-gray-400 text-sm transition-colors duration-300 hover:text-white"
+                    className="font-medium text-muted-foreground text-sm transition-colors duration-300 hover:text-foreground"
                   >
                     {title}
                   </Link>
@@ -37,7 +37,7 @@ export const Footer = () => (
                 <div key={name}>
                   <ExternalLink
                     href={link}
-                    className="font-medium text-gray-400 text-sm transition-colors duration-300 hover:text-pink-500"
+                    className="font-medium text-muted-foreground text-sm transition-colors duration-300 hover:text-foreground"
                     title={name}
                   >
                     <div className="inline-flex items-center gap-x-2">
@@ -50,7 +50,7 @@ export const Footer = () => (
             </div>
           </div>
         </div>
-        <div className="text-center text-gray-400 text-sm md:text-left">
+        <div className="text-center text-muted-foreground text-sm md:text-left">
           &copy; {new Date().getFullYear()} Chong Ru Chern. All Rights Reserved.
         </div>
       </div>

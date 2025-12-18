@@ -51,7 +51,6 @@ const VisitsChart = ({ data }: VisitsChartProps) => {
                 activeDot={{
                   r: 6,
                 }}
-                style={{ stroke: `oklch(0.592 0.249 0.584)` }}
               />
             </LineChart>
           </ResponsiveContainer>

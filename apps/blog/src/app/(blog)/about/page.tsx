@@ -62,11 +62,11 @@ const AboutPage = async () => {
             description={description}
           />
         </div>
-        <hr className="border-zinc-600" />
+        <hr className="border-border" />
         <div>
           <Employment companies={sortedCompanies} />
         </div>
-        {/*<hr className="border-zinc-600" />*/}
+        {/*<hr className="border-border" />*/}
         {/*<div>*/}
         {/*  <Contributions*/}
         {/*    github={githubProfile}*/}

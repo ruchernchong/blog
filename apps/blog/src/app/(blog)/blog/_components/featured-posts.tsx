@@ -16,7 +16,7 @@ interface FeaturedPostsProps {
 const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
   return (
     <div className="flex flex-col gap-8">
-      <div className="font-bold text-pink-500 text-xl uppercase">
+      <div className="font-bold text-foreground text-xl uppercase">
         Featured Posts
       </div>
       <div className="grid gap-4 md:auto-cols-fr md:grid-flow-col">
@@ -35,7 +35,7 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
                   <time
                     dateTime={formatISO(post.publishedAt)}
                     title={formattedDate}
-                    className="text-sm text-zinc-400 italic"
+                    className="text-sm text-muted-foreground italic"
                   >
                     {formattedDate}
                   </time>

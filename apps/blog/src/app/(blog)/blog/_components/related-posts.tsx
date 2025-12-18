@@ -20,7 +20,7 @@ export const RelatedPosts = async ({ slug }: RelatedPostsProps) => {
 
   return (
     <div className="not-prose mt-12 flex flex-col gap-8">
-      <h2 className="font-bold text-2xl text-pink-500">Related Articles</h2>
+      <h2 className="font-bold text-2xl text-foreground">Related Articles</h2>
       <div className="grid gap-4 md:grid-cols-2">
         {relatedPosts.map((post) => {
           if (!post.publishedAt) return null;
@@ -38,11 +38,11 @@ export const RelatedPosts = async ({ slug }: RelatedPostsProps) => {
                     <time
                       dateTime={formatISO(post.publishedAt)}
                       title={formattedDate}
-                      className="text-sm text-zinc-400"
+                      className="text-sm text-muted-foreground"
                     >
                       {formattedDate}
                     </time>
-                    <div className="flex items-center gap-2 text-pink-400 text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
                       <TagIcon className="h-4 w-4" />
                       <span>
                         {post.commonTagCount}{" "}

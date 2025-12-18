@@ -48,7 +48,7 @@ const AnalyticsPage = async () => {
   return (
     <div className="grid grid-cols-1 gap-4">
       <TotalVisitsChart data={visits} />
-      <Card className="bg-zinc-900 text-zinc-50">
+      <Card>
         <CardHeader>
           <CardTitle>Top Sources</CardTitle>
         </CardHeader>
@@ -65,7 +65,7 @@ const AnalyticsPage = async () => {
                 <div className="flex gap-1">
                   <div className="relative flex-1 px-2">
                     <div
-                      className="absolute inset-0 rounded-sm bg-zinc-600"
+                      className="absolute inset-0 rounded-sm bg-muted"
                       style={{ width: `${percent}%` }}
                     />
                     <span className="relative">
@@ -80,7 +80,7 @@ const AnalyticsPage = async () => {
           </div>
         </CardContent>
       </Card>
-      <Card className="bg-zinc-900 text-zinc-50">
+      <Card>
         <CardHeader>
           <CardTitle>Top Pages</CardTitle>
         </CardHeader>
@@ -100,7 +100,7 @@ const AnalyticsPage = async () => {
                     className="relative flex-1 px-2 hover:underline"
                   >
                     <div
-                      className="absolute inset-0 rounded-sm bg-zinc-600"
+                      className="absolute inset-0 rounded-sm bg-muted"
                       style={{ width: `${percent}%` }}
                     />
                     <span className="relative">{path}</span>
@@ -113,7 +113,7 @@ const AnalyticsPage = async () => {
           </div>
         </CardContent>
       </Card>
-      <Card className="bg-zinc-900 text-zinc-50">
+      <Card>
         <CardHeader>
           <CardTitle>Top Countries</CardTitle>
         </CardHeader>
@@ -130,7 +130,7 @@ const AnalyticsPage = async () => {
                 <div className="flex gap-1">
                   <div className="relative flex-1 px-2">
                     <div
-                      className="absolute inset-0 rounded-sm bg-zinc-600"
+                      className="absolute inset-0 rounded-sm bg-muted"
                       style={{ width: `${percent}%` }}
                     />
                     <span className="relative">
@@ -145,7 +145,7 @@ const AnalyticsPage = async () => {
           </div>
         </CardContent>
       </Card>
-      <Card className="bg-zinc-900 text-zinc-50">
+      <Card>
         <CardHeader>
           <CardTitle>Top OS</CardTitle>
         </CardHeader>
@@ -162,7 +162,7 @@ const AnalyticsPage = async () => {
                 <div className="flex gap-1">
                   <div className="relative flex-1 px-2">
                     <div
-                      className="absolute inset-0 rounded-sm bg-zinc-600"
+                      className="absolute inset-0 rounded-sm bg-muted"
                       style={{ width: `${percent}%` }}
                     />
                     <span className="relative">{os}</span>
@@ -175,7 +175,7 @@ const AnalyticsPage = async () => {
           </div>
         </CardContent>
       </Card>
-      <Card className="bg-zinc-900 text-zinc-50">
+      <Card>
         <CardHeader>
           <CardTitle>Top Browsers</CardTitle>
         </CardHeader>
@@ -192,7 +192,7 @@ const AnalyticsPage = async () => {
                 <div className="flex gap-1">
                   <div className="relative flex-1 px-2">
                     <div
-                      className="absolute inset-0 rounded-sm bg-zinc-600"
+                      className="absolute inset-0 rounded-sm bg-muted"
                       style={{ width: `${percent}%` }}
                     />
                     <span className="relative">{browser}</span>
@@ -205,7 +205,7 @@ const AnalyticsPage = async () => {
           </div>
         </CardContent>
       </Card>
-      <Card className="bg-zinc-900 text-zinc-50">
+      <Card>
         <CardHeader>
           <CardTitle>Top Devices</CardTitle>
         </CardHeader>
@@ -222,7 +222,7 @@ const AnalyticsPage = async () => {
                 <div className="flex gap-1">
                   <div className="relative flex-1 px-2">
                     <div
-                      className="absolute inset-0 rounded-sm bg-zinc-600"
+                      className="absolute inset-0 rounded-sm bg-muted"
                       style={{ width: `${percent}%` }}
                     />
                     <span className="relative">{device}</span>

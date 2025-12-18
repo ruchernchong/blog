@@ -20,7 +20,7 @@ export const Typography = ({
   switch (variant) {
     case "h1":
       headingClassName =
-        "inline-block bg-linear-to-r from-pink-500 to-yellow-400 bg-clip-text text-4xl font-extrabold uppercase text-transparent md:text-5xl";
+        "inline-block text-4xl font-extrabold uppercase text-foreground md:text-5xl";
       break;
     case "h2":
       headingClassName = "text-2xl font-bold";

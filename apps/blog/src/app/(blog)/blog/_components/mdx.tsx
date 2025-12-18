@@ -20,7 +20,7 @@ const CustomLink = ({ href, children, ...props }: any) => {
     return (
       <Link
         href={href}
-        className="text-pink-500 hover:text-pink-300"
+        className="text-foreground underline hover:text-muted-foreground"
         {...props}
       >
         {children}
@@ -33,7 +33,7 @@ const CustomLink = ({ href, children, ...props }: any) => {
       href={href}
       target="_blank"
       rel="noopener noreferrer nofollow"
-      className="text-pink-500 hover:text-pink-300"
+      className="text-foreground underline hover:text-muted-foreground"
       {...props}
     >
       <span>
@@ -57,7 +57,7 @@ const ImageComponent = ({ alt, ...props }: any) => (
       />
     </Suspense>
     {alt && (
-      <figcaption className="text-center font-bold text-xs text-zinc-50 italic">
+      <figcaption className="text-center font-bold text-xs text-muted-foreground italic">
         {alt}
       </figcaption>
     )}
@@ -93,7 +93,7 @@ export const Mdx = async ({ content }: { content: string }) => {
           [
             rehypePrettyCode,
             {
-              theme: "github-dark-dimmed",
+              theme: "github-light",
             } satisfies PrettyCodeOptions,
           ],
           [

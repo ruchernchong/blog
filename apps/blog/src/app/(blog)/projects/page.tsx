@@ -40,12 +40,12 @@ function ProjectCard({ project }: { project: Project }) {
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-lg text-zinc-100">
+              <h3 className="font-semibold text-lg text-foreground">
                 {project.name}
               </h3>
             </div>
             {project.description && (
-              <p className="line-clamp-2 text-sm text-zinc-400">
+              <p className="line-clamp-2 text-sm text-muted-foreground">
                 {project.description}
               </p>
             )}
@@ -55,13 +55,13 @@ function ProjectCard({ project }: { project: Project }) {
             {displayedSkills.map((skill) => (
               <Badge
                 key={skill}
-                className="bg-pink-500 text-white hover:bg-pink-600"
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 {skill}
               </Badge>
             ))}
             {remainingCount > 0 && (
-              <Badge className="bg-pink-500 text-white hover:bg-pink-600">
+              <Badge className="bg-primary text-primary-foreground hover:bg-primary/90">
                 +{remainingCount}
               </Badge>
             )}
@@ -102,10 +102,10 @@ export default function ProjectsPage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
       <header className="mb-16">
-        <h1 className="mb-4 font-bold text-4xl text-zinc-100 tracking-tight">
+        <h1 className="mb-4 font-bold text-4xl text-foreground tracking-tight">
           Projects
         </h1>
-        <p className="max-w-2xl text-lg text-zinc-400 leading-relaxed">
+        <p className="max-w-2xl text-lg text-muted-foreground leading-relaxed">
           A showcase of completed projects and experiments with new
           technologies.
         </p>
@@ -114,10 +114,10 @@ export default function ProjectsPage() {
       {/* Featured Section */}
       {featuredProjects.length > 0 && (
         <section className="mb-16">
-          <h2 className="mb-8 flex items-center gap-3 font-semibold text-xl text-zinc-300">
-            <span className="h-px flex-1 bg-gradient-to-r from-pink-500/50 to-transparent" />
+          <h2 className="mb-8 flex items-center gap-3 font-semibold text-xl text-muted-foreground">
+            <span className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
             <span>Featured</span>
-            <span className="h-px flex-1 bg-gradient-to-l from-pink-500/50 to-transparent" />
+            <span className="h-px flex-1 bg-gradient-to-l from-border to-transparent" />
           </h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {featuredProjects.map((project) => {
@@ -130,10 +130,10 @@ export default function ProjectsPage() {
       {/* Other Projects */}
       {otherProjects.length > 0 && (
         <section>
-          <h2 className="mb-8 flex items-center gap-3 font-semibold text-xl text-zinc-300">
-            <span className="h-px flex-1 bg-gradient-to-r from-zinc-700 to-transparent" />
+          <h2 className="mb-8 flex items-center gap-3 font-semibold text-xl text-muted-foreground">
+            <span className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
             <span>More Projects</span>
-            <span className="h-px flex-1 bg-gradient-to-l from-zinc-700 to-transparent" />
+            <span className="h-px flex-1 bg-gradient-to-l from-border to-transparent" />
           </h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {otherProjects.map((project) => {

@@ -19,7 +19,7 @@ export const PopularPosts = async () => {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="font-bold text-pink-500 text-xl uppercase">
+      <div className="font-bold text-foreground text-xl uppercase">
         Popular Posts
       </div>
       <div className="grid gap-4 md:auto-cols-fr md:grid-flow-col">
@@ -41,11 +41,11 @@ export const PopularPosts = async () => {
                     <time
                       dateTime={formatISO(post.publishedAt)}
                       title={formattedDate}
-                      className="text-sm text-zinc-400 italic"
+                      className="text-sm text-muted-foreground italic"
                     >
                       {formattedDate}
                     </time>
-                    <div className="flex items-center gap-2 text-sm text-zinc-400">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <EyeIcon className="h-4 w-4" />
                       <span>{post.views}</span>
                     </div>

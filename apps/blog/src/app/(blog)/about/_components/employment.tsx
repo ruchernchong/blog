@@ -14,7 +14,7 @@ const Employment = ({ companies }: EmploymentProps) => {
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
-          <BriefcaseIcon width={32} height={32} className="fill-pink-500" />
+          <BriefcaseIcon width={32} height={32} className="fill-foreground" />
           <h2 className="font-bold text-4xl">Work</h2>
         </div>
         <p>
@@ -22,7 +22,7 @@ const Employment = ({ companies }: EmploymentProps) => {
           on&nbsp;
           <ExternalLink
             href="https://linkedin.com/in/ruchernchong"
-            className="text-pink-500 underline hover:text-pink-300"
+            className="text-foreground underline hover:text-muted-foreground"
           >
             LinkedIn
           </ExternalLink>
@@ -57,7 +57,7 @@ const Employment = ({ companies }: EmploymentProps) => {
                     <BriefcaseIcon
                       width="100%"
                       height="100%"
-                      className="fill-pink-500"
+                      className="fill-foreground"
                     />
                   )}
                 </div>
@@ -69,12 +69,12 @@ const Employment = ({ companies }: EmploymentProps) => {
                     className="z-20 no-underline"
                   >
                     <ItemOverlay />
-                    <div className="font-bold text-xl group-hover:text-pink-500">
+                    <div className="font-bold text-xl group-hover:text-muted-foreground">
                       {name}
                     </div>
                   </a>
                   <div>{title}</div>
-                  <div className="text-sm text-zinc-400 italic">
+                  <div className="text-sm text-muted-foreground italic">
                     <div>
                       {dateStart} - {dateEnd ?? "Present"}
                     </div>
