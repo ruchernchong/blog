@@ -3,7 +3,7 @@ import Link from "next/link";
 import Icon from "@/app/(blog)/icon.png";
 import ExternalLink from "@/components/shared/external-link";
 import * as Icons from "@/components/shared/icons";
-import { navLinks } from "@/config";
+import { navLinks, VERSION } from "@/config";
 import socials from "@/data/socials";
 
 export const Footer = () => (
@@ -50,8 +50,9 @@ export const Footer = () => (
             </div>
           </div>
         </div>
-        <div className="text-center text-muted-foreground text-sm md:text-left">
-          &copy; {new Date().getFullYear()} Chong Ru Chern. All Rights Reserved.
+        <div className="flex flex-col gap-2 text-center text-muted-foreground text-sm md:flex-row md:items-center md:justify-between md:text-left">
+          <span>&copy; {new Date().getFullYear()} Chong Ru Chern. All Rights Reserved.</span>
+          <span>v{VERSION}</span>
         </div>
       </div>
     </footer>
