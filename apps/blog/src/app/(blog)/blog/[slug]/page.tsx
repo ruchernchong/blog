@@ -1,8 +1,5 @@
-import {
-  BookOpenIcon,
-  CalendarDaysIcon,
-  InformationCircleIcon,
-} from "@heroicons/react/24/outline";
+import { Book01Icon, Calendar01Icon, InformationCircleIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -78,12 +75,12 @@ const PostPage = async (props: { params: Params }) => {
   return (
     <>
       <StructuredData data={post.metadata.structuredData} />
-      <article className="prose prose-invert mx-auto mb-16 max-w-4xl prose-img:rounded-2xl prose-a:text-pink-500">
+      <article className="prose mx-auto mb-16 flex max-w-4xl flex-col gap-12 prose-img:rounded-2xl prose-a:text-foreground prose-a:underline">
         <div className="flex flex-col items-center gap-y-4 text-center">
           <StatsBar slug={post.slug} />
-          <div className="flex gap-x-2 text-zinc-400 md:flex-row">
+          <div className="flex gap-x-2 text-muted-foreground md:flex-row">
             <div className="flex items-center justify-center gap-x-2">
-              <CalendarDaysIcon className="h-6 w-6" />
+              <HugeiconsIcon icon={Calendar01Icon} size={24} strokeWidth={2} />
               <time
                 dateTime={formatISO(post.publishedAt)}
                 title={formattedDate}
@@ -93,7 +90,7 @@ const PostPage = async (props: { params: Params }) => {
             </div>
             <div className="flex items-center justify-center gap-x-2">
               <span>&middot;</span>
-              <BookOpenIcon className="h-6 w-6" />
+              <HugeiconsIcon icon={Book01Icon} size={24} strokeWidth={2} />
               <div>{post.metadata.readingTime}</div>
             </div>
             {post.author && (
@@ -105,9 +102,9 @@ const PostPage = async (props: { params: Params }) => {
           </div>
           <Typography variant="h1">{post.title}</Typography>
         </div>
-        <aside className="relative rounded-md border-l-4 border-l-pink-500 bg-zinc-800 p-6">
-          <div className="absolute top-0 left-0 -translate-x-[50%] -translate-y-[50%] rounded-full bg-zinc-900 p-2 text-pink-500">
-            <InformationCircleIcon width={32} height={32} />
+        <aside className="relative rounded-md border-l-4 border-l-border bg-muted p-6">
+          <div className="absolute top-0 left-0 -translate-x-[50%] -translate-y-[50%] rounded-full bg-background p-2 text-foreground">
+            <HugeiconsIcon icon={InformationCircleIcon} size={32} strokeWidth={2} />
           </div>
           {post.summary}
         </aside>

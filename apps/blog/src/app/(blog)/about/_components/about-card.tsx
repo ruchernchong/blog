@@ -18,8 +18,8 @@ export const AboutCard = () => {
         </div>
       </div>
       <div className="flex items-center justify-center">
-        <Button asChild variant="ghost">
-          <Link href="/about">More About Me</Link>
+        <Button variant="ghost" render={<Link href="/about" />}>
+          More About Me
         </Button>
       </div>
     </div>

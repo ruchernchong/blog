@@ -48,7 +48,7 @@ const BlogPage = async () => {
                       <time
                         dateTime={formatISO(post.publishedAt)}
                         title={formattedDate}
-                        className="text-sm text-zinc-400 italic"
+                        className="text-sm text-muted-foreground italic"
                       >
                         {formattedDate}
                       </time>

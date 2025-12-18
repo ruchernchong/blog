@@ -1,6 +1,7 @@
 "use client";
 
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { InformationCircleIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { Badge } from "@/components/ui/badge";
 
 interface AnnouncementProps {
@@ -15,10 +16,10 @@ export const Announcement = ({
   isClosable = false,
 }: AnnouncementProps) => {
   return (
-    <div className="sticky top-0 right-0 left-0 z-40 mb-8 bg-gradient-to-r from-blue-600 to-pink-600 px-4 py-2">
+    <div className="sticky top-0 right-0 left-0 z-40 mb-8 bg-primary px-4 py-2">
       <div className="mx-auto flex max-w-4xl items-center justify-center gap-2">
-        <InformationCircleIcon className="size-4 text-white" />
-        <Badge className="border-white/20 bg-white/10 text-white backdrop-blur-sm">
+        <HugeiconsIcon icon={InformationCircleIcon} size={16} strokeWidth={2} className="text-white" />
+        <Badge className="border-white/30 bg-white/20 text-white">
           {message}
         </Badge>
       </div>

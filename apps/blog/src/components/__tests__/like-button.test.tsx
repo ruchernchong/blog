@@ -23,13 +23,13 @@ describe("LikeButton", () => {
     render(<LikeButton {...mockProps} />);
     const button = screen.getByRole("button");
     expect(button).toBeInTheDocument();
-    expect(button).toHaveClass("text-zinc-400");
+    expect(button).toHaveClass("text-muted-foreground");
   });
 
   it("renders solid heart icon when user has liked", () => {
     render(<LikeButton {...mockProps} likesByUser={1} />);
     const button = screen.getByRole("button");
-    expect(button).toHaveClass("text-pink-500");
+    expect(button).toHaveClass("text-foreground");
   });
 
   it("calls onLikeUpdateAction when button is clicked", async () => {

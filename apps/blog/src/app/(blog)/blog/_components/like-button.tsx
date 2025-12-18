@@ -1,7 +1,5 @@
-"use client";
-
-import { HeartIcon } from "@heroicons/react/24/outline";
-import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
+import { FavouriteIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useOptimistic } from "react";
 import { incrementLikes } from "@/app/(blog)/_actions/stats";
 import { MAX_LIKES_PER_USER } from "@/config";
@@ -45,14 +43,17 @@ const LikeButton = ({
       type="button"
       onClick={handleClick}
       className={`transform transition-all duration-300 hover:scale-110 ${
-        optimisticLikes.likesByUser > 0 ? "text-pink-500" : "text-zinc-400"
+        optimisticLikes.likesByUser > 0
+          ? "text-foreground"
+          : "text-muted-foreground"
       }`}
     >
-      {optimisticLikes.likesByUser > 0 ? (
-        <HeartSolidIcon className="h-6 w-6" />
-      ) : (
-        <HeartIcon className="h-6 w-6" />
-      )}
+      <HugeiconsIcon
+        icon={FavouriteIcon}
+        size={24}
+        strokeWidth={2}
+        className={optimisticLikes.likesByUser > 0 ? "fill-current" : ""}
+      />
     </button>
   );
 };

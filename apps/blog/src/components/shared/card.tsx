@@ -29,7 +29,7 @@ export const Card = ({ children, className, ...props }: CardProps) => {
   return (
     <div
       className={cn(
-        "rounded-xl border border-white/5 bg-transparent shadow-lg backdrop-blur-md",
+        "rounded-xl border border-border bg-card",
         className,
       )}
       {...props}

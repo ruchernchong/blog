@@ -16,13 +16,13 @@ const Author = ({ title, tagline, description }: Props) => {
         <div className="flex flex-col items-center md:items-start">
           <PageTitle title={title} description={tagline} />
         </div>
-        {description && <p className="text-zinc-400">{description}</p>}
+        {description && <p className="text-muted-foreground">{description}</p>}
         <div className="flex justify-center gap-4 md:justify-start">
           {socials.map(({ name, link }) => (
             <ExternalLink
               key={name}
               href={link}
-              className="hover:text-pink-500"
+              className="hover:text-foreground"
             >
               <Icons.Social name={name} className="h-4 w-4" />
             </ExternalLink>

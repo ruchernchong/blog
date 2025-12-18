@@ -1,4 +1,5 @@
-import { BriefcaseIcon } from "@heroicons/react/24/solid";
+import { Briefcase01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import ExternalLink from "@/components/shared/external-link";
 import { ItemOverlay } from "@/components/shared/item-overlay";
@@ -14,7 +15,7 @@ const Employment = ({ companies }: EmploymentProps) => {
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
-          <BriefcaseIcon width={32} height={32} className="fill-pink-500" />
+          <HugeiconsIcon icon={Briefcase01Icon} size={32} strokeWidth={2} className="fill-foreground" />
           <h2 className="font-bold text-4xl">Work</h2>
         </div>
         <p>
@@ -22,7 +23,7 @@ const Employment = ({ companies }: EmploymentProps) => {
           on&nbsp;
           <ExternalLink
             href="https://linkedin.com/in/ruchernchong"
-            className="text-pink-500 underline hover:text-pink-300"
+            className="text-foreground underline hover:text-muted-foreground"
           >
             LinkedIn
           </ExternalLink>
@@ -33,13 +34,10 @@ const Employment = ({ companies }: EmploymentProps) => {
         {companies.map(
           ({ name, title, logo, dateStart, dateEnd, location, url }) => {
             return (
-              <div
-                key={name}
-                className="group relative flex items-center gap-4"
-              >
+              <div key={name} className="relative flex items-center gap-4">
                 <div
                   className={cn(
-                    "flex size-12 items-center rounded-2xl p-2 md:h-[72px] md:w-[72px]",
+                    "flex size-12 items-center rounded-2xl p-2 md:h-18 md:w-18",
                     logo ? "bg-zinc-50" : "bg-transparent",
                   )}
                 >
@@ -54,10 +52,11 @@ const Employment = ({ companies }: EmploymentProps) => {
                     />
                   )}
                   {!logo && (
-                    <BriefcaseIcon
-                      width="100%"
-                      height="100%"
-                      className="fill-pink-500"
+                    <HugeiconsIcon
+                      icon={Briefcase01Icon}
+                      size={48}
+                      strokeWidth={2}
+                      className="fill-foreground"
                     />
                   )}
                 </div>
@@ -69,12 +68,10 @@ const Employment = ({ companies }: EmploymentProps) => {
                     className="z-20 no-underline"
                   >
                     <ItemOverlay />
-                    <div className="font-bold text-xl group-hover:text-pink-500">
-                      {name}
-                    </div>
+                    <div className="font-bold text-xl">{name}</div>
                   </a>
                   <div>{title}</div>
-                  <div className="text-sm text-zinc-400 italic">
+                  <div className="text-muted-foreground text-sm italic">
                     <div>
                       {dateStart} - {dateEnd ?? "Present"}
                     </div>

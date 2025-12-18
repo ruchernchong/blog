@@ -1,4 +1,5 @@
-import { EyeIcon } from "@heroicons/react/24/outline";
+import { ViewIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
@@ -19,7 +20,7 @@ export const PopularPosts = async () => {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="font-bold text-pink-500 text-xl uppercase">
+      <div className="font-bold text-foreground text-xl uppercase">
         Popular Posts
       </div>
       <div className="grid gap-4 md:auto-cols-fr md:grid-flow-col">
@@ -41,12 +42,12 @@ export const PopularPosts = async () => {
                     <time
                       dateTime={formatISO(post.publishedAt)}
                       title={formattedDate}
-                      className="text-sm text-zinc-400 italic"
+                      className="text-sm text-muted-foreground italic"
                     >
                       {formattedDate}
                     </time>
-                    <div className="flex items-center gap-2 text-sm text-zinc-400">
-                      <EyeIcon className="h-4 w-4" />
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <HugeiconsIcon icon={ViewIcon} size={16} strokeWidth={2} />
                       <span>{post.views}</span>
                     </div>
                   </div>

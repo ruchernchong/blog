@@ -1,7 +1,7 @@
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Figtree, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { ViewTransitions } from "next-view-transitions";
 import type { ReactNode } from "react";
@@ -11,9 +11,9 @@ import Analytics from "@/components/analytics-tracker";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { cn } from "@/lib/utils";
 import "@/app/(blog)/styles.css";
-import { Providers } from "@/app/(blog)/providers";
 
-const inter = Inter({ subsets: ["latin"] });
+const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 
 const title = {
   default: "Home",
@@ -65,25 +65,19 @@ export const metadata: Metadata = {
 
 const BlogLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
-    <html
-      lang="en"
-      className={cn("scroll-smooth", inter.className)}
-      suppressHydrationWarning
-    >
-      <body className="bg-zinc-900 text-zinc-50" suppressHydrationWarning>
+    <html lang="en" className={cn("scroll-smooth", figtree.variable)}>
+      <body className={cn("bg-background text-foreground antialiased", geistMono.variable)}>
         <ViewTransitions>
-          <Providers>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24">
-                {children}
-              </main>
-              <Footer />
-            </div>
-            <Analytics />
-            <VercelAnalytics />
-            <SpeedInsights />
-          </Providers>
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24">
+              {children}
+            </main>
+            <Footer />
+          </div>
+          <Analytics />
+          <VercelAnalytics />
+          <SpeedInsights />
         </ViewTransitions>
         <Script
           defer

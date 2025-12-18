@@ -202,8 +202,8 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
         <Card>
           <CardContent className="py-12 text-center">
             <p className="mb-4 text-muted-foreground">Post not found</p>
-            <Button variant="outline" asChild>
-              <Link href="/studio/posts">Back to Posts</Link>
+            <Button variant="outline" render={<Link href="/studio/posts" />}>
+              Back to Posts
             </Button>
           </CardContent>
         </Card>
@@ -220,8 +220,8 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
             Update your blog post details
           </p>
         </div>
-        <Button variant="outline" asChild>
-          <Link href="/studio/posts">Back to Posts</Link>
+        <Button variant="outline" render={<Link href="/studio/posts" />}>
+          Back to Posts
         </Button>
       </div>
 
@@ -300,9 +300,9 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
                 <Label htmlFor={statusId}>Status</Label>
                 <Select
                   value={formData.status}
-                  onValueChange={(value: "draft" | "published") =>
-                    setFormData({ ...formData, status: value })
-                  }
+                  onValueChange={(value: "draft" | "published" | null) => {
+                    if (value) setFormData({ ...formData, status: value });
+                  }}
                 >
                   <SelectTrigger id={statusId}>
                     <SelectValue />
@@ -402,8 +402,8 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
           </div>
 
           <div className="flex gap-4">
-            <Button type="button" variant="outline" asChild>
-              <Link href="/studio/posts">Cancel</Link>
+            <Button type="button" variant="outline" render={<Link href="/studio/posts" />}>
+              Cancel
             </Button>
             <Button type="submit" disabled={isPending || !!post.deletedAt}>
               {isPending ? "Saving..." : "Save Changes"}

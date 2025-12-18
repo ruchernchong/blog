@@ -1,4 +1,5 @@
-import { LinkIcon } from "@heroicons/react/24/outline";
+import { Link01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 
 interface SpecialLinkProps {
   url: string;
@@ -11,8 +12,8 @@ export const LinkWithIcon = ({ url, title }: SpecialLinkProps) => {
   return (
     <a href={url} target="_blank" rel="noopener" className="z-20 no-underline">
       <div className="flex items-center">
-        <LinkIcon className="mr-2 h-4 w-4" />
-        <span className="hover:text-pink-500">{title ?? newUrl}</span>
+        <HugeiconsIcon icon={Link01Icon} size={16} strokeWidth={2} className="mr-2" />
+        <span className="hover:text-foreground">{title ?? newUrl}</span>
       </div>
     </a>
   );

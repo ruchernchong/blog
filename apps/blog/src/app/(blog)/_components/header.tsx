@@ -19,12 +19,12 @@ export const Header = () => {
   const pathname = usePathname();
 
   return (
-    <div className="fixed top-6 left-1/2 z-50 w-full -translate-x-1/2 px-4 md:max-w-4xl">
-      <header className="w-full rounded-2xl border border-white/10 bg-black/20 px-8 py-3 shadow-2xl backdrop-blur-sm">
+    <header className="fixed top-0 left-0 z-50 w-full border-b border-border bg-background px-8 py-3">
+      <div className="mx-auto max-w-4xl">
         <div className="flex items-center justify-between">
           <NavItem
             href="/"
-            className="font-bold text-lg text-white transition-colors duration-300 hover:text-pink-500"
+            className="font-bold text-lg text-foreground transition-colors duration-300 hover:text-muted-foreground"
             title="Ru Chern"
           >
             <div className="flex items-center gap-2">
@@ -43,7 +43,7 @@ export const Header = () => {
                   href={href}
                   className={cn(
                     "font-medium text-sm transition-all duration-300 ease-out",
-                    isActive ? "text-white" : "text-gray-400 hover:text-white",
+                    isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground",
                   )}
                   title={title}
                 >
@@ -53,8 +53,8 @@ export const Header = () => {
             })}
           </nav>
         </div>
-      </header>
-    </div>
+      </div>
+    </header>
   );
 };
 

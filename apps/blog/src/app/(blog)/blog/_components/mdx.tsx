@@ -1,4 +1,5 @@
-import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
+import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import type { MDXComponents } from "mdx/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,7 +21,7 @@ const CustomLink = ({ href, children, ...props }: any) => {
     return (
       <Link
         href={href}
-        className="text-pink-500 hover:text-pink-300"
+        className="text-foreground underline hover:text-muted-foreground"
         {...props}
       >
         {children}
@@ -33,12 +34,12 @@ const CustomLink = ({ href, children, ...props }: any) => {
       href={href}
       target="_blank"
       rel="noopener noreferrer nofollow"
-      className="text-pink-500 hover:text-pink-300"
+      className="text-foreground underline hover:text-muted-foreground"
       {...props}
     >
       <span>
         {children}
-        <ArrowUpRightIcon className="inline-flex h-4 w-4 align-super" />
+        <HugeiconsIcon icon={ArrowUpRight01Icon} size={16} strokeWidth={2} className="inline-flex align-super" />
       </span>
     </a>
   );
@@ -57,7 +58,7 @@ const ImageComponent = ({ alt, ...props }: any) => (
       />
     </Suspense>
     {alt && (
-      <figcaption className="text-center font-bold text-xs text-zinc-50 italic">
+      <figcaption className="text-center font-bold text-xs text-muted-foreground italic">
         {alt}
       </figcaption>
     )}
@@ -68,15 +69,9 @@ const components: MDXComponents = {
   a: CustomLink,
   h1: (props) => <Typography variant="h1" {...props} />,
   h2: (props) => (
-    <Typography
-      variant="h2"
-      className="mt-24 text-3xl text-yellow-400"
-      {...props}
-    />
+    <Typography variant="h2" className="text-3xl text-primary" {...props} />
   ),
-  h3: (props) => (
-    <Typography variant="h3" className="mt-16 text-2xl" {...props} />
-  ),
+  h3: (props) => <Typography variant="h3" className="text-2xl" {...props} />,
   img: ImageComponent,
 };
 
@@ -93,7 +88,7 @@ export const Mdx = async ({ content }: { content: string }) => {
           [
             rehypePrettyCode,
             {
-              theme: "github-dark-dimmed",
+              theme: "github-light",
             } satisfies PrettyCodeOptions,
           ],
           [

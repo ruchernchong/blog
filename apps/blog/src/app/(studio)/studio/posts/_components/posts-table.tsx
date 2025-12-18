@@ -236,8 +236,8 @@ export const PostsTable = () => {
             <h1 className="font-bold text-3xl">Content Studio</h1>
             <p className="mb-2 text-muted-foreground">Manage your blog posts</p>
           </div>
-          <Button asChild>
-            <Link href="/studio/posts/new">Create Post</Link>
+          <Button render={<Link href="/studio/posts/new" />}>
+            Create Post
           </Button>
         </div>
         <Card>
@@ -258,8 +258,8 @@ export const PostsTable = () => {
           <h1 className="font-bold text-3xl">Content Studio</h1>
           <p className="mb-2 text-muted-foreground">Manage your blog posts</p>
         </div>
-        <Button asChild>
-          <Link href="/studio/posts/new">Create Post</Link>
+        <Button render={<Link href="/studio/posts/new" />}>
+          Create Post
         </Button>
       </div>
 
@@ -274,8 +274,8 @@ export const PostsTable = () => {
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
-                <Button asChild>
-                  <Link href="/studio/posts/new">Create Post</Link>
+                <Button render={<Link href="/studio/posts/new" />}>
+                  Create Post
                 </Button>
               </EmptyContent>
             </Empty>
@@ -296,11 +296,13 @@ export const PostsTable = () => {
             <Select
               value={statusFilter}
               onValueChange={(
-                value: "all" | "draft" | "published" | "deleted",
-              ) => setStatusFilter(value)}
+                value: "all" | "draft" | "published" | "deleted" | null,
+              ) => {
+                if (value) setStatusFilter(value);
+              }}
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter by status" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Posts</SelectItem>
@@ -510,22 +512,20 @@ export const PostsTable = () => {
                                 </Button>
                               ) : (
                                 <>
-                                  <Button variant="ghost" size="sm" asChild>
-                                    <Link
-                                      href={`/studio/posts/${post.id}/edit`}
-                                    >
-                                      Edit
-                                    </Link>
+                                  <Button variant="ghost" size="sm" render={<Link href={`/studio/posts/${post.id}/edit`} />}>
+                                    Edit
                                   </Button>
                                   <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        disabled={isPending}
-                                      >
-                                        Delete
-                                      </Button>
+                                    <AlertDialogTrigger
+                                      render={
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          disabled={isPending}
+                                        />
+                                      }
+                                    >
+                                      Delete
                                     </AlertDialogTrigger>
                                     <AlertDialogContent>
                                       <AlertDialogHeader>

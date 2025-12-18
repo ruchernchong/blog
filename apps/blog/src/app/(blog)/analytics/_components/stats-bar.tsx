@@ -1,4 +1,5 @@
-import { EyeIcon } from "@heroicons/react/24/outline";
+import { ViewIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { headers } from "next/headers";
 import { LikeCounter } from "@/app/(blog)/blog/_components/like-counter";
 import { ViewCounter } from "@/app/(blog)/blog/_components/view-counter";
@@ -26,14 +27,14 @@ const StatsBar = async ({ slug }: StatsBarProps) => {
 
   return (
     <div className="sticky top-0 z-50 md:fixed md:top-1/2 md:right-0 md:bottom-auto md:left-auto md:-translate-y-1/2">
-      <div className="flex w-full items-center justify-center gap-4 p-2 backdrop-blur-sm md:w-auto md:flex-col md:items-center md:rounded-lg md:bg-zinc-800/50 md:p-4">
+      <div className="flex w-full items-center justify-center gap-4 p-2 md:w-auto md:flex-col md:items-center md:rounded-lg md:border md:border-border md:bg-card md:p-4">
         <LikeCounter
           slug={slug}
           initialTotalLikes={totalLikes}
           initialLikesByUser={likesByUser}
         />
         <div className="flex items-center gap-2 md:flex-col">
-          <EyeIcon className="h-6 w-6 text-neutral-400" />
+          <HugeiconsIcon icon={ViewIcon} size={24} strokeWidth={2} className="text-muted-foreground" />
           <ViewCounter slug={slug} />
         </div>
       </div>

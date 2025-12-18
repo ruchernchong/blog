@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Figtree, Geist_Mono } from "next/font/google";
 import { ViewTransitions } from "next-view-transitions";
 import type { ReactNode } from "react";
-import { Providers } from "@/app/(blog)/providers";
 import { BASE_URL, SITE_NAME } from "@/config";
 import { cn } from "@/lib/utils";
 import "@/app/(blog)/styles.css";
 
-const geist = Geist({ subsets: ["latin"] });
+const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 
 const url = new URL(BASE_URL);
 
@@ -26,15 +26,9 @@ export const metadata: Metadata = {
 
 const AuthLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
-    <html
-      lang="en"
-      className={cn("scroll-smooth", geist.className)}
-      suppressHydrationWarning
-    >
-      <body className="bg-zinc-900 text-zinc-50" suppressHydrationWarning>
-        <ViewTransitions>
-          <Providers>{children}</Providers>
-        </ViewTransitions>
+    <html lang="en" className={cn("scroll-smooth", figtree.variable)}>
+      <body className={cn("bg-background text-foreground antialiased", geistMono.variable)}>
+        <ViewTransitions>{children}</ViewTransitions>
       </body>
     </html>
   );

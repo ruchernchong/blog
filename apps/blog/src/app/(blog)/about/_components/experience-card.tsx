@@ -1,6 +1,7 @@
 "use client";
 
-import { BriefcaseIcon } from "@heroicons/react/24/outline";
+import { Briefcase01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import companies from "@/data/companies";
@@ -14,10 +15,10 @@ export const ExperienceCard = () => {
     .slice(0, 3);
 
   return (
-    <Card className="border border-zinc-700/50 bg-zinc-900/50 backdrop-blur-sm">
+    <Card className="border border-border bg-card">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-medium text-base">
-          <BriefcaseIcon className="size-4" />
+          <HugeiconsIcon icon={Briefcase01Icon} size={16} strokeWidth={2} />
           <span>Experience</span>
         </CardTitle>
       </CardHeader>

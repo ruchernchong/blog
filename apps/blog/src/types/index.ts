@@ -21,13 +21,7 @@ export interface Project {
   featured?: boolean;
 }
 
-export type SocialMedia =
-  | "Github"
-  | "Linkedin"
-  | "Stackoverflow"
-  | "Twitter"
-  | "Bluesky"
-  | "Threads";
+export type SocialMedia = "Github" | "Linkedin" | "Twitter";
 
 export interface LikesByUser {
   [key: string]: number;
