@@ -69,15 +69,9 @@ const components: MDXComponents = {
   a: CustomLink,
   h1: (props) => <Typography variant="h1" {...props} />,
   h2: (props) => (
-    <Typography
-      variant="h2"
-      className="mt-24 text-3xl text-primary"
-      {...props}
-    />
+    <Typography variant="h2" className="text-3xl text-primary" {...props} />
   ),
-  h3: (props) => (
-    <Typography variant="h3" className="mt-16 text-2xl" {...props} />
-  ),
+  h3: (props) => <Typography variant="h3" className="text-2xl" {...props} />,
   img: ImageComponent,
 };
 

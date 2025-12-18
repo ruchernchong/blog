@@ -20,7 +20,7 @@ export const RelatedPosts = async ({ slug }: RelatedPostsProps) => {
   if (!relatedPosts.length) return null;
 
   return (
-    <div className="not-prose mt-12 flex flex-col gap-8">
+    <div className="not-prose flex flex-col gap-8">
       <h2 className="font-bold text-2xl text-foreground">Related Articles</h2>
       <div className="grid gap-4 md:grid-cols-2">
         {relatedPosts.map((post) => {

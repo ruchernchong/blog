@@ -75,7 +75,7 @@ const PostPage = async (props: { params: Params }) => {
   return (
     <>
       <StructuredData data={post.metadata.structuredData} />
-      <article className="prose mx-auto mb-16 max-w-4xl prose-img:rounded-2xl prose-a:text-foreground prose-a:underline">
+      <article className="prose mx-auto mb-16 flex max-w-4xl flex-col gap-12 prose-img:rounded-2xl prose-a:text-foreground prose-a:underline">
         <div className="flex flex-col items-center gap-y-4 text-center">
           <StatsBar slug={post.slug} />
           <div className="flex gap-x-2 text-muted-foreground md:flex-row">
