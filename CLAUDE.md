@@ -8,54 +8,54 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 #### Development
 
-- `pnpm dev` - Start development server with hot reload (uses Turbo)
-- `pnpm build` - Build all apps for production (uses Turbo)
-- `pnpm start` - Start production server (uses Turbo)
-- `pnpm test` - Run tests across all apps (uses Turbo)
-- `pnpm lint` - Run linting across all apps with Biome (uses Turbo)
-- `pnpm lint:blog` - Run linting for blog app with Biome
+- `bun run dev` - Start development server with hot reload (uses Turbo)
+- `bun run build` - Build all apps for production (uses Turbo)
+- `bun run start` - Start production server (uses Turbo)
+- `bun run test` - Run tests across all apps (uses Turbo)
+- `bun run lint` - Run linting across all apps with Biome (uses Turbo)
+- `bun run lint:blog` - Run linting for blog app with Biome
 
 #### Database Management
 
-- `pnpm db:drop` - Drop database (interactive, requires confirmation)
-- `pnpm db:generate` - Generate database migrations from schema
-- `pnpm db:migrate` - Run database migrations
-- `pnpm db:push` - Push schema changes to database
-- `pnpm db:pull` - Pull schema from database
-- `pnpm db:check` - Check migration files for issues
-- `pnpm db:up` - Apply pending migrations
-- `pnpm db:studio` - Open Drizzle Studio for database management
-- `pnpm db:seed` - Seed database with test data
+- `bun run db:drop` - Drop database (interactive, requires confirmation)
+- `bun run db:generate` - Generate database migrations from schema
+- `bun run db:migrate` - Run database migrations
+- `bun run db:push` - Push schema changes to database
+- `bun run db:pull` - Pull schema from database
+- `bun run db:check` - Check migration files for issues
+- `bun run db:up` - Apply pending migrations
+- `bun run db:studio` - Open Drizzle Studio for database management
+- `bun run db:seed` - Seed database with test data
 
 #### Quality & Release
 
-- `pnpm release` - Create semantic release (runs build, test, lint, check-types)
-- `pnpm release:blog` - Release blog app specifically
+- `bun run release` - Create semantic release (runs build, test, lint, typecheck)
+- `bun run release:blog` - Release blog app specifically
 
 ### App-specific Commands (run from `/apps/blog/`)
 
 #### Development
 
-- `pnpm dev` - Start blog dev server (next dev --turbopack)
-- `pnpm build` - Build blog app for production
-- `pnpm start` - Start production server
-- `pnpm test` - Run Vitest tests with coverage
-- `pnpm test -- utils/__tests__/truncate.test.ts` - Run single test file
-- `pnpm test:coverage` - Generate coverage report
-- `pnpm check-types` - TypeScript type checking
-- `pnpm vercel-build` - Production build with migrations (for Vercel)
+- `bun run dev` - Start blog dev server (next dev --turbopack)
+- `bun run build` - Build blog app for production
+- `bun run start` - Start production server
+- `bun run test` - Run Vitest tests with coverage
+- `bun run test -- utils/__tests__/truncate.test.ts` - Run single test file
+- `bun run test:coverage` - Generate coverage report
+- `bun run typecheck` - TypeScript type checking
+- `bun run vercel-build` - Production build with migrations (for Vercel)
 
 #### Database (App-level)
 
-- `pnpm drop` - Drop database tables
-- `pnpm generate` - Generate migrations from schema
-- `pnpm migrate` - Run database migrations
-- `pnpm push` - Push schema changes directly
-- `pnpm pull` - Pull schema from database
-- `pnpm check` - Check migration files
-- `pnpm up` - Apply migrations
-- `pnpm studio` - Open Drizzle Studio
-- `pnpm seed` - Seed database with development data
+- `bun run drop` - Drop database tables
+- `bun run generate` - Generate migrations from schema
+- `bun run migrate` - Run database migrations
+- `bun run push` - Push schema changes directly
+- `bun run pull` - Pull schema from database
+- `bun run check` - Check migration files
+- `bun run up` - Apply migrations
+- `bun run studio` - Open Drizzle Studio
+- `bun run seed` - Seed database with development data
 
 
 ## Architecture Overview

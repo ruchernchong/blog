@@ -6,26 +6,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Development
 
-- `pnpm dev` - Start development server with hot reload (uses Turbo)
-- `pnpm build` - Build all apps for production (uses Turbo)
-- `pnpm test` - Run tests across all apps (uses Turbo)
-- `pnpm lint` - Run linting across all apps (uses Turbo)
+- `bun run dev` - Start development server with hot reload (uses Turbo)
+- `bun run build` - Build all apps for production (uses Turbo)
+- `bun run test` - Run tests across all apps (uses Turbo)
+- `bun run lint` - Run linting across all apps (uses Turbo)
 
 ### App-specific commands (run from `/apps/blog/`)
 
-- `pnpm dev` - Start blog dev server (next dev)
-- `pnpm build` - Build blog app for production
-- `pnpm test` - Run Vitest tests with coverage
-- `pnpm test -- utils/__tests__/truncate.test.ts` - Run single test file
-- `pnpm test:coverage` - Generate coverage report
-- `pnpm check-types` - TypeScript type checking
-- `pnpm migrate` - Run database migrations
-- `pnpm vercel-build` - Production build with migrations
+- `bun run dev` - Start blog dev server (next dev)
+- `bun run build` - Build blog app for production
+- `bun run test` - Run Vitest tests with coverage
+- `bun run test -- utils/__tests__/truncate.test.ts` - Run single test file
+- `bun run test:coverage` - Generate coverage report
+- `bun run typecheck` - TypeScript type checking
+- `bun run migrate` - Run database migrations
+- `bun run vercel-build` - Production build with migrations
 
 ### Quality & Release
 
-- `pnpm release` - Create semantic release (runs build, test, lint, check-types)
-- `pnpm release:blog` - Release blog app specifically
+- `bun run release` - Create semantic release (runs build, test, lint, check-types)
+- `bun run release:blog` - Release blog app specifically
 
 ## Architecture Overview
 
