@@ -76,7 +76,9 @@ export default function DesignPreviewPage() {
       {/* Controls Panel */}
       <div className="sticky top-0 z-50 border-b bg-white/90 px-6 py-4 backdrop-blur-lg">
         <div className="mx-auto max-w-5xl">
-          <h1 className="mb-4 font-bold text-2xl tracking-tight">Design Preview</h1>
+          <h1 className="mb-4 font-bold text-2xl tracking-tight">
+            Design Preview
+          </h1>
 
           <div className="flex items-center gap-4">
             <span
@@ -106,7 +108,7 @@ export default function DesignPreviewPage() {
             <div className="rounded-2xl border bg-white p-8 shadow-sm">
               <div className="flex flex-col gap-4">
                 <h1
-                  className="text-5xl font-bold tracking-tight"
+                  className="font-bold text-5xl tracking-tight"
                   style={{
                     color: "var(--preview-foreground)",
                     letterSpacing: "-0.03em",
@@ -118,8 +120,8 @@ export default function DesignPreviewPage() {
                   className="max-w-xl text-lg leading-relaxed"
                   style={{ color: "var(--preview-muted-foreground)" }}
                 >
-                  Software Engineer based in Singapore, passionate about building
-                  products that make a difference.
+                  Software Engineer based in Singapore, passionate about
+                  building products that make a difference.
                 </p>
                 <div className="flex gap-3">
                   {["GitHub", "LinkedIn", "Twitter"].map((social) => (
@@ -168,7 +170,7 @@ export default function DesignPreviewPage() {
                     Friday, 20 December 2024
                   </span>
                   <h3
-                    className="text-xl font-semibold"
+                    className="font-semibold text-xl"
                     style={{ color: "var(--preview-foreground)" }}
                   >
                     Building a Modern Portfolio with Next.js 15
@@ -196,7 +198,7 @@ export default function DesignPreviewPage() {
                 />
                 <div className="p-6">
                   <h3
-                    className="mb-2 text-lg font-semibold"
+                    className="mb-2 font-semibold text-lg"
                     style={{ color: "var(--preview-foreground)" }}
                   >
                     SG Car Trends
@@ -361,7 +363,7 @@ export default function DesignPreviewPage() {
             >
               <div className="flex flex-col gap-4">
                 <h1
-                  className="text-5xl font-bold tracking-tight"
+                  className="font-bold text-5xl tracking-tight"
                   style={{
                     color: "var(--preview-foreground)",
                     letterSpacing: "-0.03em",
@@ -370,13 +372,13 @@ export default function DesignPreviewPage() {
                   Heading 1 (5xl)
                 </h1>
                 <h2
-                  className="text-3xl font-semibold tracking-tight"
+                  className="font-semibold text-3xl tracking-tight"
                   style={{ color: "var(--preview-foreground)" }}
                 >
                   Heading 2 (3xl)
                 </h2>
                 <h3
-                  className="text-xl font-semibold"
+                  className="font-semibold text-xl"
                   style={{ color: "var(--preview-foreground)" }}
                 >
                   Heading 3 (xl)
@@ -406,13 +408,16 @@ export default function DesignPreviewPage() {
           {/* Selection Summary */}
           <section className="rounded-2xl border-2 border-dashed bg-white/50 p-8">
             <h2
-              className="mb-4 text-xl font-semibold"
+              className="mb-4 font-semibold text-xl"
               style={{ color: "var(--preview-foreground)" }}
             >
               Your Selection
             </h2>
             <div className="flex flex-col gap-2">
-              <p className="font-semibold text-xl" style={{ color: currentAccent.primary }}>
+              <p
+                className="font-semibold text-xl"
+                style={{ color: currentAccent.primary }}
+              >
                 {currentAccent.name} + Moderate Effects
               </p>
               <p className="text-muted-foreground">

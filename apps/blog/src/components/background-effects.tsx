@@ -12,7 +12,7 @@ export const BackgroundEffects = () => {
     >
       {/* Primary gradient orb - top right */}
       <div
-        className="absolute -right-[100px] -top-[200px] h-[600px] w-[600px] rounded-full bg-rose-400 opacity-[0.15] blur-[120px]"
+        className="absolute -top-[200px] -right-[100px] h-[600px] w-[600px] rounded-full bg-rose-400 opacity-[0.15] blur-[120px]"
         style={{ willChange: "transform" }}
       />
 

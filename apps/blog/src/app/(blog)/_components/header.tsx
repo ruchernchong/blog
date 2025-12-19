@@ -23,7 +23,7 @@ export const Header = () => {
       <div className="flex items-center justify-between">
         <NavItem
           href="/"
-          className="font-bold text-lg text-foreground transition-colors duration-300 hover:text-muted-foreground"
+          className="font-bold text-foreground text-lg transition-colors duration-300 hover:text-muted-foreground"
           title="Ru Chern"
         >
           <div className="flex items-center gap-2">
@@ -33,8 +33,7 @@ export const Header = () => {
         <nav className="flex items-center gap-6">
           {navLinks.map(({ title, href }) => {
             const isActive =
-              pathname === href ||
-              (pathname.startsWith(href) && href !== "/");
+              pathname === href || (pathname.startsWith(href) && href !== "/");
 
             return (
               <NavItem
@@ -42,7 +41,9 @@ export const Header = () => {
                 href={href}
                 className={cn(
                   "font-medium text-sm transition-all duration-300 ease-out",
-                  isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                  isActive
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
                 title={title}
               >

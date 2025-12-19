@@ -1,4 +1,8 @@
-import { AnalyticsUpIcon, SourceCodeIcon, StarIcon } from "@hugeicons/core-free-icons";
+import {
+  AnalyticsUpIcon,
+  SourceCodeIcon,
+  StarIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import { MetricCard } from "@/app/(blog)/analytics/_components/metric-card";
@@ -30,7 +34,9 @@ const Dashboard = async () => {
         <MetricCard
           title="Total Site Visits"
           value={totalVisits ?? 0}
-          icon={<HugeiconsIcon icon={AnalyticsUpIcon} size={32} strokeWidth={2} />}
+          icon={
+            <HugeiconsIcon icon={AnalyticsUpIcon} size={32} strokeWidth={2} />
+          }
         />
         <MetricCard
           title="GitHub Followers"
@@ -47,7 +53,9 @@ const Dashboard = async () => {
           value={
             contributions?.contributionsCollection.totalCommitContributions ?? 0
           }
-          icon={<HugeiconsIcon icon={SourceCodeIcon} size={32} strokeWidth={2} />}
+          icon={
+            <HugeiconsIcon icon={SourceCodeIcon} size={32} strokeWidth={2} />
+          }
         />
       </div>
       <VisitsChart data={visits} />

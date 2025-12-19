@@ -57,11 +57,11 @@ const AboutPage = async () => {
       <div className="relative flex flex-col gap-8">
         {/* Page-specific gradient orbs */}
         <div
-          className="pointer-events-none absolute -left-[200px] top-[50px] size-[400px] rounded-full bg-rose-400 opacity-[0.08] blur-[100px]"
+          className="pointer-events-none absolute top-[50px] -left-[200px] size-[400px] rounded-full bg-rose-400 opacity-[0.08] blur-[100px]"
           aria-hidden="true"
         />
         <div
-          className="pointer-events-none absolute -right-[150px] top-[350px] size-[300px] rounded-full bg-rose-400 opacity-[0.06] blur-[80px]"
+          className="pointer-events-none absolute top-[350px] -right-[150px] size-[300px] rounded-full bg-rose-400 opacity-[0.06] blur-[80px]"
           aria-hidden="true"
         />
         <div className="flex flex-col">

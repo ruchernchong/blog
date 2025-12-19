@@ -1,4 +1,8 @@
-import { Book01Icon, Calendar01Icon, InformationCircleIcon } from "@hugeicons/core-free-icons";
+import {
+  Book01Icon,
+  Calendar01Icon,
+  InformationCircleIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Metadata } from "next";
@@ -106,7 +110,11 @@ const PostPage = async (props: { params: Params }) => {
         </div>
         <aside className="relative rounded-md border-l-4 border-l-border bg-muted p-6">
           <div className="absolute top-0 left-0 -translate-x-[50%] -translate-y-[50%] rounded-full bg-background p-2 text-foreground">
-            <HugeiconsIcon icon={InformationCircleIcon} size={32} strokeWidth={2} />
+            <HugeiconsIcon
+              icon={InformationCircleIcon}
+              size={32}
+              strokeWidth={2}
+            />
           </div>
           {post.summary}
         </aside>

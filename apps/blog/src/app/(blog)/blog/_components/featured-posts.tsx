@@ -35,7 +35,7 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
                   <time
                     dateTime={formatISO(post.publishedAt)}
                     title={formattedDate}
-                    className="text-sm text-muted-foreground italic"
+                    className="text-muted-foreground text-sm italic"
                   >
                     {formattedDate}
                   </time>

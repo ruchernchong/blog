@@ -1,12 +1,12 @@
 "use client";
 
+import { motion } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
-import { motion } from "motion/react";
-import type { Project } from "@/types";
+import { Typography } from "@/components/typography";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Typography } from "@/components/typography";
+import type { Project } from "@/types";
 
 interface FeaturedWorkProps {
   projects: Project[];
@@ -14,10 +14,10 @@ interface FeaturedWorkProps {
 
 function ProjectCard({ project }: { project: Project }) {
   const liveUrl = project.links.find(
-    (link) => !link.includes("github.com")
+    (link) => !link.includes("github.com"),
   ) as Route;
   const githubUrl = project.links.find((link) =>
-    link.includes("github.com")
+    link.includes("github.com"),
   ) as Route;
 
   return (
@@ -50,7 +50,12 @@ function ProjectCard({ project }: { project: Project }) {
 
       <div className="mt-auto flex gap-2">
         {liveUrl && (
-          <Button variant="default" size="sm" render={<Link href={liveUrl} />}>
+          <Button
+            variant="default"
+            size="sm"
+            nativeButton={false}
+            render={<Link href={liveUrl} />}
+          >
             View Live
           </Button>
         )}
@@ -58,6 +63,7 @@ function ProjectCard({ project }: { project: Project }) {
           <Button
             variant="outline"
             size="sm"
+            nativeButton={false}
             render={<Link href={githubUrl} />}
           >
             GitHub
@@ -86,7 +92,12 @@ export function FeaturedWork({ projects }: FeaturedWorkProps) {
         <Typography variant="label" className="text-foreground">
           Featured Work
         </Typography>
-        <Button variant="ghost" size="sm" render={<Link href="/projects" />}>
+        <Button
+          variant="ghost"
+          size="sm"
+          nativeButton={false}
+          render={<Link href="/projects" />}
+        >
           View All
         </Button>
       </div>

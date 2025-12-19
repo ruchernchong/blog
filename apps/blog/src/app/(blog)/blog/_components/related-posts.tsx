@@ -40,12 +40,16 @@ export const RelatedPosts = async ({ slug }: RelatedPostsProps) => {
                     <time
                       dateTime={formatISO(post.publishedAt)}
                       title={formattedDate}
-                      className="text-sm text-muted-foreground"
+                      className="text-muted-foreground text-sm"
                     >
                       {formattedDate}
                     </time>
                     <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                      <HugeiconsIcon icon={Tag01Icon} size={16} strokeWidth={2} />
+                      <HugeiconsIcon
+                        icon={Tag01Icon}
+                        size={16}
+                        strokeWidth={2}
+                      />
                       <span>
                         {post.commonTagCount}{" "}
                         {post.commonTagCount === 1 ? "tag" : "tags"}

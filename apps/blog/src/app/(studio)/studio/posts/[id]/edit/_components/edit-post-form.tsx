@@ -202,7 +202,11 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
         <Card>
           <CardContent className="py-12 text-center">
             <p className="mb-4 text-muted-foreground">Post not found</p>
-            <Button variant="outline" render={<Link href="/studio/posts" />}>
+            <Button
+              variant="outline"
+              nativeButton={false}
+              render={<Link href="/studio/posts" />}
+            >
               Back to Posts
             </Button>
           </CardContent>
@@ -220,7 +224,11 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
             Update your blog post details
           </p>
         </div>
-        <Button variant="outline" render={<Link href="/studio/posts" />}>
+        <Button
+          variant="outline"
+          nativeButton={false}
+          render={<Link href="/studio/posts" />}
+        >
           Back to Posts
         </Button>
       </div>
@@ -402,7 +410,11 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
           </div>
 
           <div className="flex gap-4">
-            <Button type="button" variant="outline" render={<Link href="/studio/posts" />}>
+            <Button
+              variant="outline"
+              nativeButton={false}
+              render={<Link href="/studio/posts" />}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={isPending || !!post.deletedAt}>

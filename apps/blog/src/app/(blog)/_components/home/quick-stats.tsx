@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { animate, motion, useInView, useMotionValue } from "motion/react";
+import { useEffect, useRef } from "react";
 
 interface StatItemProps {
   value: number;

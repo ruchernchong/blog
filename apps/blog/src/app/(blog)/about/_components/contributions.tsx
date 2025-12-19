@@ -39,7 +39,7 @@ const Contributions = ({
             <div className="flex flex-col gap-2">
               <div>
                 <Typography variant="h3">GitHub</Typography>
-                <p className="text-sm text-muted-foreground italic">
+                <p className="text-muted-foreground text-sm italic">
                   (Powered by GitHub GraphQL API)
                 </p>
               </div>
@@ -64,7 +64,7 @@ const Contributions = ({
             <div className="flex flex-col gap-2">
               <div>
                 <Typography variant="h3">Stack Overflow</Typography>
-                <p className="text-sm text-muted-foreground italic">
+                <p className="text-muted-foreground text-sm italic">
                   (Powered by Stack Exchange API)
                 </p>
               </div>

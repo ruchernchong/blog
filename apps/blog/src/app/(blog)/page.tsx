@@ -1,13 +1,13 @@
 import type { WebSite, WithContext } from "schema-dts";
-import { StructuredData } from "@/app/(blog)/_components/structured-data";
-import { HeroSection } from "@/app/(blog)/_components/home/hero-section";
-import { QuickStats } from "@/app/(blog)/_components/home/quick-stats";
 import { FeaturedWork } from "@/app/(blog)/_components/home/featured-work";
+import { HeroSection } from "@/app/(blog)/_components/home/hero-section";
 import { LatestPosts } from "@/app/(blog)/_components/home/latest-posts";
+import { QuickStats } from "@/app/(blog)/_components/home/quick-stats";
+import { StructuredData } from "@/app/(blog)/_components/structured-data";
+import { BASE_URL } from "@/config";
 import projects from "@/data/projects";
 import { getPublishedPosts } from "@/lib/queries/posts";
 import { serverTrpc } from "@/server";
-import { BASE_URL } from "@/config";
 
 async function HomePage() {
   const structuredData: WithContext<WebSite> = {

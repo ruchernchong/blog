@@ -27,7 +27,7 @@ export const TagFilter = ({ tags, className }: TagFilterProps) => {
   return (
     <div
       className={cn(
-        "flex gap-2 overflow-x-auto pb-2 scrollbar-hide",
+        "scrollbar-hide flex gap-2 overflow-x-auto pb-2",
         className,
       )}
     >
@@ -35,7 +35,7 @@ export const TagFilter = ({ tags, className }: TagFilterProps) => {
         type="button"
         onClick={() => handleTagClick(null)}
         className={cn(
-          "shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200",
+          "shrink-0 rounded-full px-4 py-1.5 font-medium text-sm transition-all duration-200",
           activeTag === null
             ? "bg-primary text-primary-foreground"
             : "bg-muted text-muted-foreground hover:bg-muted/80",
@@ -49,7 +49,7 @@ export const TagFilter = ({ tags, className }: TagFilterProps) => {
           type="button"
           onClick={() => handleTagClick(tag)}
           className={cn(
-            "shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200",
+            "shrink-0 rounded-full px-4 py-1.5 font-medium text-sm transition-all duration-200",
             activeTag === tag
               ? "bg-primary text-primary-foreground"
               : "bg-muted text-muted-foreground hover:bg-muted/80",

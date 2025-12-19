@@ -15,7 +15,10 @@ import { cn } from "@/lib/utils";
 import "@/app/(blog)/styles.css";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
-const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+});
 
 const title = {
   default: "Home",
@@ -68,7 +71,12 @@ export const metadata: Metadata = {
 const BlogLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
     <html lang="en" className={cn("scroll-smooth", figtree.variable)}>
-      <body className={cn("bg-background text-foreground antialiased", geistMono.variable)}>
+      <body
+        className={cn(
+          "bg-background text-foreground antialiased",
+          geistMono.variable,
+        )}
+      >
         <BackgroundEffects />
         <NuqsAdapter>
           <ViewTransitions>

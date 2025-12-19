@@ -8,7 +8,10 @@ import { cn } from "@/lib/utils";
 import "@/app/(studio)/styles.css";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
-const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+});
 
 export const metadata: Metadata = {
   title: "Content Studio | Manage Blog Posts",
@@ -22,7 +25,12 @@ export const metadata: Metadata = {
 const StudioLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
     <html lang="en" className={cn("scroll-smooth", figtree.variable)}>
-      <body className={cn("bg-background text-foreground antialiased", geistMono.variable)}>
+      <body
+        className={cn(
+          "bg-background text-foreground antialiased",
+          geistMono.variable,
+        )}
+      >
         <ViewTransitions>
           <Providers>
             <div className="min-h-screen">

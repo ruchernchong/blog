@@ -39,14 +39,14 @@ export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
     e.stopPropagation();
     setDragActive(false);
 
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+    if (e.dataTransfer.files?.[0]) {
       handleFiles(e.dataTransfer.files);
     }
   }
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files?.[0]) {
       handleFiles(e.target.files);
     }
   }

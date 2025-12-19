@@ -1,12 +1,12 @@
 "use client";
 
-import type { Route } from "next";
-import Link from "next/link";
 import { format, formatISO } from "date-fns";
 import { motion } from "motion/react";
-import type { SelectPost } from "@/schema/posts";
-import { Button } from "@/components/ui/button";
+import type { Route } from "next";
+import Link from "next/link";
 import { Typography } from "@/components/typography";
+import { Button } from "@/components/ui/button";
+import type { SelectPost } from "@/schema/posts";
 
 interface LatestPostsProps {
   posts: SelectPost[];
@@ -58,7 +58,12 @@ export function LatestPosts({ posts }: LatestPostsProps) {
         <Typography variant="label" className="text-foreground">
           Latest Posts
         </Typography>
-        <Button variant="ghost" size="sm" render={<Link href="/blog" />}>
+        <Button
+          variant="ghost"
+          size="sm"
+          nativeButton={false}
+          render={<Link href="/blog" />}
+        >
           View All
         </Button>
       </div>

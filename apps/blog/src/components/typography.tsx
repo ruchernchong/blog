@@ -1,21 +1,22 @@
-import { type VariantProps, cva } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 import { createElement, type ElementType, type HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 const typographyVariants = cva("", {
   variants: {
     variant: {
-      h1: "text-4xl font-bold tracking-tight text-foreground sm:text-5xl",
-      h2: "text-3xl font-semibold tracking-tight text-foreground",
-      h3: "text-xl font-semibold text-foreground",
-      h4: "text-lg font-semibold text-foreground",
-      h5: "text-base font-semibold text-foreground",
-      h6: "text-sm font-semibold text-foreground",
-      "body-lg": "text-lg leading-relaxed text-foreground",
+      h1: "font-bold text-4xl text-foreground tracking-tight sm:text-5xl",
+      h2: "font-semibold text-3xl text-foreground tracking-tight",
+      h3: "font-semibold text-foreground text-xl",
+      h4: "font-semibold text-foreground text-lg",
+      h5: "font-semibold text-base text-foreground",
+      h6: "font-semibold text-foreground text-sm",
+      "body-lg": "text-foreground text-lg leading-relaxed",
       body: "text-base text-foreground",
-      "body-sm": "text-sm text-foreground",
-      caption: "text-sm text-muted-foreground",
-      label: "text-xs font-medium uppercase tracking-wider text-muted-foreground",
+      "body-sm": "text-foreground text-sm",
+      caption: "text-muted-foreground text-sm",
+      label:
+        "font-medium text-muted-foreground text-xs uppercase tracking-wider",
     },
   },
   defaultVariants: {
@@ -23,7 +24,9 @@ const typographyVariants = cva("", {
   },
 });
 
-type VariantKey = NonNullable<VariantProps<typeof typographyVariants>["variant"]>;
+type VariantKey = NonNullable<
+  VariantProps<typeof typographyVariants>["variant"]
+>;
 
 const variantElementMap: Record<VariantKey, ElementType> = {
   h1: "h1",

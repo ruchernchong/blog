@@ -39,7 +39,12 @@ const CustomLink = ({ href, children, ...props }: any) => {
     >
       <span>
         {children}
-        <HugeiconsIcon icon={ArrowUpRight01Icon} size={16} strokeWidth={2} className="inline-flex align-super" />
+        <HugeiconsIcon
+          icon={ArrowUpRight01Icon}
+          size={16}
+          strokeWidth={2}
+          className="inline-flex align-super"
+        />
       </span>
     </a>
   );
@@ -58,7 +63,7 @@ const ImageComponent = ({ alt, ...props }: any) => (
       />
     </Suspense>
     {alt && (
-      <figcaption className="text-center font-bold text-xs text-muted-foreground italic">
+      <figcaption className="text-center font-bold text-muted-foreground text-xs italic">
         {alt}
       </figcaption>
     )}

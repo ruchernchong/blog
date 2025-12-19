@@ -17,10 +17,7 @@ export const PageTitle = ({
   animate = true,
 }: PageTitleProps) => (
   <div className={cn("flex flex-col gap-2", className)}>
-    <Typography
-      variant="h1"
-      className={cn(animate && "animate-slide-in-left")}
-    >
+    <Typography variant="h1" className={cn(animate && "animate-slide-in-left")}>
       {title}
     </Typography>
     {description && (
