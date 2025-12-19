@@ -1,3 +1,8 @@
+---
+name: design-language-system
+description: Maintains visual consistency across portfolio UI components. Use when creating or modifying components, styling pages, or ensuring design consistency. Includes coral colour tokens (OKLCH), typography scale, spacing rules, animations, and component patterns.
+---
+
 # Design Language System
 
 Use this guide when creating or modifying UI components to ensure visual consistency across the portfolio.
