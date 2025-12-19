@@ -8,6 +8,7 @@ import { StructuredData } from "@/app/(blog)/_components/structured-data";
 import StatsBar from "@/app/(blog)/analytics/_components/stats-bar";
 import { Mdx } from "@/app/(blog)/blog/_components/mdx";
 import { RelatedPosts } from "@/app/(blog)/blog/_components/related-posts";
+import { ScrollProgress } from "@/app/(blog)/blog/_components/scroll-progress";
 import { Typography } from "@/components/typography";
 import {
   getPublishedPostBySlug,
@@ -74,6 +75,7 @@ const PostPage = async (props: { params: Params }) => {
 
   return (
     <>
+      <ScrollProgress />
       <StructuredData data={post.metadata.structuredData} />
       <article className="prose mx-auto mb-16 flex max-w-4xl flex-col gap-12 prose-img:rounded-2xl prose-a:text-foreground prose-a:underline">
         <div className="flex flex-col items-center gap-y-4 text-center">

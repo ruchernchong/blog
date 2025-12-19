@@ -62,6 +62,7 @@
     "drizzle-orm": "^0.38.3",
     "framer-motion": "^12.23.6",
     "graphql": "^16.8.1",
+    "motion": "^12.23.26",
     "next": "16.1.0",
     "next-mdx-remote": "^5.0.0",
     "next-view-transitions": "^0.3.4",
