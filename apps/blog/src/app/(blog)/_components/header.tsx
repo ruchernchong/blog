@@ -15,11 +15,11 @@ interface NavItemProps extends PropsWithChildren {
   title?: string;
 }
 
-export const Header = () => {
+export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed top-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-4xl -translate-x-1/2 rounded-full border border-border/50 bg-background/80 px-6 py-2 shadow-sm backdrop-blur-lg transition-all duration-300">
+    <header className="fixed top-4 right-4 left-4 z-50 mx-auto max-w-4xl rounded-full border border-border/50 bg-background/80 px-6 py-2 shadow-sm backdrop-blur-lg transition-all duration-300">
       <div className="flex items-center justify-between">
         <NavItem
           href="/"
@@ -55,12 +55,12 @@ export const Header = () => {
       </div>
     </header>
   );
-};
+}
 
-const NavItem = ({ href, className, children }: NavItemProps) => {
+function NavItem({ href, className, children }: NavItemProps) {
   return (
     <Link href={href} className={className}>
       {children}
     </Link>
   );
-};
+}

@@ -4,7 +4,7 @@
  * Adds atmospheric depth with gradient orbs and noise texture.
  * Uses CSS only for performance - no JS animations.
  */
-export const BackgroundEffects = () => {
+export function BackgroundEffects() {
   return (
     <div
       className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
@@ -12,13 +12,13 @@ export const BackgroundEffects = () => {
     >
       {/* Primary gradient orb - top right */}
       <div
-        className="absolute -top-[200px] -right-[100px] h-[600px] w-[600px] rounded-full bg-rose-400 opacity-[0.15] blur-[120px]"
+        className="absolute -top-50 -right-25 h-150 w-150 rounded-full bg-rose-400 opacity-[0.15] blur-[120px]"
         style={{ willChange: "transform" }}
       />
 
       {/* Secondary gradient orb - bottom left */}
       <div
-        className="absolute -bottom-[200px] -left-[100px] h-[500px] w-[500px] rounded-full bg-rose-400 opacity-[0.10] blur-[100px]"
+        className="absolute -bottom-50 -left-25 h-125 w-125 rounded-full bg-rose-400 opacity-[0.10] blur-[100px]"
         style={{ willChange: "transform" }}
       />
 
@@ -32,4 +32,4 @@ export const BackgroundEffects = () => {
       />
     </div>
   );
-};
+}

@@ -9,11 +9,11 @@ interface Props {
   description?: string;
 }
 
-const Author = ({ title, tagline, description }: Props) => {
+export function Author({ title, tagline, description }: Props) {
   return (
     <div className="flex flex-col-reverse items-center md:flex-row md:items-start md:gap-8">
       <div className="flex grow basis-1/2 flex-col gap-4">
-        <div className="flex flex-col items-center md:items-start">
+        <div className="flex flex-col">
           <PageTitle title={title} description={tagline} />
         </div>
         {description && <p className="text-muted-foreground">{description}</p>}
@@ -31,6 +31,4 @@ const Author = ({ title, tagline, description }: Props) => {
       </div>
     </div>
   );
-};
-
-export default Author;
+}

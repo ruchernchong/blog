@@ -4,7 +4,7 @@ import { StructuredData } from "@/app/(blog)/_components/structured-data";
 import Employment from "@/app/(blog)/about/_components/employment";
 import globalMetadata from "@/app/(blog)/metadata";
 import { openGraphImage, twitterImage } from "@/app/(blog)/shared-metadata";
-import Author from "@/components/shared/author";
+import { Author } from "@/components/shared/author";
 import { BASE_URL } from "@/config";
 import companies from "@/data/companies";
 
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
 };
 
-const AboutPage = async () => {
+export default async function AboutPage() {
   const sortedCompanies = companies.toSorted(
     (a, b) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime(),
   );
@@ -55,15 +55,6 @@ const AboutPage = async () => {
     <>
       <StructuredData data={structuredData} />
       <div className="relative flex flex-col gap-8">
-        {/* Page-specific gradient orbs */}
-        <div
-          className="pointer-events-none absolute top-[50px] -left-[200px] size-[400px] rounded-full bg-rose-400 opacity-[0.08] blur-[100px]"
-          aria-hidden="true"
-        />
-        <div
-          className="pointer-events-none absolute top-[350px] -right-[150px] size-[300px] rounded-full bg-rose-400 opacity-[0.06] blur-[80px]"
-          aria-hidden="true"
-        />
         <div className="flex flex-col">
           <Author
             title="About Me"
@@ -72,9 +63,7 @@ const AboutPage = async () => {
           />
         </div>
         <hr className="border-border" />
-        <div>
-          <Employment companies={sortedCompanies} />
-        </div>
+        <Employment companies={sortedCompanies} />
         {/*<hr className="border-border" />*/}
         {/*<div>*/}
         {/*  <Contributions*/}
@@ -85,6 +74,4 @@ const AboutPage = async () => {
       </div>
     </>
   );
-};
-
-export default AboutPage;
+}

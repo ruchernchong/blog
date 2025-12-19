@@ -37,8 +37,8 @@ function ProjectCard({
       className={cn(
         "overflow-hidden transition-all duration-200 hover:-translate-y-0.5",
         featured
-          ? "ring-1 ring-primary/20 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25_/_0.25)]"
-          : "hover:shadow-[0_8px_30px_-10px_oklch(0_0_0_/_0.08)]",
+          ? "ring-1 ring-primary/20 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25/0.25)]"
+          : "hover:shadow-[0_8px_30px_-10px_oklch(0_0_0/0.08)]",
       )}
     >
       <div className="relative h-56 w-full overflow-hidden">
@@ -122,16 +122,6 @@ export default function ProjectsPage() {
 
   return (
     <div className="relative mx-auto max-w-5xl px-6 py-12">
-      {/* Page-specific gradient orbs */}
-      <div
-        className="pointer-events-none absolute top-[100px] -left-[200px] size-[400px] rounded-full bg-rose-400 opacity-[0.08] blur-[100px]"
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute top-[400px] -right-[150px] size-[300px] rounded-full bg-rose-400 opacity-[0.06] blur-[80px]"
-        aria-hidden="true"
-      />
-
       <header className="mb-16 flex flex-col gap-4">
         <div className="flex items-center gap-2">
           <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
