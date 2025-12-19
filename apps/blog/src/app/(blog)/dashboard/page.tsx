@@ -6,14 +6,14 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
-import VisitsChart from "@/app/(blog)/analytics/_components/visits-chart";
+import { VisitsChart } from "@/app/(blog)/analytics/_components/visits-chart";
 import { LiveBadge } from "@/app/(blog)/dashboard/_components/live-badge";
 import { StatCard } from "@/app/(blog)/dashboard/_components/stat-card";
 import { ViewsByPage } from "@/app/(blog)/dashboard/_components/views-by-page";
 import { PageTitle } from "@/components/shared/page-title";
 import { serverTrpc } from "@/server";
 
-async function DashboardPage() {
+export default async function DashboardPage() {
   const [totalVisits, followers, stars, contributions, visits, pages] =
     await Promise.all([
       serverTrpc.analytics.getTotalVisits(),
@@ -81,5 +81,3 @@ async function DashboardPage() {
     </div>
   );
 }
-
-export default DashboardPage;

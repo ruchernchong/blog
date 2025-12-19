@@ -1,5 +1,3 @@
-"use client";
-
 import type { ReactNode } from "react";
 import { Typography } from "@/components/typography";
 import { cn } from "@/lib/utils";

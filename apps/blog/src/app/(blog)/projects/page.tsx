@@ -153,9 +153,9 @@ export default function ProjectsPage() {
             More Projects
           </h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {otherProjects.map((project) => (
-              <ProjectCard key={project.slug} project={project} />
-            ))}
+            {otherProjects.map((project) => {
+              return <ProjectCard key={project.slug} project={project} />;
+            })}
           </div>
         </section>
       )}
