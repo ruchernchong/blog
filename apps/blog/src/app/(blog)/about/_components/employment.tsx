@@ -21,7 +21,7 @@ const Employment = ({ companies }: EmploymentProps) => {
               className="text-primary"
             />
           </div>
-          <Typography variant="h2">Work Experience</Typography>
+          <Typography variant="h2">Career</Typography>
         </div>
         <Typography variant="body" className="text-muted-foreground">
           Some cool companies I have worked with. Feel free to connect with me
