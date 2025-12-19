@@ -29,7 +29,7 @@ export const Card = ({ children, className, ...props }: CardProps) => {
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-card",
+        "rounded-2xl border border-border bg-card shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-md",
         className,
       )}
       {...props}

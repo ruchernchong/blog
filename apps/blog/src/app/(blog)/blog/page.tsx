@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/shared/card";
 import { PageTitle } from "@/components/shared/page-title";
+import { Typography } from "@/components/typography";
 import { getPublishedPosts } from "@/lib/queries/posts";
 
 export const metadata: Metadata = {
@@ -26,11 +27,15 @@ const BlogPage = async () => {
         description="My blog posts on coding, tech, and random thoughts."
         className="mb-8"
       />
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-12">
         <PopularPosts />
-        <div className="flex flex-col gap-4">
-          {publishedPosts.length > 0 &&
-            publishedPosts.map((post) => {
+        <div className="flex flex-col gap-8">
+          <Typography variant="label" className="text-foreground">
+            All Posts
+          </Typography>
+          <div className="flex flex-col gap-4">
+            {publishedPosts.length > 0 &&
+              publishedPosts.map((post) => {
               if (!post.publishedAt) return null;
 
               const formattedDate = format(
@@ -58,7 +63,8 @@ const BlogPage = async () => {
                   </Link>
                 </Card>
               );
-            })}
+              })}
+          </div>
         </div>
       </div>
     </>

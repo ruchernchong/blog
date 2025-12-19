@@ -8,6 +8,7 @@ import type { ReactNode } from "react";
 import { Footer } from "@/app/(blog)/_components/footer";
 import { Header } from "@/app/(blog)/_components/header";
 import Analytics from "@/components/analytics-tracker";
+import { BackgroundEffects } from "@/components/background-effects";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { cn } from "@/lib/utils";
 import "@/app/(blog)/styles.css";
@@ -67,6 +68,7 @@ const BlogLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
     <html lang="en" className={cn("scroll-smooth", figtree.variable)}>
       <body className={cn("bg-background text-foreground antialiased", geistMono.variable)}>
+        <BackgroundEffects />
         <ViewTransitions>
           <div className="flex min-h-screen flex-col">
             <Header />

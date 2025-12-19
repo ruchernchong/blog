@@ -8,7 +8,7 @@ import { StructuredData } from "@/app/(blog)/_components/structured-data";
 import StatsBar from "@/app/(blog)/analytics/_components/stats-bar";
 import { Mdx } from "@/app/(blog)/blog/_components/mdx";
 import { RelatedPosts } from "@/app/(blog)/blog/_components/related-posts";
-import { Typography } from "@/components/shared/typography";
+import { Typography } from "@/components/typography";
 import {
   getPublishedPostBySlug,
   getPublishedPostSlugs,

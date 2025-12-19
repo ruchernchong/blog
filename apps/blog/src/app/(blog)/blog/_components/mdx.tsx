@@ -12,7 +12,7 @@ import rehypePrettyCode, {
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkUnwrapImages from "remark-unwrap-images";
-import { Typography } from "@/components/shared/typography";
+import { Typography } from "@/components/typography";
 
 const CustomLink = ({ href, children, ...props }: any) => {
   const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));

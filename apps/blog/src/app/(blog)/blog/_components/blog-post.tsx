@@ -3,7 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO, parseISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
-import { Typography } from "@/components/shared/typography";
+import { Typography } from "@/components/typography";
 
 interface BlogPostProps {
   title: string;

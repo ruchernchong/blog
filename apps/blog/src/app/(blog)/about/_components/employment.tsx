@@ -3,6 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import ExternalLink from "@/components/shared/external-link";
 import { ItemOverlay } from "@/components/shared/item-overlay";
+import { Typography } from "@/components/typography";
 import { cn } from "@/lib/utils";
 import type { Company } from "@/types";
 
@@ -16,9 +17,9 @@ const Employment = ({ companies }: EmploymentProps) => {
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
           <HugeiconsIcon icon={Briefcase01Icon} size={32} strokeWidth={2} />
-          <h2 className="font-bold text-4xl">Work</h2>
+          <Typography variant="h2">Work</Typography>
         </div>
-        <p>
+        <Typography variant="body" className="text-muted-foreground">
           Some cool companies I have worked with. Feel free to connect with me
           on&nbsp;
           <ExternalLink
@@ -28,7 +29,7 @@ const Employment = ({ companies }: EmploymentProps) => {
             LinkedIn
           </ExternalLink>
           .
-        </p>
+        </Typography>
       </div>
       <div className="flex flex-col gap-8">
         {companies.map(
@@ -38,7 +39,7 @@ const Employment = ({ companies }: EmploymentProps) => {
                 <div
                   className={cn(
                     "flex size-12 items-center rounded-2xl p-2 md:h-18 md:w-18",
-                    logo ? "bg-zinc-50" : "bg-transparent",
+                    logo ? "bg-muted" : "bg-transparent",
                   )}
                 >
                   {logo && (

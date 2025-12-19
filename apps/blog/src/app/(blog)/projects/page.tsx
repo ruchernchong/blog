@@ -3,6 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import Image from "next/image";
 import Link from "next/link";
+import { Typography } from "@/components/typography";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import projects from "@/data/projects";
@@ -102,14 +103,12 @@ export default function ProjectsPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
-      <header className="mb-16">
-        <h1 className="mb-4 font-bold text-4xl text-foreground tracking-tight">
-          Projects
-        </h1>
-        <p className="max-w-2xl text-lg text-muted-foreground leading-relaxed">
+      <header className="mb-16 flex flex-col gap-4">
+        <Typography variant="h1">Projects</Typography>
+        <Typography variant="body-lg" className="max-w-2xl text-muted-foreground">
           A showcase of completed projects and experiments with new
           technologies.
-        </p>
+        </Typography>
       </header>
 
       {/* Featured Section */}

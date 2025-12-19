@@ -1,5 +1,6 @@
 "use client";
 
+import { Typography } from "@/components/typography";
 import { cn } from "@/lib/utils";
 
 interface PageTitleProps {
@@ -16,23 +17,22 @@ export const PageTitle = ({
   animate = true,
 }: PageTitleProps) => (
   <div className={cn("flex flex-col gap-2", className)}>
-    <h1
-      className={cn(
-        "font-bold text-3xl text-foreground tracking-tight sm:text-4xl",
-        animate && "animate-slide-in-left",
-      )}
+    <Typography
+      variant="h1"
+      className={cn(animate && "animate-slide-in-left")}
     >
       {title}
-    </h1>
+    </Typography>
     {description && (
-      <h2
+      <Typography
+        variant="body-lg"
         className={cn(
-          "text-muted-foreground text-lg",
+          "text-muted-foreground",
           animate && "animate-slide-in-left-delayed",
         )}
       >
         {description}
-      </h2>
+      </Typography>
     )}
   </div>
 );

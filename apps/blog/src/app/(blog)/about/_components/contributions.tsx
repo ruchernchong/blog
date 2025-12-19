@@ -3,7 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Fragment } from "react";
 import { Card } from "@/components/shared/card";
 import { LinkWithIcon } from "@/components/shared/link-with-icon";
-import { Typography } from "@/components/shared/typography";
+import { Typography } from "@/components/typography";
 import type { GitHubProfile } from "@/lib/github";
 import { cn } from "@/lib/utils";
 import type { StackOverflowProfile } from "@/utils/stackoverflow";
@@ -28,7 +28,7 @@ const Contributions = ({
           <HugeiconsIcon icon={UserMultipleIcon} size={32} strokeWidth={2} />
           <Typography variant="h2">Contributions</Typography>
         </div>
-        <Typography variant="p" className="text-muted-foreground">
+        <Typography variant="body" className="text-muted-foreground">
           My contributions to open-source platforms. I believe that by sharing
           my knowledge and expertise, I can help others to learn and grow too.
         </Typography>

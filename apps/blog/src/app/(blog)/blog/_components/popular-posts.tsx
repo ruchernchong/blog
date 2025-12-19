@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/shared/card";
+import { Typography } from "@/components/typography";
 import { popularPostsService } from "@/lib/services";
 
 export const PopularPosts = async () => {
@@ -20,9 +21,9 @@ export const PopularPosts = async () => {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="font-bold text-foreground text-xl uppercase">
+      <Typography variant="label" className="text-foreground">
         Popular Posts
-      </div>
+      </Typography>
       <div className="grid gap-4 md:auto-cols-fr md:grid-flow-col">
         {popularPosts.map((post) => {
           if (!post.publishedAt) {
