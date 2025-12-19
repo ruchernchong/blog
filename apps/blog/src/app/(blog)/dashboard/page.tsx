@@ -1,14 +1,16 @@
 import {
   AnalyticsUpIcon,
+  DashboardBrowsingIcon,
   SourceCodeIcon,
   StarIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
+import VisitsChart from "@/app/(blog)/analytics/_components/visits-chart";
 import { LiveBadge } from "@/app/(blog)/dashboard/_components/live-badge";
 import { StatCard } from "@/app/(blog)/dashboard/_components/stat-card";
 import { ViewsByPage } from "@/app/(blog)/dashboard/_components/views-by-page";
-import VisitsChart from "@/app/(blog)/analytics/_components/visits-chart";
+import { PageTitle } from "@/components/shared/page-title";
 import { serverTrpc } from "@/server";
 
 async function DashboardPage() {
@@ -27,15 +29,20 @@ async function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex flex-col gap-2">
-        <div className="flex items-center gap-2">
-          <h1 className="font-bold text-4xl tracking-tight">Dashboard</h1>
-          <LiveBadge />
-        </div>
-        <p className="text-muted-foreground">
-          Real-time analytics. All data updates automatically.
-        </p>
-      </header>
+      <PageTitle
+        title="Dashboard"
+        description="Real-time analytics. All data updates automatically."
+        icon={
+          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+            <HugeiconsIcon
+              icon={DashboardBrowsingIcon}
+              size={20}
+              className="text-primary"
+            />
+          </div>
+        }
+        action={<LiveBadge />}
+      />
 
       {/* Stats Grid - 2x2 on mobile, 4 columns on desktop */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

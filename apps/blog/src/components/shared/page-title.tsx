@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Typography } from "@/components/typography";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +9,8 @@ interface PageTitleProps {
   description?: string;
   className?: string;
   animate?: boolean;
+  icon?: ReactNode;
+  action?: ReactNode;
 }
 
 export const PageTitle = ({
@@ -15,11 +18,20 @@ export const PageTitle = ({
   description,
   className,
   animate = true,
+  icon,
+  action,
 }: PageTitleProps) => (
   <div className={cn("flex flex-col gap-2", className)}>
-    <Typography variant="h1" className={cn(animate && "animate-slide-in-left")}>
-      {title}
-    </Typography>
+    <div className="flex items-center gap-4">
+      {icon}
+      <Typography
+        variant="h1"
+        className={cn(animate && "animate-slide-in-left")}
+      >
+        {title}
+      </Typography>
+      {action}
+    </div>
     {description && (
       <Typography
         variant="body-lg"

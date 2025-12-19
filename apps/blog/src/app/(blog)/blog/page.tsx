@@ -1,3 +1,5 @@
+import { Notebook02Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Metadata, Route } from "next";
 import Link from "next/link";
@@ -56,6 +58,15 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       <PageTitle
         title="Blog"
         description="My blog posts on coding, tech, and random thoughts."
+        icon={
+          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+            <HugeiconsIcon
+              icon={Notebook02Icon}
+              size={20}
+              className="text-primary"
+            />
+          </div>
+        }
         className="mb-8"
       />
 
