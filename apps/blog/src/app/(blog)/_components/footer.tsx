@@ -8,15 +8,17 @@ import socials from "@/data/socials";
 
 export const Footer = () => (
   <div className="mx-auto flex w-full max-w-4xl justify-center px-4 pb-6">
-    <footer className="w-full border-border border-t bg-background px-8 py-6">
+    <footer className="w-full rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-          <Image src={Icon} width={48} height={48} alt="Logo" />
+          <div className="rounded-lg border border-transparent p-1 transition-all duration-200 hover:border-primary/30 hover:shadow-[0_4px_12px_-4px_theme(colors.primary/0.25)]">
+            <Image src={Icon} width={40} height={40} alt="Logo" />
+          </div>
           <div className="flex gap-6 md:gap-8">
             <div className="flex flex-col gap-4">
               <Link
                 href="/"
-                className="font-medium text-muted-foreground text-sm transition-colors duration-300 hover:text-foreground"
+                className="font-medium text-muted-foreground text-sm transition-all duration-200 hover:text-primary"
               >
                 Home
               </Link>
@@ -25,7 +27,7 @@ export const Footer = () => (
                   <Link
                     key={title}
                     href={href}
-                    className="font-medium text-muted-foreground text-sm transition-colors duration-300 hover:text-foreground"
+                    className="font-medium text-muted-foreground text-sm transition-all duration-200 hover:text-primary"
                   >
                     {title}
                   </Link>
@@ -37,7 +39,7 @@ export const Footer = () => (
                 <div key={name}>
                   <ExternalLink
                     href={link}
-                    className="font-medium text-muted-foreground text-sm transition-colors duration-300 hover:text-foreground"
+                    className="font-medium text-muted-foreground text-sm transition-all duration-200 hover:text-primary"
                     title={name}
                   >
                     <div className="inline-flex items-center gap-2">
@@ -50,6 +52,7 @@ export const Footer = () => (
             </div>
           </div>
         </div>
+        <div className="border-border border-t" />
         <div className="flex flex-col gap-2 text-center text-muted-foreground text-sm md:flex-row md:items-center md:justify-between md:text-left">
           <span>
             &copy; {new Date().getFullYear()} Chong Ru Chern. All Rights
