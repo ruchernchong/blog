@@ -9,10 +9,10 @@ import socials from "@/data/socials";
 export const Footer = () => (
   <div className="mx-auto flex w-full max-w-4xl justify-center px-4 pb-6">
     <footer className="w-full border-t border-border bg-background px-8 py-6">
-      <div className="flex flex-col gap-y-6">
-        <div className="flex flex-col gap-y-6 md:flex-row md:items-start md:justify-between">
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <Image src={Icon} width={48} height={48} alt="Logo" />
-          <div className="flex gap-x-12 md:gap-x-16">
+          <div className="flex gap-6 md:gap-8">
             <div className="flex flex-col gap-4">
               <Link
                 href="/"
@@ -40,7 +40,7 @@ export const Footer = () => (
                     className="font-medium text-muted-foreground text-sm transition-colors duration-300 hover:text-foreground"
                     title={name}
                   >
-                    <div className="inline-flex items-center gap-x-2">
+                    <div className="inline-flex items-center gap-2">
                       <Icons.Social name={name} className="h-4 w-4" />
                       {name}
                     </div>

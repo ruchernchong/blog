@@ -133,7 +133,7 @@ export default function ProjectsPage() {
       />
 
       <header className="mb-16 flex flex-col gap-4">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
             <HugeiconsIcon icon={CodeIcon} size={20} className="text-primary" />
           </div>

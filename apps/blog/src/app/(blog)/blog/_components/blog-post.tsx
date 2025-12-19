@@ -39,7 +39,7 @@ const BlogPost = ({
           {formattedDate}
         </time>
       </div>
-      <div className="flex items-center gap-x-1">
+      <div className="flex items-center gap-2">
         Read more
         <HugeiconsIcon
           icon={ArrowRight01Icon}

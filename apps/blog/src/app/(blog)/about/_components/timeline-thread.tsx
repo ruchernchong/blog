@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { Briefcase01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -39,7 +39,7 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
               : `${dateStart} — ${dateEnd ?? "Present"}`;
 
             return (
-              <div key={name} className="group relative flex gap-4 md:gap-5">
+              <div key={name} className="group relative flex gap-4 md:gap-6">
                 {/* Node column */}
                 <div className="relative z-10 flex flex-col items-center">
                   {/* Node dot */}
@@ -59,7 +59,9 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                         alt={`${name} logo`}
                         className={cn(
                           "object-contain",
-                          isCurrentRole ? "size-6 md:size-7" : "size-5 md:size-6",
+                          isCurrentRole
+                            ? "size-6 md:size-7"
+                            : "size-5 md:size-6",
                         )}
                       />
                     ) : (
@@ -85,7 +87,7 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
 
                   {/* Pulse for current */}
                   {isCurrentRole && (
-                    <span className="absolute -right-0.5 top-0 flex size-2.5">
+                    <span className="absolute top-0 -right-0.5 flex size-2.5">
                       <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-75" />
                       <span className="relative inline-flex size-2.5 rounded-full bg-primary" />
                     </span>
@@ -108,14 +110,16 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                           : "hover:shadow-[0_8px_30px_-10px_oklch(0_0_0_/_0.08)]",
                       )}
                     >
-                      <CardContent className="flex flex-col gap-3 py-0">
+                      <CardContent className="flex flex-col gap-4">
                         <div className="flex flex-wrap items-start justify-between gap-2">
                           <div className="flex flex-col">
-                            <span className="text-lg font-semibold tracking-tight">
+                            <span className="font-semibold text-lg tracking-tight">
                               {name}
                             </span>
                             {!hasRoles && (
-                              <span className="text-muted-foreground">{title}</span>
+                              <span className="text-muted-foreground">
+                                {title}
+                              </span>
                             )}
                           </div>
                           <Badge
@@ -128,9 +132,9 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
 
                         {/* Nested roles */}
                         {hasRoles && (
-                          <div className="relative flex flex-col gap-3 pl-5">
+                          <div className="relative flex flex-col gap-4 pl-4">
                             {/* Vertical line */}
-                            <div className="absolute left-[3px] top-1 bottom-1 w-0.5 bg-border" />
+                            <div className="absolute top-1 bottom-1 left-[3px] w-0.5 bg-border" />
 
                             {roles.map((role) => {
                               const isCurrentSubRole = !role.dateEnd;
@@ -138,13 +142,15 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                               return (
                                 <div
                                   key={`${role.title}-${role.dateStart}`}
-                                  className="relative flex flex-col gap-0.5"
+                                  className="relative flex flex-col gap-2"
                                 >
                                   {/* Dot on line */}
                                   <span
                                     className={cn(
-                                      "absolute -left-5 top-1.5 size-2 rounded-full",
-                                      isCurrentSubRole ? "bg-primary" : "bg-muted-foreground/40",
+                                      "absolute -left-4 size-2 rounded-full",
+                                      isCurrentSubRole
+                                        ? "bg-primary"
+                                        : "bg-muted-foreground",
                                     )}
                                   />
 
@@ -158,13 +164,17 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                                       {role.title}
                                     </span>
                                     {role.team && (
-                                      <Badge variant="secondary" className="text-xs">
+                                      <Badge
+                                        variant="secondary"
+                                        className="text-xs"
+                                      >
                                         {role.team}
                                       </Badge>
                                     )}
                                   </div>
-                                  <span className="text-sm text-muted-foreground">
-                                    {role.dateStart} — {role.dateEnd ?? "Present"}
+                                  <span className="text-muted-foreground text-sm">
+                                    {role.dateStart} —{" "}
+                                    {role.dateEnd ?? "Present"}
                                   </span>
                                 </div>
                               );
@@ -172,7 +182,7 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                           </div>
                         )}
 
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2 text-muted-foreground text-sm">
                           {!hasRoles && (
                             <>
                               <span>{durationText}</span>

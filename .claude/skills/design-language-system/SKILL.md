@@ -65,11 +65,23 @@ Use this guide when creating or modifying UI components to ensure visual consist
 - Use `gap-*` utilities for spacing between elements
 - Avoid `margin-top`, prefer `margin-bottom` or `gap`
 - Use even numbers only: `gap-2`, `gap-4`, `gap-6`, `gap-8`, `gap-12`
+- Use `gap-*` instead of `gap-x-*`/`gap-y-*` (cleaner, same behaviour in flex containers)
 
-### Common Patterns
-- Section gaps: `gap-8` or `gap-12`
-- Card internal: `gap-4`
-- Inline elements: `gap-2`
+### Spacing Scale (Even Numbers Only)
+
+| Gap | Size | Purpose |
+|-----|------|---------|
+| `gap-2` | 8px | Micro: icons + text, badges, inline elements |
+| `gap-4` | 16px | **Standard**: card content, grids, forms |
+| `gap-6` | 24px | Section: between related components |
+| `gap-8` | 32px | Macro: major page divisions, section separators |
+| `gap-12` | 48px | Page: hero to content transitions |
+
+### Guidelines
+- **Default to gap-4** when unsure
+- Icon + heading pairs: `gap-2`
+- Card internal content: `gap-4`
+- Section containers: `gap-6` or `gap-8`
 
 ---
 

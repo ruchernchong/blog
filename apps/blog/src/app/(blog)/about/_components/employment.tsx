@@ -13,7 +13,7 @@ const Employment = ({ companies }: EmploymentProps) => {
   return (
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
             <HugeiconsIcon
               icon={Briefcase01Icon}

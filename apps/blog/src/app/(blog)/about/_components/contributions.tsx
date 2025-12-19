@@ -24,7 +24,7 @@ const Contributions = ({
   return (
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-x-2">
+        <div className="flex items-center gap-2">
           <HugeiconsIcon icon={UserMultipleIcon} size={32} strokeWidth={2} />
           <Typography variant="h2">Contributions</Typography>
         </div>

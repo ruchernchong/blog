@@ -78,10 +78,10 @@ const PostPage = async (props: { params: Params }) => {
       <ScrollProgress />
       <StructuredData data={post.metadata.structuredData} />
       <article className="prose mx-auto mb-16 flex max-w-4xl flex-col gap-12 prose-img:rounded-2xl prose-a:text-foreground prose-a:underline">
-        <div className="flex flex-col items-center gap-y-4 text-center">
+        <div className="flex flex-col items-center gap-4 text-center">
           <StatsBar slug={post.slug} />
-          <div className="flex gap-x-2 text-muted-foreground md:flex-row">
-            <div className="flex items-center justify-center gap-x-2">
+          <div className="flex gap-2 text-muted-foreground md:flex-row">
+            <div className="flex items-center justify-center gap-2">
               <HugeiconsIcon icon={Calendar01Icon} size={24} strokeWidth={2} />
               <time
                 dateTime={formatISO(post.publishedAt)}
@@ -90,13 +90,13 @@ const PostPage = async (props: { params: Params }) => {
                 {formattedDate}
               </time>
             </div>
-            <div className="flex items-center justify-center gap-x-2">
+            <div className="flex items-center justify-center gap-2">
               <span>&middot;</span>
               <HugeiconsIcon icon={Book01Icon} size={24} strokeWidth={2} />
               <div>{post.metadata.readingTime}</div>
             </div>
             {post.author && (
-              <div className="flex items-center justify-center gap-x-2">
+              <div className="flex items-center justify-center gap-2">
                 <span>&middot;</span>
                 <span>By {post.author.name}</span>
               </div>

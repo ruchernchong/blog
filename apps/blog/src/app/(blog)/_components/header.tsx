@@ -30,7 +30,7 @@ export const Header = () => {
             <Image src={Icon} width={32} height={32} alt="Logo" />
           </div>
         </NavItem>
-        <nav className="flex items-center gap-x-6">
+        <nav className="flex items-center gap-6">
           {navLinks.map(({ title, href }) => {
             const isActive =
               pathname === href ||
