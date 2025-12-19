@@ -15,7 +15,7 @@ const Employment = ({ companies }: EmploymentProps) => {
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
-          <HugeiconsIcon icon={Briefcase01Icon} size={32} strokeWidth={2} className="fill-foreground" />
+          <HugeiconsIcon icon={Briefcase01Icon} size={32} strokeWidth={2} />
           <h2 className="font-bold text-4xl">Work</h2>
         </div>
         <p>
@@ -56,7 +56,6 @@ const Employment = ({ companies }: EmploymentProps) => {
                       icon={Briefcase01Icon}
                       size={48}
                       strokeWidth={2}
-                      className="fill-foreground"
                     />
                   )}
                 </div>
