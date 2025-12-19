@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Figtree, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { ViewTransitions } from "next-view-transitions";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { ReactNode } from "react";
 import { Footer } from "@/app/(blog)/_components/footer";
 import { Header } from "@/app/(blog)/_components/header";
@@ -69,18 +70,20 @@ const BlogLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
     <html lang="en" className={cn("scroll-smooth", figtree.variable)}>
       <body className={cn("bg-background text-foreground antialiased", geistMono.variable)}>
         <BackgroundEffects />
-        <ViewTransitions>
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24">
-              {children}
-            </main>
-            <Footer />
-          </div>
-          <Analytics />
-          <VercelAnalytics />
-          <SpeedInsights />
-        </ViewTransitions>
+        <NuqsAdapter>
+          <ViewTransitions>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24">
+                {children}
+              </main>
+              <Footer />
+            </div>
+            <Analytics />
+            <VercelAnalytics />
+            <SpeedInsights />
+          </ViewTransitions>
+        </NuqsAdapter>
         <Script
           defer
           src="https://analytics.ruchern.dev/script.js"
