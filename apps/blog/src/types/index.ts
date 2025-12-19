@@ -1,5 +1,12 @@
 import type { Route } from "next";
 
+export interface CompanyRole {
+  title: string;
+  team?: string;
+  dateStart: string;
+  dateEnd?: string;
+}
+
 export interface Company {
   name: string;
   title: string;
@@ -8,6 +15,7 @@ export interface Company {
   dateEnd?: string;
   location: string;
   url: string;
+  roles?: CompanyRole[];
 }
 
 export interface Project {

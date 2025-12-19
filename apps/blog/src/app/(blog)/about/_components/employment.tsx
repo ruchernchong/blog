@@ -1,11 +1,9 @@
 import { Briefcase01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Image from "next/image";
 import ExternalLink from "@/components/shared/external-link";
-import { ItemOverlay } from "@/components/shared/item-overlay";
 import { Typography } from "@/components/typography";
-import { cn } from "@/lib/utils";
 import type { Company } from "@/types";
+import { TimelineThread } from "./timeline-thread";
 
 interface EmploymentProps {
   companies: Company[];
@@ -15,74 +13,30 @@ const Employment = ({ companies }: EmploymentProps) => {
   return (
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2">
-          <HugeiconsIcon icon={Briefcase01Icon} size={32} strokeWidth={2} />
-          <Typography variant="h2">Work</Typography>
+        <div className="flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+            <HugeiconsIcon
+              icon={Briefcase01Icon}
+              size={20}
+              className="text-primary"
+            />
+          </div>
+          <Typography variant="h2">Work Experience</Typography>
         </div>
         <Typography variant="body" className="text-muted-foreground">
           Some cool companies I have worked with. Feel free to connect with me
-          on&nbsp;
+          on{" "}
           <ExternalLink
             href="https://linkedin.com/in/ruchernchong"
-            className="text-foreground underline hover:text-muted-foreground"
+            className="text-primary underline decoration-primary/30 underline-offset-4 transition-colors duration-200 hover:decoration-primary"
           >
             LinkedIn
           </ExternalLink>
           .
         </Typography>
       </div>
-      <div className="flex flex-col gap-8">
-        {companies.map(
-          ({ name, title, logo, dateStart, dateEnd, location, url }) => {
-            return (
-              <div key={name} className="relative flex items-center gap-4">
-                <div
-                  className={cn(
-                    "flex size-12 items-center rounded-2xl p-2 md:h-18 md:w-18",
-                    logo ? "bg-muted" : "bg-transparent",
-                  )}
-                >
-                  {logo && (
-                    <Image
-                      src={logo}
-                      width={72}
-                      height={72}
-                      sizes="100vw"
-                      alt={`${name} logo`}
-                      priority
-                    />
-                  )}
-                  {!logo && (
-                    <HugeiconsIcon
-                      icon={Briefcase01Icon}
-                      size={48}
-                      strokeWidth={2}
-                    />
-                  )}
-                </div>
-                <div>
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener nofollow"
-                    className="z-20 no-underline"
-                  >
-                    <ItemOverlay />
-                    <div className="font-bold text-xl">{name}</div>
-                  </a>
-                  <div>{title}</div>
-                  <div className="text-muted-foreground text-sm italic">
-                    <div>
-                      {dateStart} - {dateEnd ?? "Present"}
-                    </div>
-                    <div>{location}</div>
-                  </div>
-                </div>
-              </div>
-            );
-          },
-        )}
-      </div>
+
+      <TimelineThread companies={companies} />
     </section>
   );
 };

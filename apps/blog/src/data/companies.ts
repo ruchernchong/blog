@@ -3,20 +3,33 @@ import type { Company } from "@/types";
 const companies: Company[] = [
   {
     name: "DBS Bank",
-    title: "Application Developer (Front-end)",
+    title: "Application Developer",
     logo: "/companies/logo-dbs.svg",
     dateStart: "Apr 2021",
     location: "Singapore",
     url: "https://dbs.com.sg",
+    roles: [
+      {
+        title: "Application Developer (Fullstack)",
+        dateStart: "Apr 2021",
+      },
+    ],
   },
   {
     name: "Singtel",
     title: "Software Engineer",
     logo: "/companies/logo-singtel.svg",
     dateStart: "Aug 2018",
-    dateEnd: "Dec 2021",
+    dateEnd: "Dec 2020",
     location: "Singapore",
     url: "https://shop.singtel.com",
+    roles: [
+      {
+        title: "Software Engineer",
+        dateStart: "Aug 2018",
+        dateEnd: "Dec 2020",
+      },
+    ],
   },
   {
     name: "Sproud",
@@ -26,6 +39,13 @@ const companies: Company[] = [
     dateEnd: "Aug 2018",
     location: "Singapore",
     url: "https://sproud.biz",
+    roles: [
+      {
+        title: "Software Developer",
+        dateStart: "Feb 2017",
+        dateEnd: "Aug 2018",
+      },
+    ],
   },
   {
     name: "The University of Queensland",
@@ -35,6 +55,13 @@ const companies: Company[] = [
     dateEnd: "Jun 2016",
     location: "Brisbane, Queensland, Australia",
     url: "https://www.eait.uq.edu.au",
+    roles: [
+      {
+        title: "Teaching Assistant",
+        dateStart: "Feb 2016",
+        dateEnd: "Jun 2016",
+      },
+    ],
   },
 ];
 
