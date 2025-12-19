@@ -90,7 +90,7 @@ This is a Turborepo monorepo containing a Next.js 16 portfolio website with an i
 
 ### Tech Stack
 
-- **Framework**: Next.js 16 with App Router and React 19.2
+- **Framework**: Next.js 16.1 with App Router and React 19.2
 - **Content**: Database-backed MDX with next-mdx-remote for compilation
 - **Database**: Neon PostgreSQL with Drizzle ORM
 - **Storage**: Cloudflare R2 for media assets
