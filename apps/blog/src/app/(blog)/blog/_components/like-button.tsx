@@ -44,8 +44,8 @@ const LikeButton = ({
       onClick={handleClick}
       className={`transform transition-all duration-300 hover:scale-110 ${
         optimisticLikes.likesByUser > 0
-          ? "text-foreground"
-          : "text-muted-foreground"
+          ? "text-primary"
+          : "text-muted-foreground hover:text-primary/60"
       }`}
     >
       <HugeiconsIcon
