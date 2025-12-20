@@ -1,3 +1,35 @@
+## [1.11.0](https://github.com/ruchernchong/portfolio/compare/v1.10.2...v1.11.0) (2025-12-20)
+
+### Features
+
+* add employment timeline with roles ([a1574d3](https://github.com/ruchernchong/portfolio/commit/a1574d323b931cd2a64b9c09b87ab15c2e2645b1))
+* add icons to page titles ([0101b2e](https://github.com/ruchernchong/portfolio/commit/0101b2eb51829b1acc322563dfc390ec6d8f59b9))
+* add media library with R2 storage ([4647e1a](https://github.com/ruchernchong/portfolio/commit/4647e1a581ee98969f6733b674ee374d16a3fd88))
+* add page-specific gradient orbs to about ([a7832c7](https://github.com/ruchernchong/portfolio/commit/a7832c7155321edf5d525eb845523d3fecd4601b))
+* add scroll progress indicator to articles ([e1a617a](https://github.com/ruchernchong/portfolio/commit/e1a617a0191257060243d4d05e4b6db2421ba249))
+* add web app manifest ([7630ea8](https://github.com/ruchernchong/portfolio/commit/7630ea8de513db06b96a6578e837c2a35157722e))
+* enable typed routes and MCP server ([53959f2](https://github.com/ruchernchong/portfolio/commit/53959f2ba22d92482955ce20ba6f156570bc8c17))
+* filter R2-deleted media from library ([4976b2b](https://github.com/ruchernchong/portfolio/commit/4976b2bfdcc529cbaf5d825c60c899757dad508f))
+* implement coral design system ([45c4613](https://github.com/ruchernchong/portfolio/commit/45c46134e37e079eeec3384a3da2c403beb36c50))
+* integrate MDXEditor for content editing ([7a6daf2](https://github.com/ruchernchong/portfolio/commit/7a6daf208db49640e6579c72586b2b77752d8495))
+* migrate to Base UI with Maia style ([e7de4ac](https://github.com/ruchernchong/portfolio/commit/e7de4ac4e3f0367d7602d74201507de4ff62b254))
+* redesign blog page with tag filter ([19ef62a](https://github.com/ruchernchong/portfolio/commit/19ef62a0400bf609b7275d522e94c58521834f07))
+* revamp dashboard with new components ([dd47abb](https://github.com/ruchernchong/portfolio/commit/dd47abb116ffdeae4f18b3e4bfe9e9eec752ad1a))
+* revamp landing page with new components ([bc0692a](https://github.com/ruchernchong/portfolio/commit/bc0692abfa0d6d12e3c5a774b8e4d1efcab54e38))
+* revamp projects page with DLS ([177919a](https://github.com/ruchernchong/portfolio/commit/177919ae22e9014b216cedc5b074fb9b4100b500))
+* run convex:dev with dev task ([d60d992](https://github.com/ruchernchong/portfolio/commit/d60d992765ea192ca6a2cc56a59a42c37eda0daa))
+* set up convex ([cd4fd94](https://github.com/ruchernchong/portfolio/commit/cd4fd940564f71da051e2cda82e2e3cea8671c65))
+
+### Bug Fixes
+
+* add nativeButton prop to Link buttons ([83010d0](https://github.com/ruchernchong/portfolio/commit/83010d0baefaab91279cd9cf9db2687ac28c1798))
+* configure serverExternalPackages for MDX ([6a09ece](https://github.com/ruchernchong/portfolio/commit/6a09ece054d1241ed586c0e828d57eee729e9004))
+* remove cover image from featured post ([441f6e0](https://github.com/ruchernchong/portfolio/commit/441f6e0293a5b35c5ab59acd0f9ba659a0b65c68))
+* remove fill-foreground from section icons ([e9d0133](https://github.com/ruchernchong/portfolio/commit/e9d0133bb437f06873ab5d52b59cd3a447c16eb7))
+* simplify OAuth to Google with proxy support ([51d8124](https://github.com/ruchernchong/portfolio/commit/51d81245d54c7f52578893142e360952ee90bd17))
+* use bun pm version in release ([da90ab3](https://github.com/ruchernchong/portfolio/commit/da90ab385f4a5bf189e2f7c5cc13ace17bf6b369))
+* use correct cache invalidation method ([7907053](https://github.com/ruchernchong/portfolio/commit/7907053f1e31e165e39f3f6348a442ca4745a8d1))
+
 ## [1.10.2](https://github.com/ruchernchong/portfolio/compare/v1.10.1...v1.10.2) (2025-10-24)
 
 ### Bug Fixes
