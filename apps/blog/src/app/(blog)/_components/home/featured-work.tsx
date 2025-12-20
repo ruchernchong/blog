@@ -12,13 +12,18 @@ interface FeaturedWorkProps {
   projects: Project[];
 }
 
+function isGitHubUrl(url: string): boolean {
+  try {
+    const { hostname } = new URL(url);
+    return hostname === "github.com" || hostname.endsWith(".github.com");
+  } catch {
+    return false;
+  }
+}
+
 function ProjectCard({ project }: { project: Project }) {
-  const liveUrl = project.links.find(
-    (link) => !link.includes("github.com"),
-  ) as Route;
-  const githubUrl = project.links.find((link) =>
-    link.includes("github.com"),
-  ) as Route;
+  const liveUrl = project.links.find((link) => !isGitHubUrl(link)) as Route;
+  const githubUrl = project.links.find((link) => isGitHubUrl(link)) as Route;
 
   return (
     <motion.div

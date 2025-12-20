@@ -21,7 +21,7 @@ export const getUniqueTags = cache(async (): Promise<string[]> => {
     }
   }
 
-  return Array.from(tagSet).sort();
+  return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
 });
 
 /**
