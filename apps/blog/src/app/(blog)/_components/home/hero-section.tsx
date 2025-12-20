@@ -28,7 +28,7 @@ export function HeroSection() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="flex min-h-[60vh] flex-col justify-center gap-6"
+      className="flex min-h-[30vh] flex-col justify-center gap-6"
     >
       {/* Decorative coral accent */}
       <motion.div
