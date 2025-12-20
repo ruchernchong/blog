@@ -12,7 +12,7 @@ import Analytics from "@/components/analytics-tracker";
 import { BackgroundEffects } from "@/components/background-effects";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { cn } from "@/lib/utils";
-import "@/app/(blog)/styles.css";
+import "@/app/(blog)/globals.css";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
 const geistMono = Geist_Mono({

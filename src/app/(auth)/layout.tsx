@@ -4,7 +4,7 @@ import { ViewTransitions } from "next-view-transitions";
 import type { ReactNode } from "react";
 import { BASE_URL, SITE_NAME } from "@/config";
 import { cn } from "@/lib/utils";
-import "@/app/(blog)/styles.css";
+import "@/app/(blog)/globals.css";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
 const geistMono = Geist_Mono({

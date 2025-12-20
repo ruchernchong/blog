@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { Providers } from "@/app/(studio)/providers";
 import { UserMenu } from "@/components/auth/user-menu";
 import { cn } from "@/lib/utils";
-import "@/app/(studio)/styles.css";
+import "@/app/(blog)/globals.css";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
 const geistMono = Geist_Mono({
