@@ -29,7 +29,7 @@ describe("LikeButton", () => {
   it("renders solid heart icon when user has liked", () => {
     render(<LikeButton {...mockProps} likesByUser={1} />);
     const button = screen.getByRole("button");
-    expect(button).toHaveClass("text-foreground");
+    expect(button).toHaveClass("text-primary");
   });
 
   it("calls onLikeUpdateAction when button is clicked", async () => {
