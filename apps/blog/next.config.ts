@@ -38,6 +38,7 @@ const nextConfig: NextConfig = {
       fullUrl: true,
     },
   },
+  serverExternalPackages: ["next-mdx-remote", "@mdx-js/mdx"],
   typedRoutes: true,
   experimental: {
     mcpServer: true,
