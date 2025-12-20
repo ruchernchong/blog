@@ -1,25 +1,28 @@
 {
   "name": "portfolio",
   "version": "1.10.2",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "turbo dev studio",
-    "build": "turbo build",
-    "start": "turbo start",
-    "test": "turbo test",
-    "test:coverage": "turbo test:coverage",
-    "lint": "turbo lint",
-    "lint:blog": "turbo @ruchernchong/portfolio#lint",
+    "dev": "turbo run dev studio",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "test": "turbo run test",
+    "test:coverage": "turbo run test:coverage",
+    "lint": "turbo run lint",
+    "lint:blog": "turbo run @ruchernchong/portfolio#lint",
     "format": "turbo run format",
-    "db:drop": "turbo @ruchernchong/portfolio#drop",
-    "db:generate": "turbo @ruchernchong/portfolio#generate",
-    "db:migrate": "turbo @ruchernchong/portfolio#migrate",
-    "db:push": "turbo @ruchernchong/portfolio#push",
-    "db:pull": "turbo @ruchernchong/portfolio#pull",
-    "db:check": "turbo @ruchernchong/portfolio#check",
-    "db:up": "turbo @ruchernchong/portfolio#up",
-    "db:studio": "turbo @ruchernchong/portfolio#studio",
-    "db:seed": "turbo @ruchernchong/portfolio#seed",
+    "db:drop": "turbo run @ruchernchong/portfolio#drop",
+    "db:generate": "turbo run @ruchernchong/portfolio#generate",
+    "db:migrate": "turbo run @ruchernchong/portfolio#migrate",
+    "db:push": "turbo run @ruchernchong/portfolio#push",
+    "db:pull": "turbo run @ruchernchong/portfolio#pull",
+    "db:check": "turbo run @ruchernchong/portfolio#check",
+    "db:up": "turbo run @ruchernchong/portfolio#up",
+    "db:studio": "turbo run @ruchernchong/portfolio#studio",
+    "db:seed": "turbo run @ruchernchong/portfolio#seed",
     "prepare": "husky",
     "release": "semantic-release"
   },
@@ -38,5 +41,5 @@
     "semantic-release": "^25.0.1",
     "turbo": "^2.5.8"
   },
-  "packageManager": "bun@1.3.4"
+  "packageManager": "bun@1.3.5"
 }

@@ -8,9 +8,7 @@ const Notification = ({ children }: PropsWithChildren) => {
   return (
     <div className="bg-muted text-foreground">
       <div className="mx-auto flex max-w-4xl justify-center p-4 text-sm">
-        <div className="font-extrabold">
-          {children}
-        </div>
+        <div className="font-extrabold">{children}</div>
       </div>
     </div>
   );

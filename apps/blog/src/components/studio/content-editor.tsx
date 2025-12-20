@@ -1,7 +1,7 @@
 "use client";
 
 import type { MutableRefObject } from "react";
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { useImperativeHandle, useRef } from "react";
 import { MarkdownEditor, type MarkdownEditorMethods } from "./markdown-editor";
 
 export interface ContentEditorMethods {

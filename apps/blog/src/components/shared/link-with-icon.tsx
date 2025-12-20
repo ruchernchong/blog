@@ -12,7 +12,12 @@ export const LinkWithIcon = ({ url, title }: SpecialLinkProps) => {
   return (
     <a href={url} target="_blank" rel="noopener" className="z-20 no-underline">
       <div className="flex items-center">
-        <HugeiconsIcon icon={Link01Icon} size={16} strokeWidth={2} className="mr-2" />
+        <HugeiconsIcon
+          icon={Link01Icon}
+          size={16}
+          strokeWidth={2}
+          className="mr-2"
+        />
         <span className="hover:text-foreground">{title ?? newUrl}</span>
       </div>
     </a>

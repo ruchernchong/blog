@@ -13,7 +13,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!migrations"]
+    "includes": ["**", "!migrations", "!!**/components/ui"]
   },
   "formatter": {
     "enabled": true,

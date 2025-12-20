@@ -1,4 +1,8 @@
-import { Book01Icon, Calendar01Icon, InformationCircleIcon } from "@hugeicons/core-free-icons";
+import {
+  Book01Icon,
+  Calendar01Icon,
+  InformationCircleIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Metadata } from "next";
@@ -8,7 +12,8 @@ import { StructuredData } from "@/app/(blog)/_components/structured-data";
 import StatsBar from "@/app/(blog)/analytics/_components/stats-bar";
 import { Mdx } from "@/app/(blog)/blog/_components/mdx";
 import { RelatedPosts } from "@/app/(blog)/blog/_components/related-posts";
-import { Typography } from "@/components/shared/typography";
+import { ScrollProgress } from "@/app/(blog)/blog/_components/scroll-progress";
+import { Typography } from "@/components/typography";
 import {
   getPublishedPostBySlug,
   getPublishedPostSlugs,
@@ -31,12 +36,20 @@ const getPost = cache(async (slug: string) => {
     });
   }
 
+  if (!post) {
+    return;
+  }
+
+  // TODO: Interim solution to use the opengraph images from the generated ones
+  delete post.metadata.openGraph.images;
+  delete post.metadata.twitter.images;
+
   return post;
 });
 
-export const generateMetadata = async (props: {
+export async function generateMetadata(props: {
   params: Params;
-}): Promise<Metadata> => {
+}): Promise<Metadata> {
   const params = await props.params;
   const post = await getPost(params.slug);
 
@@ -53,15 +66,14 @@ export const generateMetadata = async (props: {
       canonical: post.metadata.canonical,
     },
   };
-};
+}
 
-export const generateStaticParams = async () => {
+export async function generateStaticParams() {
   const publishedPosts = await getPublishedPostSlugs();
-
   return publishedPosts.map(({ slug }) => ({ slug }));
-};
+}
 
-const PostPage = async (props: { params: Params }) => {
+export default async function PostPage(props: { params: Params }) {
   const params = await props.params;
   // Use cached getPost - deduplicates with generateMetadata call
   const post = await getPost(params.slug);
@@ -74,37 +86,39 @@ const PostPage = async (props: { params: Params }) => {
 
   return (
     <>
+      <ScrollProgress />
       <StructuredData data={post.metadata.structuredData} />
       <article className="prose mx-auto mb-16 flex max-w-4xl flex-col gap-12 prose-img:rounded-2xl prose-a:text-foreground prose-a:underline">
-        <div className="flex flex-col items-center gap-y-4 text-center">
+        <div className="flex flex-col items-center gap-4 text-center">
           <StatsBar slug={post.slug} />
-          <div className="flex gap-x-2 text-muted-foreground md:flex-row">
-            <div className="flex items-center justify-center gap-x-2">
-              <HugeiconsIcon icon={Calendar01Icon} size={24} strokeWidth={2} />
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <HugeiconsIcon icon={Calendar01Icon} size={20} strokeWidth={2} />
               <time
+                className="whitespace-nowrap"
                 dateTime={formatISO(post.publishedAt)}
                 title={formattedDate}
               >
                 {formattedDate}
               </time>
             </div>
-            <div className="flex items-center justify-center gap-x-2">
-              <span>&middot;</span>
-              <HugeiconsIcon icon={Book01Icon} size={24} strokeWidth={2} />
-              <div>{post.metadata.readingTime}</div>
+            <span>&middot;</span>
+            <div className="flex items-center gap-2">
+              <HugeiconsIcon icon={Book01Icon} size={20} strokeWidth={2} />
+              <span className="whitespace-nowrap">
+                {post.metadata.readingTime}
+              </span>
             </div>
-            {post.author && (
-              <div className="flex items-center justify-center gap-x-2">
-                <span>&middot;</span>
-                <span>By {post.author.name}</span>
-              </div>
-            )}
           </div>
           <Typography variant="h1">{post.title}</Typography>
         </div>
         <aside className="relative rounded-md border-l-4 border-l-border bg-muted p-6">
           <div className="absolute top-0 left-0 -translate-x-[50%] -translate-y-[50%] rounded-full bg-background p-2 text-foreground">
-            <HugeiconsIcon icon={InformationCircleIcon} size={32} strokeWidth={2} />
+            <HugeiconsIcon
+              icon={InformationCircleIcon}
+              size={32}
+              strokeWidth={2}
+            />
           </div>
           {post.summary}
         </aside>
@@ -115,6 +129,4 @@ const PostPage = async (props: { params: Params }) => {
       </article>
     </>
   );
-};
-
-export default PostPage;
+}

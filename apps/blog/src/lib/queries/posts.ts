@@ -28,6 +28,14 @@ export const getPublishedPosts = async () => {
     .orderBy(desc(posts.publishedAt));
 };
 
+export async function getFeaturedPosts() {
+  return db
+    .select()
+    .from(posts)
+    .where(eq(posts.featured, true))
+    .orderBy(desc(posts.createdAt));
+}
+
 export const getPublishedPostBySlug = async (slug: string) => {
   return db.query.posts.findFirst({
     with: {

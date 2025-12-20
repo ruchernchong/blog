@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/shared/card";
+import { Typography } from "@/components/typography";
 import { popularPostsService } from "@/lib/services";
 
 export const PopularPosts = async () => {
@@ -20,9 +21,9 @@ export const PopularPosts = async () => {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="font-bold text-foreground text-xl uppercase">
+      <Typography variant="label" className="text-foreground">
         Popular Posts
-      </div>
+      </Typography>
       <div className="grid gap-4 md:auto-cols-fr md:grid-flow-col">
         {popularPosts.map((post) => {
           if (!post.publishedAt) {
@@ -42,12 +43,16 @@ export const PopularPosts = async () => {
                     <time
                       dateTime={formatISO(post.publishedAt)}
                       title={formattedDate}
-                      className="text-sm text-muted-foreground italic"
+                      className="text-muted-foreground text-sm italic"
                     >
                       {formattedDate}
                     </time>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <HugeiconsIcon icon={ViewIcon} size={16} strokeWidth={2} />
+                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                      <HugeiconsIcon
+                        icon={ViewIcon}
+                        size={16}
+                        strokeWidth={2}
+                      />
                       <span>{post.views}</span>
                     </div>
                   </div>

@@ -236,7 +236,10 @@ export const PostsTable = () => {
             <h1 className="font-bold text-3xl">Content Studio</h1>
             <p className="mb-2 text-muted-foreground">Manage your blog posts</p>
           </div>
-          <Button render={<Link href="/studio/posts/new" />}>
+          <Button
+            nativeButton={false}
+            render={<Link href="/studio/posts/new" />}
+          >
             Create Post
           </Button>
         </div>
@@ -258,7 +261,7 @@ export const PostsTable = () => {
           <h1 className="font-bold text-3xl">Content Studio</h1>
           <p className="mb-2 text-muted-foreground">Manage your blog posts</p>
         </div>
-        <Button render={<Link href="/studio/posts/new" />}>
+        <Button nativeButton={false} render={<Link href="/studio/posts/new" />}>
           Create Post
         </Button>
       </div>
@@ -274,7 +277,10 @@ export const PostsTable = () => {
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
-                <Button render={<Link href="/studio/posts/new" />}>
+                <Button
+                  nativeButton={false}
+                  render={<Link href="/studio/posts/new" />}
+                >
                   Create Post
                 </Button>
               </EmptyContent>
@@ -512,7 +518,16 @@ export const PostsTable = () => {
                                 </Button>
                               ) : (
                                 <>
-                                  <Button variant="ghost" size="sm" render={<Link href={`/studio/posts/${post.id}/edit`} />}>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    nativeButton={false}
+                                    render={
+                                      <Link
+                                        href={`/studio/posts/${post.id}/edit`}
+                                      />
+                                    }
+                                  >
                                     Edit
                                   </Button>
                                   <AlertDialog>

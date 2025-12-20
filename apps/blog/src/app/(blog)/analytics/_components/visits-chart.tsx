@@ -10,12 +10,7 @@ import {
   YAxis,
 } from "recharts";
 import type { Visit } from "@/app/(blog)/analytics/_actions/visits";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/shared/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface VisitsChartProps {
   data: Visit[];
@@ -27,7 +22,7 @@ const formatDate = (date: string) =>
     month: "short",
   });
 
-const VisitsChart = ({ data }: VisitsChartProps) => {
+export function VisitsChart({ data }: VisitsChartProps) {
   return (
     <Card>
       <CardHeader>
@@ -51,6 +46,7 @@ const VisitsChart = ({ data }: VisitsChartProps) => {
                 activeDot={{
                   r: 6,
                 }}
+                stroke="var(--chart-1)"
               />
             </LineChart>
           </ResponsiveContainer>
@@ -58,6 +54,4 @@ const VisitsChart = ({ data }: VisitsChartProps) => {
       </CardContent>
     </Card>
   );
-};
-
-export default VisitsChart;
+}

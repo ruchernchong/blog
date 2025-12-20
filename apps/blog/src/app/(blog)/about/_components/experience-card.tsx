@@ -27,7 +27,7 @@ export const ExperienceCard = () => {
           {recentCompanies.map((company) => (
             <div key={company.name}>
               <div className="flex items-center gap-2">
-                <div className="flex size-16 items-center rounded-full bg-neutral-50 p-2">
+                <div className="flex size-16 items-center rounded-full bg-muted p-2">
                   <Image
                     src={company.logo}
                     width={72}
@@ -40,7 +40,7 @@ export const ExperienceCard = () => {
                 </div>
                 <div className="flex flex-col">
                   <div className="font-semibold">{company.name}</div>
-                  <div className="text-neutral-400">{company.title}</div>
+                  <div className="text-muted-foreground">{company.title}</div>
                 </div>
               </div>
             </div>

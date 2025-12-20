@@ -3,7 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO, parseISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
-import { Typography } from "@/components/shared/typography";
+import { Typography } from "@/components/typography";
 
 interface BlogPostProps {
   title: string;
@@ -39,7 +39,7 @@ const BlogPost = ({
           {formattedDate}
         </time>
       </div>
-      <div className="flex items-center gap-x-1">
+      <div className="flex items-center gap-2">
         Read more
         <HugeiconsIcon
           icon={ArrowRight01Icon}

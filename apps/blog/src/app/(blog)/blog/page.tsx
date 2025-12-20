@@ -1,7 +1,14 @@
+import { Notebook02Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Metadata, Route } from "next";
 import Link from "next/link";
-import { PopularPosts } from "@/app/(blog)/blog/_components/popular-posts";
+import type { SearchParams } from "nuqs/server";
+import { Suspense } from "react";
+import readingTime from "reading-time";
+import { FeaturedPost } from "@/app/(blog)/blog/_components/featured-post";
+import { TagFilter } from "@/app/(blog)/blog/_components/tag-filter";
+import { blogSearchParamsCache } from "@/app/(blog)/blog/search-params";
 import {
   Card,
   CardContent,
@@ -9,60 +16,132 @@ import {
   CardTitle,
 } from "@/components/shared/card";
 import { PageTitle } from "@/components/shared/page-title";
-import { getPublishedPosts } from "@/lib/queries/posts";
+import { Badge } from "@/components/ui/badge";
+import { getFeaturedPosts, getPublishedPosts } from "@/lib/queries/posts";
+import { popularPostsService } from "@/lib/services";
+import { getUniqueTags } from "@/lib/tags";
 
 export const metadata: Metadata = {
   title: "Blog",
   description: "My blog posts on coding, tech, and random thoughts.",
 };
 
-const BlogPage = async () => {
-  const publishedPosts = await getPublishedPosts();
+interface BlogPageProps {
+  searchParams: Promise<SearchParams>;
+}
+
+export default async function BlogPage({ searchParams }: BlogPageProps) {
+  const { tag } = await blogSearchParamsCache.parse(searchParams);
+
+  const [publishedPosts, popularPosts, tags] = await Promise.all([
+    getPublishedPosts(),
+    popularPostsService.getPopularPosts(1),
+    getUniqueTags(),
+  ]);
+
+  const featuredPosts = await getFeaturedPosts();
+
+  // Prefer explicitly featured post, fallback to most popular
+  const featuredPost = featuredPosts[0] ?? popularPosts[0];
+
+  // Filter posts by tag if provided
+  const filteredPosts = tag
+    ? publishedPosts.filter((post) => post.tags.includes(tag))
+    : publishedPosts;
+
+  // Exclude featured post from the grid when showing all posts
+  const gridPosts = tag
+    ? filteredPosts
+    : filteredPosts.filter((post) => !post.featured);
 
   return (
     <>
       <PageTitle
         title="Blog"
         description="My blog posts on coding, tech, and random thoughts."
+        icon={
+          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+            <HugeiconsIcon
+              icon={Notebook02Icon}
+              size={20}
+              className="text-primary"
+            />
+          </div>
+        }
         className="mb-8"
       />
+
       <div className="flex flex-col gap-8">
-        <PopularPosts />
-        <div className="flex flex-col gap-4">
-          {publishedPosts.length > 0 &&
-            publishedPosts.map((post) => {
-              if (!post.publishedAt) return null;
+        {/* Featured Post - only show when no tag filter */}
+        {featuredPost && !tag && <FeaturedPost post={featuredPost} />}
 
-              const formattedDate = format(
-                post.publishedAt,
-                "iiii, dd MMMM yyyy",
-              );
+        {/* Tag Filter */}
+        <Suspense fallback={null}>
+          <TagFilter tags={tags} />
+        </Suspense>
 
-              return (
-                <Card key={post.id}>
-                  <Link
-                    href={post.metadata.canonical as Route}
-                    className="flex h-full flex-col"
-                  >
-                    <CardHeader>
+        {/* Post Grid */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {gridPosts.length === 0 && (
+            <p className="col-span-full text-center text-muted-foreground">
+              No posts found{tag && ` for "${tag}"`}.
+            </p>
+          )}
+          {gridPosts.map((post) => {
+            if (!post.publishedAt) return null;
+
+            const formattedDate = format(post.publishedAt, "dd MMM yyyy");
+            const readTime = readingTime(post.content).text;
+
+            return (
+              <Card key={post.id} className="flex flex-col">
+                <Link
+                  href={`/blog/${post.slug}` as Route}
+                  className="flex h-full flex-col"
+                >
+                  <CardHeader>
+                    <div className="flex items-center justify-between gap-2">
                       <time
                         dateTime={formatISO(post.publishedAt)}
                         title={formattedDate}
-                        className="text-sm text-muted-foreground italic"
+                        className="text-muted-foreground text-sm"
                       >
                         {formattedDate}
                       </time>
-                      <CardTitle className="capitalize">{post.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>{post.summary}</CardContent>
-                  </Link>
-                </Card>
-              );
-            })}
+                      <span className="text-muted-foreground text-sm">
+                        {readTime}
+                      </span>
+                    </div>
+                    <CardTitle className="line-clamp-2 capitalize">
+                      {post.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-1 flex-col gap-4">
+                    <p className="line-clamp-2 flex-1 text-muted-foreground">
+                      {post.summary}
+                    </p>
+                    {post.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {post.tags.slice(0, 2).map((postTag) => {
+                          return (
+                            <Badge
+                              key={postTag}
+                              variant="secondary"
+                              className="text-xs"
+                            >
+                              {postTag}
+                            </Badge>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </CardContent>
+                </Link>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </>
   );
-};
-
-export default BlogPage;
+}

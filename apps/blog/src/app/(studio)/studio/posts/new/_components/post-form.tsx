@@ -19,7 +19,12 @@ import { z } from "zod";
 import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Field, FieldLabel, FieldDescription, FieldError } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   ResizableHandle,
@@ -150,7 +155,11 @@ export const PostForm = () => {
               Write and publish a new blog post
             </p>
           </div>
-          <Button variant="outline" render={<Link href="/studio/posts" />}>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href="/studio/posts" />}
+          >
             Back to Posts
           </Button>
         </div>
@@ -186,7 +195,9 @@ export const PostForm = () => {
                         />
                       </Suspense>
                       {fieldState.error && (
-                        <FieldError className="px-4">{fieldState.error.message}</FieldError>
+                        <FieldError className="px-4">
+                          {fieldState.error.message}
+                        </FieldError>
                       )}
                     </Field>
                   )}
@@ -322,7 +333,9 @@ export const PostForm = () => {
                       name="coverImage"
                       render={({ field, fieldState }) => (
                         <Field data-invalid={!!fieldState.error}>
-                          <FieldLabel htmlFor={coverImageId}>Cover Image URL</FieldLabel>
+                          <FieldLabel htmlFor={coverImageId}>
+                            Cover Image URL
+                          </FieldLabel>
                           <div className="flex gap-2">
                             <Input
                               id={coverImageId}
@@ -378,7 +391,11 @@ export const PostForm = () => {
           </ResizablePanelGroup>
 
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" render={<Link href="/studio/posts" />}>
+            <Button
+              variant="outline"
+              nativeButton={false}
+              render={<Link href="/studio/posts" />}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={isPending}>

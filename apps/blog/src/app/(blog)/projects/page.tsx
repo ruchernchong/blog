@@ -1,12 +1,40 @@
-import { LinkSquare01Icon } from "@hugeicons/core-free-icons";
+import { CodeIcon, LinkSquare01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import globalMetadata from "@/app/(blog)/metadata";
+import { PageTitle } from "@/components/shared/page-title";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import projects from "@/data/projects";
+import { cn } from "@/lib/utils";
 import type { Project } from "@/types";
+
+const title = "Projects";
+const description =
+  "A showcase of completed projects and experiments with new technologies.";
+const canonical = "/projects";
+
+export const metadata: Metadata = {
+  title,
+  description,
+  openGraph: {
+    ...globalMetadata.openGraph,
+    title,
+    description,
+    url: canonical,
+  },
+  twitter: {
+    ...globalMetadata.twitter,
+    title,
+    description,
+  },
+  alternates: {
+    canonical,
+  },
+};
 
 function isGitHubLink(url: string): boolean {
   try {
@@ -20,12 +48,25 @@ function isGitHubLink(url: string): boolean {
   }
 }
 
-function ProjectCard({ project }: { project: Project }) {
+function ProjectCard({
+  project,
+  featured = false,
+}: {
+  project: Project;
+  featured?: boolean;
+}) {
   const displayedSkills = project.skills.slice(0, 4);
   const remainingCount = project.skills.length - 4;
 
   return (
-    <Card className="overflow-hidden">
+    <Card
+      className={cn(
+        "overflow-hidden transition-all duration-200 hover:-translate-y-0.5",
+        featured
+          ? "ring-1 ring-primary/20 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25/0.25)]"
+          : "hover:shadow-[0_8px_30px_-10px_oklch(0_0_0/0.08)]",
+      )}
+    >
       <div className="relative h-56 w-full overflow-hidden">
         <Image
           fill
@@ -37,16 +78,17 @@ function ProjectCard({ project }: { project: Project }) {
           className="object-cover"
         />
       </div>
-      <CardContent className="pt-6">
+      <CardContent>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-lg text-foreground">
+              <h3 className="font-semibold text-foreground text-lg">
                 {project.name}
               </h3>
+              {featured && <Badge variant="default">Featured</Badge>}
             </div>
             {project.description && (
-              <p className="line-clamp-2 text-sm text-muted-foreground">
+              <p className="line-clamp-2 text-muted-foreground text-sm">
                 {project.description}
               </p>
             )}
@@ -83,7 +125,11 @@ function ProjectCard({ project }: { project: Project }) {
                   {isGitHubLink(link) ? (
                     <SiGithub className="size-4" />
                   ) : (
-                    <HugeiconsIcon icon={LinkSquare01Icon} size={16} strokeWidth={2} />
+                    <HugeiconsIcon
+                      icon={LinkSquare01Icon}
+                      size={16}
+                      strokeWidth={2}
+                    />
                   )}
                   {isGitHubLink(link) ? "Source" : "Live"}
                 </div>
@@ -101,29 +147,27 @@ export default function ProjectsPage() {
   const otherProjects = projects.filter((project) => !project.featured);
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12">
-      <header className="mb-16">
-        <h1 className="mb-4 font-bold text-4xl text-foreground tracking-tight">
-          Projects
-        </h1>
-        <p className="max-w-2xl text-lg text-muted-foreground leading-relaxed">
-          A showcase of completed projects and experiments with new
-          technologies.
-        </p>
-      </header>
+    <div className="flex flex-col gap-8">
+      <PageTitle
+        title="Projects"
+        description="A showcase of completed projects and experiments with new technologies."
+        icon={
+          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+            <HugeiconsIcon icon={CodeIcon} size={20} className="text-primary" />
+          </div>
+        }
+      />
 
       {/* Featured Section */}
       {featuredProjects.length > 0 && (
-        <section className="mb-16">
-          <h2 className="mb-8 flex items-center gap-3 font-semibold text-xl text-foreground">
-            <span className="h-px flex-1 bg-gradient-to-r from-muted-foreground to-transparent" />
-            <span>Featured</span>
-            <span className="h-px flex-1 bg-gradient-to-l from-muted-foreground to-transparent" />
+        <section className="mb-12">
+          <h2 className="mb-6 font-semibold text-lg text-muted-foreground">
+            Featured
           </h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {featuredProjects.map((project) => {
-              return <ProjectCard key={project.slug} project={project} />;
-            })}
+            {featuredProjects.map((project) => (
+              <ProjectCard key={project.slug} project={project} featured />
+            ))}
           </div>
         </section>
       )}
@@ -131,10 +175,8 @@ export default function ProjectsPage() {
       {/* Other Projects */}
       {otherProjects.length > 0 && (
         <section>
-          <h2 className="mb-8 flex items-center gap-3 font-semibold text-xl text-foreground">
-            <span className="h-px flex-1 bg-gradient-to-r from-muted-foreground to-transparent" />
-            <span>More Projects</span>
-            <span className="h-px flex-1 bg-gradient-to-l from-muted-foreground to-transparent" />
+          <h2 className="mb-6 font-semibold text-lg text-muted-foreground">
+            More Projects
           </h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {otherProjects.map((project) => {

@@ -34,7 +34,12 @@ const StatsBar = async ({ slug }: StatsBarProps) => {
           initialLikesByUser={likesByUser}
         />
         <div className="flex items-center gap-2 md:flex-col">
-          <HugeiconsIcon icon={ViewIcon} size={24} strokeWidth={2} className="text-muted-foreground" />
+          <HugeiconsIcon
+            icon={ViewIcon}
+            size={24}
+            strokeWidth={2}
+            className="text-muted-foreground"
+          />
           <ViewCounter slug={slug} />
         </div>
       </div>

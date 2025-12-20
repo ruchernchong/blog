@@ -63,7 +63,7 @@ export interface PostMetadata {
     type: string;
     publishedTime: string;
     url: string;
-    images: string[];
+    images?: string[];
     locale: string;
   };
   twitter: {
@@ -71,7 +71,7 @@ export interface PostMetadata {
     site: string;
     title: string;
     description: string;
-    images: string[];
+    images?: string[];
   };
   structuredData: {
     "@context": string;
@@ -80,7 +80,7 @@ export interface PostMetadata {
     dateModified: string;
     datePublished: string;
     description: string;
-    image: string[];
+    image?: string[];
     url: string;
     author: {
       "@type": string;

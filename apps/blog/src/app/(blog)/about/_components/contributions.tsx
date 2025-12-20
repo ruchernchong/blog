@@ -3,7 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Fragment } from "react";
 import { Card } from "@/components/shared/card";
 import { LinkWithIcon } from "@/components/shared/link-with-icon";
-import { Typography } from "@/components/shared/typography";
+import { Typography } from "@/components/typography";
 import type { GitHubProfile } from "@/lib/github";
 import { cn } from "@/lib/utils";
 import type { StackOverflowProfile } from "@/utils/stackoverflow";
@@ -24,11 +24,11 @@ const Contributions = ({
   return (
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-x-2">
+        <div className="flex items-center gap-2">
           <HugeiconsIcon icon={UserMultipleIcon} size={32} strokeWidth={2} />
           <Typography variant="h2">Contributions</Typography>
         </div>
-        <Typography variant="p" className="text-muted-foreground">
+        <Typography variant="body" className="text-muted-foreground">
           My contributions to open-source platforms. I believe that by sharing
           my knowledge and expertise, I can help others to learn and grow too.
         </Typography>
@@ -39,7 +39,7 @@ const Contributions = ({
             <div className="flex flex-col gap-2">
               <div>
                 <Typography variant="h3">GitHub</Typography>
-                <p className="text-sm text-muted-foreground italic">
+                <p className="text-muted-foreground text-sm italic">
                   (Powered by GitHub GraphQL API)
                 </p>
               </div>
@@ -64,7 +64,7 @@ const Contributions = ({
             <div className="flex flex-col gap-2">
               <div>
                 <Typography variant="h3">Stack Overflow</Typography>
-                <p className="text-sm text-muted-foreground italic">
+                <p className="text-muted-foreground text-sm italic">
                   (Powered by Stack Exchange API)
                 </p>
               </div>
