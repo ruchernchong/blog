@@ -4,37 +4,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-### Root-level Commands (run from project root)
+### Development
 
-#### Development
+- `bun run dev` - Start development server
+- `bun run build` - Build for production
+- `bun run start` - Start production server
+- `bun run test` - Run tests
+- `bun run test:watch` - Run tests in watch mode
+- `bun run test:coverage` - Generate coverage report
+- `bun run lint` - Run linting with Biome
+- `bun run format` - Format code with Biome
+- `bun run typecheck` - TypeScript type checking
 
-- `bun run dev` - Start development server AND Drizzle Studio simultaneously (uses Turbo)
-- `bun run build` - Build all apps for production (uses Turbo)
-- `bun run start` - Start production server (uses Turbo)
-- `bun run test` - Run tests across all apps (uses Turbo)
-- `bun run test:coverage` - Generate coverage report across all apps (uses Turbo)
-- `bun run lint` - Run linting across all apps with Biome (uses Turbo)
-- `bun run lint:blog` - Run linting for blog app with Biome
-- `bun run format` - Format code with Biome across all apps (uses Turbo)
+### Database
 
-#### Database Management
-
-- `bun run db:drop` - Drop database (interactive, requires confirmation)
-- `bun run db:generate` - Generate database migrations from schema
+- `bun run db:drop` - Drop database (interactive)
+- `bun run db:generate` - Generate migrations from schema
 - `bun run db:migrate` - Run database migrations
 - `bun run db:push` - Push schema changes to database
 - `bun run db:pull` - Pull schema from database
-- `bun run db:check` - Check migration files for issues
+- `bun run db:check` - Check migration files
 - `bun run db:up` - Apply pending migrations
-- `bun run db:studio` - Open Drizzle Studio for database management
+- `bun run db:studio` - Open Drizzle Studio
 - `bun run db:seed` - Seed database with test data
 
-#### Quality & Release
+### Release
 
-- `bun run release` - Create semantic release (runs build, test, lint, typecheck)
-- `bun run release:blog` - Release blog app specifically
+- `bun run release` - Create semantic release
 
-### Available Slash Commands
+### Slash Commands
 
 This project includes custom slash commands for Claude Code:
 
@@ -52,41 +50,9 @@ This project includes custom slash commands for Claude Code:
 
 **Usage**: Type `/command-name` in Claude Code to execute. Commands are located in `~/.claude/commands/`.
 
-### App-specific Commands (run from `/apps/blog/`)
-
-#### Development
-
-- `bun run dev` - Start blog dev server (next dev --turbopack)
-- `bun run build` - Build blog app for production
-- `bun run start` - Start production server
-- `bun run test` - Run Vitest tests with coverage
-- `bun run test:watch` - Run Vitest in watch mode for development
-- `bun run test -- utils/__tests__/truncate.test.ts` - Run single test file
-- `bun run test:coverage` - Generate coverage report
-- `bun run typecheck` - TypeScript type checking
-- `bun run vercel-build` - Production build with migrations (for Vercel)
-
-#### Database (App-level)
-
-- `bun run drop` - Drop database tables
-- `bun run generate` - Generate migrations from schema
-- `bun run migrate` - Run database migrations
-- `bun run push` - Push schema changes directly
-- `bun run pull` - Pull schema from database
-- `bun run check` - Check migration files
-- `bun run up` - Apply migrations
-- `bun run studio` - Open Drizzle Studio
-- `bun run seed` - Seed database with development data
-
-
 ## Architecture Overview
 
-This is a Turborepo monorepo containing a Next.js 16 portfolio website with an integrated blog system.
-
-### Monorepo Structure
-
-- **Root**: Turborepo configuration with shared tooling (Biome, commitlint, semantic-release)
-- **apps/blog**: Main Next.js application with blog functionality and integrated CMS at `/studio`
+A Next.js 16 portfolio website with an integrated blog system and Content Studio CMS.
 
 ### Tech Stack
 
@@ -112,7 +78,7 @@ This project uses cutting-edge Next.js features:
 - **Turbopack File System Cache** (`experimental.turbopackFileSystemCacheForDev: true`) - Persistent dev build cache
 - **Typed Environment Variables** (`experimental.typedEnv: true`) - Type-safe env var access
 
-**Note**: These features are experimental and may have breaking changes in future Next.js versions. Configuration in `apps/blog/next.config.ts`.
+**Note**: These features are experimental and may have breaking changes in future Next.js versions. Configuration in `next.config.ts`.
 
 ### CI/CD Pipeline
 
@@ -130,8 +96,7 @@ Automated workflows via GitHub Actions (`.github/workflows/release.yml`):
 
 **Environment**:
 - Runner: Ubuntu latest
-- Package manager: Bun 1.3.4
-- Turbo cache enabled via TURBO_TOKEN/TURBO_TEAM secrets
+- Package manager: Bun 1.3.5
 
 ### Key Features
 
@@ -152,7 +117,7 @@ Automated workflows via GitHub Actions (`.github/workflows/release.yml`):
 
 **shadcn/ui Migration (December 2024)**:
 - Migrated to shadcn/ui components for consistent UI primitives
-- Component library located in `apps/blog/src/components/ui/`
+- Component library located in `src/components/ui/`
 - **Do not modify shadcn/ui components directly** - use composition instead
 - 17 components installed: alert-dialog, badge, button, card, chart, checkbox, dialog, empty, field, form, input, label, resizable, scroll-area, select, separator, textarea
 
@@ -169,14 +134,14 @@ Automated workflows via GitHub Actions (`.github/workflows/release.yml`):
 ### Database Architecture
 
 #### PostgreSQL (Neon + Drizzle ORM)
-- Schema in `apps/blog/src/schema/` using Drizzle ORM
+- Schema in `src/schema/` using Drizzle ORM
     - `posts.ts`: Blog posts with MDX content, metadata, tags, and publish status
     - `sessions.ts`: Session tracking for analytics (visits, geolocation, device info)
     - `media.ts`: Media assets with R2 storage keys, metadata, and soft delete support
     - `auth.ts`: Better Auth authentication tables (users, accounts, sessions, verification)
     - `index.ts`: Database client export
-- Configuration in `apps/blog/drizzle.config.ts`
-- Migrations in `apps/blog/migrations/` managed by drizzle-kit
+- Configuration in `drizzle.config.ts`
+- Migrations in `migrations/` managed by drizzle-kit
 
 #### Redis (Upstash)
 - Post statistics: likes and views per post
@@ -329,7 +294,7 @@ export async function POST(request: Request) {
 
 ## Environment Variables
 
-Required environment variables (see `apps/blog/.env.example`):
+Required environment variables (see `.env.example`):
 
 ### Core Configuration
 
@@ -425,8 +390,8 @@ This project uses Tailwind CSS v4 with a **PostCSS-only configuration** approach
 - **CSS custom properties** for design tokens with light/dark mode support
 
 **Key files**:
-- `apps/blog/src/app/(blog)/styles.css` - Main Tailwind configuration
-- `apps/blog/src/app/(studio)/styles.css` - Studio-specific styles
+- `src/app/(blog)/styles.css` - Main Tailwind configuration
+- `src/app/(studio)/styles.css` - Studio-specific styles
 
 **Migration note**: This is a breaking change from Tailwind v3. Theme customization now happens in CSS using `@theme inline` blocks instead of JavaScript configuration files.
 
@@ -560,7 +525,7 @@ export const Component = ({ className, ...props }: ComponentProps) => (
 - `mt-px` allowed for checkbox/radio alignment
 - Negative margins for specific layout corrections
 - Fractional values in UI components for fine-tuning
-- **Do not modify files in `apps/blog/src/components/ui/`** (shadcn/ui components)
+- **Do not modify files in `src/components/ui/`** (shadcn/ui components)
 
 ## Documentation Maintenance
 
@@ -576,16 +541,5 @@ To ensure documentation stays up-to-date:
 
 ### Documentation Structure
 
-- **CLAUDE.md** (root) - Comprehensive developer guide for Claude Code
-- **CLAUDE.md** (apps/blog) - Minimal redirect to root documentation
-- **README.md** (root) - Public-facing project overview and setup guide
-- **README.md** (apps/blog) - Minimal redirect to root documentation
-
-### Single Source of Truth
-
-- **Commands**: Root CLAUDE.md is authoritative
-- **Architecture**: Root CLAUDE.md is authoritative
-- **Setup/Getting Started**: Root README.md is authoritative
-- **Tech Stack**: Root README.md is authoritative
-
-**Never duplicate content across files** - use links to redirect to authoritative source.
+- **CLAUDE.md** - Comprehensive developer guide for Claude Code
+- **README.md** - Public-facing project overview and setup guide

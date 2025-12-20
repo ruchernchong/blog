@@ -132,6 +132,15 @@ dist
 
 .turbo
 
+# misc
+.DS_Store
+*.pem
+
+# local env files (keep example)
+!.env.example
+
 # claude
 .claude/settings.local.json
+
+# vercel
 .vercel
