@@ -1,7 +1,7 @@
 export {
-  default,
   alt,
-  size,
   contentType,
+  default,
   generateStaticParams,
+  size,
 } from "./opengraph-image";
