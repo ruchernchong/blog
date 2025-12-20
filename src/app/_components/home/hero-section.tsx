@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "motion/react";
-import ExternalLink from "@/components/shared/external-link";
-import * as Icons from "@/components/shared/icons";
+import ExternalLink from "@/components/external-link";
+import * as Icons from "@/components/icons";
 import socials from "@/data/socials";
 
 const container = {

@@ -3,13 +3,8 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/shared/card";
 import { Typography } from "@/components/typography";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { popularPostsService } from "@/lib/services";
 
 export const PopularPosts = async () => {

@@ -1,7 +1,7 @@
 import Link from "next/link";
+import ExternalLink from "@/components/external-link";
+import * as Icons from "@/components/icons";
 import { Logo } from "@/components/logo";
-import ExternalLink from "@/components/shared/external-link";
-import * as Icons from "@/components/shared/icons";
 import { navLinks, VERSION } from "@/config";
 import socials from "@/data/socials";
 

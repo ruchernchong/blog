@@ -12,7 +12,7 @@ import { LiveBadge } from "@/app/(main)/dashboard/_components/live-badge";
 import { StatCard } from "@/app/(main)/dashboard/_components/stat-card";
 import { ViewsByPage } from "@/app/(main)/dashboard/_components/views-by-page";
 import globalMetadata from "@/app/metadata";
-import { PageTitle } from "@/components/shared/page-title";
+import { PageTitle } from "@/components/page-title";
 import { serverTrpc } from "@/server";
 
 const title = "Dashboard";

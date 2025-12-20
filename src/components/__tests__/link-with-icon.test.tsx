@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { LinkWithIcon } from "@/components/shared/link-with-icon";
+import { LinkWithIcon } from "@/components/link-with-icon";
 
 describe("LinkWithIcon", () => {
   it("renders link with URL", () => {

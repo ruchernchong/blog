@@ -1,6 +1,6 @@
 import { Briefcase01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import ExternalLink from "@/components/shared/external-link";
+import ExternalLink from "@/components/external-link";
 import { Typography } from "@/components/typography";
 import type { Company } from "@/types";
 import { TimelineThread } from "./timeline-thread";

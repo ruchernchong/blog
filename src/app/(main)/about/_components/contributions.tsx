@@ -1,9 +1,9 @@
 import { UserMultipleIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Fragment } from "react";
-import { Card } from "@/components/shared/card";
-import { LinkWithIcon } from "@/components/shared/link-with-icon";
+import { LinkWithIcon } from "@/components/link-with-icon";
 import { Typography } from "@/components/typography";
+import { Card } from "@/components/ui/card";
 import type { GitHubProfile } from "@/lib/github";
 import { cn } from "@/lib/utils";
 import type { StackOverflowProfile } from "@/utils/stackoverflow";

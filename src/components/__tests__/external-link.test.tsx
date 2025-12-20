@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import ExternalLink from "@/components/shared/external-link";
+import ExternalLink from "@/components/external-link";
 
 describe("ExternalLink", () => {
   it("renders link with href", () => {

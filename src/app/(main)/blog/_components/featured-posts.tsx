@@ -1,12 +1,7 @@
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/shared/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SelectPost } from "@/schema";
 
 interface FeaturedPostsProps {

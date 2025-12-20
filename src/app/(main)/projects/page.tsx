@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import globalMetadata from "@/app/metadata";
-import { PageTitle } from "@/components/shared/page-title";
+import { PageTitle } from "@/components/page-title";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import projects from "@/data/projects";

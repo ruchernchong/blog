@@ -9,14 +9,9 @@ import readingTime from "reading-time";
 import { FeaturedPost } from "@/app/(main)/blog/_components/featured-post";
 import { TagFilter } from "@/app/(main)/blog/_components/tag-filter";
 import { blogSearchParamsCache } from "@/app/(main)/blog/search-params";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/shared/card";
-import { PageTitle } from "@/components/shared/page-title";
+import { PageTitle } from "@/components/page-title";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getFeaturedPosts, getPublishedPosts } from "@/lib/queries/posts";
 import { popularPostsService } from "@/lib/services";
 import { getUniqueTags } from "@/lib/tags";

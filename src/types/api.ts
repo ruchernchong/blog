@@ -103,19 +103,6 @@ export type UpdatePostInput = z.infer<typeof updatePostSchema>;
  */
 export const postIdSchema = z.string().uuid("Invalid post ID format");
 
-/**
- * Helper function to validate and parse request body
- *
- * @param schema - Zod schema to validate against
- * @param data - Raw request data
- * @returns Validated and transformed data
- * @throws ZodError if validation fails
- */
-export const validateRequestBody = <T>(
-  schema: z.ZodSchema<T>,
-  data: unknown,
-): T => schema.parse(data);
-
 export const mediaIdSchema = z.string().uuid("Invalid media ID format");
 
 export const requestUploadSchema = z.object({

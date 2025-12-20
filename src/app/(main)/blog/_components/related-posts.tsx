@@ -2,13 +2,8 @@ import { Tag01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/shared/card";
 import { Typography } from "@/components/typography";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { relatedPostsCalculator } from "@/lib/services";
 
 interface RelatedPostsProps {
