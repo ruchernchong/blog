@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import type { Route } from "next";
-import BlogPost from "@/app/(blog)/blog/_components/blog-post";
+import BlogPost from "@/app/(main)/blog/_components/blog-post";
 
 const mockProps = {
   title: "test blog post",

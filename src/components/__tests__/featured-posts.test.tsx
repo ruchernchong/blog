@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import FeaturedPosts from "@/app/(blog)/blog/_components/featured-posts";
+import FeaturedPosts from "@/app/(main)/blog/_components/featured-posts";
 import type { PostMetadata, SelectPost } from "@/schema";
 
 const createMockPost = (

@@ -1,15 +1,15 @@
 import { z } from "zod";
-import { incrementLikes, incrementViews } from "@/app/(blog)/_actions/stats";
-import { getBrowsers } from "@/app/(blog)/analytics/_actions/browsers";
-import { getCountries } from "@/app/(blog)/analytics/_actions/countries";
-import { getDevices } from "@/app/(blog)/analytics/_actions/devices";
-import { getOS } from "@/app/(blog)/analytics/_actions/os";
-import { getPages } from "@/app/(blog)/analytics/_actions/pages";
-import { getReferrers } from "@/app/(blog)/analytics/_actions/referrers";
+import { incrementLikes, incrementViews } from "@/app/_actions/stats";
+import { getBrowsers } from "@/app/(main)/analytics/_actions/browsers";
+import { getCountries } from "@/app/(main)/analytics/_actions/countries";
+import { getDevices } from "@/app/(main)/analytics/_actions/devices";
+import { getOS } from "@/app/(main)/analytics/_actions/os";
+import { getPages } from "@/app/(main)/analytics/_actions/pages";
+import { getReferrers } from "@/app/(main)/analytics/_actions/referrers";
 import {
   getTotalVisits,
   getVisits,
-} from "@/app/(blog)/analytics/_actions/visits";
+} from "@/app/(main)/analytics/_actions/visits";
 import { postStatsService } from "@/lib/services";
 import { publicProcedure, router } from "../trpc";
 
