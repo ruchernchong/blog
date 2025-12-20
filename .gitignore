@@ -133,6 +133,5 @@ dist
 .turbo
 
 # claude
-.claude
-!.claude/skills/
+.claude/settings.local.json
 .vercel
