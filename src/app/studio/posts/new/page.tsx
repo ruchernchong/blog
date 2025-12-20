@@ -1,7 +1,8 @@
 import { PostForm } from "@/app/studio/posts/new/_components/post-form";
+import { getSeriesForSelector } from "@/lib/queries/series";
 
-const NewPostPage = () => {
-  return <PostForm />;
-};
+export default async function NewPostPage() {
+  const seriesOptions = await getSeriesForSelector();
 
-export default NewPostPage;
+  return <PostForm seriesOptions={seriesOptions} />;
+}

@@ -84,6 +84,8 @@ export const PATCH = async (
       tags,
       coverImage,
       featured,
+      seriesId,
+      seriesOrder,
     } = bodyResult.data;
 
     const updatedTitle = title ?? existingPost.title;
@@ -123,9 +125,10 @@ export const PATCH = async (
               ? tags
               : []
             : existingPost.tags,
-        coverImage:
-          coverImage !== undefined ? coverImage : existingPost.coverImage,
-        featured: featured !== undefined ? featured : existingPost.featured,
+        coverImage: coverImage ?? existingPost.coverImage,
+        featured: featured ?? existingPost.featured,
+        seriesId: seriesId ?? existingPost.seriesId,
+        seriesOrder: seriesOrder ?? existingPost.seriesOrder,
         metadata,
         publishedAt,
         updatedAt: new Date(),

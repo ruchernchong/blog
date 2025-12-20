@@ -49,9 +49,9 @@ export function validateSchema<T>(
         response: NextResponse.json(
           {
             message: "Validation failed",
-            errors: error.errors.map((err) => ({
-              field: err.path.join("."),
-              message: err.message,
+            errors: error.issues.map((issue) => ({
+              field: issue.path.join("."),
+              message: issue.message,
             })),
           },
           { status: 400 },

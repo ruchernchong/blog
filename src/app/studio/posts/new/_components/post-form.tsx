@@ -53,6 +53,7 @@ const newPostSchema = z.object({
   content: z.string().min(1, "Content is required"),
   status: z.enum(["draft", "published"]).default("draft"),
   tags: z.string().optional(),
+  seriesId: z.string().optional().or(z.literal("")),
   coverImage: z
     .string()
     .url("Must be a valid URL")
@@ -62,7 +63,16 @@ const newPostSchema = z.object({
 
 type NewPostFormValues = z.infer<typeof newPostSchema>;
 
-export const PostForm = () => {
+interface SeriesOption {
+  id: string;
+  title: string;
+}
+
+interface PostFormProps {
+  seriesOptions: SeriesOption[];
+}
+
+export function PostForm({ seriesOptions }: PostFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -72,6 +82,7 @@ export const PostForm = () => {
   const slugId = useId();
   const summaryId = useId();
   const statusId = useId();
+  const seriesFieldId = useId();
   const tagsId = useId();
   const coverImageId = useId();
 
@@ -84,6 +95,7 @@ export const PostForm = () => {
       content: "",
       status: "draft",
       tags: "",
+      seriesId: "",
       coverImage: "",
     },
   });
@@ -121,6 +133,7 @@ export const PostForm = () => {
           .split(",")
           .map((tag) => tag.trim())
           .filter(Boolean),
+        seriesId: values.seriesId || null,
         coverImage: values.coverImage || null,
       };
 
@@ -309,6 +322,38 @@ export const PostForm = () => {
 
                     <Controller
                       control={form.control}
+                      name="seriesId"
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={!!fieldState.error}>
+                          <FieldLabel>Series</FieldLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <SelectTrigger id={seriesFieldId}>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">None</SelectItem>
+                              {seriesOptions.map((option) => (
+                                <SelectItem key={option.id} value={option.id}>
+                                  {option.title}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FieldDescription>
+                            Assign this post to a series
+                          </FieldDescription>
+                          {fieldState.error && (
+                            <FieldError>{fieldState.error.message}</FieldError>
+                          )}
+                        </Field>
+                      )}
+                    />
+
+                    <Controller
+                      control={form.control}
                       name="tags"
                       render={({ field, fieldState }) => (
                         <Field data-invalid={!!fieldState.error}>
@@ -405,4 +450,4 @@ export const PostForm = () => {
       </div>
     </FormProvider>
   );
-};
+}

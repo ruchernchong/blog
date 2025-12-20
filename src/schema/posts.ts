@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
+  integer,
   jsonb,
   pgTable,
   text,
@@ -9,6 +10,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth";
+import { series } from "./series";
 
 export const posts = pgTable(
   "posts",
@@ -28,6 +30,10 @@ export const posts = pgTable(
     authorId: text().references(() => user.id, {
       onDelete: "cascade",
     }),
+    seriesId: uuid().references(() => series.id, {
+      onDelete: "set null",
+    }),
+    seriesOrder: integer(),
     publishedAt: timestamp({ withTimezone: true }),
     createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
@@ -41,6 +47,7 @@ export const posts = pgTable(
       index().on(table.publishedAt),
       index().on(table.deletedAt),
       index().on(table.authorId),
+      index().on(table.seriesId),
     ];
   },
 );
@@ -49,6 +56,10 @@ export const postsRelations = relations(posts, ({ one }) => ({
   author: one(user, {
     fields: [posts.authorId],
     references: [user.id],
+  }),
+  series: one(series, {
+    fields: [posts.seriesId],
+    references: [series.id],
   }),
 }));
 
