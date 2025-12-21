@@ -3,10 +3,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Route } from "next";
 import Link from "next/link";
-import { useEffect, useEffectEvent, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import slugify from "slugify";
-import { createSeries } from "@/app/_actions/series";
+import { createSeries, updateSeries } from "@/app/_actions/series";
 import {
   SeriesFormFields,
   type SeriesFormValues,
@@ -14,44 +15,50 @@ import {
 } from "@/components/studio/series-form-fields";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import type { SelectSeries } from "@/schema";
 
-export function SeriesForm() {
+interface SeriesFormProps {
+  series?: SelectSeries;
+}
+
+export function SeriesForm({ series }: SeriesFormProps) {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const isEditing = !!series;
 
   const form = useForm<SeriesFormValues>({
     resolver: zodResolver(seriesFormSchema),
     defaultValues: {
-      title: "",
-      slug: "",
-      description: "",
-      status: "draft",
-      coverImage: "",
+      title: series?.title ?? "",
+      slug: series?.slug ?? "",
+      description: series?.description ?? "",
+      status: series?.status ?? "draft",
+      coverImage: series?.coverImage ?? "",
     },
   });
 
   const titleValue = form.watch("title");
 
-  const updateSlugFromTitle = useEffectEvent((title: string) => {
-    const generatedSlug = title
-      ? slugify(title, { lower: true, strict: true })
+  useEffect(() => {
+    if (isEditing) return;
+
+    const generatedSlug = titleValue
+      ? slugify(titleValue, { lower: true, strict: true })
       : "";
 
     if (form.getValues("slug") !== generatedSlug) {
       form.setValue("slug", generatedSlug);
     }
-  });
-
-  useEffect(() => {
-    updateSlugFromTitle(titleValue);
-  }, [titleValue]);
+  }, [titleValue, isEditing, form]);
 
   const handleSubmit = async (values: SeriesFormValues) => {
     startTransition(async () => {
       setError(null);
 
       try {
-        await createSeries({
+        const data = {
           title: values.title,
           slug:
             values.slug ||
@@ -60,10 +67,21 @@ export function SeriesForm() {
           description: values.description || null,
           status: values.status,
           coverImage: values.coverImage || null,
-        });
+        };
+
+        if (isEditing) {
+          await updateSeries(series.id, data);
+        } else {
+          await createSeries(data);
+        }
+
+        router.push("/studio/series" as Route);
+        router.refresh();
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to create series",
+          err instanceof Error
+            ? err.message
+            : `Failed to ${isEditing ? "update" : "create"} series`,
         );
       }
     });
@@ -71,14 +89,16 @@ export function SeriesForm() {
 
   return (
     <FormProvider {...form}>
-      <div className="mx-auto flex max-w-2xl flex-col gap-6">
+      <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-bold text-3xl tracking-tight">
-              Create New Series
+              {isEditing ? "Edit Series" : "Create New Series"}
             </h1>
             <p className="text-muted-foreground">
-              Group related posts into an ordered collection
+              {isEditing
+                ? "Update series details and settings"
+                : "Group related posts into an ordered collection"}
             </p>
           </div>
           <Button
@@ -104,7 +124,7 @@ export function SeriesForm() {
         >
           <Card>
             <CardContent className="flex flex-col gap-4 py-6">
-              <SeriesFormFields slugReadOnly />
+              <SeriesFormFields slugReadOnly={!isEditing} />
             </CardContent>
           </Card>
 
@@ -117,7 +137,13 @@ export function SeriesForm() {
               Cancel
             </Button>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Creating..." : "Create Series"}
+              {isPending
+                ? isEditing
+                  ? "Saving..."
+                  : "Creating..."
+                : isEditing
+                  ? "Save Changes"
+                  : "Create Series"}
             </Button>
           </div>
         </form>

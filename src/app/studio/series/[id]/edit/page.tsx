@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { EditSeriesForm } from "@/app/studio/series/[id]/edit/_components/edit-series-form";
 import { SeriesPostsManager } from "@/app/studio/series/[id]/edit/_components/series-posts-manager";
+import { SeriesForm } from "@/components/studio/series-form";
 import { getSeriesById } from "@/lib/queries/series";
 
 interface EditSeriesPageProps {
@@ -17,7 +17,7 @@ export default async function EditSeriesPage({ params }: EditSeriesPageProps) {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-8">
-      <EditSeriesForm series={series} />
+      <SeriesForm series={series} />
       <SeriesPostsManager seriesId={id} />
     </div>
   );

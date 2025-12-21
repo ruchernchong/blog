@@ -1,5 +1,9 @@
-import { SeriesForm } from "@/app/studio/series/new/_components/series-form";
+import { SeriesForm } from "@/components/studio/series-form";
 
 export default function NewSeriesPage() {
-  return <SeriesForm />;
+  return (
+    <div className="mx-auto max-w-2xl">
+      <SeriesForm />
+    </div>
+  );
 }
