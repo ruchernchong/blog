@@ -36,6 +36,36 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `bun run release` - Create semantic release
 
+### MCP Server
+
+- `bun run mcp` - Start MCP server for blog management
+
+## MCP Server
+
+An MCP (Model Context Protocol) server for managing blog posts and media via Claude Code.
+
+### Available Tools
+
+**Post Tools:**
+- `list_posts` - List posts with optional status/limit/offset filters
+- `get_post` - Get single post by ID or slug
+- `create_post` - Create new post with auto-generated metadata
+- `update_post` - Update existing post
+- `delete_post` - Soft delete a post
+- `restore_post` - Restore soft-deleted post
+- `publish_post` - Publish a draft (sets publishedAt)
+
+**Media Tools:**
+- `list_media` - List uploaded media with search
+- `get_media` - Get single media item
+- `request_upload` - Get presigned R2 upload URL
+- `confirm_upload` - Confirm upload and create database record
+- `delete_media` - Soft delete media
+
+### Configuration
+
+The MCP server is configured in `.mcp.json` and uses stdio transport for local CLI integration.
+
 ## Architecture Overview
 
 A Next.js 16 portfolio website with an integrated blog system and Content Studio CMS.
@@ -82,6 +112,10 @@ src/
 │   ├── queries/      # Pure database queries (Drizzle ORM)
 │   ├── services/     # Business logic layer
 │   └── og/           # OpenGraph image generation
+├── mcp/              # MCP server for blog management
+│   ├── index.ts      # Entry point with stdio transport
+│   ├── server.ts     # McpServer configuration
+│   └── tools/        # Tool implementations (posts, media)
 ├── server/           # tRPC routers (github, analytics)
 ├── schema/           # Drizzle ORM database schemas
 ├── utils/            # Pure utility functions (hash, truncate, etc.)
