@@ -1,24 +1,14 @@
 import { ViewIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { headers } from "next/headers";
 import { LikeCounter } from "@/app/(main)/blog/_components/like-counter";
 import { ViewCounter } from "@/app/(main)/blog/_components/view-counter";
 import { postStatsService } from "@/lib/services";
+import { getIpAddress } from "@/utils/get-ip-address";
 import { generateUserHash } from "@/utils/hash";
 
 interface StatsBarProps {
   slug: string;
 }
-
-const getIpAddress = async (): Promise<string> => {
-  const headersList = await headers();
-  const forwardedFor = headersList.get("x-forwarded-for");
-  if (forwardedFor) {
-    return forwardedFor.split(",")[0];
-  }
-  const realIp = headersList.get("x-real-ip");
-  return realIp ?? "127.0.0.1";
-};
 
 const StatsBar = async ({ slug }: StatsBarProps) => {
   const userHash = generateUserHash(await getIpAddress());
