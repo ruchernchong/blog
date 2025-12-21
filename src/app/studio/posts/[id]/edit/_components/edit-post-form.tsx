@@ -39,15 +39,22 @@ interface Post {
   content: string;
   status: "draft" | "published";
   tags: string[];
+  seriesId: string | null;
   coverImage: string | null;
   deletedAt: Date | null;
 }
 
-interface EditPostFormProps {
-  postId: string;
+interface SeriesOption {
+  id: string;
+  title: string;
 }
 
-export const EditPostForm = ({ postId }: EditPostFormProps) => {
+interface EditPostFormProps {
+  postId: string;
+  seriesOptions: SeriesOption[];
+}
+
+export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
   const router = useRouter();
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -60,6 +67,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
     content: "",
     status: "draft" as "draft" | "published",
     tags: "",
+    seriesId: "",
     coverImage: "",
   });
 
@@ -68,6 +76,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
   const slugId = useId();
   const summaryId = useId();
   const statusId = useId();
+  const seriesFieldId = useId();
   const tagsId = useId();
   const coverImageId = useId();
 
@@ -84,6 +93,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
         content: data.content,
         status: data.status,
         tags: Array.isArray(data.tags) ? data.tags.join(", ") : "",
+        seriesId: data.seriesId || "",
         coverImage: data.coverImage || "",
       });
     } catch (err) {
@@ -113,6 +123,7 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
           .split(",")
           .map((tag) => tag.trim())
           .filter(Boolean),
+        seriesId: formData.seriesId || null,
         coverImage: formData.coverImage || null,
       };
 
@@ -322,19 +333,44 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label htmlFor={tagsId}>Tags</Label>
-                <Input
-                  id={tagsId}
-                  value={formData.tags}
-                  onChange={(e) =>
-                    setFormData({ ...formData, tags: e.target.value })
-                  }
-                  placeholder="nextjs, react, typescript"
-                />
+                <Label htmlFor={seriesFieldId}>Series</Label>
+                <Select
+                  value={formData.seriesId}
+                  onValueChange={(value: string | null) => {
+                    setFormData({ ...formData, seriesId: value || "" });
+                  }}
+                >
+                  <SelectTrigger id={seriesFieldId}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">None</SelectItem>
+                    {seriesOptions.map((option) => (
+                      <SelectItem key={option.id} value={option.id}>
+                        {option.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <p className="text-muted-foreground text-xs">
-                  Comma-separated tags
+                  Assign this post to a series
                 </p>
               </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor={tagsId}>Tags</Label>
+              <Input
+                id={tagsId}
+                value={formData.tags}
+                onChange={(e) =>
+                  setFormData({ ...formData, tags: e.target.value })
+                }
+                placeholder="nextjs, react, typescript"
+              />
+              <p className="text-muted-foreground text-xs">
+                Comma-separated tags
+              </p>
             </div>
 
             <div className="flex flex-col gap-2">
@@ -424,4 +460,4 @@ export const EditPostForm = ({ postId }: EditPostFormProps) => {
       </form>
     </div>
   );
-};
+}

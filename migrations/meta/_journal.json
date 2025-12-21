@@ -50,6 +50,13 @@
       "when": 1765718477164,
       "tag": "0006_smiling_spectrum",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1766252474691,
+      "tag": "0007_late_elektra",
+      "breakpoints": true
     }
   ]
 }

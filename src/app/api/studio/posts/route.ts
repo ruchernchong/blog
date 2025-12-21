@@ -36,8 +36,18 @@ export const POST = async (request: Request) => {
   const bodyResult = await parseAndValidateBody(request, createPostSchema);
   if (!bodyResult.success) return bodyResult.response;
 
-  const { title, slug, summary, content, status, tags, coverImage, featured } =
-    bodyResult.data;
+  const {
+    title,
+    slug,
+    summary,
+    content,
+    status,
+    tags,
+    coverImage,
+    featured,
+    seriesId,
+    seriesOrder,
+  } = bodyResult.data;
 
   try {
     const publishedAt = status === "published" ? new Date() : null;
@@ -58,6 +68,8 @@ export const POST = async (request: Request) => {
       tags: Array.isArray(tags) ? tags : [],
       coverImage,
       featured,
+      seriesId: seriesId ?? null,
+      seriesOrder: seriesOrder ?? null,
       metadata,
       publishedAt,
       authorId: authResult.data.user.id,

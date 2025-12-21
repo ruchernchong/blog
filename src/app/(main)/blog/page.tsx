@@ -7,12 +7,14 @@ import type { SearchParams } from "nuqs/server";
 import { Suspense } from "react";
 import readingTime from "reading-time";
 import { FeaturedPost } from "@/app/(main)/blog/_components/featured-post";
+import { SeriesCards } from "@/app/(main)/blog/_components/series-cards";
 import { TagFilter } from "@/app/(main)/blog/_components/tag-filter";
 import { blogSearchParamsCache } from "@/app/(main)/blog/search-params";
 import { PageTitle } from "@/components/page-title";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getFeaturedPosts, getPublishedPosts } from "@/lib/queries/posts";
+import { getPublishedSeriesWithPosts } from "@/lib/queries/series";
 import { popularPostsService } from "@/lib/services";
 import { getUniqueTags } from "@/lib/tags";
 
@@ -28,23 +30,26 @@ interface BlogPageProps {
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   const { tag } = await blogSearchParamsCache.parse(searchParams);
 
-  const [publishedPosts, popularPosts, tags] = await Promise.all([
-    getPublishedPosts(),
-    popularPostsService.getPopularPosts(1),
-    getUniqueTags(),
-  ]);
+  const [publishedPosts, popularPosts, tags, publishedSeries] =
+    await Promise.all([
+      getPublishedPosts(),
+      popularPostsService.getPopularPosts(1),
+      getUniqueTags(),
+      getPublishedSeriesWithPosts(),
+    ]);
 
   const featuredPosts = await getFeaturedPosts();
 
   // Prefer explicitly featured post, fallback to most popular
   const featuredPost = featuredPosts[0] ?? popularPosts[0];
 
-  // Filter posts by tag if provided
-  const filteredPosts = tag
-    ? publishedPosts.filter((post) => post.tags.includes(tag))
-    : publishedPosts;
+  // Filter posts by tag
+  let filteredPosts = publishedPosts;
+  if (tag) {
+    filteredPosts = filteredPosts.filter((post) => post.tags.includes(tag));
+  }
 
-  // Exclude featured post from the grid when showing all posts
+  // Exclude featured post from the grid when showing all posts (no tag filter)
   const gridPosts = tag
     ? filteredPosts
     : filteredPosts.filter((post) => !post.featured);
@@ -67,8 +72,15 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       />
 
       <div className="flex flex-col gap-8">
-        {/* Featured Post - only show when no tag filter */}
+        {/* Featured Post - only show when no tag filter active */}
         {featuredPost && !tag && <FeaturedPost post={featuredPost} />}
+
+        {/* Series Cards */}
+        {publishedSeries.length > 0 && (
+          <Suspense fallback={null}>
+            <SeriesCards series={publishedSeries} />
+          </Suspense>
+        )}
 
         {/* Tag Filter */}
         <Suspense fallback={null}>
