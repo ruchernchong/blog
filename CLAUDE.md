@@ -30,7 +30,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `bun run test` - Run all tests
 - `bun run test:watch` - Run tests in watch mode
 - `bun run test:coverage` - Generate coverage report
-- `bun run test <path>` - Run a specific test file (e.g., `bun run test src/lib/services/__tests__/cache.service.test.ts`)
+- `bun run test <path>` - Run a specific test file (e.g.,
+  `bun run test src/lib/services/__tests__/cache.service.test.ts`)
 
 ### Release
 
@@ -47,6 +48,7 @@ An MCP (Model Context Protocol) server for managing blog posts and media via Cla
 ### Available Tools
 
 **Post Tools:**
+
 - `list_posts` - List posts with optional status/limit/offset filters
 - `get_post` - Get single post by ID or slug
 - `create_post` - Create new post with auto-generated metadata
@@ -56,6 +58,7 @@ An MCP (Model Context Protocol) server for managing blog posts and media via Cla
 - `publish_post` - Publish a draft (sets publishedAt)
 
 **Media Tools:**
+
 - `list_media` - List uploaded media with search
 - `get_media` - Get single media item
 - `request_upload` - Get presigned R2 upload URL
@@ -65,6 +68,45 @@ An MCP (Model Context Protocol) server for managing blog posts and media via Cla
 ### Configuration
 
 The MCP server is configured in `.mcp.json` and uses stdio transport for local CLI integration.
+
+### Remote Access
+
+The MCP server is also available as a serverless API route for remote access from Claude Desktop, Claude Code, or the
+Claude mobile app.
+
+**Endpoint:** `https://ruchern.dev/api/mcp`
+
+**Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "blog": {
+      "url": "https://ruchern.dev/api/mcp",
+      "auth": {
+        "type": "bearer",
+        "token": "your-mcp-auth-token"
+      }
+    }
+  }
+}
+```
+
+**Claude Code** (`.mcp.json` or global settings):
+
+```json
+{
+  "mcpServers": {
+    "blog-remote": {
+      "url": "https://ruchern.dev/api/mcp",
+      "auth": {
+        "type": "bearer",
+        "token": "${BLOG_MCP_AUTH_TOKEN}"
+      }
+    }
+  }
+}
+```
 
 ## Architecture Overview
 
@@ -147,6 +189,7 @@ See `.env.example` for all required variables:
 - `GOOGLE_CLIENT_ID/SECRET` - Google OAuth
 - `CLOUDFLARE_ACCOUNT_ID` - R2 storage
 - `R2_ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET_NAME/PUBLIC_URL` - R2 config
+- `BLOG_MCP_AUTH_TOKEN` - Bearer token for remote MCP access
 
 ## Code Conventions
 
