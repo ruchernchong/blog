@@ -1,4 +1,4 @@
-import { and, asc, eq, isNull } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { ERROR_IDS } from "@/constants/error-ids";
 import {
@@ -9,7 +9,8 @@ import {
   validateRouteParam,
 } from "@/lib/api";
 import { logError } from "@/lib/logger";
-import { db, posts, series } from "@/schema";
+import { getPostsInSeries, getSeriesById } from "@/lib/queries/series";
+import { db, posts } from "@/schema";
 import { reorderPostsSchema, seriesIdSchema } from "@/types/api";
 
 export const GET = async (
@@ -27,19 +28,11 @@ export const GET = async (
   try {
     const seriesId = paramResult.data;
 
-    const [seriesItem] = await db
-      .select()
-      .from(series)
-      .where(eq(series.id, seriesId))
-      .limit(1);
+    const seriesItem = await getSeriesById(seriesId);
 
     if (!seriesItem) return notFoundResponse("Series");
 
-    const seriesPosts = await db
-      .select()
-      .from(posts)
-      .where(and(eq(posts.seriesId, seriesId), isNull(posts.deletedAt)))
-      .orderBy(asc(posts.seriesOrder));
+    const seriesPosts = await getPostsInSeries(seriesId);
 
     return NextResponse.json(seriesPosts);
   } catch (error) {
@@ -74,11 +67,7 @@ export const PATCH = async (
   const { posts: postOrders } = bodyResult.data;
 
   try {
-    const [seriesItem] = await db
-      .select()
-      .from(series)
-      .where(eq(series.id, seriesId))
-      .limit(1);
+    const seriesItem = await getSeriesById(seriesId);
 
     if (!seriesItem) return notFoundResponse("Series");
 
@@ -93,11 +82,7 @@ export const PATCH = async (
     );
 
     // Fetch updated posts
-    const updatedPosts = await db
-      .select()
-      .from(posts)
-      .where(and(eq(posts.seriesId, seriesId), isNull(posts.deletedAt)))
-      .orderBy(asc(posts.seriesOrder));
+    const updatedPosts = await getPostsInSeries(seriesId);
 
     return NextResponse.json(updatedPosts);
   } catch (error) {

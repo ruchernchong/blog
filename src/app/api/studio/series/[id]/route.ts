@@ -12,6 +12,7 @@ import {
   validateRouteParam,
 } from "@/lib/api";
 import { logError } from "@/lib/logger";
+import { getSeriesById } from "@/lib/queries/series";
 import { db, series } from "@/schema";
 import { seriesIdSchema, updateSeriesSchema } from "@/types/api";
 
@@ -28,11 +29,7 @@ export const GET = async (
   if (!paramResult.success) return paramResult.response;
 
   try {
-    const [seriesItem] = await db
-      .select()
-      .from(series)
-      .where(eq(series.id, paramResult.data))
-      .limit(1);
+    const seriesItem = await getSeriesById(paramResult.data);
 
     if (!seriesItem) return notFoundResponse("Series");
 
@@ -68,11 +65,7 @@ export const PATCH = async (
   const seriesId = paramResult.data;
 
   try {
-    const [existingSeries] = await db
-      .select()
-      .from(series)
-      .where(eq(series.id, seriesId))
-      .limit(1);
+    const existingSeries = await getSeriesById(seriesId);
 
     if (!existingSeries) return notFoundResponse("Series");
 
