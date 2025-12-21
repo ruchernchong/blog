@@ -13,13 +13,11 @@ import StatsBar from "@/app/(main)/analytics/_components/stats-bar";
 import { Mdx } from "@/app/(main)/blog/_components/mdx";
 import { RelatedPosts } from "@/app/(main)/blog/_components/related-posts";
 import { ScrollProgress } from "@/app/(main)/blog/_components/scroll-progress";
-import { SeriesNavigation } from "@/app/(main)/blog/_components/series-navigation";
 import { Typography } from "@/components/typography";
 import {
   getPublishedPostBySlug,
   getPublishedPostSlugs,
 } from "@/lib/queries/posts";
-import { getPublishedPostsInSeries, getSeriesById } from "@/lib/queries/series";
 
 type Params = Promise<{ slug: string }>;
 
@@ -86,41 +84,6 @@ export default async function PostPage(props: { params: Params }) {
 
   const formattedDate = format(post.publishedAt, "dd MMM yyyy");
 
-  // Fetch series data if post belongs to a series
-  let seriesData = null;
-  if (post.seriesId) {
-    const [series, seriesPosts] = await Promise.all([
-      getSeriesById(post.seriesId),
-      getPublishedPostsInSeries(post.seriesId),
-    ]);
-
-    if (series && seriesPosts.length > 0) {
-      const currentIndex = seriesPosts.findIndex((p) => p.slug === post.slug);
-      if (currentIndex !== -1) {
-        seriesData = {
-          title: series.title,
-          slug: series.slug,
-          currentPosition: currentIndex + 1,
-          totalPosts: seriesPosts.length,
-          previousPost:
-            currentIndex > 0
-              ? {
-                  slug: seriesPosts[currentIndex - 1].slug,
-                  title: seriesPosts[currentIndex - 1].title,
-                }
-              : null,
-          nextPost:
-            currentIndex < seriesPosts.length - 1
-              ? {
-                  slug: seriesPosts[currentIndex + 1].slug,
-                  title: seriesPosts[currentIndex + 1].title,
-                }
-              : null,
-        };
-      }
-    }
-  }
-
   return (
     <>
       <ScrollProgress />
@@ -128,16 +91,6 @@ export default async function PostPage(props: { params: Params }) {
       <article className="prose mx-auto mb-16 flex max-w-4xl flex-col gap-12 prose-img:rounded-2xl prose-a:text-foreground prose-a:underline">
         <div className="flex flex-col items-center gap-4 text-center">
           <StatsBar slug={post.slug} />
-          {seriesData && (
-            <SeriesNavigation
-              seriesTitle={seriesData.title}
-              seriesSlug={seriesData.slug}
-              currentPosition={seriesData.currentPosition}
-              totalPosts={seriesData.totalPosts}
-              previousPost={seriesData.previousPost}
-              nextPost={seriesData.nextPost}
-            />
-          )}
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-muted-foreground">
             <div className="flex items-center gap-2">
               <HugeiconsIcon icon={Calendar01Icon} size={20} strokeWidth={2} />

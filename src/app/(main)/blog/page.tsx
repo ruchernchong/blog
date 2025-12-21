@@ -8,14 +8,13 @@ import { Suspense } from "react";
 import readingTime from "reading-time";
 import { FeaturedPost } from "@/app/(main)/blog/_components/featured-post";
 import { SeriesCards } from "@/app/(main)/blog/_components/series-cards";
-import { SeriesFilter } from "@/app/(main)/blog/_components/series-filter";
 import { TagFilter } from "@/app/(main)/blog/_components/tag-filter";
 import { blogSearchParamsCache } from "@/app/(main)/blog/search-params";
 import { PageTitle } from "@/components/page-title";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getFeaturedPosts, getPublishedPosts } from "@/lib/queries/posts";
-import { getPublishedSeriesWithPostCount } from "@/lib/queries/series";
+import { getPublishedSeriesWithPosts } from "@/lib/queries/series";
 import { popularPostsService } from "@/lib/services";
 import { getUniqueTags } from "@/lib/tags";
 
@@ -29,14 +28,14 @@ interface BlogPageProps {
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
-  const { tag, series } = await blogSearchParamsCache.parse(searchParams);
+  const { tag } = await blogSearchParamsCache.parse(searchParams);
 
   const [publishedPosts, popularPosts, tags, publishedSeries] =
     await Promise.all([
       getPublishedPosts(),
       popularPostsService.getPopularPosts(1),
       getUniqueTags(),
-      getPublishedSeriesWithPostCount(),
+      getPublishedSeriesWithPosts(),
     ]);
 
   const featuredPosts = await getFeaturedPosts();
@@ -44,28 +43,14 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   // Prefer explicitly featured post, fallback to most popular
   const featuredPost = featuredPosts[0] ?? popularPosts[0];
 
-  // Find the active series for display
-  const activeSeries = series
-    ? publishedSeries.find((item) => item.slug === series)
-    : undefined;
-
-  // Filter posts by series and/or tag
+  // Filter posts by tag
   let filteredPosts = publishedPosts;
-  if (series) {
-    filteredPosts = filteredPosts.filter((post) => {
-      const postSeries = publishedSeries.find(
-        (item) => item.id === post.seriesId,
-      );
-      return postSeries?.slug === series;
-    });
-  }
   if (tag) {
     filteredPosts = filteredPosts.filter((post) => post.tags.includes(tag));
   }
 
-  // Exclude featured post from the grid when showing all posts (no filters)
-  const hasFilters = tag || series;
-  const gridPosts = hasFilters
+  // Exclude featured post from the grid when showing all posts (no tag filter)
+  const gridPosts = tag
     ? filteredPosts
     : filteredPosts.filter((post) => !post.featured);
 
@@ -87,20 +72,13 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       />
 
       <div className="flex flex-col gap-8">
-        {/* Featured Post - only show when no filters active */}
-        {featuredPost && !hasFilters && <FeaturedPost post={featuredPost} />}
+        {/* Featured Post - only show when no tag filter active */}
+        {featuredPost && !tag && <FeaturedPost post={featuredPost} />}
 
-        {/* Series Cards - show when no series filter is active */}
-        {!series && publishedSeries.length > 0 && (
+        {/* Series Cards */}
+        {publishedSeries.length > 0 && (
           <Suspense fallback={null}>
             <SeriesCards series={publishedSeries} />
-          </Suspense>
-        )}
-
-        {/* Series Filter - show when series filter is active */}
-        {series && (
-          <Suspense fallback={null}>
-            <SeriesFilter seriesTitle={activeSeries?.title} />
           </Suspense>
         )}
 
@@ -113,9 +91,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {gridPosts.length === 0 && (
             <p className="col-span-full text-center text-muted-foreground">
-              No posts found
-              {series && ` in "${activeSeries?.title ?? series}"`}
-              {tag && ` for "${tag}"`}.
+              No posts found{tag && ` for "${tag}"`}.
             </p>
           )}
           {gridPosts.map((post) => {

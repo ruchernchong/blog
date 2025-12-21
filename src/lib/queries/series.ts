@@ -80,3 +80,22 @@ export const getSeriesForSelector = async () => {
     .where(isNull(series.deletedAt))
     .orderBy(desc(series.updatedAt));
 };
+
+export const getPublishedSeriesWithPosts = async () => {
+  const seriesList = await getPublishedSeriesWithPostCount();
+
+  const seriesWithPosts = await Promise.all(
+    seriesList.map(async (s) => {
+      const seriesPosts = await getPublishedPostsInSeries(s.id);
+      return {
+        ...s,
+        posts: seriesPosts.map((p) => ({
+          slug: p.slug,
+          title: p.title,
+        })),
+      };
+    }),
+  );
+
+  return seriesWithPosts;
+};
