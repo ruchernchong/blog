@@ -10,6 +10,7 @@ export {
   notFoundResponse,
 } from "./errors";
 export { validateRouteParam } from "./params";
+export { validateSeriesExists } from "./series";
 export type { ApiResult } from "./types";
 export {
   parseAndValidateBody,

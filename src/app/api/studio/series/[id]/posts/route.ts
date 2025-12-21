@@ -3,36 +3,24 @@ import { NextResponse } from "next/server";
 import { ERROR_IDS } from "@/constants/error-ids";
 import {
   handleApiError,
-  notFoundResponse,
   parseAndValidateBody,
   requireAuth,
-  validateRouteParam,
+  validateSeriesExists,
 } from "@/lib/api";
 import { logError } from "@/lib/logger";
-import { getPostsInSeries, getSeriesById } from "@/lib/queries/series";
+import { getPostsInSeries } from "@/lib/queries/series";
 import { db, posts } from "@/schema";
-import { reorderPostsSchema, seriesIdSchema } from "@/types/api";
+import { reorderPostsSchema } from "@/types/api";
 
 export const GET = async (
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
-  const paramResult = await validateRouteParam(
-    params,
-    "id",
-    seriesIdSchema,
-    "series",
-  );
-  if (!paramResult.success) return paramResult.response;
-
   try {
-    const seriesId = paramResult.data;
+    const result = await validateSeriesExists(params);
+    if (!result.success) return result.response;
 
-    const seriesItem = await getSeriesById(seriesId);
-
-    if (!seriesItem) return notFoundResponse("Series");
-
-    const seriesPosts = await getPostsInSeries(seriesId);
+    const seriesPosts = await getPostsInSeries(result.data.seriesId);
 
     return NextResponse.json(seriesPosts);
   } catch (error) {
@@ -40,7 +28,6 @@ export const GET = async (
       error,
       ERROR_IDS.SERIES_FETCH_FAILED,
       "fetch series posts",
-      { seriesId: paramResult.data },
     );
   }
 };
@@ -52,25 +39,16 @@ export const PATCH = async (
   const authResult = await requireAuth("reorder series posts");
   if (!authResult.success) return authResult.response;
 
-  const paramResult = await validateRouteParam(
-    params,
-    "id",
-    seriesIdSchema,
-    "series",
-  );
-  if (!paramResult.success) return paramResult.response;
+  const seriesResult = await validateSeriesExists(params);
+  if (!seriesResult.success) return seriesResult.response;
 
   const bodyResult = await parseAndValidateBody(request, reorderPostsSchema);
   if (!bodyResult.success) return bodyResult.response;
 
-  const seriesId = paramResult.data;
+  const { seriesId } = seriesResult.data;
   const { posts: postOrders } = bodyResult.data;
 
   try {
-    const seriesItem = await getSeriesById(seriesId);
-
-    if (!seriesItem) return notFoundResponse("Series");
-
     // Update each post's order
     await Promise.all(
       postOrders.map(({ id, order }) =>

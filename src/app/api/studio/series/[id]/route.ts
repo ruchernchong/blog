@@ -10,9 +10,9 @@ import {
   parseAndValidateBody,
   requireAuth,
   validateRouteParam,
+  validateSeriesExists,
 } from "@/lib/api";
 import { logError } from "@/lib/logger";
-import { getSeriesById } from "@/lib/queries/series";
 import { db, series } from "@/schema";
 import { seriesIdSchema, updateSeriesSchema } from "@/types/api";
 
@@ -20,27 +20,13 @@ export const GET = async (
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
-  const paramResult = await validateRouteParam(
-    params,
-    "id",
-    seriesIdSchema,
-    "series",
-  );
-  if (!paramResult.success) return paramResult.response;
-
   try {
-    const seriesItem = await getSeriesById(paramResult.data);
+    const result = await validateSeriesExists(params);
+    if (!result.success) return result.response;
 
-    if (!seriesItem) return notFoundResponse("Series");
-
-    return NextResponse.json(seriesItem);
+    return NextResponse.json(result.data.series);
   } catch (error) {
-    return handleApiError(
-      error,
-      ERROR_IDS.SERIES_FETCH_FAILED,
-      "fetch series",
-      { seriesId: paramResult.data },
-    );
+    return handleApiError(error, ERROR_IDS.SERIES_FETCH_FAILED, "fetch series");
   }
 };
 
@@ -51,26 +37,16 @@ export const PATCH = async (
   const authResult = await requireAuth("edit series");
   if (!authResult.success) return authResult.response;
 
-  const paramResult = await validateRouteParam(
-    params,
-    "id",
-    seriesIdSchema,
-    "series",
-  );
-  if (!paramResult.success) return paramResult.response;
+  const seriesResult = await validateSeriesExists(params);
+  if (!seriesResult.success) return seriesResult.response;
 
   const bodyResult = await parseAndValidateBody(request, updateSeriesSchema);
   if (!bodyResult.success) return bodyResult.response;
 
-  const seriesId = paramResult.data;
+  const { seriesId, series: existingSeries } = seriesResult.data;
+  const { title, slug, description, status, coverImage } = bodyResult.data;
 
   try {
-    const existingSeries = await getSeriesById(seriesId);
-
-    if (!existingSeries) return notFoundResponse("Series");
-
-    const { title, slug, description, status, coverImage } = bodyResult.data;
-
     const [updatedSeries] = await db
       .update(series)
       .set({
