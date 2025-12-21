@@ -3,7 +3,7 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useEffectEvent, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,7 +38,6 @@ import type { SelectSeries } from "@/schema";
 export function SeriesTable() {
   const router = useRouter();
   const [allSeries, setAllSeries] = useState<SelectSeries[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<
@@ -46,25 +45,25 @@ export function SeriesTable() {
   >("all");
   const [selectedSeries, setSelectedSeries] = useState<Set<string>>(new Set());
 
-  const fetchSeries = useEffectEvent(async () => {
+  const fetchSeries = useCallback(async () => {
     try {
       const response = await fetch("/api/studio/series");
       if (response.ok) {
         const series = await response.json();
-        setAllSeries(series);
+        startTransition(() => {
+          setAllSeries(series);
+        });
       } else if (response.status === 401) {
         console.error("Unauthorised: Please sign in");
       }
     } catch (error) {
       console.error("Failed to fetch series:", error);
-    } finally {
-      setIsLoading(false);
     }
-  });
+  }, []);
 
   useEffect(() => {
     fetchSeries();
-  }, []);
+  }, [fetchSeries]);
 
   const handleDelete = async (seriesId: string) => {
     startTransition(async () => {
@@ -182,7 +181,7 @@ export function SeriesTable() {
     return matchesSearch && matchesStatus;
   });
 
-  if (isLoading) {
+  if (allSeries.length === 0) {
     return (
       <div className="mx-auto flex max-w-6xl flex-col gap-6">
         <div className="flex items-center justify-between">
@@ -225,281 +224,250 @@ export function SeriesTable() {
         </Button>
       </div>
 
-      {allSeries.length === 0 ? (
+      <div className="flex items-center gap-4">
+        <div className="flex-1">
+          <Input
+            type="search"
+            placeholder="Search series by title or slug..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="max-w-md"
+          />
+        </div>
+        <Select
+          value={statusFilter}
+          onValueChange={(
+            value: "all" | "draft" | "published" | "deleted" | null,
+          ) => {
+            if (value) setStatusFilter(value);
+          }}
+        >
+          <SelectTrigger className="w-45">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Series</SelectItem>
+            <SelectItem value="draft">Draft</SelectItem>
+            <SelectItem value="published">Published</SelectItem>
+            <SelectItem value="deleted">Deleted</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {selectedSeries.size > 0 && (
+        <div className="flex items-center gap-4 rounded-lg border bg-muted p-4">
+          <span className="text-sm">{selectedSeries.size} series selected</span>
+          <div className="ml-auto flex gap-4">
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleBulkDelete}
+              disabled={isPending}
+            >
+              {isPending ? "Deleting..." : "Delete Selected"}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedSeries(new Set())}
+            >
+              Clear Selection
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {filteredSeries.length === 0 ? (
         <Card>
           <CardContent className="py-12">
             <Empty>
               <EmptyHeader>
-                <EmptyTitle>No series yet</EmptyTitle>
+                <EmptyTitle>No series found</EmptyTitle>
                 <EmptyDescription>
-                  Get started by creating your first series
+                  Try adjusting your search or filter criteria
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
                 <Button
-                  nativeButton={false}
-                  render={<Link href={"/studio/series/new" as Route} />}
+                  variant="outline"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setStatusFilter("all");
+                  }}
                 >
-                  Create Series
+                  Clear Filters
                 </Button>
               </EmptyContent>
             </Empty>
           </CardContent>
         </Card>
       ) : (
-        <>
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <Input
-                type="search"
-                placeholder="Search series by title or slug..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="max-w-md"
-              />
-            </div>
-            <Select
-              value={statusFilter}
-              onValueChange={(
-                value: "all" | "draft" | "published" | "deleted" | null,
-              ) => {
-                if (value) setStatusFilter(value);
-              }}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Series</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
-                <SelectItem value="deleted">Deleted</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {selectedSeries.size > 0 && (
-            <div className="flex items-center gap-4 rounded-lg border bg-muted p-4">
-              <span className="text-sm">
-                {selectedSeries.size} series selected
-              </span>
-              <div className="ml-auto flex gap-4">
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={handleBulkDelete}
-                  disabled={isPending}
-                >
-                  {isPending ? "Deleting..." : "Delete Selected"}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedSeries(new Set())}
-                >
-                  Clear Selection
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {filteredSeries.length === 0 ? (
-            <Card>
-              <CardContent className="py-12">
-                <Empty>
-                  <EmptyHeader>
-                    <EmptyTitle>No series found</EmptyTitle>
-                    <EmptyDescription>
-                      Try adjusting your search or filter criteria
-                    </EmptyDescription>
-                  </EmptyHeader>
-                  <EmptyContent>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setSearchQuery("");
-                        setStatusFilter("all");
-                      }}
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              All Series ({filteredSeries.length}
+              {filteredSeries.length !== allSeries.length &&
+                ` of ${allSeries.length}`}
+              )
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="w-12 px-6 py-3">
+                      <Checkbox
+                        checked={
+                          filteredSeries.length > 0 &&
+                          selectedSeries.size === filteredSeries.length
+                        }
+                        onCheckedChange={toggleAllSeries}
+                        aria-label="Select all series"
+                      />
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Title
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-sm">
+                      Updated
+                    </th>
+                    <th className="px-6 py-3 text-right font-medium text-sm">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredSeries.map((series) => (
+                    <tr
+                      key={series.id}
+                      className={`border-b last:border-0 hover:bg-muted/50 ${
+                        series.deletedAt ? "opacity-60" : ""
+                      }`}
                     >
-                      Clear Filters
-                    </Button>
-                  </EmptyContent>
-                </Empty>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  All Series ({filteredSeries.length}
-                  {filteredSeries.length !== allSeries.length &&
-                    ` of ${allSeries.length}`}
-                  )
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="w-12 px-6 py-3">
-                          <Checkbox
-                            checked={
-                              filteredSeries.length > 0 &&
-                              selectedSeries.size === filteredSeries.length
-                            }
-                            onCheckedChange={toggleAllSeries}
-                            aria-label="Select all series"
-                          />
-                        </th>
-                        <th className="px-6 py-3 text-left font-medium text-sm">
-                          Title
-                        </th>
-                        <th className="px-6 py-3 text-left font-medium text-sm">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 text-left font-medium text-sm">
-                          Updated
-                        </th>
-                        <th className="px-6 py-3 text-right font-medium text-sm">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredSeries.map((series) => (
-                        <tr
-                          key={series.id}
-                          className={`border-b last:border-0 hover:bg-muted/50 ${
-                            series.deletedAt ? "opacity-60" : ""
-                          }`}
-                        >
-                          <td className="px-6 py-4">
-                            <Checkbox
-                              checked={selectedSeries.has(series.id)}
-                              onCheckedChange={() =>
-                                toggleSeriesSelection(series.id)
-                              }
-                              aria-label={`Select ${series.title}`}
-                            />
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-col">
-                              <span className="font-medium">
-                                {series.title}
-                              </span>
-                              <span className="text-muted-foreground text-xs">
-                                {series.slug}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-wrap gap-2">
-                              {series.deletedAt ? (
-                                <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 font-medium text-red-800 text-xs">
-                                  deleted
-                                </span>
-                              ) : (
-                                <span
-                                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-medium text-xs ${
-                                    series.status === "published"
-                                      ? "bg-green-100 text-green-800"
-                                      : "bg-yellow-100 text-yellow-800"
-                                  }`}
-                                >
-                                  {series.status}
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-muted-foreground text-sm">
-                            {new Date(series.updatedAt).toLocaleDateString(
-                              "en-SG",
-                              {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              },
-                            )}
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-4">
-                              {series.deletedAt ? (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleRestore(series.id)}
-                                  disabled={isPending}
-                                >
-                                  {isPending ? "Restoring..." : "Restore"}
-                                </Button>
-                              ) : (
-                                <>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    nativeButton={false}
-                                    render={
-                                      <Link
-                                        href={
-                                          `/studio/series/${series.id}/edit` as Route
-                                        }
-                                      />
+                      <td className="px-6 py-4">
+                        <Checkbox
+                          checked={selectedSeries.has(series.id)}
+                          onCheckedChange={() =>
+                            toggleSeriesSelection(series.id)
+                          }
+                          aria-label={`Select ${series.title}`}
+                        />
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span className="font-medium">{series.title}</span>
+                          <span className="text-muted-foreground text-xs">
+                            {series.slug}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-wrap gap-2">
+                          {series.deletedAt ? (
+                            <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 font-medium text-red-800 text-xs">
+                              deleted
+                            </span>
+                          ) : (
+                            <span
+                              className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-medium text-xs ${
+                                series.status === "published"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-yellow-100 text-yellow-800"
+                              }`}
+                            >
+                              {series.status}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-muted-foreground text-sm">
+                        {new Date(series.updatedAt).toLocaleDateString(
+                          "en-SG",
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          },
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-4">
+                          {series.deletedAt ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleRestore(series.id)}
+                              disabled={isPending}
+                            >
+                              {isPending ? "Restoring..." : "Restore"}
+                            </Button>
+                          ) : (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                nativeButton={false}
+                                render={
+                                  <Link
+                                    href={
+                                      `/studio/series/${series.id}/edit` as Route
                                     }
-                                  >
-                                    Edit
-                                  </Button>
-                                  <AlertDialog>
-                                    <AlertDialogTrigger
-                                      render={
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          disabled={isPending}
-                                        />
-                                      }
+                                  />
+                                }
+                              >
+                                Edit
+                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger
+                                  render={
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      disabled={isPending}
+                                    />
+                                  }
+                                >
+                                  Delete
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Are you sure?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      This will delete the series &ldquo;
+                                      {series.title}&rdquo;. You can restore it
+                                      later from the Deleted filter.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                      Cancel
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleDelete(series.id)}
+                                      className="bg-destructive hover:bg-destructive/90"
                                     >
                                       Delete
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                      <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                          Are you sure?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                          This will delete the series &ldquo;
-                                          {series.title}&rdquo;. You can restore
-                                          it later from the Deleted filter.
-                                        </AlertDialogDescription>
-                                      </AlertDialogHeader>
-                                      <AlertDialogFooter>
-                                        <AlertDialogCancel>
-                                          Cancel
-                                        </AlertDialogCancel>
-                                        <AlertDialogAction
-                                          onClick={() =>
-                                            handleDelete(series.id)
-                                          }
-                                          className="bg-destructive hover:bg-destructive/90"
-                                        >
-                                          Delete
-                                        </AlertDialogAction>
-                                      </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                  </AlertDialog>
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </>
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
