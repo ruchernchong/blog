@@ -1,5 +1,8 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { and, desc, eq, ilike, isNull, or } from "drizzle-orm";
 import { ERROR_IDS } from "@/constants/error-ids";
+import { R2Config } from "@/lib/config/r2.config";
 import { logError } from "@/lib/logger";
 import { db, media, type SelectMedia } from "@/schema";
 import type {
@@ -29,6 +32,18 @@ export interface MediaListOptions {
   verifyR2Existence?: boolean;
 }
 
+export interface UploadFromUrlInput {
+  url: string;
+  alt?: string;
+  caption?: string;
+}
+
+export interface UploadFromPathInput {
+  filePath: string;
+  alt?: string;
+  caption?: string;
+}
+
 export class MediaService {
   constructor(private readonly r2: R2Service) {}
 
@@ -46,6 +61,148 @@ export class MediaService {
       logError(ERROR_IDS.MEDIA_CREATE_FAILED, error, {
         filename: input.filename,
       });
+      throw error;
+    }
+  }
+
+  async uploadFromUrl(input: UploadFromUrlInput): Promise<SelectMedia> {
+    const { url, alt, caption } = input;
+
+    try {
+      // Fetch the image from URL
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch URL: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      // Validate content type
+      const contentType = response.headers.get("content-type")?.split(";")[0];
+      if (
+        !contentType ||
+        !R2Config.ALLOWED_MIME_TYPES.includes(
+          contentType as (typeof R2Config.ALLOWED_MIME_TYPES)[number],
+        )
+      ) {
+        throw new Error(
+          `Invalid content type: ${contentType}. Allowed: ${R2Config.ALLOWED_MIME_TYPES.join(", ")}`,
+        );
+      }
+
+      // Get the buffer
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      if (buffer.length > R2Config.MAX_FILE_SIZE) {
+        throw new Error(
+          `File too large. Maximum size: ${R2Config.MAX_FILE_SIZE / 1024 / 1024}MB`,
+        );
+      }
+
+      // Extract filename from URL or generate one
+      const urlPath = new URL(url).pathname;
+      const urlFilename = urlPath.split("/").pop() || "image";
+      const extension = urlFilename.includes(".")
+        ? ""
+        : `.${contentType.split("/")[1]}`;
+      const filename = `${urlFilename}${extension}`;
+
+      // Upload to R2
+      const uploadResult = await this.r2.uploadObject(
+        buffer,
+        filename,
+        contentType,
+      );
+
+      // Create database record
+      const [created] = await db
+        .insert(media)
+        .values({
+          key: uploadResult.key,
+          filename,
+          url: uploadResult.publicUrl,
+          mimeType: contentType,
+          size: uploadResult.size,
+          alt,
+          caption,
+        })
+        .returning();
+
+      return created;
+    } catch (error) {
+      logError(ERROR_IDS.MEDIA_CREATE_FAILED, error, { url });
+      throw error;
+    }
+  }
+
+  async uploadFromPath(input: UploadFromPathInput): Promise<SelectMedia> {
+    const { filePath, alt, caption } = input;
+
+    try {
+      // Read the file
+      const buffer = await readFile(filePath);
+
+      // Get filename and detect MIME type from extension
+      const filename = path.basename(filePath);
+      const ext = path.extname(filePath).toLowerCase();
+      const mimeTypeMap: Record<string, string> = {
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".gif": "image/gif",
+        ".webp": "image/webp",
+        ".svg": "image/svg+xml",
+      };
+      const mimeType = mimeTypeMap[ext];
+
+      if (!mimeType) {
+        throw new Error(
+          `Unsupported file extension: ${ext}. Supported: ${Object.keys(mimeTypeMap).join(", ")}`,
+        );
+      }
+
+      // Validate content type
+      if (
+        !R2Config.ALLOWED_MIME_TYPES.includes(
+          mimeType as (typeof R2Config.ALLOWED_MIME_TYPES)[number],
+        )
+      ) {
+        throw new Error(
+          `Invalid content type: ${mimeType}. Allowed: ${R2Config.ALLOWED_MIME_TYPES.join(", ")}`,
+        );
+      }
+
+      if (buffer.length > R2Config.MAX_FILE_SIZE) {
+        throw new Error(
+          `File too large. Maximum size: ${R2Config.MAX_FILE_SIZE / 1024 / 1024}MB`,
+        );
+      }
+
+      // Upload to R2
+      const uploadResult = await this.r2.uploadObject(
+        buffer,
+        filename,
+        mimeType,
+      );
+
+      // Create database record
+      const [created] = await db
+        .insert(media)
+        .values({
+          key: uploadResult.key,
+          filename,
+          url: uploadResult.publicUrl,
+          mimeType,
+          size: uploadResult.size,
+          alt,
+          caption,
+        })
+        .returning();
+
+      return created;
+    } catch (error) {
+      logError(ERROR_IDS.MEDIA_CREATE_FAILED, error, { filePath });
       throw error;
     }
   }

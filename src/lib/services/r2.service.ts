@@ -21,6 +21,12 @@ export interface UploadMetadata {
   size: number;
 }
 
+export interface DirectUploadResult {
+  key: string;
+  publicUrl: string;
+  size: number;
+}
+
 export class R2Service {
   private client: S3Client;
   private bucketName: string;
@@ -85,6 +91,48 @@ export class R2Service {
       };
     } catch (error) {
       logError(ERROR_IDS.R2_PRESIGN_FAILED, error, { filename, mimeType });
+      throw error;
+    }
+  }
+
+  async uploadObject(
+    buffer: Buffer | Uint8Array,
+    filename: string,
+    mimeType: string,
+  ): Promise<DirectUploadResult> {
+    if (
+      !R2Config.ALLOWED_MIME_TYPES.includes(
+        mimeType as (typeof R2Config.ALLOWED_MIME_TYPES)[number],
+      )
+    ) {
+      throw new Error(`Invalid file type: ${mimeType}`);
+    }
+
+    if (buffer.length > R2Config.MAX_FILE_SIZE) {
+      throw new Error(
+        `File too large. Maximum size: ${R2Config.MAX_FILE_SIZE / 1024 / 1024}MB`,
+      );
+    }
+
+    const key = this.generateKey(filename);
+
+    try {
+      const command = new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+        Body: buffer,
+        ContentType: mimeType,
+        ContentLength: buffer.length,
+      });
+      await this.client.send(command);
+
+      return {
+        key,
+        publicUrl: `${this.publicUrl}/${key}`,
+        size: buffer.length,
+      };
+    } catch (error) {
+      logError(ERROR_IDS.R2_UPLOAD_FAILED, error, { filename, mimeType });
       throw error;
     }
   }
