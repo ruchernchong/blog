@@ -47,7 +47,7 @@ const CustomLink = ({ href, children, ...props }: CustomLinkProps) => {
         {children}
         <HugeiconsIcon
           icon={ArrowUpRight01Icon}
-          size={16}
+          size={8}
           strokeWidth={2}
           className="inline-flex align-super"
         />
