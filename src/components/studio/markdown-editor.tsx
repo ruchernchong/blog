@@ -3,10 +3,13 @@
 import {
   BlockTypeSelect,
   BoldItalicUnderlineToggles,
+  CodeToggle,
   CreateLink,
+  codeBlockPlugin,
   DiffSourceToggleWrapper,
   diffSourcePlugin,
   headingsPlugin,
+  InsertCodeBlock,
   InsertImage,
   InsertThematicBreak,
   imagePlugin,
@@ -121,11 +124,13 @@ export const MarkdownEditor = forwardRef<
         linkPlugin(),
         linkDialogPlugin(),
         imagePlugin({ imageUploadHandler }),
+        codeBlockPlugin({ defaultCodeBlockLanguage: "typescript" }),
         diffSourcePlugin({ viewMode: "rich-text" }),
         toolbarPlugin({
           toolbarContents: () => (
             <DiffSourceToggleWrapper>
               <BoldItalicUnderlineToggles />
+              <CodeToggle />
               <Separator />
               <ListsToggle />
               <Separator />
@@ -134,6 +139,7 @@ export const MarkdownEditor = forwardRef<
               <CreateLink />
               <InsertImage />
               <InsertThematicBreak />
+              <InsertCodeBlock />
             </DiffSourceToggleWrapper>
           ),
         }),
