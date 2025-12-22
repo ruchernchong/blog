@@ -111,7 +111,7 @@ export const MarkdownEditor = forwardRef<
       ref={editorRef}
       markdown={markdown}
       onChange={onChange}
-      contentEditableClassName="prose dark:prose-invert max-w-none min-h-[400px] p-4"
+      contentEditableClassName="prose max-w-none min-h-[400px] p-4"
       plugins={[
         headingsPlugin(),
         listsPlugin(),
