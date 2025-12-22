@@ -6,40 +6,40 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Development
 
-- `bun run dev` - Start development server
-- `bun run build` - Build for production
-- `bun run start` - Start production server
-- `bun run lint` - Run linting with Biome
-- `bun run format` - Format code with Biome
-- `bun run typecheck` - TypeScript type checking
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm lint` - Run linting with Biome
+- `pnpm format` - Format code with Biome
+- `pnpm typecheck` - TypeScript type checking
 
 ### Database
 
-- `bun run db:generate` - Generate migrations from schema
-- `bun run db:migrate` - Run database migrations
-- `bun run db:push` - Push schema changes to database
-- `bun run db:pull` - Pull schema from existing database
-- `bun run db:check` - Check migration consistency
-- `bun run db:up` - Run pending migrations
-- `bun run db:drop` - Drop database tables
-- `bun run db:studio` - Open Drizzle Studio
-- `bun run db:seed` - Seed database with test data
+- `pnpm db:generate` - Generate migrations from schema
+- `pnpm db:migrate` - Run database migrations
+- `pnpm db:push` - Push schema changes to database
+- `pnpm db:pull` - Pull schema from existing database
+- `pnpm db:check` - Check migration consistency
+- `pnpm db:up` - Run pending migrations
+- `pnpm db:drop` - Drop database tables
+- `pnpm db:studio` - Open Drizzle Studio
+- `pnpm db:seed` - Seed database with test data
 
 ### Testing
 
-- `bun run test` - Run all tests
-- `bun run test:watch` - Run tests in watch mode
-- `bun run test:coverage` - Generate coverage report
-- `bun run test <path>` - Run a specific test file (e.g.,
-  `bun run test src/lib/services/__tests__/cache.service.test.ts`)
+- `pnpm test` - Run all tests
+- `pnpm test:watch` - Run tests in watch mode
+- `pnpm test:coverage` - Generate coverage report
+- `pnpm test <path>` - Run a specific test file (e.g.,
+  `pnpm test src/lib/services/__tests__/cache.service.test.ts`)
 
 ### Release
 
-- `bun run release` - Create semantic release
+- `pnpm release` - Create semantic release
 
 ### MCP Server
 
-- `bun run mcp` - Start MCP server for blog management
+- `pnpm mcp` - Start MCP server for blog management
 
 ## MCP Server
 
