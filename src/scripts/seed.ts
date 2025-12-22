@@ -109,20 +109,6 @@ const main = async () => {
     // Seed the database with generated data
     console.log("📝 Generating and inserting sample posts...\n");
 
-    const availableTags = [
-      "Next.js",
-      "TypeScript",
-      "React",
-      "Testing",
-      "Performance",
-      "Security",
-      "Web Development",
-      "Database",
-      "API",
-      "UX",
-      "Accessibility",
-    ];
-
     await seed(db, { posts }, { count: 10 }).refine((f) => ({
       posts: {
         columns: {
@@ -139,6 +125,7 @@ const main = async () => {
               "debugging-production-issues",
               "monitoring-application-health",
             ],
+            isUnique: true,
           }),
           title: f.valuesFromArray({
             values: [
@@ -153,6 +140,7 @@ const main = async () => {
               "Debugging Production Issues Like a Pro",
               "Monitoring Application Health in Real-Time",
             ],
+            isUnique: true,
           }),
           summary: f.loremIpsum({ sentencesCount: 2 }),
           content: f.loremIpsum({ sentencesCount: 100 }),
@@ -160,20 +148,8 @@ const main = async () => {
             { weight: 0.7, value: f.default({ defaultValue: "published" }) },
             { weight: 0.3, value: f.default({ defaultValue: "draft" }) },
           ]),
-          tags: f.default({
-            defaultValue: (() => {
-              // Randomly select 2-4 tags
-              const numTags = randomInt(2, 5); // 2-4 tags
-              // Fisher-Yates shuffle using crypto.randomInt
-              const shuffled = [...availableTags];
-              for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = randomInt(0, i + 1);
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-              }
-              return shuffled.slice(0, numTags);
-            })(),
-          }),
-          featured: f.boolean(),
+          tags: f.default({ defaultValue: [] }),
+          featured: f.default({ defaultValue: false }),
           authorId: f.default({ defaultValue: seedUser.id }),
           publishedAt: f.date({
             minDate: "2024-01-01",
@@ -194,9 +170,34 @@ const main = async () => {
 
     console.log("✅ Successfully seeded initial data!\n");
 
-    // Update metadata for all posts with actual values
-    console.log("📝 Updating metadata with actual post data...\n");
+    // Update metadata and tags for all posts with actual values
+    console.log("📝 Updating metadata and tags with actual post data...\n");
     const allPosts = await db.select().from(posts);
+
+    const availableTags = [
+      "Next.js",
+      "TypeScript",
+      "React",
+      "Testing",
+      "Performance",
+      "Security",
+      "Web Development",
+      "Database",
+      "API",
+      "UX",
+      "Accessibility",
+    ];
+
+    // Helper to generate random tags
+    const generateRandomTags = () => {
+      const numTags = randomInt(2, 5); // 2-4 tags
+      const shuffled = [...availableTags];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = randomInt(0, i + 1);
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled.slice(0, numTags);
+    };
 
     for (const post of allPosts) {
       const metadata = generateMetadata(
@@ -205,8 +206,12 @@ const main = async () => {
         post.slug,
         post.content,
       );
+      const tags = generateRandomTags();
 
-      await db.update(posts).set({ metadata }).where(eq(posts.id, post.id));
+      await db
+        .update(posts)
+        .set({ metadata, tags })
+        .where(eq(posts.id, post.id));
     }
 
     console.log("✅ Successfully updated all metadata!\n");
