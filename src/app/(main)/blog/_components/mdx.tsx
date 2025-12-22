@@ -14,6 +14,8 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkUnwrapImages from "remark-unwrap-images";
 import { Typography } from "@/components/typography";
+import { Mermaid } from "./mermaid";
+import { remarkMermaid } from "./remark-mermaid";
 
 interface CustomLinkProps
   extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
@@ -89,6 +91,7 @@ const components: MDXComponents = {
   ),
   h3: (props) => <Typography variant="h3" className="text-2xl" {...props} />,
   img: ImageComponent,
+  Mermaid,
 };
 
 export const Mdx = async ({ content }: { content: string }) => {
@@ -98,7 +101,7 @@ export const Mdx = async ({ content }: { content: string }) => {
     options: {
       parseFrontmatter: false, // We use database fields instead of frontmatter
       mdxOptions: {
-        remarkPlugins: [remarkGfm, remarkUnwrapImages],
+        remarkPlugins: [remarkMermaid, remarkGfm, remarkUnwrapImages],
         rehypePlugins: [
           rehypeSlug,
           [

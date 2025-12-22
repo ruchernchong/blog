@@ -211,6 +211,116 @@ const main = async () => {
 
     console.log("✅ Successfully updated all metadata!\n");
 
+    // Add sample Mermaid diagram post
+    console.log("📊 Adding sample Mermaid diagram post...\n");
+    const mermaidContent = `# Visualising System Architecture with Mermaid Diagrams
+
+Mermaid is a powerful diagramming tool that lets you create diagrams using simple text syntax. This post demonstrates various diagram types you can embed directly in MDX.
+
+## Sequence Diagrams
+
+Sequence diagrams are perfect for illustrating how components interact over time:
+
+\`\`\`mermaid
+sequenceDiagram
+    participant User
+    participant Browser
+    participant API
+    participant Database
+
+    User->>Browser: Click "Submit"
+    Browser->>API: POST /api/posts
+    API->>Database: INSERT INTO posts
+    Database-->>API: Success
+    API-->>Browser: 201 Created
+    Browser-->>User: Show success message
+\`\`\`
+
+## Flowcharts
+
+Flowcharts help visualise decision processes and workflows:
+
+\`\`\`mermaid
+flowchart TD
+    A[Start] --> B{Is user authenticated?}
+    B -->|Yes| C[Show dashboard]
+    B -->|No| D[Redirect to login]
+    D --> E[User enters credentials]
+    E --> F{Valid credentials?}
+    F -->|Yes| C
+    F -->|No| G[Show error]
+    G --> E
+\`\`\`
+
+## Entity Relationship Diagrams
+
+ER diagrams are useful for documenting database schemas:
+
+\`\`\`mermaid
+erDiagram
+    USER ||--o{ POST : writes
+    USER {
+        string id PK
+        string name
+        string email
+    }
+    POST ||--|{ TAG : has
+    POST {
+        uuid id PK
+        string title
+        text content
+        string status
+    }
+    TAG {
+        string name PK
+    }
+\`\`\`
+
+## State Diagrams
+
+State diagrams show the different states an entity can be in:
+
+\`\`\`mermaid
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> Published: publish()
+    Published --> Draft: unpublish()
+    Draft --> Deleted: delete()
+    Published --> Deleted: delete()
+    Deleted --> Draft: restore()
+    Deleted --> [*]: permanentDelete()
+\`\`\`
+
+## Conclusion
+
+Mermaid diagrams are a fantastic way to add visual documentation to your technical blog posts without needing external tools or image files.`;
+
+    const mermaidSummary =
+      "A demonstration of embedding Mermaid diagrams in MDX blog posts, including sequence diagrams, flowcharts, and entity relationship diagrams.";
+    const mermaidSlug = "mermaid-diagrams-demo";
+    const mermaidTitle =
+      "Visualising System Architecture with Mermaid Diagrams";
+
+    await db.insert(posts).values({
+      slug: mermaidSlug,
+      title: mermaidTitle,
+      summary: mermaidSummary,
+      content: mermaidContent,
+      status: "published",
+      tags: ["MDX", "Mermaid", "Documentation", "Tutorial"],
+      featured: true,
+      authorId: seedUser.id,
+      publishedAt: new Date(),
+      metadata: generateMetadata(
+        mermaidTitle,
+        mermaidSummary,
+        mermaidSlug,
+        mermaidContent,
+      ),
+    });
+
+    console.log("✅ Added Mermaid diagram sample post!\n");
+
     // Display summary
     const published = allPosts.filter((p) => p.status === "published").length;
     const draft = allPosts.filter((p) => p.status === "draft").length;
