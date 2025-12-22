@@ -23,3 +23,34 @@ export async function POST(request: Request) {
 export async function GET() {
   return Response.json({ status: "ok", service: "mcp-blog" });
 }
+
+export async function DELETE() {
+  return new Response(null, { status: 204 });
+}
+
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      Allow: "GET, POST, DELETE, OPTIONS",
+    },
+  });
+}
+
+export async function HEAD() {
+  return Response.json({ status: "ok", service: "mcp-blog" });
+}
+
+export async function PUT() {
+  return Response.json(
+    { error: "Method not allowed" },
+    { status: 405, headers: { Allow: "GET, POST, DELETE, OPTIONS" } },
+  );
+}
+
+export async function PATCH() {
+  return Response.json(
+    { error: "Method not allowed" },
+    { status: 405, headers: { Allow: "GET, POST, DELETE, OPTIONS" } },
+  );
+}

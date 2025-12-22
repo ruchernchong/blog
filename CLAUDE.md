@@ -98,10 +98,10 @@ Claude mobile app.
 {
   "mcpServers": {
     "blog-remote": {
+      "type": "http",
       "url": "https://ruchern.dev/api/mcp",
-      "auth": {
-        "type": "bearer",
-        "token": "${BLOG_MCP_AUTH_TOKEN}"
+      "headers": {
+        "Authorization": "Bearer ${BLOG_MCP_AUTH_TOKEN}"
       }
     }
   }
