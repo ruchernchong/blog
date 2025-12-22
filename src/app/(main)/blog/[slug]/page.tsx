@@ -6,6 +6,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { cache, cacheSignal } from "react";
 import { StructuredData } from "@/app/_components/structured-data";
@@ -14,7 +15,10 @@ import { Mdx } from "@/app/(main)/blog/_components/mdx";
 import { RelatedPosts } from "@/app/(main)/blog/_components/related-posts";
 import { ScrollProgress } from "@/app/(main)/blog/_components/scroll-progress";
 import { Typography } from "@/components/typography";
+import { Badge } from "@/components/ui/badge";
+import { auth } from "@/lib/auth";
 import {
+  getPostBySlugForPreview,
   getPublishedPostBySlug,
   getPublishedPostSlugs,
 } from "@/lib/queries/posts";
@@ -25,8 +29,13 @@ type Params = Promise<{ slug: string }>;
 const getPost = cache(async (slug: string) => {
   const signal = cacheSignal();
 
-  // Fetch post using query function
-  const post = await getPublishedPostBySlug(slug);
+  // Check if user is authenticated for draft preview
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  // Fetch post - authenticated users can see drafts
+  const post = session
+    ? await getPostBySlugForPreview(slug)
+    : await getPublishedPostBySlug(slug);
 
   // Listen for cache expiration to perform cleanup if needed
   if (signal) {
@@ -78,11 +87,13 @@ export default async function PostPage(props: { params: Params }) {
   // Use cached getPost - deduplicates with generateMetadata call
   const post = await getPost(params.slug);
 
-  if (!post || !post.publishedAt) {
+  if (!post) {
     return notFound();
   }
 
-  const formattedDate = format(post.publishedAt, "dd MMM yyyy");
+  const formattedDate = post.publishedAt
+    ? format(post.publishedAt, "dd MMM yyyy")
+    : "";
 
   return (
     <>
@@ -90,17 +101,20 @@ export default async function PostPage(props: { params: Params }) {
       <StructuredData data={post.metadata.structuredData} />
       <article className="prose mx-auto mb-16 flex max-w-4xl flex-col gap-12 prose-img:rounded-2xl prose-a:text-foreground prose-a:underline">
         <div className="flex flex-col items-center gap-4 text-center">
+          {post.status === "draft" && <Badge variant="secondary">Draft</Badge>}
           <StatsBar slug={post.slug} />
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-muted-foreground">
             <div className="flex items-center gap-2">
               <HugeiconsIcon icon={Calendar01Icon} size={20} strokeWidth={2} />
-              <time
-                className="whitespace-nowrap"
-                dateTime={formatISO(post.publishedAt)}
-                title={formattedDate}
-              >
-                {formattedDate}
-              </time>
+              {post.publishedAt && (
+                <time
+                  className="whitespace-nowrap"
+                  dateTime={formatISO(post.publishedAt)}
+                  title={formattedDate}
+                >
+                  {formattedDate}
+                </time>
+              )}
             </div>
             <span>&middot;</span>
             <div className="flex items-center gap-2">

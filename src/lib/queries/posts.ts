@@ -49,6 +49,15 @@ export const getPublishedPostBySlug = async (slug: string) => {
   });
 };
 
+export const getPostBySlugForPreview = async (slug: string) => {
+  return db.query.posts.findFirst({
+    with: {
+      author: true,
+    },
+    where: and(eq(posts.slug, slug), isNull(posts.deletedAt)),
+  });
+};
+
 export const getPublishedPostSlugs = async () => {
   return db
     .select({ slug: posts.slug })
