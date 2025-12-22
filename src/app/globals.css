@@ -56,10 +56,6 @@
     content: "";
   }
 
-  .prose pre {
-    @apply rounded-2xl border border-border bg-muted p-4;
-  }
-
   .prose pre code {
     @apply m-0 border-0 bg-transparent p-0;
   }
