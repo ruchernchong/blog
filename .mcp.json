@@ -6,6 +6,10 @@
       "headers": {
         "Authorization": "Bearer ${BLOG_MCP_AUTH_TOKEN}"
       }
+    },
+    "shadcn": {
+      "command": "bunx",
+      "args": ["shadcn@latest", "mcp"]
     }
   }
 }
