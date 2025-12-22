@@ -1,5 +1,6 @@
 import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import rehypeShiki from "@shikijs/rehype";
 import type { MDXComponents } from "mdx/types";
 import type { Route } from "next";
 import Image from "next/image";
@@ -7,9 +8,6 @@ import Link from "next/link";
 import { compileMDX } from "next-mdx-remote/rsc";
 import { Suspense } from "react";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypePrettyCode, {
-  type Options as PrettyCodeOptions,
-} from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import remarkUnwrapImages from "remark-unwrap-images";
@@ -105,10 +103,10 @@ export const Mdx = async ({ content }: { content: string }) => {
         rehypePlugins: [
           rehypeSlug,
           [
-            rehypePrettyCode,
+            rehypeShiki,
             {
-              theme: "github-light",
-            } satisfies PrettyCodeOptions,
+              theme: "nord",
+            },
           ],
           [
             rehypeAutolinkHeadings,
