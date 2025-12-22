@@ -2,6 +2,12 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Providers } from "@/app/studio/providers";
 import { UserMenu } from "@/components/auth/user-menu";
+import { AppSidebar } from "@/components/studio/app-sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 
 export const metadata: Metadata = {
   title: "Content Studio | Manage Blog Posts",
@@ -17,15 +23,16 @@ export default function StudioLayout({
 }: Readonly<{ children: ReactNode }>) {
   return (
     <Providers>
-      <div className="min-h-screen">
-        <header className="border-b bg-white">
-          <div className="container mx-auto flex items-center justify-between p-4">
-            <h1 className="font-bold text-xl">Content Studio</h1>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <header className="flex h-14 items-center justify-between border-b px-4">
+            <SidebarTrigger />
             <UserMenu />
-          </div>
-        </header>
-        <main className="container mx-auto px-4 py-8">{children}</main>
-      </div>
+          </header>
+          <main className="p-4">{children}</main>
+        </SidebarInset>
+      </SidebarProvider>
     </Providers>
   );
 }
