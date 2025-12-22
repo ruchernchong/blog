@@ -23,7 +23,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "bun pm version ${nextRelease.version} --no-git-tag-version"
+        "prepareCmd": "pnpm version ${nextRelease.version} --no-git-tag-version"
       }
     ],
     [
