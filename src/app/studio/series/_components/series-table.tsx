@@ -183,7 +183,7 @@ export function SeriesTable() {
 
   if (allSeries.length === 0) {
     return (
-      <div className="mx-auto flex max-w-6xl flex-col gap-6">
+      <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-bold text-3xl">Series</h1>
@@ -210,7 +210,7 @@ export function SeriesTable() {
   }
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6">
+    <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-3xl">Series</h1>

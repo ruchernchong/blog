@@ -16,7 +16,7 @@ export default async function EditSeriesPage({ params }: EditSeriesPageProps) {
   }
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-8">
+    <div className="flex flex-col gap-8">
       <SeriesForm series={series} />
       <SeriesPostsManager seriesId={id} />
     </div>

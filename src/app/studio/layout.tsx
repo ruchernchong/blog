@@ -19,7 +19,7 @@ export default function StudioLayout({
     <Providers>
       <div className="min-h-screen">
         <header className="border-b bg-white">
-          <div className="container mx-auto flex items-center justify-between px-4 py-4">
+          <div className="container mx-auto flex items-center justify-between p-4">
             <h1 className="font-bold text-xl">Content Studio</h1>
             <UserMenu />
           </div>

@@ -1,5 +1,5 @@
 import { SeriesTable } from "@/app/studio/series/_components/series-table";
 
-export default function SeriesListPage() {
+export default async function SeriesPage() {
   return <SeriesTable />;
 }

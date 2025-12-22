@@ -196,37 +196,33 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-4xl">
-        <Card>
-          <CardContent className="flex items-center justify-center py-12">
-            <p className="text-muted-foreground">Loading...</p>
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardContent className="flex items-center justify-center py-12">
+          <p className="text-muted-foreground">Loading...</p>
+        </CardContent>
+      </Card>
     );
   }
 
   if (!post) {
     return (
-      <div className="mx-auto max-w-4xl">
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="mb-4 text-muted-foreground">Post not found</p>
-            <Button
-              variant="outline"
-              nativeButton={false}
-              render={<Link href="/studio/posts" />}
-            >
-              Back to Posts
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardContent className="py-12 text-center">
+          <p className="mb-4 text-muted-foreground">Post not found</p>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href="/studio/posts" />}
+          >
+            Back to Posts
+          </Button>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-6">
+    <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-3xl">Edit Post</h1>

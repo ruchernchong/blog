@@ -1,7 +1,5 @@
 import { PostsTable } from "@/app/studio/posts/_components/posts-table";
 
-const PostsListPage = () => {
+export default async function PostsPage() {
   return <PostsTable />;
-};
-
-export default PostsListPage;
+}
