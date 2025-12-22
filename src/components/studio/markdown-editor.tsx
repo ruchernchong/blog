@@ -8,6 +8,7 @@ import {
   diffSourcePlugin,
   headingsPlugin,
   InsertImage,
+  InsertThematicBreak,
   imagePlugin,
   ListsToggle,
   linkDialogPlugin,
@@ -18,6 +19,7 @@ import {
   markdownShortcutPlugin,
   quotePlugin,
   Separator,
+  thematicBreakPlugin,
   toolbarPlugin,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
@@ -114,6 +116,7 @@ export const MarkdownEditor = forwardRef<
         headingsPlugin(),
         listsPlugin(),
         quotePlugin(),
+        thematicBreakPlugin(),
         markdownShortcutPlugin(),
         linkPlugin(),
         linkDialogPlugin(),
@@ -130,6 +133,7 @@ export const MarkdownEditor = forwardRef<
               <Separator />
               <CreateLink />
               <InsertImage />
+              <InsertThematicBreak />
             </DiffSourceToggleWrapper>
           ),
         }),
