@@ -46,19 +46,6 @@
   h1 .permalink::after {
     @apply content-none;
   }
-
-  .prose code {
-    @apply m-1 rounded-lg border border-border bg-muted p-1 text-foreground;
-  }
-
-  .prose code::before,
-  .prose code::after {
-    content: "";
-  }
-
-  .prose pre code {
-    @apply m-0 border-0 bg-transparent p-0;
-  }
 }
 
 /* View Transitions API CSS */
