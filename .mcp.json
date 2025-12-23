@@ -7,10 +7,6 @@
         "Authorization": "Bearer ${BLOG_MCP_AUTH_TOKEN}"
       }
     },
-    "nextjs": {
-      "command": "bunx",
-      "args": ["-y", "@vercel/next-devtools-mcp@latest"]
-    },
     "shadcn": {
       "command": "bunx",
       "args": ["shadcn@latest", "mcp"]

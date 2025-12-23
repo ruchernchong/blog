@@ -100,7 +100,7 @@ async function imageUploadHandler(file: File): Promise<string> {
 export const MarkdownEditor = forwardRef<
   MarkdownEditorMethods,
   MarkdownEditorProps
->(function MarkdownEditor({ markdown, onChange }, ref) {
+>(({ markdown, onChange }, ref) => {
   const editorRef = useRef<MDXEditorMethods>(null);
 
   useImperativeHandle(ref, () => ({
@@ -114,7 +114,7 @@ export const MarkdownEditor = forwardRef<
       ref={editorRef}
       markdown={markdown}
       onChange={onChange}
-      contentEditableClassName="prose max-w-none min-h-[400px] p-4"
+      contentEditableClassName="prose max-w-none p-6"
       plugins={[
         headingsPlugin(),
         listsPlugin(),
@@ -124,8 +124,8 @@ export const MarkdownEditor = forwardRef<
         linkPlugin(),
         linkDialogPlugin(),
         imagePlugin({ imageUploadHandler }),
-        codeBlockPlugin({ defaultCodeBlockLanguage: "typescript" }),
-        diffSourcePlugin({ viewMode: "rich-text" }),
+        codeBlockPlugin(),
+        diffSourcePlugin({ viewMode: "source" }),
         toolbarPlugin({
           toolbarContents: () => (
             <DiffSourceToggleWrapper>

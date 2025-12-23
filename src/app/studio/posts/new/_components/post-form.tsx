@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,6 +15,7 @@ import {
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import slugify from "slugify";
 import { z } from "zod";
+import { ContentEditor } from "@/components/studio/content-editor";
 import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,11 +40,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-
-const ContentEditor = dynamic(
-  () => import("@/components/studio/content-editor"),
-  { ssr: false },
-);
 
 const newPostSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -200,12 +195,10 @@ export function PostForm({ seriesOptions }: PostFormProps) {
                   name="content"
                   render={({ field, fieldState }) => (
                     <Field className="flex h-full flex-col">
-                      <Suspense fallback={null}>
-                        <ContentEditor
-                          markdown={field.value}
-                          onChange={field.onChange}
-                        />
-                      </Suspense>
+                      <ContentEditor
+                        markdown={field.value}
+                        onChange={field.onChange}
+                      />
                       {fieldState.error && (
                         <FieldError className="px-4">
                           {fieldState.error.message}

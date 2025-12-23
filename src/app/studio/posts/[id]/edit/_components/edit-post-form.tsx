@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -12,6 +11,7 @@ import {
   useState,
   useTransition,
 } from "react";
+import { ContentEditor } from "@/components/studio/content-editor";
 import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,11 +25,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-
-const ContentEditor = dynamic(
-  () => import("@/components/studio/content-editor"),
-  { ssr: false },
-);
 
 interface Post {
   id: string;
@@ -401,21 +396,10 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Content</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[600px]">
-              <Suspense fallback={null}>
-                <ContentEditor
-                  markdown={formData.content}
-                  onChange={(content) => setFormData({ ...formData, content })}
-                />
-              </Suspense>
-            </div>
-          </CardContent>
-        </Card>
+        <ContentEditor
+          markdown={formData.content}
+          onChange={(content) => setFormData({ ...formData, content })}
+        />
 
         <div className="flex items-center justify-between">
           <div className="flex gap-4">
