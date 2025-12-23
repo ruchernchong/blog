@@ -66,6 +66,7 @@
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "react-hook-form": "^7.65.0",
+    "react-markdown": "^10.1.0",
     "react-resizable-panels": "3",
     "react-spring": "^10.0.1",
     "reading-time": "^1.5.0",
