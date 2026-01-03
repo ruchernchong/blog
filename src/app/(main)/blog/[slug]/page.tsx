@@ -6,7 +6,6 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Metadata } from "next";
-import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { StructuredData } from "@/app/_components/structured-data";
@@ -15,22 +14,15 @@ import { Mdx } from "@/app/(main)/blog/_components/mdx";
 import { RelatedPosts } from "@/app/(main)/blog/_components/related-posts";
 import { ScrollProgress } from "@/app/(main)/blog/_components/scroll-progress";
 import { Typography } from "@/components/typography";
-import { Badge } from "@/components/ui/badge";
 import {
-  getPostBySlugForPreview,
   getPublishedPostBySlug,
   getPublishedPostSlugs,
 } from "@/lib/queries/posts";
 
 type Params = Promise<{ slug: string }>;
 
-// Cached post fetching - uses draftMode for preview
 const getPost = cache(async (slug: string) => {
-  const { isEnabled } = await draftMode();
-
-  const post = isEnabled
-    ? await getPostBySlugForPreview(slug)
-    : await getPublishedPostBySlug(slug);
+  const post = await getPublishedPostBySlug(slug);
 
   if (!post) {
     return;
@@ -92,7 +84,6 @@ export default async function PostPage(props: { params: Params }) {
       <StructuredData data={post.metadata.structuredData} />
       <article className="prose mx-auto mb-16 flex max-w-4xl flex-col gap-12 prose-img:rounded-2xl prose-a:text-foreground prose-a:underline">
         <div className="flex flex-col items-center gap-4 text-center">
-          {post.status === "draft" && <Badge variant="secondary">Draft</Badge>}
           <StatsBar slug={post.slug} />
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-muted-foreground">
             <div className="flex items-center gap-2">
