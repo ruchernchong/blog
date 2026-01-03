@@ -6,9 +6,9 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Metadata } from "next";
-import { headers } from "next/headers";
+import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
-import { cache, cacheSignal } from "react";
+import { cache } from "react";
 import { StructuredData } from "@/app/_components/structured-data";
 import StatsBar from "@/app/(main)/analytics/_components/stats-bar";
 import { Mdx } from "@/app/(main)/blog/_components/mdx";
@@ -16,7 +16,6 @@ import { RelatedPosts } from "@/app/(main)/blog/_components/related-posts";
 import { ScrollProgress } from "@/app/(main)/blog/_components/scroll-progress";
 import { Typography } from "@/components/typography";
 import { Badge } from "@/components/ui/badge";
-import { auth } from "@/lib/auth";
 import {
   getPostBySlugForPreview,
   getPublishedPostBySlug,
@@ -25,35 +24,27 @@ import {
 
 type Params = Promise<{ slug: string }>;
 
-// Cached post fetching with cacheSignal for cleanup
+// Cached post fetching - uses draftMode for preview
 const getPost = cache(async (slug: string) => {
-  const signal = cacheSignal();
+  const { isEnabled } = await draftMode();
 
-  // Check if user is authenticated for draft preview
-  const session = await auth.api.getSession({ headers: await headers() });
-
-  // Fetch post - authenticated users can see drafts
-  const post = session
+  const post = isEnabled
     ? await getPostBySlugForPreview(slug)
     : await getPublishedPostBySlug(slug);
-
-  // Listen for cache expiration to perform cleanup if needed
-  if (signal) {
-    signal.addEventListener("abort", () => {
-      // Cache lifetime ended - cleanup resources if needed
-      console.log(`[cacheSignal] Cache expired for post: ${slug}`);
-    });
-  }
 
   if (!post) {
     return;
   }
 
-  // TODO: Interim solution to use the opengraph images from the generated ones
-  delete post.metadata.openGraph.images;
-  delete post.metadata.twitter.images;
-
-  return post;
+  // Return post with images removed from metadata (using generated OG images instead)
+  return {
+    ...post,
+    metadata: {
+      ...post.metadata,
+      openGraph: { ...post.metadata.openGraph, images: undefined },
+      twitter: { ...post.metadata.twitter, images: undefined },
+    },
+  };
 });
 
 export async function generateMetadata(props: {
