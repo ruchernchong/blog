@@ -53,7 +53,7 @@ bun run build        # Build for production
 
 ### Analytics & Stats
 - **Custom Analytics**: Privacy-focused visitor tracking with IP hashing
-- **Post Statistics**: Redis-powered likes and views
+- **Post Statistics**: Client-side views tracking (likes temporarily disabled)
 - **Popular Posts**: Top posts by view count
 - **Related Posts**: Tag-based recommendations with Jaccard similarity
 

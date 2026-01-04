@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { incrementLikes, incrementViews } from "@/app/_actions/stats";
+// import { incrementLikes } from "@/app/_actions/stats";
+import { incrementViews } from "@/app/_actions/stats";
 import { getBrowsers } from "@/app/(main)/analytics/_actions/browsers";
 import { getCountries } from "@/app/(main)/analytics/_actions/countries";
 import { getDevices } from "@/app/(main)/analytics/_actions/devices";
@@ -27,16 +28,16 @@ export const analyticsRouter = router({
   incrementViews: publicProcedure
     .input(z.object({ slug: z.string() }))
     .mutation(({ input }) => incrementViews(input.slug)),
-  incrementLikes: publicProcedure
-    .input(z.object({ slug: z.string() }))
-    .mutation(({ input }) => incrementLikes(input.slug)),
-  getLikesByUser: publicProcedure
-    .input(z.object({ slug: z.string(), userHash: z.string().optional() }))
-    .query(({ input }) =>
-      postStatsService.getLikesByUser(input.slug, input.userHash),
-    ),
-  getTotalLikes: publicProcedure
-    .input(z.object({ slug: z.string() }))
-    .query(({ input }) => postStatsService.getTotalLikes(input.slug)),
+  // incrementLikes: publicProcedure
+  //   .input(z.object({ slug: z.string() }))
+  //   .mutation(({ input }) => incrementLikes(input.slug)),
+  // getLikesByUser: publicProcedure
+  //   .input(z.object({ slug: z.string(), userHash: z.string().optional() }))
+  //   .query(({ input }) =>
+  //     postStatsService.getLikesByUser(input.slug, input.userHash),
+  //   ),
+  // getTotalLikes: publicProcedure
+  //   .input(z.object({ slug: z.string() }))
+  //   .query(({ input }) => postStatsService.getTotalLikes(input.slug)),
   getTotalVisits: publicProcedure.query(() => getTotalVisits()),
 });

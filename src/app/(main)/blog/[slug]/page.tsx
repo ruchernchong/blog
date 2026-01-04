@@ -9,9 +9,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { StructuredData } from "@/app/_components/structured-data";
-import StatsBar from "@/app/(main)/analytics/_components/stats-bar";
+import { StatsBar } from "@/app/(main)/analytics/_components/stats-bar";
 import { Mdx } from "@/app/(main)/blog/_components/mdx";
-import { RelatedPosts } from "@/app/(main)/blog/_components/related-posts";
+// import { RelatedPosts } from "@/app/(main)/blog/_components/related-posts";
 import { ScrollProgress } from "@/app/(main)/blog/_components/scroll-progress";
 import { Typography } from "@/components/typography";
 import {
@@ -121,7 +121,7 @@ export default async function PostPage(props: { params: Params }) {
         <div>
           <Mdx content={post.content} />
         </div>
-        <RelatedPosts slug={post.slug} />
+        {/*<RelatedPosts slug={post.slug} />*/}
       </article>
     </>
   );

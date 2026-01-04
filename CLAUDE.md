@@ -128,12 +128,16 @@ A Next.js 16 portfolio website with an integrated blog system and Content Studio
 
 - **Blog System**: Database-backed MDX with automatic metadata generation
 - **Content Studio**: CMS at `/studio` for managing posts and media
-- **Post Statistics**: Redis-powered likes and views tracking
+- **Post Statistics**: Client-side views tracking (likes temporarily disabled)
 - **Related Posts**: Tag-based recommendations using Jaccard similarity
 - **OpenGraph Images**: Dynamic OG image generation at `/og` route
 - **Analytics**: Privacy-focused visitor tracking at `/analytics`
 - **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers
 - **RSS Feed**: Dynamic `/feed.xml` endpoint
+
+### Temporary Changes
+
+- **Likes Feature Disabled**: The likes functionality is currently commented out to enable static generation of blog post pages. The code is preserved in comments for potential future re-enablement. Views are now tracked client-side using React 19's `useEffectEvent`.
 
 ### Project Structure
 
@@ -207,6 +211,12 @@ See `.env.example` for all required variables:
 - kebab-case for filenames
 - Tests in `__tests__/` directories
 - Named exports preferred
+
+### Testing
+
+- Use `it("should...")` convention for test descriptions
+- Mock external dependencies (database, cache, APIs)
+- Test behaviour, not implementation details
 
 ### Components
 
