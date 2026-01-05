@@ -1,8 +1,8 @@
 "use client";
 
 import type { Route } from "next";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Link } from "next-view-transitions";
 import type { PropsWithChildren } from "react";
 import { Logo } from "@/components/logo";
 import { navLinks } from "@/config";

@@ -7,7 +7,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { cache } from "react";
+import { Suspense } from "react";
 import { StructuredData } from "@/app/_components/structured-data";
 import { StatsBar } from "@/app/(main)/analytics/_components/stats-bar";
 import { Mdx } from "@/app/(main)/blog/_components/mdx";
@@ -19,9 +19,11 @@ import {
   getPublishedPostSlugs,
 } from "@/lib/queries/posts";
 
-type Params = Promise<{ slug: string }>;
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
 
-const getPost = cache(async (slug: string) => {
+const getPost = async (slug: string) => {
   const post = await getPublishedPostBySlug(slug);
 
   if (!post) {
@@ -33,17 +35,17 @@ const getPost = cache(async (slug: string) => {
     ...post,
     metadata: {
       ...post.metadata,
-      openGraph: { ...post.metadata.openGraph, images: undefined },
-      twitter: { ...post.metadata.twitter, images: undefined },
+      openGraph: { ...post.metadata.openGraph },
+      twitter: { ...post.metadata.twitter },
     },
   };
-});
+};
 
-export async function generateMetadata(props: {
-  params: Params;
-}): Promise<Metadata> {
-  const params = await props.params;
-  const post = await getPost(params.slug);
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getPost(slug);
 
   if (!post) {
     notFound();
@@ -65,10 +67,8 @@ export async function generateStaticParams() {
   return publishedPosts.map(({ slug }) => ({ slug }));
 }
 
-export default async function PostPage(props: { params: Params }) {
-  const params = await props.params;
-  // Use cached getPost - deduplicates with generateMetadata call
-  const post = await getPost(params.slug);
+async function PostContent({ slug }: { slug: string }) {
+  const post = await getPublishedPostBySlug(slug);
 
   if (!post) {
     return notFound();
@@ -118,11 +118,18 @@ export default async function PostPage(props: { params: Params }) {
           </div>
           {post.summary}
         </aside>
-        <div>
-          <Mdx content={post.content} />
-        </div>
-        {/*<RelatedPosts slug={post.slug} />*/}
+        <Mdx content={post.content} />
       </article>
     </>
+  );
+}
+
+export default async function PostPage({ params }: PageProps) {
+  const { slug } = await params;
+
+  return (
+    <Suspense>
+      <PostContent slug={slug} />
+    </Suspense>
   );
 }

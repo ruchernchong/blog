@@ -1,5 +1,7 @@
-import { createSearchParamsCache, parseAsString } from "nuqs/server";
+import { createLoader, parseAsString } from "nuqs/server";
 
-export const blogSearchParamsCache = createSearchParamsCache({
+export const tagSearchParams = {
   tag: parseAsString,
-});
+};
+
+export const loadSearchParams = createLoader(tagSearchParams);

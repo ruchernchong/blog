@@ -1,3 +1,5 @@
+import { ViewIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
@@ -5,7 +7,15 @@ import { Typography } from "@/components/typography";
 import { Badge } from "@/components/ui/badge";
 import type { PostMetadata } from "@/schema/posts";
 
+function formatViews(views: number): string {
+  if (views >= 1000) {
+    return `${(views / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+  }
+  return views.toLocaleString();
+}
+
 interface FeaturedPostData {
+  slug: string;
   title: string;
   summary: string | null;
   publishedAt: Date | null;
@@ -15,9 +25,10 @@ interface FeaturedPostData {
 
 interface FeaturedPostProps {
   post: FeaturedPostData;
+  views?: number;
 }
 
-export const FeaturedPost = ({ post }: FeaturedPostProps) => {
+export function FeaturedPost({ post, views = 0 }: FeaturedPostProps) {
   if (!post.publishedAt) return null;
 
   const formattedDate = format(post.publishedAt, "dd MMMM yyyy");
@@ -37,9 +48,11 @@ export const FeaturedPost = ({ post }: FeaturedPostProps) => {
           >
             {formattedDate}
           </time>
-          <span className="text-muted-foreground text-sm">
-            · {post.metadata.readingTime}
-          </span>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <span>·</span>
+            <HugeiconsIcon icon={ViewIcon} size={16} strokeWidth={2} />
+            <span className="text-sm">{formatViews(views)}</span>
+          </div>
         </div>
 
         <Typography variant="h2" className="line-clamp-2 capitalize">
@@ -71,4 +84,4 @@ export const FeaturedPost = ({ post }: FeaturedPostProps) => {
       </div>
     </Link>
   );
-};
+}

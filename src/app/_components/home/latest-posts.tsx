@@ -6,13 +6,20 @@ import type { Route } from "next";
 import Link from "next/link";
 import { Typography } from "@/components/typography";
 import { Button } from "@/components/ui/button";
-import type { SelectPost } from "@/schema/posts";
+import type { PostMetadata } from "@/schema/posts";
 
-interface LatestPostsProps {
-  posts: SelectPost[];
+interface PostData {
+  id: string;
+  title: string;
+  publishedAt: Date | null;
+  metadata: PostMetadata;
 }
 
-function PostItem({ post }: { post: SelectPost }) {
+interface LatestPostsProps {
+  posts: PostData[];
+}
+
+function PostItem({ post }: { post: PostData }) {
   if (!post.publishedAt) {
     return null;
   }

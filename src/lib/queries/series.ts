@@ -99,13 +99,17 @@ export const getSeriesForSelector = async () => {
 };
 
 export const getPublishedSeriesWithPosts = async () => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("series");
+
   const seriesList = await getPublishedSeriesWithPostCount();
 
-  const seriesWithPosts = await Promise.all(
-    seriesList.map(async (s) => {
-      const seriesPosts = await getPublishedPostsInSeries(s.id);
+  return await Promise.all(
+    seriesList.map(async (series) => {
+      const seriesPosts = await getPublishedPostsInSeries(series.id);
       return {
-        ...s,
+        ...series,
         posts: seriesPosts.map((p) => ({
           slug: p.slug,
           title: p.title,
@@ -113,6 +117,4 @@ export const getPublishedSeriesWithPosts = async () => {
       };
     }),
   );
-
-  return seriesWithPosts;
 };

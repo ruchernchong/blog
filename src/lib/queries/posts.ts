@@ -1,5 +1,6 @@
 import {
   and,
+  arrayContains,
   arrayOverlaps,
   desc,
   eq,
@@ -21,17 +22,49 @@ export const getPostBySlug = async (slug: string) => {
   return post;
 };
 
-export const getPublishedPosts = async () => {
+export async function getPublishedPosts() {
   "use cache";
   cacheLife("max");
   cacheTag("posts");
 
-  return db
-    .select()
-    .from(posts)
-    .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)))
-    .orderBy(desc(posts.publishedAt));
-};
+  return db.query.posts.findMany({
+    columns: {
+      content: false,
+    },
+    where: and(eq(posts.status, "published"), isNull(posts.deletedAt)),
+    orderBy: desc(posts.publishedAt),
+  });
+}
+
+/**
+ * Get published posts for the blog grid with optional filtering
+ *
+ * @param tag - Filter by tag (optional)
+ * @returns Posts excluding featured when no tag filter, or all matching posts when filtered
+ */
+export async function getPublishedPostsForGrid(tag?: string) {
+  "use cache";
+  cacheLife("max");
+  cacheTag("posts");
+
+  const conditions = [eq(posts.status, "published"), isNull(posts.deletedAt)];
+
+  if (tag) {
+    // Filter by tag
+    conditions.push(arrayContains(posts.tags, [tag]));
+  } else {
+    // Exclude featured posts when showing all
+    conditions.push(eq(posts.featured, false));
+  }
+
+  return db.query.posts.findMany({
+    columns: {
+      content: false,
+    },
+    where: and(...conditions),
+    orderBy: desc(posts.publishedAt),
+  });
+}
 
 export async function getFeaturedPosts() {
   "use cache";

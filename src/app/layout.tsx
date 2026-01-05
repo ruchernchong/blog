@@ -3,9 +3,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Figtree, Geist_Mono } from "next/font/google";
 import Script from "next/script";
-import { ViewTransitions } from "next-view-transitions";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { type ReactNode, Suspense } from "react";
+import type { ReactNode } from "react";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { cn } from "@/lib/utils";
 import "@/app/globals.css";
@@ -75,11 +74,7 @@ export default function RootLayout({
           geistMono.variable,
         )}
       >
-        <Suspense>
-          <NuqsAdapter>
-            <ViewTransitions>{children}</ViewTransitions>
-          </NuqsAdapter>
-        </Suspense>
+        <NuqsAdapter>{children}</NuqsAdapter>
         <VercelAnalytics />
         <SpeedInsights />
         <Script

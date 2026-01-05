@@ -122,3 +122,27 @@ export async function getTotalLikes(slug: string): Promise<number> {
     0,
   );
 }
+
+/**
+ * Get all view counts from the popular posts sorted set
+ *
+ * @returns Map of slug to view count
+ */
+export async function getAllViewCounts(): Promise<Map<string, number>> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("views");
+
+  const results = await redis.zrange(
+    CacheConfig.REDIS_KEYS.POPULAR_SET,
+    0,
+    -1,
+    { withScores: true },
+  );
+
+  const viewMap = new Map<string, number>();
+  for (let i = 0; i < results.length; i += 2) {
+    viewMap.set(results[i] as string, Number(results[i + 1]));
+  }
+  return viewMap;
+}

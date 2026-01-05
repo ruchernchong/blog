@@ -181,6 +181,7 @@ export function SeriesTable() {
     return matchesSearch && matchesStatus;
   });
 
+  // TODO: To be fixed. This should be an empty state
   if (allSeries.length === 0) {
     return (
       <div className="flex flex-col gap-6">

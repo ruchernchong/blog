@@ -30,7 +30,7 @@ interface MermaidProps {
   chart: string;
 }
 
-export const Mermaid = ({ chart }: MermaidProps) => {
+export function Mermaid({ chart }: MermaidProps) {
   const id = useId();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -51,4 +51,4 @@ export const Mermaid = ({ chart }: MermaidProps) => {
       />
     </figure>
   );
-};
+}
