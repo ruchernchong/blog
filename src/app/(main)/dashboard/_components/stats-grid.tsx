@@ -5,6 +5,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
+import { cacheLife, cacheTag } from "next/cache";
 import { getTotalVisits } from "@/app/(main)/analytics/_actions/visits";
 import { StatCard } from "@/app/(main)/dashboard/_components/stat-card";
 import {
@@ -14,6 +15,9 @@ import {
 } from "@/lib/github";
 
 export async function StatsGrid() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("dashboard-stats");
   const [totalVisits, followers, stars, contributions] = await Promise.all([
     getTotalVisits(),
     getGitHubFollowers(),

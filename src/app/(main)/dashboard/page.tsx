@@ -50,9 +50,7 @@ export default function DashboardPage() {
         action={<LiveBadge />}
       />
 
-      <Suspense>
-        <StatsGrid />
-      </Suspense>
+      <StatsGrid />
 
       <Suspense>
         <ViewsByPage />
