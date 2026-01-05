@@ -5,7 +5,9 @@ import type { Route } from "next";
 import Link from "next/link";
 import { Typography } from "@/components/typography";
 import { Badge } from "@/components/ui/badge";
-import type { PostMetadata } from "@/schema/posts";
+import { getFeaturedPosts } from "@/lib/queries/posts";
+import { getPopularPosts } from "@/lib/services/popular-posts";
+import { getAllViewCounts } from "@/lib/services/post-stats";
 
 function formatViews(views: number): string {
   if (views >= 1000) {
@@ -14,23 +16,21 @@ function formatViews(views: number): string {
   return views.toLocaleString();
 }
 
-interface FeaturedPostData {
-  slug: string;
-  title: string;
-  summary: string | null;
-  publishedAt: Date | null;
-  metadata: PostMetadata;
-  tags?: string[];
-}
+export async function FeaturedPost() {
+  const [popularPosts, featuredPosts, viewCounts] = await Promise.all([
+    getPopularPosts(1),
+    getFeaturedPosts(),
+    getAllViewCounts(),
+  ]);
 
-interface FeaturedPostProps {
-  post: FeaturedPostData;
-  views?: number;
-}
+  // Prefer explicitly featured post, fallback to most popular
+  const post = featuredPosts[0] ?? popularPosts[0];
 
-export function FeaturedPost({ post, views = 0 }: FeaturedPostProps) {
-  if (!post.publishedAt) return null;
+  if (!post || !post.publishedAt) {
+    return null;
+  }
 
+  const views = viewCounts.get(post.slug) ?? 0;
   const formattedDate = format(post.publishedAt, "dd MMMM yyyy");
 
   return (
