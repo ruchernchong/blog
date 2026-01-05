@@ -1,10 +1,13 @@
-"use server";
-
 import { desc, sql } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 import { db, sessions } from "@/schema";
 
-export const getReferrers = async () =>
-  db
+export const getReferrers = async () => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("analytics");
+
+  return db
     .select({
       referrer: sessions.referrer,
       count: sql<number>`CAST(COUNT(${sessions.referrer}) AS INTEGER)`,
@@ -13,3 +16,4 @@ export const getReferrers = async () =>
     .from(sessions)
     .groupBy(sessions.referrer)
     .orderBy(desc(sql`COUNT(${sessions.referrer})`));
+};

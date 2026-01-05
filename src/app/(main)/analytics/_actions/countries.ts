@@ -1,10 +1,13 @@
-"use server";
-
 import { desc, isNotNull, sql } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 import { db, sessions } from "@/schema";
 
-export const getCountries = async () =>
-  db
+export const getCountries = async () => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("analytics");
+
+  return db
     .select({
       country: sessions.country,
       flag: sessions.flag,
@@ -15,3 +18,4 @@ export const getCountries = async () =>
     .where(isNotNull(sessions.country))
     .groupBy(sessions.country, sessions.flag)
     .orderBy(desc(sql`COUNT(${sessions.country})`));
+};

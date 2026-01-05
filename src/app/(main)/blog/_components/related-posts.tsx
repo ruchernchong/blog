@@ -4,14 +4,14 @@ import { format, formatISO } from "date-fns";
 import Link from "next/link";
 import { Typography } from "@/components/typography";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { relatedPostsCalculator } from "@/lib/services";
+import { getRelatedPosts } from "@/lib/services/related-posts";
 
 interface RelatedPostsProps {
   slug: string;
 }
 
 export const RelatedPosts = async ({ slug }: RelatedPostsProps) => {
-  const relatedPosts = await relatedPostsCalculator.getRelatedPosts(slug, 4);
+  const relatedPosts = await getRelatedPosts(slug, 4);
 
   if (!relatedPosts.length) return null;
 

@@ -1,52 +1,57 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { LikeCounter } from "@/app/(main)/blog/_components/like-counter";
+// Tests temporarily disabled - likes feature is disabled
+// Uncomment when likes feature is re-enabled
 
-vi.mock("@/app/_actions/stats", () => ({
-  incrementLikes: vi.fn(() =>
-    Promise.resolve({ totalLikes: 11, likesByUser: 1 }),
-  ),
-}));
+it.todo("re-enable when likes feature is restored");
 
-vi.mock("@/config", () => ({
-  MAX_LIKES_PER_USER: 10,
-}));
+// import { fireEvent, render, screen } from "@testing-library/react";
+// import { LikeCounter } from "@/app/(main)/blog/_components/like-counter";
 
-const mockProps = {
-  slug: "test-post",
-  initialTotalLikes: 10,
-  initialLikesByUser: 0,
-};
+// vi.mock("@/app/_actions/stats", () => ({
+//   incrementLikes: vi.fn(() =>
+//     Promise.resolve({ totalLikes: 11, likesByUser: 1 }),
+//   ),
+// }));
 
-describe("LikeCounter", () => {
-  it("renders initial total likes", () => {
-    render(<LikeCounter {...mockProps} />);
-    expect(screen.getByText("10")).toBeInTheDocument();
-  });
+// vi.mock("@/config", () => ({
+//   MAX_LIKES_PER_USER: 10,
+// }));
 
-  it("renders initial likes with locale formatting", () => {
-    render(<LikeCounter {...mockProps} initialTotalLikes={1234} />);
-    expect(screen.getByText("1,234")).toBeInTheDocument();
-  });
+// const mockProps = {
+//   slug: "test-post",
+//   initialTotalLikes: 10,
+//   initialLikesByUser: 0,
+// };
 
-  it("updates like count when button is clicked", async () => {
-    render(<LikeCounter {...mockProps} />);
+// describe("LikeCounter", () => {
+//   it("renders initial total likes", () => {
+//     render(<LikeCounter {...mockProps} />);
+//     expect(screen.getByText("10")).toBeInTheDocument();
+//   });
 
-    const button = screen.getByRole("button");
-    fireEvent.click(button);
+//   it("renders initial likes with locale formatting", () => {
+//     render(<LikeCounter {...mockProps} initialTotalLikes={1234} />);
+//     expect(screen.getByText("1,234")).toBeInTheDocument();
+//   });
 
-    await vi.waitFor(() => {
-      expect(screen.getByText("11")).toBeInTheDocument();
-    });
-  });
+//   it("updates like count when button is clicked", async () => {
+//     render(<LikeCounter {...mockProps} />);
 
-  it("renders like button component", () => {
-    render(<LikeCounter {...mockProps} />);
-    expect(screen.getByRole("button")).toBeInTheDocument();
-  });
+//     const button = screen.getByRole("button");
+//     fireEvent.click(button);
 
-  it("has proper structure", () => {
-    render(<LikeCounter {...mockProps} />);
-    const container = screen.getByText("10").closest("div");
-    expect(container).toBeInTheDocument();
-  });
-});
+//     await vi.waitFor(() => {
+//       expect(screen.getByText("11")).toBeInTheDocument();
+//     });
+//   });
+
+//   it("renders like button component", () => {
+//     render(<LikeCounter {...mockProps} />);
+//     expect(screen.getByRole("button")).toBeInTheDocument();
+//   });
+
+//   it("has proper structure", () => {
+//     render(<LikeCounter {...mockProps} />);
+//     const container = screen.getByText("10").closest("div");
+//     expect(container).toBeInTheDocument();
+//   });
+// });

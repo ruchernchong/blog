@@ -1,4 +1,4 @@
-import { cache } from "react";
+import { cacheLife, cacheTag } from "next/cache";
 import { getPublishedPosts } from "@/lib/queries/posts";
 
 /**
@@ -7,11 +7,13 @@ import { getPublishedPosts } from "@/lib/queries/posts";
  * Fetches all published posts and extracts unique tags,
  * sorted alphabetically.
  *
- * Uses React cache() for request-level deduplication.
- *
  * @returns Array of unique tag strings, sorted alphabetically
  */
-export const getUniqueTags = cache(async (): Promise<string[]> => {
+export const getUniqueTags = async (): Promise<string[]> => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("posts");
+
   const posts = await getPublishedPosts();
 
   const tagSet = new Set<string>();
@@ -22,7 +24,7 @@ export const getUniqueTags = cache(async (): Promise<string[]> => {
   }
 
   return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
-});
+};
 
 /**
  * Get tag counts from published posts
@@ -31,7 +33,11 @@ export const getUniqueTags = cache(async (): Promise<string[]> => {
  *
  * @returns Map of tag to count
  */
-export const getTagCounts = cache(async (): Promise<Map<string, number>> => {
+export const getTagCounts = async (): Promise<Map<string, number>> => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("posts");
+
   const posts = await getPublishedPosts();
 
   const tagCounts = new Map<string, number>();
@@ -42,4 +48,4 @@ export const getTagCounts = cache(async (): Promise<Map<string, number>> => {
   }
 
   return tagCounts;
-});
+};

@@ -50,11 +50,7 @@ export function Footer() {
             </div>
           </div>
           <div className="border-border border-t" />
-          <div className="flex flex-col gap-2 text-center text-muted-foreground text-sm md:flex-row md:items-center md:justify-between md:text-left">
-            <span>
-              &copy; {new Date().getFullYear()} Chong Ru Chern. All Rights
-              Reserved.
-            </span>
+          <div className="text-center text-muted-foreground text-sm md:text-right">
             <span>v{VERSION}</span>
           </div>
         </div>

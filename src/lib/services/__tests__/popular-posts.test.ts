@@ -1,12 +1,19 @@
-import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CacheConfig } from "@/lib/config/cache.config";
 import * as postsQueries from "@/lib/queries/posts";
-import type { CacheService } from "../cache.service";
-import { PopularPostsService } from "../popular-posts.service";
 
 // Mock dependencies
-vi.mock("react", () => ({
-  cache: (fn: any) => fn,
+vi.mock("next/cache", () => ({
+  cacheLife: vi.fn(),
+  cacheTag: vi.fn(),
+}));
+
+vi.mock("@/config/redis", () => ({
+  default: {
+    zrange: vi.fn(),
+    zadd: vi.fn(),
+    zrem: vi.fn(),
+  },
 }));
 
 vi.mock("@/lib/queries/posts", () => ({
@@ -32,32 +39,22 @@ vi.mock("@/schema", () => ({
   },
 }));
 
-describe("PopularPostsService", () => {
-  let mockCache: {
-    zrange: Mock;
-    zadd: Mock;
-    zrem: Mock;
-  };
-  let popularPostsService: PopularPostsService;
+// Import after mocks
+import redis from "@/config/redis";
+import {
+  getPopularPosts,
+  removeFromPopular,
+  updatePopularScore,
+} from "../popular-posts";
 
+describe("popular-posts", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-
-    mockCache = {
-      zrange: vi.fn(),
-      zadd: vi.fn(),
-      zrem: vi.fn(),
-    };
-
-    popularPostsService = new PopularPostsService(
-      mockCache as unknown as CacheService,
-    );
   });
 
   describe("getPopularPosts", () => {
-    it("returns popular posts with view counts from Redis", async () => {
-      // Mock Redis sorted set response (alternating member/score)
-      mockCache.zrange.mockResolvedValue([
+    it("should return popular posts with view counts from Redis", async () => {
+      vi.mocked(redis.zrange).mockResolvedValue([
         "post-1",
         100,
         "post-2",
@@ -66,7 +63,6 @@ describe("PopularPostsService", () => {
         50,
       ]);
 
-      // Mock database response
       const mockDbPosts = [
         {
           id: "1",
@@ -98,7 +94,7 @@ describe("PopularPostsService", () => {
         mockDbPosts as any,
       );
 
-      const result = await popularPostsService.getPopularPosts(3);
+      const result = await getPopularPosts(3);
 
       expect(result).toHaveLength(3);
       expect(result[0]).toMatchObject({
@@ -114,10 +110,10 @@ describe("PopularPostsService", () => {
         views: 50,
       });
 
-      expect(mockCache.zrange).toHaveBeenCalledWith(
+      expect(redis.zrange).toHaveBeenCalledWith(
         CacheConfig.REDIS_KEYS.POPULAR_SET,
         0,
-        2, // limit - 1
+        2,
         { rev: true, withScores: true },
       );
 
@@ -128,8 +124,8 @@ describe("PopularPostsService", () => {
       ]);
     });
 
-    it("sorts posts by view count descending", async () => {
-      mockCache.zrange.mockResolvedValue(["post-b", 50, "post-a", 100]);
+    it("should sort posts by view count descending", async () => {
+      vi.mocked(redis.zrange).mockResolvedValue(["post-b", 50, "post-a", 100]);
 
       const mockDbPosts = [
         {
@@ -154,7 +150,7 @@ describe("PopularPostsService", () => {
         mockDbPosts as any,
       );
 
-      const result = await popularPostsService.getPopularPosts(2);
+      const result = await getPopularPosts(2);
 
       expect(result[0].slug).toBe("post-a");
       expect(result[0].views).toBe(100);
@@ -162,12 +158,12 @@ describe("PopularPostsService", () => {
       expect(result[1].views).toBe(50);
     });
 
-    it("uses default limit when not specified", async () => {
-      mockCache.zrange.mockResolvedValue([]);
+    it("should use default limit when not specified", async () => {
+      vi.mocked(redis.zrange).mockResolvedValue([]);
 
-      await popularPostsService.getPopularPosts();
+      await getPopularPosts();
 
-      expect(mockCache.zrange).toHaveBeenCalledWith(
+      expect(redis.zrange).toHaveBeenCalledWith(
         CacheConfig.REDIS_KEYS.POPULAR_SET,
         0,
         CacheConfig.POPULAR_POSTS.LIMIT - 1,
@@ -175,28 +171,25 @@ describe("PopularPostsService", () => {
       );
     });
 
-    it("handles empty Redis result", async () => {
-      mockCache.zrange.mockResolvedValue([]);
+    it("should handle empty Redis result", async () => {
+      vi.mocked(redis.zrange).mockResolvedValue([]);
 
-      const result = await popularPostsService.getPopularPosts(5);
-
-      // Should return fallback posts (we can't test the actual fallback
-      // without mocking the entire database, but we verify it doesn't crash)
-      expect(Array.isArray(result)).toBe(true);
-    });
-
-    it("handles Redis returning null", async () => {
-      mockCache.zrange.mockResolvedValue(null);
-
-      const result = await popularPostsService.getPopularPosts(5);
+      const result = await getPopularPosts(5);
 
       expect(Array.isArray(result)).toBe(true);
     });
 
-    it("handles missing posts in database", async () => {
-      mockCache.zrange.mockResolvedValue(["post-1", 100, "post-2", 75]);
+    it("should handle Redis returning null", async () => {
+      vi.mocked(redis.zrange).mockResolvedValue(null as any);
 
-      // Only return one post from DB (post-2 is missing)
+      const result = await getPopularPosts(5);
+
+      expect(Array.isArray(result)).toBe(true);
+    });
+
+    it("should handle missing posts in database", async () => {
+      vi.mocked(redis.zrange).mockResolvedValue(["post-1", 100, "post-2", 75]);
+
       vi.mocked(postsQueries.getPublishedPostsBySlugs).mockResolvedValue([
         {
           id: "1",
@@ -208,7 +201,7 @@ describe("PopularPostsService", () => {
         },
       ] as any);
 
-      const result = await popularPostsService.getPopularPosts(2);
+      const result = await getPopularPosts(2);
 
       expect(result).toHaveLength(1);
       expect(result[0].slug).toBe("post-1");
@@ -216,26 +209,28 @@ describe("PopularPostsService", () => {
   });
 
   describe("updatePopularScore", () => {
-    it("updates score in Redis sorted set", async () => {
-      mockCache.zadd.mockResolvedValue(undefined);
+    it("should update score in Redis sorted set", async () => {
+      vi.mocked(redis.zadd).mockResolvedValue(undefined as any);
 
-      await popularPostsService.updatePopularScore("test-post", 150);
+      await updatePopularScore("test-post", 150);
 
-      expect(mockCache.zadd).toHaveBeenCalledWith(
+      expect(redis.zadd).toHaveBeenCalledWith(
         CacheConfig.REDIS_KEYS.POPULAR_SET,
-        150,
-        "test-post",
+        {
+          score: 150,
+          member: "test-post",
+        },
       );
     });
   });
 
   describe("removeFromPopular", () => {
-    it("removes post from Redis sorted set", async () => {
-      mockCache.zrem.mockResolvedValue(undefined);
+    it("should remove post from Redis sorted set", async () => {
+      vi.mocked(redis.zrem).mockResolvedValue(undefined as any);
 
-      await popularPostsService.removeFromPopular("test-post");
+      await removeFromPopular("test-post");
 
-      expect(mockCache.zrem).toHaveBeenCalledWith(
+      expect(redis.zrem).toHaveBeenCalledWith(
         CacheConfig.REDIS_KEYS.POPULAR_SET,
         "test-post",
       );

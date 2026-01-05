@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getFeaturedPosts, getPublishedPosts } from "@/lib/queries/posts";
 import { getPublishedSeriesWithPosts } from "@/lib/queries/series";
-import { popularPostsService } from "@/lib/services";
+import { getPopularPosts } from "@/lib/services/popular-posts";
 import { getUniqueTags } from "@/lib/tags";
 
 export const metadata: Metadata = {
@@ -33,7 +33,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const [publishedPosts, popularPosts, tags, publishedSeries] =
     await Promise.all([
       getPublishedPosts(),
-      popularPostsService.getPopularPosts(1),
+      getPopularPosts(1),
       getUniqueTags(),
       getPublishedSeriesWithPosts(),
     ]);

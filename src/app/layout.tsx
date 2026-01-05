@@ -5,7 +5,7 @@ import { Figtree, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { ViewTransitions } from "next-view-transitions";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import type { ReactNode } from "react";
+import { type ReactNode, Suspense } from "react";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { cn } from "@/lib/utils";
 import "@/app/globals.css";
@@ -75,9 +75,11 @@ export default function RootLayout({
           geistMono.variable,
         )}
       >
-        <NuqsAdapter>
-          <ViewTransitions>{children}</ViewTransitions>
-        </NuqsAdapter>
+        <Suspense>
+          <NuqsAdapter>
+            <ViewTransitions>{children}</ViewTransitions>
+          </NuqsAdapter>
+        </Suspense>
         <VercelAnalytics />
         <SpeedInsights />
         <Script

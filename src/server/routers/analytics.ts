@@ -11,7 +11,7 @@ import {
   getTotalVisits,
   getVisits,
 } from "@/app/(main)/analytics/_actions/visits";
-import { postStatsService } from "@/lib/services";
+import { getPostStats } from "@/lib/services/post-stats";
 import { publicProcedure, router } from "../trpc";
 
 export const analyticsRouter = router({
@@ -24,7 +24,7 @@ export const analyticsRouter = router({
   getReferrers: publicProcedure.query(() => getReferrers()),
   getPostStats: publicProcedure
     .input(z.object({ slug: z.string() }))
-    .query(({ input }) => postStatsService.getStats(input.slug)),
+    .query(({ input }) => getPostStats(input.slug)),
   incrementViews: publicProcedure
     .input(z.object({ slug: z.string() }))
     .mutation(({ input }) => incrementViews(input.slug)),

@@ -1,10 +1,13 @@
-"use server";
-
 import { desc, sql } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 import { db, sessions } from "@/schema";
 
-export const getOS = async () =>
-  db
+export const getOS = async () => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("analytics");
+
+  return db
     .select({
       os: sessions.os,
       count: sql<number>`CAST(COUNT(${sessions.os}) AS INTEGER)`,
@@ -13,3 +16,4 @@ export const getOS = async () =>
     .from(sessions)
     .groupBy(sessions.os)
     .orderBy(desc(sql`COUNT(${sessions.os})`));
+};

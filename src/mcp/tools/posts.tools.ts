@@ -2,7 +2,10 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { generatePostMetadata } from "@/lib/post-metadata";
-import { cacheInvalidationService } from "@/lib/services";
+import {
+  invalidatePopularPost,
+  invalidateRelatedByTags,
+} from "@/lib/services/cache-invalidation";
 import { db, posts } from "@/schema";
 
 export function registerPostTools(server: McpServer): void {
@@ -307,16 +310,13 @@ export function registerPostTools(server: McpServer): void {
 
       // Invalidate cache if slug or tags changed
       if (updates.slug && updates.slug !== oldSlug) {
-        await cacheInvalidationService.invalidatePopularPost(oldSlug);
+        await invalidatePopularPost(oldSlug);
       }
       if (
         updates.tags &&
         JSON.stringify(updates.tags) !== JSON.stringify(oldTags)
       ) {
-        await cacheInvalidationService.invalidateRelatedByTags(
-          [...oldTags, ...updates.tags],
-          slug,
-        );
+        await invalidateRelatedByTags([...oldTags, ...updates.tags], slug);
       }
 
       const output = {
@@ -358,7 +358,7 @@ export function registerPostTools(server: McpServer): void {
         .returning();
 
       if (deleted) {
-        await cacheInvalidationService.invalidatePopularPost(deleted.slug);
+        await invalidatePopularPost(deleted.slug);
       }
 
       const output = {

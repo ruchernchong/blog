@@ -5,10 +5,10 @@ import type { Route } from "next";
 import Link from "next/link";
 import { Typography } from "@/components/typography";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { popularPostsService } from "@/lib/services";
+import { getPopularPosts } from "@/lib/services/popular-posts";
 
 export const PopularPosts = async () => {
-  const popularPosts = await popularPostsService.getPopularPosts(3);
+  const popularPosts = await getPopularPosts(3);
 
   if (!popularPosts.length) {
     return null;

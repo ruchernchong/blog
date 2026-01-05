@@ -8,6 +8,7 @@ import {
   isNull,
   ne,
 } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 import { db, posts } from "@/schema";
 
 export const getPostBySlug = async (slug: string) => {
@@ -21,6 +22,10 @@ export const getPostBySlug = async (slug: string) => {
 };
 
 export const getPublishedPosts = async () => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("posts");
+
   return db
     .select()
     .from(posts)
@@ -29,6 +34,10 @@ export const getPublishedPosts = async () => {
 };
 
 export async function getFeaturedPosts() {
+  "use cache";
+  cacheLife("max");
+  cacheTag("posts");
+
   return db
     .select()
     .from(posts)
@@ -37,6 +46,10 @@ export async function getFeaturedPosts() {
 }
 
 export const getPublishedPostBySlug = async (slug: string) => {
+  "use cache";
+  cacheLife("max");
+  cacheTag(`post:${slug}`);
+
   return db.query.posts.findFirst({
     with: {
       author: true,
@@ -59,6 +72,10 @@ export const getPostBySlugForPreview = async (slug: string) => {
 };
 
 export const getPublishedPostSlugs = async () => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("posts");
+
   return db
     .select({ slug: posts.slug })
     .from(posts)
@@ -66,6 +83,10 @@ export const getPublishedPostSlugs = async () => {
 };
 
 export const getPublishedPostsBySlugs = async (slugs: string[]) => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("posts");
+
   return db
     .select()
     .from(posts)

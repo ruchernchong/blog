@@ -1,5 +1,6 @@
 import { asc, count, sql } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
+import { cacheLife, cacheTag } from "next/cache";
 import { db, sessions } from "@/schema";
 
 export type Visit = {
@@ -12,8 +13,12 @@ const formatDate = (column: PgColumn) =>
     (${column})
     AT TIME ZONE 'ASIA/SINGAPORE'`;
 
-export const getVisits = async () =>
-  db
+export const getVisits = async () => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("analytics");
+
+  return db
     .select({
       date: formatDate(sessions.createdAt),
       visits: count(),
@@ -21,5 +26,12 @@ export const getVisits = async () =>
     .from(sessions)
     .groupBy(formatDate(sessions.createdAt))
     .orderBy(asc(formatDate(sessions.createdAt)));
+};
 
-export const getTotalVisits = async () => db.$count(sessions);
+export const getTotalVisits = async () => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("analytics");
+
+  return db.$count(sessions);
+};

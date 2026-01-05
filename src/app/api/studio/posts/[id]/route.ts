@@ -13,7 +13,11 @@ import {
 } from "@/lib/api";
 import { logError } from "@/lib/logger";
 import { generatePostMetadata } from "@/lib/post-metadata";
-import { cacheInvalidationService } from "@/lib/services";
+import {
+  invalidatePopularPost,
+  invalidatePost,
+  invalidateRelatedByTags,
+} from "@/lib/services/cache-invalidation";
 import { db, posts } from "@/schema";
 import { postIdSchema, updatePostSchema } from "@/types/api";
 
@@ -136,7 +140,7 @@ export const PATCH = async (
       .where(eq(posts.id, postId))
       .returning();
 
-    await cacheInvalidationService.invalidatePost(updatedSlug);
+    await invalidatePost(updatedSlug);
 
     const tagsChanged =
       tags !== undefined &&
@@ -149,10 +153,7 @@ export const PATCH = async (
       const allAffectedTags = [
         ...new Set([...existingPost.tags, ...(tags || [])]),
       ];
-      await cacheInvalidationService.invalidateRelatedByTags(
-        allAffectedTags,
-        updatedSlug,
-      );
+      await invalidateRelatedByTags(allAffectedTags, updatedSlug);
     }
 
     return NextResponse.json(updatedPost);
@@ -210,13 +211,10 @@ export const DELETE = async (
 
     if (!deletedPost) return notFoundResponse("Post");
 
-    await cacheInvalidationService.invalidatePopularPost(deletedPost.slug);
+    await invalidatePopularPost(deletedPost.slug);
 
     if (deletedPost.tags.length > 0) {
-      await cacheInvalidationService.invalidateRelatedByTags(
-        deletedPost.tags,
-        deletedPost.slug,
-      );
+      await invalidateRelatedByTags(deletedPost.tags, deletedPost.slug);
     }
 
     return NextResponse.json({ message: "Post deleted successfully" });

@@ -1,7 +1,12 @@
 import { and, asc, count, desc, eq, isNull } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 import { db, posts, series } from "@/schema";
 
 export const getSeriesById = async (id: string) => {
+  "use cache";
+  cacheLife("max");
+  cacheTag(`series:${id}`);
+
   return db.query.series.findFirst({
     where: eq(series.id, id),
   });
@@ -34,6 +39,10 @@ export const getPostsInSeries = async (seriesId: string) => {
 };
 
 export const getPublishedPostsInSeries = async (seriesId: string) => {
+  "use cache";
+  cacheLife("max");
+  cacheTag(`series:${seriesId}`);
+
   return db
     .select()
     .from(posts)
@@ -48,6 +57,10 @@ export const getPublishedPostsInSeries = async (seriesId: string) => {
 };
 
 export const getPublishedSeriesWithPostCount = async () => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("series");
+
   const result = await db
     .select({
       id: series.id,
@@ -74,6 +87,10 @@ export const getPublishedSeriesWithPostCount = async () => {
 };
 
 export const getSeriesForSelector = async () => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("series");
+
   return db
     .select()
     .from(series)

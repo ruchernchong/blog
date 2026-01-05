@@ -1,7 +1,7 @@
 "use server";
 
 // import { headers } from "next/headers";
-import { postStatsService } from "@/lib/services";
+import { incrementViews as incrementViewsService } from "@/lib/services/post-stats";
 import type { PostStats } from "@/types";
 // import type { Likes } from "@/types";
 // import { generateUserHash } from "@/utils/hash";
@@ -19,13 +19,13 @@ import type { PostStats } from "@/types";
 // }
 
 export async function incrementViews(slug: string): Promise<PostStats> {
-  return postStatsService.incrementViews(slug);
+  return incrementViewsService(slug);
 }
 
 // export async function incrementLikes(slug: string): Promise<Likes> {
 //   try {
 //     const userHash = generateUserHash(await getIpAddress());
-//     return postStatsService.incrementLikes(slug, userHash);
+//     return incrementLikes(slug, userHash);
 //   } catch (error) {
 //     console.error("Error adding like:", error);
 //     throw error;

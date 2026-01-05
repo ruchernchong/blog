@@ -1,10 +1,13 @@
-"use server";
-
 import { desc, sql } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 import { db, sessions } from "@/schema";
 
-export const getBrowsers = async () =>
-  db
+export const getBrowsers = async () => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("analytics");
+
+  return db
     .select({
       browser: sessions.browser,
       count: sql<number>`CAST(COUNT(${sessions.browser}) AS INTEGER)`,
@@ -13,3 +16,4 @@ export const getBrowsers = async () =>
     .from(sessions)
     .groupBy(sessions.browser)
     .orderBy(desc(sql`COUNT(${sessions.browser})`));
+};

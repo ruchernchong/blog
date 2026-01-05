@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import { type ReactNode, Suspense } from "react";
 import { Providers } from "@/app/studio/providers";
 import { UserMenu } from "@/components/auth/user-menu";
 import { AppSidebar } from "@/components/studio/app-sidebar";
@@ -22,17 +22,19 @@ export default function StudioLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   return (
-    <Providers>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <header className="flex h-14 items-center justify-between border-b px-4">
-            <SidebarTrigger />
-            <UserMenu />
-          </header>
-          <main className="p-4">{children}</main>
-        </SidebarInset>
-      </SidebarProvider>
-    </Providers>
+    <Suspense>
+      <Providers>
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
+            <header className="flex h-14 items-center justify-between border-b px-4">
+              <SidebarTrigger />
+              <UserMenu />
+            </header>
+            <main className="p-4">{children}</main>
+          </SidebarInset>
+        </SidebarProvider>
+      </Providers>
+    </Suspense>
   );
 }
