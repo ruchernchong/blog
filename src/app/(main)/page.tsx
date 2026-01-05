@@ -9,7 +9,7 @@ import projects from "@/data/projects";
 import { getPublishedPosts } from "@/lib/queries/posts";
 import { serverTrpc } from "@/server";
 
-async function HomePage() {
+export default async function HomePage() {
   const structuredData: WithContext<WebSite> = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -57,5 +57,3 @@ async function HomePage() {
     </>
   );
 }
-
-export default HomePage;
