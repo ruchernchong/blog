@@ -1,4 +1,3 @@
-import { cacheLife, cacheTag } from "next/cache";
 import redis from "@/config/redis";
 import { CacheConfig } from "@/lib/config/cache.config";
 import {
@@ -29,10 +28,6 @@ export async function getRelatedPosts(
   slug: string,
   limit: number = CacheConfig.RELATED_POSTS.LIMIT,
 ): Promise<RelatedPost[]> {
-  "use cache";
-  cacheLife("max");
-  cacheTag(`post:${slug}`);
-
   // Check cache first
   const cached = await getCachedRelated(slug);
   if (cached) return cached.slice(0, limit);

@@ -1,4 +1,3 @@
-import { cacheLife, cacheTag } from "next/cache";
 import { getPublishedPosts } from "@/lib/queries/posts";
 
 /**
@@ -10,10 +9,6 @@ import { getPublishedPosts } from "@/lib/queries/posts";
  * @returns Array of unique tag strings, sorted alphabetically
  */
 export const getUniqueTags = async (): Promise<string[]> => {
-  "use cache";
-  cacheLife("max");
-  cacheTag("posts");
-
   const posts = await getPublishedPosts();
 
   const tagSet = new Set<string>();
@@ -34,10 +29,6 @@ export const getUniqueTags = async (): Promise<string[]> => {
  * @returns Map of tag to count
  */
 export const getTagCounts = async (): Promise<Map<string, number>> => {
-  "use cache";
-  cacheLife("max");
-  cacheTag("posts");
-
   const posts = await getPublishedPosts();
 
   const tagCounts = new Map<string, number>();

@@ -1,4 +1,3 @@
-import { cacheLife, cacheTag } from "next/cache";
 import redis from "@/config/redis";
 import { CacheConfig } from "@/lib/config/cache.config";
 import type { Likes, PostStats } from "@/types";
@@ -10,10 +9,6 @@ import type { Likes, PostStats } from "@/types";
  * @returns Post statistics including views and likes by user
  */
 export async function getPostStats(slug: string): Promise<PostStats> {
-  "use cache";
-  cacheLife("max");
-  cacheTag(`post:${slug}`);
-
   const key = CacheConfig.REDIS_KEYS.POST_STATS(slug);
   const stats = await redis.get<PostStats>(key);
 
@@ -129,10 +124,6 @@ export async function getTotalLikes(slug: string): Promise<number> {
  * @returns Map of slug to view count
  */
 export async function getAllViewCounts(): Promise<Map<string, number>> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("views");
-
   const results = await redis.zrange(
     CacheConfig.REDIS_KEYS.POPULAR_SET,
     0,

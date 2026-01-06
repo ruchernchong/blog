@@ -3,14 +3,6 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactCompiler: true,
-  cacheComponents: true,
-  cacheLife: {
-    max: {
-      stale: Infinity,
-      revalidate: Infinity,
-      expire: Infinity,
-    },
-  },
   images: {
     qualities: [75, 100],
     remotePatterns: [

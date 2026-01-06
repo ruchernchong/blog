@@ -1,5 +1,4 @@
 import { format } from "date-fns";
-import { cacheLife, cacheTag } from "next/cache";
 import { ImageResponse } from "next/og";
 import { OG_SIZE } from "@/lib/og/config";
 import { getOGFonts } from "@/lib/og/fonts";
@@ -18,10 +17,6 @@ export const size = OG_SIZE;
 export const contentType = "image/png";
 
 async function getMetadata(slug: string) {
-  "use cache";
-  cacheLife("max");
-  cacheTag(`posts:${slug}`);
-
   const [post, fonts] = await Promise.all([
     getPublishedPostBySlug(slug),
     getOGFonts(),

@@ -1,5 +1,4 @@
 import { and, desc, eq, isNotNull, isNull } from "drizzle-orm";
-import { cacheLife, cacheTag } from "next/cache";
 import redis from "@/config/redis";
 import { CacheConfig } from "@/lib/config/cache.config";
 import { getPublishedPostsBySlugs } from "@/lib/queries/posts";
@@ -27,10 +26,6 @@ export interface PopularPost {
 export async function getPopularPosts(
   limit: number = CacheConfig.POPULAR_POSTS.LIMIT,
 ): Promise<PopularPost[]> {
-  "use cache";
-  cacheLife("max");
-  cacheTag("posts");
-
   // Get top N from sorted set (highest scores first)
   const results = await redis.zrange(
     CacheConfig.REDIS_KEYS.POPULAR_SET,

@@ -1,4 +1,3 @@
-import { cacheLife } from "next/cache";
 import { OG_CONFIG } from "./config";
 
 /**
@@ -11,9 +10,6 @@ async function loadGoogleFont(
   weight: number,
   text?: string,
 ): Promise<ArrayBuffer> {
-  "use cache";
-  cacheLife("max");
-
   const params = new URLSearchParams({
     family: `${font}:wght@${weight}`,
   });
