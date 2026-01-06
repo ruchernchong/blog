@@ -4,7 +4,7 @@ import {
   handleApiError,
   notFoundResponse,
   parseAndValidateBody,
-  requireAuth,
+  requireAdmin,
   validateRouteParam,
 } from "@/lib/api";
 import { mediaService } from "@/lib/services";
@@ -14,6 +14,9 @@ export const GET = async (
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
+  const authResult = await requireAdmin();
+  if (!authResult.success) return authResult.response;
+
   const paramResult = await validateRouteParam(
     params,
     "id",
@@ -37,7 +40,7 @@ export const PATCH = async (
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
-  const authResult = await requireAuth("edit media");
+  const authResult = await requireAdmin();
   if (!authResult.success) return authResult.response;
 
   const paramResult = await validateRouteParam(
@@ -74,7 +77,7 @@ export const DELETE = async (
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
-  const authResult = await requireAuth("delete media");
+  const authResult = await requireAdmin();
   if (!authResult.success) return authResult.response;
 
   const paramResult = await validateRouteParam(

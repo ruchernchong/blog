@@ -4,7 +4,7 @@ import { ERROR_IDS } from "@/constants/error-ids";
 import {
   handleApiError,
   parseAndValidateBody,
-  requireAuth,
+  requireAdmin,
   validateSeriesExists,
 } from "@/lib/api";
 import { logError } from "@/lib/logger";
@@ -16,6 +16,9 @@ export const GET = async (
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
+  const authResult = await requireAdmin();
+  if (!authResult.success) return authResult.response;
+
   try {
     const result = await validateSeriesExists(params);
     if (!result.success) return result.response;
@@ -36,7 +39,7 @@ export const PATCH = async (
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
-  const authResult = await requireAuth("reorder series posts");
+  const authResult = await requireAdmin();
   if (!authResult.success) return authResult.response;
 
   const seriesResult = await validateSeriesExists(params);

@@ -7,7 +7,7 @@ import {
   isDatabaseError,
   isUniqueConstraintError,
   parseAndValidateBody,
-  requireAuth,
+  requireAdmin,
 } from "@/lib/api";
 import { logError } from "@/lib/logger";
 import { generatePostMetadata } from "@/lib/post-metadata";
@@ -15,6 +15,9 @@ import { db, type InsertPost, posts } from "@/schema";
 import { createPostSchema } from "@/types/api";
 
 export const GET = async () => {
+  const authResult = await requireAdmin();
+  if (!authResult.success) return authResult.response;
+
   try {
     const allPosts = await db.query.posts.findMany({
       orderBy: desc(posts.updatedAt),
@@ -30,7 +33,7 @@ export const GET = async () => {
 };
 
 export const POST = async (request: Request) => {
-  const authResult = await requireAuth("create posts");
+  const authResult = await requireAdmin();
   if (!authResult.success) return authResult.response;
 
   const bodyResult = await parseAndValidateBody(request, createPostSchema);

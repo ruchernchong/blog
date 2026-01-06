@@ -7,13 +7,16 @@ import {
   isDatabaseError,
   isUniqueConstraintError,
   parseAndValidateBody,
-  requireAuth,
+  requireAdmin,
 } from "@/lib/api";
 import { logError } from "@/lib/logger";
 import { db, type InsertSeries, series } from "@/schema";
 import { createSeriesSchema } from "@/types/api";
 
 export const GET = async () => {
+  const authResult = await requireAdmin();
+  if (!authResult.success) return authResult.response;
+
   try {
     const allSeries = await db
       .select()
@@ -27,7 +30,7 @@ export const GET = async () => {
 };
 
 export const POST = async (request: Request) => {
-  const authResult = await requireAuth("create series");
+  const authResult = await requireAdmin();
   if (!authResult.success) return authResult.response;
 
   const bodyResult = await parseAndValidateBody(request, createSeriesSchema);

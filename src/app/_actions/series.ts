@@ -3,16 +3,22 @@
 import { eq } from "drizzle-orm";
 import type { Route } from "next";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db, series } from "@/schema";
 import type { CreateSeriesInput, UpdateSeriesInput } from "@/types/api";
 
-export async function createSeries(input: CreateSeriesInput) {
-  const session = await auth.api.getSession({ headers: new Headers() });
-  if (!session) {
+async function requireAdmin() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user || session.user.role !== "admin") {
     throw new Error("Unauthorised");
   }
+  return session;
+}
+
+export async function createSeries(input: CreateSeriesInput) {
+  await requireAdmin();
 
   const [created] = await db.insert(series).values(input).returning();
 
@@ -23,10 +29,7 @@ export async function createSeries(input: CreateSeriesInput) {
 }
 
 export async function updateSeries(id: string, input: UpdateSeriesInput) {
-  const session = await auth.api.getSession({ headers: new Headers() });
-  if (!session) {
-    throw new Error("Unauthorised");
-  }
+  await requireAdmin();
 
   const [existing] = await db
     .select()
@@ -58,10 +61,7 @@ export async function updateSeries(id: string, input: UpdateSeriesInput) {
 }
 
 export async function deleteSeries(id: string) {
-  const session = await auth.api.getSession({ headers: new Headers() });
-  if (!session) {
-    throw new Error("Unauthorised");
-  }
+  await requireAdmin();
 
   await db
     .update(series)
@@ -72,10 +72,7 @@ export async function deleteSeries(id: string) {
 }
 
 export async function restoreSeries(id: string) {
-  const session = await auth.api.getSession({ headers: new Headers() });
-  if (!session) {
-    throw new Error("Unauthorised");
-  }
+  await requireAdmin();
 
   await db
     .update(series)

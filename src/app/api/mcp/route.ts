@@ -1,11 +1,14 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { createServer } from "@/mcp/server";
 
-export async function POST(request: Request) {
+function checkAuth(request: Request) {
   const authHeader = request.headers.get("authorization");
   const token = authHeader?.replace("Bearer ", "");
+  return token === process.env.BLOG_MCP_AUTH_TOKEN;
+}
 
-  if (token !== process.env.BLOG_MCP_AUTH_TOKEN) {
+export async function POST(request: Request) {
+  if (!checkAuth(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -20,11 +23,17 @@ export async function POST(request: Request) {
   return transport.handleRequest(request);
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!checkAuth(request)) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
   return Response.json({ status: "ok", service: "mcp-blog" });
 }
 
-export async function DELETE() {
+export async function DELETE(request: Request) {
+  if (!checkAuth(request)) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
   return new Response(null, { status: 204 });
 }
 
@@ -37,7 +46,10 @@ export async function OPTIONS() {
   });
 }
 
-export async function HEAD() {
+export async function HEAD(request: Request) {
+  if (!checkAuth(request)) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
   return Response.json({ status: "ok", service: "mcp-blog" });
 }
 

@@ -1,4 +1,4 @@
-export { requireAuth } from "./auth";
+export { requireAdmin, requireAuth } from "./auth";
 export {
   API_ERROR_MESSAGES,
   conflictResponse,
