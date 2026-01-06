@@ -36,13 +36,9 @@ export default function HomePage() {
       <StructuredData data={structuredData} />
       <div className="flex flex-col gap-12">
         <HeroSection />
-        <Suspense>
-          <QuickStats />
-        </Suspense>
+        <QuickStats />
         <FeaturedWork projects={projects} />
-        <Suspense>
-          <LatestPosts />
-        </Suspense>
+        <LatestPosts />
       </div>
     </>
   );
