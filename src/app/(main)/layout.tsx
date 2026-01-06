@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { Footer } from "@/app/_components/footer";
 import { Header } from "@/app/_components/header";
-import Analytics from "@/components/analytics-tracker";
 import { BackgroundEffects } from "@/components/background-effects";
 
 export default function MainLayout({
@@ -17,7 +16,6 @@ export default function MainLayout({
         </main>
         <Footer />
       </div>
-      <Analytics />
     </>
   );
 }

@@ -9,10 +9,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { StructuredData } from "@/app/_components/structured-data";
-import { StatsBar } from "@/app/(main)/analytics/_components/stats-bar";
 import { Mdx } from "@/app/(main)/blog/_components/mdx";
 // import { RelatedPosts } from "@/app/(main)/blog/_components/related-posts";
 import { ScrollProgress } from "@/app/(main)/blog/_components/scroll-progress";
+import { StatsBar } from "@/app/(main)/blog/_components/stats-bar";
 import { Typography } from "@/components/typography";
 import {
   getPublishedPostBySlug,
