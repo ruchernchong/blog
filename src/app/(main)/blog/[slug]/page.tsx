@@ -119,6 +119,7 @@ async function PostContent({ slug }: { slug: string }) {
           {post.summary}
         </aside>
         <Mdx content={post.content} />
+        {/*<RelatedPosts slug={post.slug} />*/}
       </article>
     </>
   );
