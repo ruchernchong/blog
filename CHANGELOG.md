@@ -1,3 +1,9 @@
+## [1.12.1](https://github.com/ruchernchong/blog/compare/v1.12.0...v1.12.1) (2026-01-06)
+
+### Bug Fixes
+
+* restrict studio access to admin only ([6272efd](https://github.com/ruchernchong/blog/commit/6272efddf5a559d039a23cce3bf870156fd11629))
+
 ## [1.12.0](https://github.com/ruchernchong/blog/compare/v1.11.0...v1.12.0) (2026-01-06)
 
 ### Features
