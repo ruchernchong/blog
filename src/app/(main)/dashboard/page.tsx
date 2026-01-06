@@ -1,13 +1,12 @@
 import { DashboardBrowsingIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { LiveBadge } from "@/app/(main)/dashboard/_components/live-badge";
 import { StatsGrid } from "@/app/(main)/dashboard/_components/stats-grid";
+import { ViewsByPage } from "@/app/(main)/dashboard/_components/views-by-page";
+import { VisitsChart } from "@/app/(main)/dashboard/_components/visits-chart";
 import globalMetadata from "@/app/metadata";
-// TODO: Integrate with Umami Analytics
-// import { Suspense } from "react";
-// import { VisitsChart } from "@/app/(main)/analytics/_components/visits-chart";
-// import { ViewsByPage } from "@/app/(main)/dashboard/_components/views-by-page";
 import { PageTitle } from "@/components/page-title";
 
 const title = "Dashboard";
@@ -51,16 +50,17 @@ export default function DashboardPage() {
         action={<LiveBadge />}
       />
 
-      <StatsGrid />
+      <Suspense>
+        <StatsGrid />
+      </Suspense>
 
-      {/* TODO: Integrate with Umami Analytics */}
-      {/* <Suspense>
+      <Suspense>
         <ViewsByPage />
       </Suspense>
 
       <Suspense>
         <VisitsChart />
-      </Suspense> */}
+      </Suspense>
     </div>
   );
 }
