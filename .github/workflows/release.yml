@@ -9,16 +9,12 @@ concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  id-token: write
-
 jobs:
   checks:
     name: ${{ matrix.task }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         task: [Lint, Test, Build]
@@ -67,6 +63,11 @@ jobs:
     name: Release
     needs: checks
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
 
     steps:
       - name: Checkout
