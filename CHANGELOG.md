@@ -1,3 +1,33 @@
+## [1.12.0](https://github.com/ruchernchong/blog/compare/v1.11.0...v1.12.0) (2026-01-06)
+
+### Features
+
+* add blog MCP server ([f190199](https://github.com/ruchernchong/blog/commit/f1901993f5cc9fbc7babc4aad46a084404c70065))
+* add custom 404 page ([9a4e1bd](https://github.com/ruchernchong/blog/commit/9a4e1bd0409c74db2babe765d163a1f89de24940))
+* add draft preview for logged-in users ([3f00862](https://github.com/ruchernchong/blog/commit/3f00862ce523b486b5e7820f80afb469d5db6744))
+* add MCP server for blog and media management ([1069b64](https://github.com/ruchernchong/blog/commit/1069b64554aea627ab7656d60e1accbb22a40165))
+* add Mermaid diagram support to MDX posts ([41f2307](https://github.com/ruchernchong/blog/commit/41f23079a49dfee57948a22c43f828899e461918))
+* add series feature for blog posts ([7a69b03](https://github.com/ruchernchong/blog/commit/7a69b033a97df9e6e436db7d219d4a4b96eded00))
+* add sidebar to studio layout ([dd53da9](https://github.com/ruchernchong/blog/commit/dd53da9a7dd63dd578b6936cfd0ac8486bb476e4))
+* add split panel editor with preview ([a307ad1](https://github.com/ruchernchong/blog/commit/a307ad152e539ba535247ccae99109f7e4afb61e))
+* integrate Umami analytics ([a2c76fb](https://github.com/ruchernchong/blog/commit/a2c76fb7da91c583f684e4e2bb6ce44a132e5e46))
+
+### Bug Fixes
+
+* add code block support to MDX editor ([adcfa2e](https://github.com/ruchernchong/blog/commit/adcfa2e1a6ce5918ddc9e64ac13318b70ac9665c))
+* add thematic break support to editor ([ba0affb](https://github.com/ruchernchong/blog/commit/ba0affbdd360ea9298071cac7de946e601f0fad5))
+* enable git credentials for release ([7ab3cbf](https://github.com/ruchernchong/blog/commit/7ab3cbf8924da3154411a3abed30bb778682cb49))
+* remove cache from MDX component ([49dec76](https://github.com/ruchernchong/blog/commit/49dec768726b0e5e135d50a04f39ccc3cb375859))
+* remove dark prose invert from editor ([b09411c](https://github.com/ruchernchong/blog/commit/b09411c1c5d589a96fc114cec21a0d9fa5255c22))
+* use pnpm version in release config ([8f372ca](https://github.com/ruchernchong/blog/commit/8f372caf966e592c900f70ba51675b70a6ebd698))
+* wrap async content in Suspense ([a3d7b3a](https://github.com/ruchernchong/blog/commit/a3d7b3a146193187d5e7b2de9b9aea8d88663303))
+
+### Performance Improvements
+
+* cache OG images and fonts ([c0aa915](https://github.com/ruchernchong/blog/commit/c0aa9153e0ab6d9d0dc43a44ac58665790ff079f))
+* **dashboard:** cache stats grid component ([5694003](https://github.com/ruchernchong/blog/commit/56940038a560771761c269fb378185d83ce38546))
+* use draftMode for blog post preview ([b0db8db](https://github.com/ruchernchong/blog/commit/b0db8db95173f2532adc3061b57eaac6276723b6))
+
 ## [1.11.0](https://github.com/ruchernchong/portfolio/compare/v1.10.2...v1.11.0) (2025-12-20)
 
 ### Features
