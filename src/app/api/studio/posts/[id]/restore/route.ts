@@ -4,7 +4,7 @@ import { ERROR_IDS } from "@/constants/error-ids";
 import {
   handleApiError,
   notFoundResponse,
-  requireAuth,
+  requireAdmin,
   validateRouteParam,
 } from "@/lib/api";
 import { db, posts } from "@/schema";
@@ -14,7 +14,7 @@ export const POST = async (
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
-  const authResult = await requireAuth("restore posts");
+  const authResult = await requireAdmin();
   if (!authResult.success) return authResult.response;
 
   const paramResult = await validateRouteParam(

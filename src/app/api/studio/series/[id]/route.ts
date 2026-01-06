@@ -8,7 +8,7 @@ import {
   isUniqueConstraintError,
   notFoundResponse,
   parseAndValidateBody,
-  requireAuth,
+  requireAdmin,
   validateRouteParam,
   validateSeriesExists,
 } from "@/lib/api";
@@ -20,6 +20,9 @@ export const GET = async (
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
+  const authResult = await requireAdmin();
+  if (!authResult.success) return authResult.response;
+
   try {
     const result = await validateSeriesExists(params);
     if (!result.success) return result.response;
@@ -34,7 +37,7 @@ export const PATCH = async (
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
-  const authResult = await requireAuth("edit series");
+  const authResult = await requireAdmin();
   if (!authResult.success) return authResult.response;
 
   const seriesResult = await validateSeriesExists(params);
@@ -97,7 +100,7 @@ export const DELETE = async (
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
-  const authResult = await requireAuth("delete series");
+  const authResult = await requireAdmin();
   if (!authResult.success) return authResult.response;
 
   const paramResult = await validateRouteParam(

@@ -1,7 +1,10 @@
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { betterAuth } from "better-auth/minimal";
 import { nextCookies } from "better-auth/next-js";
-import { lastLoginMethod, oAuthProxy } from "better-auth/plugins";
+import { admin, lastLoginMethod, oAuthProxy } from "better-auth/plugins";
+import { eq } from "drizzle-orm";
+import * as schema from "@/schema";
 import { db } from "@/schema";
 
 /**
@@ -31,9 +34,11 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      disableSignUp: true,
     },
   },
   plugins: [
+    admin(),
     lastLoginMethod({
       storeInDatabase: true,
     }),

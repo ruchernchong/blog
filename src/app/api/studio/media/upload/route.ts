@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { ERROR_IDS } from "@/constants/error-ids";
-import { handleApiError, parseAndValidateBody, requireAuth } from "@/lib/api";
+import { handleApiError, parseAndValidateBody, requireAdmin } from "@/lib/api";
 import { mediaService } from "@/lib/services";
 import { requestUploadSchema } from "@/types/api";
 
 export const POST = async (request: Request) => {
-  const authResult = await requireAuth("upload media");
+  const authResult = await requireAdmin();
   if (!authResult.success) return authResult.response;
 
   const bodyResult = await parseAndValidateBody(request, requestUploadSchema);

@@ -14,6 +14,7 @@ interface SessionUser {
   emailVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
+  role: string | null;
 }
 
 interface AuthSession {
@@ -57,6 +58,36 @@ export async function requireAuth(
         { message: `Unauthorized. Please sign in to ${action}.` },
         { status: 401 },
       ),
+    };
+  }
+
+  return {
+    success: true,
+    data: session as AuthSession,
+  };
+}
+
+/**
+ * Validates that the request has an authenticated admin session.
+ *
+ * @returns Result with session data on success, or 401/403 response on failure
+ */
+export async function requireAdmin(): Promise<ApiResult<AuthSession>> {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    return {
+      success: false,
+      response: NextResponse.json({ message: "Unauthorised" }, { status: 401 }),
+    };
+  }
+
+  if (session.user.role !== "admin") {
+    return {
+      success: false,
+      response: NextResponse.json({ message: "Forbidden" }, { status: 403 }),
     };
   }
 

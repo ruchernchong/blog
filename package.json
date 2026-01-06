@@ -13,6 +13,7 @@
     "lint": "biome check",
     "typecheck": "tsc --noEmit",
     "format": "biome format --write",
+    "auth:generate": "pnpm dlx @better-auth/cli@latest generate --output src/schema/auth.ts --yes",
     "db:drop": "drizzle-kit drop",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

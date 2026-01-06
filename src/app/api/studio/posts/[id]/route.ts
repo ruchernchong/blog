@@ -8,7 +8,7 @@ import {
   isUniqueConstraintError,
   notFoundResponse,
   parseAndValidateBody,
-  requireAuth,
+  requireAdmin,
   validateRouteParam,
 } from "@/lib/api";
 import { logError } from "@/lib/logger";
@@ -25,6 +25,9 @@ export const GET = async (
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
+  const authResult = await requireAdmin();
+  if (!authResult.success) return authResult.response;
+
   const paramResult = await validateRouteParam(
     params,
     "id",
@@ -54,7 +57,7 @@ export const PATCH = async (
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
-  const authResult = await requireAuth("edit posts");
+  const authResult = await requireAdmin();
   if (!authResult.success) return authResult.response;
 
   const paramResult = await validateRouteParam(
@@ -191,7 +194,7 @@ export const DELETE = async (
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) => {
-  const authResult = await requireAuth("delete posts");
+  const authResult = await requireAdmin();
   if (!authResult.success) return authResult.response;
 
   const paramResult = await validateRouteParam(

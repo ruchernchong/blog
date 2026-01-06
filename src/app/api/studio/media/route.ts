@@ -5,7 +5,7 @@ import {
   handleApiError,
   isUniqueConstraintError,
   parseAndValidateBody,
-  requireAuth,
+  requireAdmin,
 } from "@/lib/api";
 import { logError } from "@/lib/logger";
 import { loadMediaSearchParams } from "@/lib/search-params/media";
@@ -13,6 +13,9 @@ import { mediaService } from "@/lib/services";
 import { confirmUploadSchema } from "@/types/api";
 
 export const GET = async (request: Request) => {
+  const authResult = await requireAdmin();
+  if (!authResult.success) return authResult.response;
+
   try {
     const { search, limit, offset } = loadMediaSearchParams(request);
 
@@ -29,7 +32,7 @@ export const GET = async (request: Request) => {
 };
 
 export const POST = async (request: Request) => {
-  const authResult = await requireAuth("upload media");
+  const authResult = await requireAdmin();
   if (!authResult.success) return authResult.response;
 
   const bodyResult = await parseAndValidateBody(request, confirmUploadSchema);

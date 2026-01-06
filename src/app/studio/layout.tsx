@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { type ReactNode, Suspense } from "react";
 import { Providers } from "@/app/studio/providers";
 import { UserMenu } from "@/components/auth/user-menu";
@@ -8,6 +10,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Content Studio | Manage Blog Posts",
@@ -18,9 +21,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function StudioLayout({
+export default async function StudioLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    redirect("/login");
+  }
+
+  if (session.user.role !== "admin") {
+    redirect("/");
+  }
+
   return (
     <Suspense>
       <Providers>
