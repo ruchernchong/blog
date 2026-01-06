@@ -3,7 +3,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import rehypeShiki from "@shikijs/rehype";
 import type { MDXComponents } from "mdx/types";
 import type { Route } from "next";
-import { cacheLife, cacheTag } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
 import { compileMDX } from "next-mdx-remote/rsc";
@@ -91,10 +90,6 @@ const components: MDXComponents = {
 };
 
 export async function Mdx({ content }: { content: string }) {
-  "use cache";
-  cacheLife("max");
-  cacheTag("posts");
-
   const { content: mdxContent } = await compileMDX({
     source: content,
     components,
