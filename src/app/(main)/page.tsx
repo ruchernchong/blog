@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import type { WebSite, WithContext } from "schema-dts";
 import { FeaturedWork } from "@/app/_components/home/featured-work";
 import { HeroSection } from "@/app/_components/home/hero-section";
@@ -7,6 +6,8 @@ import { QuickStats } from "@/app/_components/home/quick-stats";
 import { StructuredData } from "@/app/_components/structured-data";
 import { BASE_URL } from "@/config";
 import projects from "@/data/projects";
+
+export const revalidate = 3600; // Revalidate every hour
 
 const structuredData: WithContext<WebSite> = {
   "@context": "https://schema.org",

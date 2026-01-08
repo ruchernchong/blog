@@ -4,6 +4,8 @@ import RSS from "rss";
 import { BASE_URL } from "@/config";
 import { db, posts } from "@/schema";
 
+export const revalidate = 3600; // Revalidate every hour
+
 export const GET = async () => {
   const publishedPosts = await db
     .select({

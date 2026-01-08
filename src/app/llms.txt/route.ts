@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { db, posts } from "@/schema";
 
+export const revalidate = 3600; // Revalidate every hour
+
 export const GET = async () => {
   const publishedPosts = await db
     .select({
