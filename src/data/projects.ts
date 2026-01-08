@@ -40,12 +40,13 @@ const projects: Project[] = [
     ],
   },
   {
-    name: "Agentic Slash Commands",
-    slug: "agentic-slash-commands",
+    name: "Claude Kit",
+    slug: "claude-kit",
+    coverImage: "/images/projects/claude-kit.png",
     description:
-      "Intelligent agentic slash commands for Claude Code, Codex, and Gemini CLI. Smart detection for JS/TS workflows with auto package manager detection.",
-    skills: ["Shell", "TypeScript", "Claude Code", "Codex", "Gemini CLI"],
-    links: ["https://github.com/ruchernchong/agentic-slash-commands"],
+      "A collection of powertools for Claude Code including specialised agents, slash commands, and skills.",
+    skills: ["Shell", "TypeScript", "Claude Code"],
+    links: ["https://github.com/ruchernchong/claude-kit"],
   },
 ];
 
