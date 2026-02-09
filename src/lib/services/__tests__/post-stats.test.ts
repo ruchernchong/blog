@@ -51,7 +51,7 @@ describe("post-stats", () => {
 
     it("should initialise default stats when cache is empty", async () => {
       vi.mocked(redis.get).mockResolvedValue(null);
-      vi.mocked(redis.set).mockResolvedValue(undefined as any);
+      vi.mocked(redis.set).mockResolvedValue("OK");
 
       const result = await getPostStats("new-post");
 
@@ -81,8 +81,8 @@ describe("post-stats", () => {
       };
 
       vi.mocked(redis.get).mockResolvedValue(existingStats);
-      vi.mocked(redis.set).mockResolvedValue(undefined as any);
-      vi.mocked(redis.zadd).mockResolvedValue(undefined as any);
+      vi.mocked(redis.set).mockResolvedValue("OK");
+      vi.mocked(redis.zadd).mockResolvedValue(1);
 
       const result = await incrementViews("test-post");
 
@@ -122,7 +122,7 @@ describe("post-stats", () => {
       };
 
       vi.mocked(redis.get).mockResolvedValue(existingStats);
-      vi.mocked(redis.set).mockResolvedValue(undefined as any);
+      vi.mocked(redis.set).mockResolvedValue("OK");
 
       const result = await incrementLikes("test-post", "user-hash-1");
 
@@ -149,7 +149,7 @@ describe("post-stats", () => {
       };
 
       vi.mocked(redis.get).mockResolvedValue(existingStats);
-      vi.mocked(redis.set).mockResolvedValue(undefined as any);
+      vi.mocked(redis.set).mockResolvedValue("OK");
 
       const result = await incrementLikes("test-post", "user-hash-1");
 
@@ -167,7 +167,7 @@ describe("post-stats", () => {
       };
 
       vi.mocked(redis.get).mockResolvedValue(existingStats);
-      vi.mocked(redis.set).mockResolvedValue(undefined as any);
+      vi.mocked(redis.set).mockResolvedValue("OK");
 
       const result = await incrementLikes("test-post", "user4");
 

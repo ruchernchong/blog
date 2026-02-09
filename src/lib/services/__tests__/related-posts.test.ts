@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CacheConfig } from "@/lib/config/cache.config";
 import * as postsQueries from "@/lib/queries/posts";
+import type { SelectPost } from "@/schema";
 
 // Mock dependencies
 vi.mock("next/cache", () => ({
@@ -23,6 +24,60 @@ vi.mock("@/lib/queries/posts", () => ({
 // Import after mocks
 import redis from "@/config/redis";
 import { getRelatedPosts } from "../related-posts";
+
+const createMockPost = (overrides: Partial<SelectPost>): SelectPost => ({
+  id: "post-id",
+  slug: "post-slug",
+  title: "Post title",
+  summary: null,
+  metadata: {
+    readingTime: "1 min",
+    description: "description",
+    canonical: "https://example.com/post",
+    openGraph: {
+      title: "Post title",
+      siteName: "Site",
+      description: "description",
+      type: "article",
+      publishedTime: "2024-01-01T00:00:00.000Z",
+      url: "https://example.com/post",
+      locale: "en_SG",
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: "@site",
+      title: "Post title",
+      description: "description",
+    },
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: "Post title",
+      dateModified: "2024-01-01T00:00:00.000Z",
+      datePublished: "2024-01-01T00:00:00.000Z",
+      description: "description",
+      url: "https://example.com/post",
+      author: {
+        "@type": "Person",
+        name: "Author",
+        url: "https://example.com",
+      },
+    },
+  },
+  content: "content",
+  status: "published",
+  tags: [],
+  featured: false,
+  coverImage: null,
+  authorId: null,
+  seriesId: null,
+  seriesOrder: null,
+  publishedAt: new Date("2024-01-01T00:00:00.000Z"),
+  createdAt: new Date("2024-01-01T00:00:00.000Z"),
+  updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+  deletedAt: null,
+  ...overrides,
+});
 
 describe("related-posts", () => {
   beforeEach(() => {
@@ -55,35 +110,35 @@ describe("related-posts", () => {
 
     it("should calculate Jaccard similarity and cache result", async () => {
       vi.mocked(redis.get).mockResolvedValue(null);
-      vi.mocked(redis.set).mockResolvedValue(undefined as any);
+      vi.mocked(redis.set).mockResolvedValue("OK");
 
       vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
         tags: ["typescript", "react", "testing"],
-      } as any);
+      });
 
       vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue([
-        {
+        createMockPost({
           slug: "post-1",
           title: "Post 1",
           summary: "Summary 1",
           publishedAt: new Date("2024-01-01"),
           tags: ["typescript", "react"],
-        },
-        {
+        }),
+        createMockPost({
           slug: "post-2",
           title: "Post 2",
           summary: "Summary 2",
           publishedAt: new Date("2024-01-02"),
           tags: ["typescript"],
-        },
-        {
+        }),
+        createMockPost({
           slug: "post-3",
           title: "Post 3",
           summary: "Summary 3",
           publishedAt: new Date("2024-01-03"),
           tags: ["typescript", "react", "testing"],
-        },
-      ] as any);
+        }),
+      ]);
 
       const result = await getRelatedPosts("test-post", 4);
 
@@ -107,31 +162,31 @@ describe("related-posts", () => {
 
       vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
         tags: ["tag1", "tag2"],
-      } as any);
+      });
 
       vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue([
-        {
+        createMockPost({
           slug: "post-1",
           title: "Post 1",
           summary: null,
           publishedAt: new Date(),
           tags: ["tag1", "tag2"],
-        },
-        {
+        }),
+        createMockPost({
           slug: "post-2",
           title: "Post 2",
           summary: null,
           publishedAt: new Date(),
           tags: ["tag1"],
-        },
-        {
+        }),
+        createMockPost({
           slug: "post-3",
           title: "Post 3",
           summary: null,
           publishedAt: new Date(),
           tags: ["tag2"],
-        },
-      ] as any);
+        }),
+      ]);
 
       const result = await getRelatedPosts("test-post", 2);
 
@@ -143,24 +198,24 @@ describe("related-posts", () => {
 
       vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
         tags: ["tag1", "tag2", "tag3", "tag4"],
-      } as any);
+      });
 
       vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue([
-        {
+        createMockPost({
           slug: "high-similarity",
           title: "High",
           summary: null,
           publishedAt: new Date(),
           tags: ["tag1", "tag2", "tag3"],
-        },
-        {
+        }),
+        createMockPost({
           slug: "low-similarity",
           title: "Low",
           summary: null,
           publishedAt: new Date(),
           tags: ["tag1", "tag5", "tag6", "tag7", "tag8"],
-        },
-      ] as any);
+        }),
+      ]);
 
       const result = await getRelatedPosts("test-post", 10);
 
@@ -177,7 +232,7 @@ describe("related-posts", () => {
 
       vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
         tags: [],
-      } as any);
+      });
 
       const result = await getRelatedPosts("test-post");
 
@@ -201,17 +256,17 @@ describe("related-posts", () => {
 
       vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
         tags: ["a", "b", "c"],
-      } as any);
+      });
 
       vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue([
-        {
+        createMockPost({
           slug: "post-1",
           title: "Post 1",
           summary: null,
           publishedAt: new Date(),
           tags: ["a", "b"],
-        },
-      ] as any);
+        }),
+      ]);
 
       const result = await getRelatedPosts("test-post");
 
@@ -244,17 +299,17 @@ describe("related-posts", () => {
 
       vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
         tags: ["a", "b", "c"],
-      } as any);
+      });
 
       vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue([
-        {
+        createMockPost({
           slug: "identical",
           title: "Identical",
           summary: null,
           publishedAt: new Date(),
           tags: ["a", "b", "c"],
-        },
-      ] as any);
+        }),
+      ]);
 
       const result = await getRelatedPosts("test-post");
 
@@ -266,17 +321,17 @@ describe("related-posts", () => {
 
       vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
         tags: ["a", "b"],
-      } as any);
+      });
 
       vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue([
-        {
+        createMockPost({
           slug: "different",
           title: "Different",
           summary: null,
           publishedAt: new Date(),
           tags: ["c", "d"],
-        },
-      ] as any);
+        }),
+      ]);
 
       const result = await getRelatedPosts("test-post");
 
@@ -288,17 +343,17 @@ describe("related-posts", () => {
 
       vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
         tags: ["a", "b", "c"],
-      } as any);
+      });
 
       vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue([
-        {
+        createMockPost({
           slug: "partial",
           title: "Partial",
           summary: null,
           publishedAt: new Date(),
           tags: ["b", "c", "d"],
-        },
-      ] as any);
+        }),
+      ]);
 
       const result = await getRelatedPosts("test-post");
 

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CacheConfig } from "@/lib/config/cache.config";
 import * as postsQueries from "@/lib/queries/posts";
+import type { SelectPost } from "@/schema";
 
 // Mock dependencies
 vi.mock("next/cache", () => ({
@@ -47,6 +48,60 @@ import {
   updatePopularScore,
 } from "../popular-posts";
 
+const createMockPost = (overrides: Partial<SelectPost>): SelectPost => ({
+  id: "post-id",
+  slug: "post-slug",
+  title: "Post title",
+  summary: null,
+  metadata: {
+    readingTime: "1 min",
+    description: "description",
+    canonical: "https://example.com/post",
+    openGraph: {
+      title: "Post title",
+      siteName: "Site",
+      description: "description",
+      type: "article",
+      publishedTime: "2024-01-01T00:00:00.000Z",
+      url: "https://example.com/post",
+      locale: "en_SG",
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: "@site",
+      title: "Post title",
+      description: "description",
+    },
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: "Post title",
+      dateModified: "2024-01-01T00:00:00.000Z",
+      datePublished: "2024-01-01T00:00:00.000Z",
+      description: "description",
+      url: "https://example.com/post",
+      author: {
+        "@type": "Person",
+        name: "Author",
+        url: "https://example.com",
+      },
+    },
+  },
+  content: "content",
+  status: "published",
+  tags: [],
+  featured: false,
+  coverImage: null,
+  authorId: null,
+  seriesId: null,
+  seriesOrder: null,
+  publishedAt: new Date("2024-01-01T00:00:00.000Z"),
+  createdAt: new Date("2024-01-01T00:00:00.000Z"),
+  updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+  deletedAt: null,
+  ...overrides,
+});
+
 describe("popular-posts", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -64,34 +119,31 @@ describe("popular-posts", () => {
       ]);
 
       const mockDbPosts = [
-        {
+        createMockPost({
           id: "1",
           slug: "post-1",
           title: "Post 1",
           summary: "Summary 1",
           publishedAt: new Date("2024-01-01"),
-          metadata: { readingTime: "5 min" },
-        },
-        {
+        }),
+        createMockPost({
           id: "2",
           slug: "post-2",
           title: "Post 2",
           summary: "Summary 2",
           publishedAt: new Date("2024-01-02"),
-          metadata: { readingTime: "3 min" },
-        },
-        {
+        }),
+        createMockPost({
           id: "3",
           slug: "post-3",
           title: "Post 3",
           summary: "Summary 3",
           publishedAt: new Date("2024-01-03"),
-          metadata: { readingTime: "7 min" },
-        },
+        }),
       ];
 
       vi.mocked(postsQueries.getPublishedPostsBySlugs).mockResolvedValue(
-        mockDbPosts as any,
+        mockDbPosts,
       );
 
       const result = await getPopularPosts(3);
@@ -128,26 +180,24 @@ describe("popular-posts", () => {
       vi.mocked(redis.zrange).mockResolvedValue(["post-b", 50, "post-a", 100]);
 
       const mockDbPosts = [
-        {
+        createMockPost({
           id: "2",
           slug: "post-b",
           title: "Post B",
           summary: null,
           publishedAt: new Date(),
-          metadata: {},
-        },
-        {
+        }),
+        createMockPost({
           id: "1",
           slug: "post-a",
           title: "Post A",
           summary: null,
           publishedAt: new Date(),
-          metadata: {},
-        },
+        }),
       ];
 
       vi.mocked(postsQueries.getPublishedPostsBySlugs).mockResolvedValue(
-        mockDbPosts as any,
+        mockDbPosts,
       );
 
       const result = await getPopularPosts(2);
@@ -180,7 +230,9 @@ describe("popular-posts", () => {
     });
 
     it("should handle Redis returning null", async () => {
-      vi.mocked(redis.zrange).mockResolvedValue(null as any);
+      vi.mocked(redis.zrange).mockResolvedValue(
+        null as unknown as Awaited<ReturnType<typeof redis.zrange>>,
+      );
 
       const result = await getPopularPosts(5);
 
@@ -191,15 +243,14 @@ describe("popular-posts", () => {
       vi.mocked(redis.zrange).mockResolvedValue(["post-1", 100, "post-2", 75]);
 
       vi.mocked(postsQueries.getPublishedPostsBySlugs).mockResolvedValue([
-        {
+        createMockPost({
           id: "1",
           slug: "post-1",
           title: "Post 1",
           summary: null,
           publishedAt: new Date(),
-          metadata: {},
-        },
-      ] as any);
+        }),
+      ]);
 
       const result = await getPopularPosts(2);
 
@@ -210,7 +261,7 @@ describe("popular-posts", () => {
 
   describe("updatePopularScore", () => {
     it("should update score in Redis sorted set", async () => {
-      vi.mocked(redis.zadd).mockResolvedValue(undefined as any);
+      vi.mocked(redis.zadd).mockResolvedValue(1);
 
       await updatePopularScore("test-post", 150);
 
@@ -226,7 +277,7 @@ describe("popular-posts", () => {
 
   describe("removeFromPopular", () => {
     it("should remove post from Redis sorted set", async () => {
-      vi.mocked(redis.zrem).mockResolvedValue(undefined as any);
+      vi.mocked(redis.zrem).mockResolvedValue(1);
 
       await removeFromPopular("test-post");
 

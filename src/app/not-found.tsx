@@ -15,7 +15,7 @@ export default function NotFound() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="select-none text-[clamp(8rem,25vw,14rem)] font-bold leading-none tracking-tighter text-primary"
+          className="select-none font-bold text-[clamp(8rem,25vw,14rem)] text-primary leading-none tracking-tighter"
         >
           404
         </motion.h1>
@@ -27,7 +27,7 @@ export default function NotFound() {
           transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
           className="flex flex-col items-center gap-4 text-center"
         >
-          <p className="text-xl font-medium tracking-tight text-foreground">
+          <p className="font-medium text-foreground text-xl tracking-tight">
             This page has wandered off
           </p>
           <p className="max-w-md text-muted-foreground">

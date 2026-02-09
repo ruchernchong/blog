@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CacheConfig } from "@/lib/config/cache.config";
 import * as postsQueries from "@/lib/queries/posts";
+import type { SelectPost } from "@/schema";
 
 // Mock dependencies
 vi.mock("@/config/redis", () => ({
@@ -27,6 +28,60 @@ import {
 } from "../cache-invalidation";
 import { removeFromPopular } from "../popular-posts";
 
+const createMockPost = (overrides: Partial<SelectPost>): SelectPost => ({
+  id: "post-id",
+  slug: "post-slug",
+  title: "Post title",
+  summary: null,
+  metadata: {
+    readingTime: "1 min",
+    description: "description",
+    canonical: "https://example.com/post",
+    openGraph: {
+      title: "Post title",
+      siteName: "Site",
+      description: "description",
+      type: "article",
+      publishedTime: "2024-01-01T00:00:00.000Z",
+      url: "https://example.com/post",
+      locale: "en_SG",
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: "@site",
+      title: "Post title",
+      description: "description",
+    },
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: "Post title",
+      dateModified: "2024-01-01T00:00:00.000Z",
+      datePublished: "2024-01-01T00:00:00.000Z",
+      description: "description",
+      url: "https://example.com/post",
+      author: {
+        "@type": "Person",
+        name: "Author",
+        url: "https://example.com",
+      },
+    },
+  },
+  content: "content",
+  status: "published",
+  tags: [],
+  featured: false,
+  coverImage: null,
+  authorId: null,
+  seriesId: null,
+  seriesOrder: null,
+  publishedAt: new Date("2024-01-01T00:00:00.000Z"),
+  createdAt: new Date("2024-01-01T00:00:00.000Z"),
+  updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+  deletedAt: null,
+  ...overrides,
+});
+
 describe("cache-invalidation", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -34,7 +89,7 @@ describe("cache-invalidation", () => {
 
   describe("invalidatePost", () => {
     it("should delete both stats and related cache for a post", async () => {
-      vi.mocked(redis.del).mockResolvedValue(undefined as any);
+      vi.mocked(redis.del).mockResolvedValue(2);
 
       await invalidatePost("test-post");
 
@@ -48,15 +103,15 @@ describe("cache-invalidation", () => {
   describe("invalidateRelatedByTags", () => {
     it("should invalidate related caches for all posts with overlapping tags", async () => {
       const mockPosts = [
-        { slug: "post-1", tags: ["typescript", "react"] },
-        { slug: "post-2", tags: ["typescript"] },
-        { slug: "post-3", tags: ["react", "testing"] },
+        createMockPost({ slug: "post-1", tags: ["typescript", "react"] }),
+        createMockPost({ slug: "post-2", tags: ["typescript"] }),
+        createMockPost({ slug: "post-3", tags: ["react", "testing"] }),
       ];
 
       vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue(
-        mockPosts as any,
+        mockPosts,
       );
-      vi.mocked(redis.del).mockResolvedValue(undefined as any);
+      vi.mocked(redis.del).mockResolvedValue(3);
 
       await invalidateRelatedByTags(["typescript", "react"]);
 
@@ -74,12 +129,12 @@ describe("cache-invalidation", () => {
 
     it("should exclude specified slug from invalidation", async () => {
       const mockPosts = [
-        { slug: "post-1", tags: ["typescript"] },
-        { slug: "post-2", tags: ["typescript"] },
+        createMockPost({ slug: "post-1", tags: ["typescript"] }),
+        createMockPost({ slug: "post-2", tags: ["typescript"] }),
       ];
 
       vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue(
-        mockPosts as any,
+        mockPosts,
       );
 
       await invalidateRelatedByTags(["typescript"], "excluded-post");
@@ -109,7 +164,7 @@ describe("cache-invalidation", () => {
   describe("invalidatePopularPost", () => {
     it("should remove from popular and invalidate post caches", async () => {
       vi.mocked(removeFromPopular).mockResolvedValue(undefined);
-      vi.mocked(redis.del).mockResolvedValue(undefined as any);
+      vi.mocked(redis.del).mockResolvedValue(2);
 
       await invalidatePopularPost("test-post");
 
@@ -123,7 +178,7 @@ describe("cache-invalidation", () => {
 
     it("should run operations in parallel", async () => {
       const removePromise = Promise.resolve();
-      const delPromise = Promise.resolve(undefined as any);
+      const delPromise = Promise.resolve(2);
 
       vi.mocked(removeFromPopular).mockReturnValue(removePromise);
       vi.mocked(redis.del).mockReturnValue(delPromise);

@@ -115,7 +115,14 @@ export function registerPostTools(server: McpServer): void {
         throw new Error("Either id or slug must be provided");
       }
 
-      const condition = id ? eq(posts.id, id) : eq(posts.slug, slug!);
+      const condition = id
+        ? eq(posts.id, id)
+        : slug
+          ? eq(posts.slug, slug)
+          : null;
+      if (!condition) {
+        throw new Error("Either id or slug must be provided");
+      }
 
       const [result] = await db
         .select()
@@ -485,7 +492,7 @@ export function registerPostTools(server: McpServer): void {
           id: published.id,
           slug: published.slug,
           title: published.title,
-          publishedAt: published.publishedAt!.toISOString(),
+          publishedAt: published.publishedAt?.toISOString(),
         },
       };
 
