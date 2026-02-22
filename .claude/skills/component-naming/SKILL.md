@@ -122,10 +122,10 @@ Files use **kebab-case** matching the component name:
 
 | Location | Purpose |
 |----------|---------|
-| `components/` | Reusable components (not shadcn/ui) |
-| `components/ui/` | shadcn/ui primitives (DO NOT MODIFY) |
-| `components/shared/` | Shared layout components |
-| `app/(blog)/_components/` | Route-specific, single-use components |
+| `src/components/` | Reusable components (not shadcn/ui) |
+| `src/components/ui/` | shadcn/ui primitives (DO NOT MODIFY) |
+| `src/components/shared/` | Shared layout components |
+| `src/app/(main)/blog/_components/` | Route-specific, single-use components |
 
 ---
 
@@ -171,5 +171,5 @@ When reviewing component names:
 ## Related Files
 
 - `.claude/skills/design-language-system/SKILL.md` - Design system guidelines
-- `apps/blog/src/components/` - Blog components
-- `apps/blog/src/components/ui/` - shadcn/ui (do not modify)
+- `src/components/` - Blog components
+- `src/components/ui/` - shadcn/ui (do not modify)
