@@ -63,6 +63,8 @@ An MCP (Model Context Protocol) server for managing blog posts and media via Cla
 - `get_media` - Get single media item
 - `request_upload` - Get presigned R2 upload URL
 - `confirm_upload` - Confirm upload and create database record
+- `upload_from_path` - Upload image directly from local file path
+- `upload_from_url` - Upload image from a public URL
 - `delete_media` - Soft delete media
 
 ### Configuration
@@ -251,6 +253,6 @@ Invoke skills with `/component-naming` or `/design-language-system` when creatin
 
 ## Documentation
 
-- Run `/update-docs` before releases to audit documentation
+- Run `/update-project` before releases to audit documentation
 - Update CLAUDE.md when changing commands or architecture
 - Update README.md when modifying tech stack

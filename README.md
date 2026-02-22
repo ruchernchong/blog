@@ -5,10 +5,10 @@ A personal portfolio and blog built with Next.js 16, React 19, and TypeScript.
 ## Quick Start
 
 ```bash
-bun install          # Install dependencies
-bun run dev          # Start dev server
-bun run test         # Run tests
-bun run build        # Build for production
+pnpm install         # Install dependencies
+pnpm dev             # Start dev server
+pnpm test            # Run tests
+pnpm build           # Build for production
 ```
 
 ## Tech Stack
@@ -73,18 +73,18 @@ bun run build        # Build for production
 ## Development
 
 ### Prerequisites
-- Bun 1.3.5 or later
+- PNPM 10.22.0 or later
 - Node.js 18+ (for compatibility)
 - PostgreSQL database (Neon recommended)
 - Redis instance (Upstash recommended)
 
 ### Setup
 1. Clone the repository
-2. Install dependencies: `bun install`
+2. Install dependencies: `pnpm install`
 3. Copy `.env.example` to `.env` and configure
-4. Run database migrations: `bun run db:migrate`
-5. (Optional) Seed database: `bun run db:seed`
-6. Start dev server: `bun run dev`
+4. Run database migrations: `pnpm db:migrate`
+5. (Optional) Seed database: `pnpm db:seed`
+6. Start dev server: `pnpm dev`
 
 ### Available Commands
 See [CLAUDE.md](./CLAUDE.md) for complete command reference including:
