@@ -220,12 +220,13 @@ export class MediaService {
       const conditions = includeDeleted ? [] : [isNull(media.deletedAt)];
 
       if (search) {
-        conditions.push(
-          or(
-            ilike(media.filename, `%${search}%`),
-            ilike(media.alt, `%${search}%`),
-          )!,
+        const searchCondition = or(
+          ilike(media.filename, `%${search}%`),
+          ilike(media.alt, `%${search}%`),
         );
+        if (searchCondition) {
+          conditions.push(searchCondition);
+        }
       }
 
       const mediaList = await db
