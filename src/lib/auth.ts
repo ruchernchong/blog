@@ -1,10 +1,7 @@
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { APIError, createAuthMiddleware } from "better-auth/api";
 import { betterAuth } from "better-auth/minimal";
 import { nextCookies } from "better-auth/next-js";
 import { admin, lastLoginMethod, oAuthProxy } from "better-auth/plugins";
-import { eq } from "drizzle-orm";
-import * as schema from "@/schema";
 import { db } from "@/schema";
 
 /**
