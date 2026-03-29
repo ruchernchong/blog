@@ -1,5 +1,0 @@
-allowBuilds:
-  es5-ext: true
-  esbuild: true
-  msw: true
-  sharp: true
