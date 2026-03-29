@@ -134,5 +134,5 @@
   "lint-staged": {
     "*.{js,ts,jsx,tsx,json,css,md,mdx}": "biome check --write --no-errors-on-unmatched"
   },
-  "packageManager": "pnpm@10.22.0"
+  "packageManager": "pnpm@11.0.0-beta.3"
 }
