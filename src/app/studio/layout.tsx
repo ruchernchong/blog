@@ -21,9 +21,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function StudioLayout({
-  children,
-}: Readonly<{ children: ReactNode }>) {
+async function AuthCheck({ children }: { children: ReactNode }) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -37,19 +35,27 @@ export default async function StudioLayout({
   }
 
   return (
-    <Suspense>
-      <Providers>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <header className="flex h-14 items-center justify-between border-b px-4">
-              <SidebarTrigger />
-              <UserMenu />
-            </header>
-            <main className="p-4">{children}</main>
-          </SidebarInset>
-        </SidebarProvider>
-      </Providers>
+    <Providers>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <header className="flex h-14 items-center justify-between border-b px-4">
+            <SidebarTrigger />
+            <UserMenu />
+          </header>
+          <main className="p-4">{children}</main>
+        </SidebarInset>
+      </SidebarProvider>
+    </Providers>
+  );
+}
+
+export default function StudioLayout({
+  children,
+}: Readonly<{ children: ReactNode }>) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AuthCheck>{children}</AuthCheck>
     </Suspense>
   );
 }

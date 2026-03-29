@@ -4,15 +4,13 @@ import RSS from "rss";
 import { BASE_URL } from "@/config";
 import { db, posts } from "@/schema";
 
-export const revalidate = 3600; // Revalidate every hour
-
 export const GET = async () => {
   const publishedPosts = await db
     .select({
       title: posts.title,
       publishedAt: posts.publishedAt,
       summary: posts.summary,
-      metadata: posts.metadata,
+      slug: posts.slug,
     })
     .from(posts)
     .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)))
@@ -27,13 +25,15 @@ export const GET = async () => {
   publishedPosts.forEach((post) => {
     feed.item({
       title: post.title,
-      url: post.metadata.canonical,
-      date: post.publishedAt || new Date(),
+      url: `${BASE_URL}/blog/${post.slug}`,
+      date: post.publishedAt?.toISOString() || new Date().toISOString(),
       description: post.summary ?? post.title,
     });
   });
 
-  return new NextResponse(feed.xml({ indent: true }), {
+  const xml = feed.xml({ indent: true });
+
+  return new NextResponse(xml, {
     headers: {
       "Content-Type": "application/xml; charset=utf-8",
       "Cache-Control": "public, s-maxage=1200, stale-while-revalidate=600",
