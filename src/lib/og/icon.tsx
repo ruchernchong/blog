@@ -1,9 +1,14 @@
+import { cacheLife, cacheTag } from "next/cache";
 import { ImageResponse } from "next/og";
 
 const TEXT = "R";
 const FONT_FAMILY = "Figtree";
 
 async function loadGoogleFont(font: string, text: string) {
+  "use cache";
+  cacheLife("max");
+  cacheTag(`icon:font:${font}`);
+
   const url = `https://fonts.googleapis.com/css2?family=${font}&text=${encodeURIComponent(text)}`;
   const css = await (await fetch(url)).text();
   const resource = css.match(
