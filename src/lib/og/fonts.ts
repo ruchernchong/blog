@@ -1,15 +1,15 @@
+import { cacheLife, cacheTag } from "next/cache";
 import { OG_CONFIG } from "./config";
 
-/**
- * Load a Google Font for use in OG images
- *
- * @see lib/og/icon.tsx for the original pattern
- */
 async function loadGoogleFont(
   font: string,
   weight: number,
   text?: string,
 ): Promise<ArrayBuffer> {
+  "use cache";
+  cacheLife("max");
+  cacheTag(`og:font:${font}:${weight}`);
+
   const params = new URLSearchParams({
     family: `${font}:wght@${weight}`,
   });
@@ -35,12 +35,11 @@ async function loadGoogleFont(
   throw new Error(`Failed to load font: ${font} weight ${weight}`);
 }
 
-/**
- * Get Figtree fonts for OG images
- *
- * Returns regular (400) and bold (700) weights
- */
 export async function getOGFonts() {
+  "use cache";
+  cacheLife("max");
+  cacheTag("og:fonts");
+
   const [regular, bold] = await Promise.all([
     loadGoogleFont(OG_CONFIG.fontFamily, 400),
     loadGoogleFont(OG_CONFIG.fontFamily, 700),
