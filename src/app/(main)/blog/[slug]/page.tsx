@@ -6,8 +6,8 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Metadata } from "next";
+import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
-import { connection } from "next/server";
 import { Suspense } from "react";
 import { Mdx } from "@/app/(main)/blog/components/mdx";
 // import { RelatedPosts } from "@/app/(main)/blog/components/related-posts";
@@ -68,8 +68,16 @@ export async function generateStaticParams() {
   return publishedPosts.map(({ slug }) => ({ slug }));
 }
 
+// Cached MDX component to avoid re-compilation on each request
+async function CachedMdx({ content, slug }: { content: string; slug: string }) {
+  "use cache";
+  cacheTag(`mdx:${slug}`);
+  cacheLife("max");
+
+  return <Mdx content={content} />;
+}
+
 async function PostContent({ slug }: { slug: string }) {
-  await connection();
   const post = await getPublishedPostBySlug(slug);
 
   if (!post) {
@@ -120,7 +128,11 @@ async function PostContent({ slug }: { slug: string }) {
           </div>
           {post.summary}
         </aside>
-        <Mdx content={post.content} />
+        <Suspense
+          fallback={<div className="animate-pulse">Loading content...</div>}
+        >
+          <CachedMdx content={post.content} slug={slug} />
+        </Suspense>
         {/*<RelatedPosts slug={post.slug} />*/}
       </article>
     </>
