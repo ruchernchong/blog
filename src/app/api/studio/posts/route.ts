@@ -1,4 +1,5 @@
 import { desc } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { ERROR_IDS } from "@/constants/error-ids";
 import {
@@ -79,6 +80,12 @@ export const POST = async (request: Request) => {
     };
 
     const [createdPost] = await db.insert(posts).values(newPost).returning();
+
+    if (status === "published") {
+      revalidateTag("posts:list", "max");
+      revalidateTag("posts:count", "max");
+      revalidateTag("posts:featured", "max");
+    }
 
     return NextResponse.json(createdPost, { status: 201 });
   } catch (error) {
