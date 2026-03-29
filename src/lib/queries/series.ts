@@ -1,4 +1,5 @@
 import { and, asc, count, desc, eq, isNull } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 import { db, posts, series } from "@/schema";
 
 export const getSeriesById = async (id: string) => {
@@ -14,6 +15,10 @@ export const getSeriesBySlug = async (slug: string) => {
 };
 
 export const getPublishedSeries = async () => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("series:list");
+
   return db
     .select()
     .from(series)
@@ -48,6 +53,10 @@ export const getPublishedPostsInSeries = async (seriesId: string) => {
 };
 
 export const getPublishedSeriesWithPostCount = async () => {
+  "use cache";
+  cacheLife("max");
+  cacheTag("series:list");
+
   const result = await db
     .select({
       id: series.id,

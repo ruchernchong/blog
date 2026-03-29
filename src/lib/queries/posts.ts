@@ -2,6 +2,7 @@ import {
   and,
   arrayContains,
   arrayOverlaps,
+  count,
   desc,
   eq,
   inArray,
@@ -9,6 +10,7 @@ import {
   isNull,
   ne,
 } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 import { db, posts } from "@/schema";
 
 export const getPostBySlug = async (slug: string) => {
@@ -22,6 +24,10 @@ export const getPostBySlug = async (slug: string) => {
 };
 
 export async function getPublishedPosts() {
+  "use cache";
+  cacheLife("max");
+  cacheTag("posts:list");
+
   return db.query.posts.findMany({
     columns: {
       content: false,
@@ -38,13 +44,15 @@ export async function getPublishedPosts() {
  * @returns Posts excluding featured when no tag filter, or all matching posts when filtered
  */
 export async function getPublishedPostsForGrid(tag?: string) {
+  "use cache";
+  cacheLife("max");
+  cacheTag("posts:list");
+
   const conditions = [eq(posts.status, "published"), isNull(posts.deletedAt)];
 
   if (tag) {
-    // Filter by tag
     conditions.push(arrayContains(posts.tags, [tag]));
   } else {
-    // Exclude featured posts when showing all
     conditions.push(eq(posts.featured, false));
   }
 
@@ -58,6 +66,10 @@ export async function getPublishedPostsForGrid(tag?: string) {
 }
 
 export async function getFeaturedPosts() {
+  "use cache";
+  cacheLife("max");
+  cacheTag("posts:featured");
+
   return db
     .select()
     .from(posts)
@@ -65,7 +77,24 @@ export async function getFeaturedPosts() {
     .orderBy(desc(posts.createdAt));
 }
 
+export async function getPublishedPostsCount() {
+  "use cache";
+  cacheLife("max");
+  cacheTag("posts:count");
+
+  const result = await db
+    .select({ count: count() })
+    .from(posts)
+    .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)));
+
+  return result[0]?.count ?? 0;
+}
+
 export const getPublishedPostBySlug = async (slug: string) => {
+  "use cache";
+  cacheLife("max");
+  cacheTag(`post:${slug}`);
+
   return db.query.posts.findFirst({
     with: {
       author: true,

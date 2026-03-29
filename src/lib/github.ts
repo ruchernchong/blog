@@ -6,6 +6,7 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { Octokit } from "@octokit/rest";
+import { cacheLife, cacheTag } from "next/cache";
 
 const GITHUB_USERNAME = "ruchernchong";
 
@@ -63,6 +64,10 @@ type GetPinnedRepositoriesResult = {
 export const getGitHubPinnedRepositories = async (): Promise<
   PinnedRepository[]
 > => {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("github:pinned");
+
   const { data } = await gqlClient.query<GetPinnedRepositoriesResult>({
     query: gql`
       {
@@ -140,6 +145,10 @@ export const getGitHubFollowers = async (): Promise<number> => {
 };
 
 export const getGitHubStars = async (): Promise<number> => {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("github:stars");
+
   try {
     const { data } = await octokit.rest.repos.listForUser({
       username: GITHUB_USERNAME,
