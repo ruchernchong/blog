@@ -36,3 +36,11 @@ coverage/
 # Vercel
 .vercel/
 
+# IDE configurations
+.continue/
+.crush/
+.factory/
+.goose/
+.kiro/
+.windsurf/
+
