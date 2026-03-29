@@ -124,8 +124,14 @@ Files use **kebab-case** matching the component name:
 |----------|---------|
 | `src/components/` | Reusable components (not shadcn/ui) |
 | `src/components/ui/` | shadcn/ui primitives (DO NOT MODIFY) |
-| `src/components/shared/` | Shared layout components |
-| `src/app/(main)/blog/_components/` | Route-specific, single-use components |
+| `src/components/auth/` | Authentication components |
+| `src/app/_components/` | App-level shared components |
+| `src/app/(main)/about/_components/` | About page components |
+| `src/app/(main)/blog/_components/` | Blog page components |
+| `src/app/(main)/dashboard/_components/` | Dashboard page components |
+| `src/app/studio/media/_components/` | Studio media components |
+| `src/app/studio/posts/_components/` | Studio posts components |
+| `src/app/studio/series/_components/` | Studio series components |
 
 ---
 

@@ -132,8 +132,9 @@ A Next.js 16 portfolio website with an integrated blog system and Content Studio
 - **Content Studio**: CMS at `/studio` for managing posts and media
 - **Post Statistics**: Client-side views tracking (likes temporarily disabled)
 - **Related Posts**: Tag-based recommendations using Jaccard similarity
-- **OpenGraph Images**: Dynamic OG image generation at `/og` route
-- **Analytics**: Privacy-focused visitor tracking at `/analytics`
+- **OpenGraph Images**: Dynamic OG image generation via `opengraph-image.tsx` route files
+- **Series Support**: Organise posts into series with navigation and ordering
+- **Analytics**: Privacy-focused visitor tracking in `/dashboard`
 - **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers
 - **RSS Feed**: Dynamic `/feed.xml` endpoint
 
@@ -146,12 +147,12 @@ A Next.js 16 portfolio website with an integrated blog system and Content Studio
 ```
 src/
 ├── app/              # Next.js App Router
-│   ├── (main)/       # Public routes (blog, about, projects, dashboard, analytics)
+│   ├── (main)/       # Public routes (blog, about, projects, dashboard)
 │   ├── studio/       # CMS routes (protected)
 │   ├── api/          # API routes
 │   └── login/        # Auth pages
 ├── components/
-│   ├── shared/       # Reusable components across the site
+│   ├── auth/         # Authentication components
 │   ├── studio/       # CMS-specific components
 │   └── ui/           # shadcn/ui primitives (DO NOT MODIFY)
 ├── lib/
@@ -188,11 +189,17 @@ src/
 
 See `.env.example` for all required variables:
 
+- `NEXT_PUBLIC_BASE_URL` - Base URL for the application (e.g., https://ruchern.dev)
 - `DATABASE_URL` - Neon PostgreSQL connection string
 - `UPSTASH_REDIS_REST_URL/TOKEN` - Redis connection
 - `BETTER_AUTH_SECRET/URL` - Authentication
 - `GITHUB_CLIENT_ID/SECRET` - GitHub OAuth
 - `GOOGLE_CLIENT_ID/SECRET` - Google OAuth
+- `GH_ACCESS_TOKEN` - GitHub API access token for repository data
+- `IP_SALT` - Salt for hashing IP addresses (privacy protection)
+- `UMAMI_API_URL` - Umami analytics API endpoint
+- `UMAMI_API_TOKEN` - Umami API authentication token
+- `UMAMI_WEBSITE_ID` - Umami website identifier
 - `CLOUDFLARE_ACCOUNT_ID` - R2 storage
 - `R2_ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET_NAME/PUBLIC_URL` - R2 config
 - `BLOG_MCP_AUTH_TOKEN` - Bearer token for remote MCP access
@@ -253,6 +260,5 @@ Invoke skills with `/component-naming` or `/design-language-system` when creatin
 
 ## Documentation
 
-- Run `/update-project` before releases to audit documentation
 - Update CLAUDE.md when changing commands or architecture
 - Update README.md when modifying tech stack
