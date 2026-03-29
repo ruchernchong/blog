@@ -8,11 +8,11 @@ import { format, formatISO } from "date-fns";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { StructuredData } from "@/app/_components/structured-data";
-import { Mdx } from "@/app/(main)/blog/_components/mdx";
-// import { RelatedPosts } from "@/app/(main)/blog/_components/related-posts";
-import { ScrollProgress } from "@/app/(main)/blog/_components/scroll-progress";
-import { StatsBar } from "@/app/(main)/blog/_components/stats-bar";
+import { Mdx } from "@/app/(main)/blog/components/mdx";
+// import { RelatedPosts } from "@/app/(main)/blog/components/related-posts";
+import { ScrollProgress } from "@/app/(main)/blog/components/scroll-progress";
+import { StatsBar } from "@/app/(main)/blog/components/stats-bar";
+import { StructuredData } from "@/app/components/structured-data";
 import { Typography } from "@/components/typography";
 import {
   getPublishedPostBySlug,

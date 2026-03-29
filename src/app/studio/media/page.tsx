@@ -1,4 +1,4 @@
-import { MediaLibrary } from "@/app/studio/media/_components/media-library";
+import { MediaLibrary } from "@/app/studio/media/components/media-library";
 
 export default async function MediaPage() {
   return <MediaLibrary />;

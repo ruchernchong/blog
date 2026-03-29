@@ -2,9 +2,9 @@ import { Notebook02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { FeaturedPost } from "@/app/(main)/blog/_components/featured-post";
-import { PostGrid } from "@/app/(main)/blog/_components/post-grid";
-import { SeriesCards } from "@/app/(main)/blog/_components/series-cards";
+import { FeaturedPost } from "@/app/(main)/blog/components/featured-post";
+import { PostGrid } from "@/app/(main)/blog/components/post-grid";
+import { SeriesCards } from "@/app/(main)/blog/components/series-cards";
 import { PageTitle } from "@/components/page-title";
 
 export const dynamic = "force-static";

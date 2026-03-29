@@ -31,16 +31,16 @@ Combine domain context with component role for clarity:
 
 ```typescript
 // ✅ Good - Clear domain and role
-export const FeaturedPost = () => {};     // Featured (domain) + Post (role)
-export const TagFilter = () => {};        // Tag (domain) + Filter (role)
-export const ReadingProgress = () => {};  // Reading (domain) + Progress (role)
-export const MetricCard = () => {};       // Metric (domain) + Card (role)
-export const HeroSection = () => {};      // Hero (domain) + Section (role)
+export const FeaturedPost = () => {}; // Featured (domain) + Post (role)
+export const TagFilter = () => {}; // Tag (domain) + Filter (role)
+export const ReadingProgress = () => {}; // Reading (domain) + Progress (role)
+export const MetricCard = () => {}; // Metric (domain) + Card (role)
+export const HeroSection = () => {}; // Hero (domain) + Section (role)
 
 // ❌ Bad - Too generic or unclear
-export const Card = () => {};             // No domain context
-export const Filter = () => {};           // No specificity
-export const Section = () => {};          // Meaningless
+export const Card = () => {}; // No domain context
+export const Filter = () => {}; // No specificity
+export const Section = () => {}; // Meaningless
 ```
 
 ### 3. Compound Components for Subparts
@@ -73,10 +73,10 @@ Never use these suffixes:
 
 ```typescript
 // ❌ Avoid these suffixes
-export const CardContainer = () => {};    // -Container
-export const PostWrapper = () => {};      // -Wrapper
-export const DataComponent = () => {};    // -Component
-export const ListElement = () => {};      // -Element
+export const CardContainer = () => {}; // -Container
+export const PostWrapper = () => {}; // -Wrapper
+export const DataComponent = () => {}; // -Component
+export const ListElement = () => {}; // -Element
 
 // ✅ Use clear domain + role instead
 export const MetricCard = () => {};
@@ -108,30 +108,30 @@ export const BentoGrid = () => {};
 
 Files use **kebab-case** matching the component name:
 
-| Component | File Name |
-|-----------|-----------|
-| `FeaturedPost` | `featured-post.tsx` |
-| `TagFilter` | `tag-filter.tsx` |
+| Component         | File Name              |
+| ----------------- | ---------------------- |
+| `FeaturedPost`    | `featured-post.tsx`    |
+| `TagFilter`       | `tag-filter.tsx`       |
 | `ReadingProgress` | `reading-progress.tsx` |
-| `MetricCard` | `metric-card.tsx` |
-| `HeroSection` | `hero-section.tsx` |
+| `MetricCard`      | `metric-card.tsx`      |
+| `HeroSection`     | `hero-section.tsx`     |
 
 ---
 
 ## Component Location
 
-| Location | Purpose |
-|----------|---------|
-| `src/components/` | Reusable components (not shadcn/ui) |
-| `src/components/ui/` | shadcn/ui primitives (DO NOT MODIFY) |
-| `src/components/auth/` | Authentication components |
-| `src/app/_components/` | App-level shared components |
-| `src/app/(main)/about/_components/` | About page components |
-| `src/app/(main)/blog/_components/` | Blog page components |
-| `src/app/(main)/dashboard/_components/` | Dashboard page components |
-| `src/app/studio/media/_components/` | Studio media components |
-| `src/app/studio/posts/_components/` | Studio posts components |
-| `src/app/studio/series/_components/` | Studio series components |
+| Location                               | Purpose                              |
+| -------------------------------------- | ------------------------------------ |
+| `src/components/`                      | Reusable components (not shadcn/ui)  |
+| `src/components/ui/`                   | shadcn/ui primitives (DO NOT MODIFY) |
+| `src/components/auth/`                 | Authentication components            |
+| `src/app/components/`                  | App-level shared components          |
+| `src/app/(main)/about/components/`     | About page components                |
+| `src/app/(main)/blog/components/`      | Blog page components                 |
+| `src/app/(main)/dashboard/components/` | Dashboard page components            |
+| `src/app/studio/media/components/`     | Studio media components              |
+| `src/app/studio/posts/components/`     | Studio posts components              |
+| `src/app/studio/series/components/`    | Studio series components             |
 
 ---
 
@@ -153,18 +153,18 @@ When reviewing component names:
 
 **Good patterns:**
 
-| Component | Domain | Role |
-|-----------|--------|------|
-| `FeaturedPost` | Featured | Post |
-| `TagFilter` | Tag | Filter |
-| `ReadingProgress` | Reading | Progress |
-| `PostGrid` | Post | Grid |
-| `AuthorCard` | Author | Card |
-| `BentoGrid` | Bento | Grid |
-| `HeroSection` | Hero | Section |
-| `LatestPosts` | Latest | Posts |
-| `SkillsGrid` | Skills | Grid |
-| `ContactCta` | Contact | Cta |
+| Component         | Domain   | Role     |
+| ----------------- | -------- | -------- |
+| `FeaturedPost`    | Featured | Post     |
+| `TagFilter`       | Tag      | Filter   |
+| `ReadingProgress` | Reading  | Progress |
+| `PostGrid`        | Post     | Grid     |
+| `AuthorCard`      | Author   | Card     |
+| `BentoGrid`       | Bento    | Grid     |
+| `HeroSection`     | Hero     | Section  |
+| `LatestPosts`     | Latest   | Posts    |
+| `SkillsGrid`      | Skills   | Grid     |
+| `ContactCta`      | Contact  | Cta      |
 
 **Anti-patterns to avoid:**
 

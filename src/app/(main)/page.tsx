@@ -1,9 +1,9 @@
 import type { WebSite, WithContext } from "schema-dts";
-import { FeaturedWork } from "@/app/_components/home/featured-work";
-import { HeroSection } from "@/app/_components/home/hero-section";
-import { LatestPosts } from "@/app/_components/home/latest-posts";
-import { QuickStats } from "@/app/_components/home/quick-stats";
-import { StructuredData } from "@/app/_components/structured-data";
+import { FeaturedWork } from "@/app/components/home/featured-work";
+import { HeroSection } from "@/app/components/home/hero-section";
+import { LatestPosts } from "@/app/components/home/latest-posts";
+import { QuickStats } from "@/app/components/home/quick-stats";
+import { StructuredData } from "@/app/components/structured-data";
 import { BASE_URL } from "@/config";
 import projects from "@/data/projects";
 

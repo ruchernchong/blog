@@ -1,6 +1,6 @@
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { EditPostForm } from "@/app/studio/posts/[id]/edit/_components/edit-post-form";
+import { EditPostForm } from "@/app/studio/posts/[id]/edit/components/edit-post-form";
 import { getSeriesForSelector } from "@/lib/queries/series";
 
 interface PageProps {

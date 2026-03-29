@@ -5,7 +5,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
-import { StatCard } from "@/app/(main)/dashboard/_components/stat-card";
+import { StatCard } from "@/app/(main)/dashboard/components/stat-card";
 import {
   getGitHubContributions,
   getGitHubFollowers,
