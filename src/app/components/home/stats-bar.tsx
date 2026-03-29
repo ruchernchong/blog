@@ -3,12 +3,11 @@
 import { animate, motion, useInView, useMotionValue } from "motion/react";
 import { useEffect, useRef } from "react";
 
-interface StatItemProps {
+interface AnimatedCounterProps {
   value: number;
-  label: string;
 }
 
-function AnimatedCounter({ value }: { value: number }) {
+function AnimatedCounter({ value }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const motionValue = useMotionValue(0);
   const isInView = useInView(ref, { once: true });
@@ -32,6 +31,11 @@ function AnimatedCounter({ value }: { value: number }) {
   return <span ref={ref}>0</span>;
 }
 
+interface StatItemProps {
+  value: number;
+  label: string;
+}
+
 function StatItem({ value, label }: StatItemProps) {
   return (
     <div className="flex flex-col gap-1 text-center">
@@ -43,12 +47,6 @@ function StatItem({ value, label }: StatItemProps) {
   );
 }
 
-interface QuickStatsClientProps {
-  visits?: number;
-  posts: number;
-  stars: number;
-}
-
 function StatItemSkeleton() {
   return (
     <div className="flex flex-col gap-1 text-center">
@@ -58,11 +56,13 @@ function StatItemSkeleton() {
   );
 }
 
-export function QuickStatsClient({
-  visits,
-  posts,
-  stars,
-}: QuickStatsClientProps) {
+interface StatsBarProps {
+  visits?: number;
+  posts: number;
+  stars: number;
+}
+
+export function StatsBar({ visits, posts, stars }: StatsBarProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
