@@ -71,19 +71,11 @@ const fetchUmami = async <T>(
   }
 };
 
-function getDateRange(days: number) {
-  const endAt = Date.now();
-  const startAt = endAt - days * 24 * 60 * 60 * 1000;
-  return { startAt: startAt.toString(), endAt: endAt.toString() };
-}
-
-function getAllTimeRange() {
-  return { startAt: "0", endAt: Date.now().toString() };
-}
-
 export async function getTotalVisits(): Promise<number> {
   await connection();
-  const { startAt, endAt } = getAllTimeRange();
+  // Generate dates after connection() to ensure we're in request context
+  const endAt = Date.now().toString();
+  const startAt = "0";
   const stats = await fetchUmami<UmamiStats>("/stats", { startAt, endAt });
 
   return stats?.pageviews ?? 0;
@@ -91,10 +83,12 @@ export async function getTotalVisits(): Promise<number> {
 
 export async function getVisits(): Promise<Visit[]> {
   await connection();
-  const { startAt, endAt } = getDateRange(30);
+  // Generate dates after connection() to ensure we're in request context
+  const endAt = Date.now();
+  const startAt = endAt - 30 * 24 * 60 * 60 * 1000;
   const data = await fetchUmami<{ pageviews: UmamiPageview[] }>("/pageviews", {
-    startAt,
-    endAt,
+    startAt: startAt.toString(),
+    endAt: endAt.toString(),
     unit: "day",
     timezone: "Asia/Singapore",
   });
@@ -111,10 +105,12 @@ export async function getVisits(): Promise<Visit[]> {
 
 export async function getPages(): Promise<PageMetric[]> {
   await connection();
-  const { startAt, endAt } = getDateRange(30);
+  // Generate dates after connection() to ensure we're in request context
+  const endAt = Date.now();
+  const startAt = endAt - 30 * 24 * 60 * 60 * 1000;
   const metrics = await fetchUmami<UmamiMetric[]>("/metrics", {
-    startAt,
-    endAt,
+    startAt: startAt.toString(),
+    endAt: endAt.toString(),
     type: "path",
   });
 
