@@ -18,7 +18,7 @@ pnpm build           # Build for production
 - **Language**: TypeScript 5.2 (strict mode)
 - **Styling**: Tailwind CSS v4 (PostCSS-only config)
 - **UI Components**: shadcn/ui built on Base UI with HugeIcons
-- **Animation**: Motion, Framer Motion, View Transitions API
+- **Animation**: Motion, React Spring, View Transitions API
 
 ### Backend & Data
 - **Database**: Neon PostgreSQL with Drizzle ORM
@@ -50,9 +50,10 @@ pnpm build           # Build for production
 - **MDX Support**: Rich content with React components
 - **Media Library**: Cloudflare R2-backed asset management
 - **Draft System**: Save posts before publishing
+- **Series Support**: Organise posts into series with navigation
 
 ### Analytics & Stats
-- **Custom Analytics**: Privacy-focused visitor tracking with IP hashing
+- **Custom Analytics**: Privacy-focused visitor tracking at /dashboard with IP hashing
 - **Post Statistics**: Client-side views tracking (likes temporarily disabled)
 - **Popular Posts**: Top posts by view count
 - **Related Posts**: Tag-based recommendations with Jaccard similarity
