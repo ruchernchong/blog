@@ -7,6 +7,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { Mdx } from "@/app/(main)/blog/components/mdx";
 // import { RelatedPosts } from "@/app/(main)/blog/components/related-posts";
@@ -68,6 +69,7 @@ export async function generateStaticParams() {
 }
 
 async function PostContent({ slug }: { slug: string }) {
+  await connection();
   const post = await getPublishedPostBySlug(slug);
 
   if (!post) {

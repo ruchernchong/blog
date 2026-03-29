@@ -7,9 +7,6 @@ import { PostGrid } from "@/app/(main)/blog/components/post-grid";
 import { SeriesCards } from "@/app/(main)/blog/components/series-cards";
 import { PageTitle } from "@/components/page-title";
 
-export const dynamic = "force-static";
-export const revalidate = 3600; // Revalidate every hour
-
 export const metadata: Metadata = {
   title: "Blog",
   description: "My blog posts on coding, tech, and random thoughts.",

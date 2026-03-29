@@ -5,6 +5,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
+import { connection } from "next/server";
 import { StatCard } from "@/app/(main)/dashboard/components/stat-card";
 import {
   getGitHubContributions,
@@ -14,6 +15,7 @@ import {
 import { getTotalVisits } from "@/lib/umami";
 
 export async function StatsGrid() {
+  await connection();
   const [totalVisits, followers, stars, contributions] = await Promise.all([
     getTotalVisits(),
     getGitHubFollowers(),
