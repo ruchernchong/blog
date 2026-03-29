@@ -1,15 +1,21 @@
-import { cacheLife, cacheTag } from "next/cache";
-import { NextResponse } from "next/server";
+import { and, desc, eq, isNull } from "drizzle-orm";
+import { connection, NextResponse } from "next/server";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
-import { getPublishedPosts } from "@/lib/queries/posts";
+import { db, posts } from "@/schema";
 
 export const GET = async () => {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("llms");
+  await connection();
 
-  const publishedPosts = await getPublishedPosts();
-  const recentPosts = publishedPosts.slice(0, 10);
+  const publishedPosts = await db
+    .select({
+      title: posts.title,
+      summary: posts.summary,
+      metadata: posts.metadata,
+    })
+    .from(posts)
+    .where(and(eq(posts.status, "published"), isNull(posts.deletedAt)))
+    .orderBy(desc(posts.publishedAt))
+    .limit(10);
 
   const content = `# ${SITE_NAME}'s Portfolio
 
@@ -33,7 +39,7 @@ This is the personal portfolio and blog of Ru Chern Chong, featuring:
 
 ## Recent Blog Posts
 
-${recentPosts.map((post) => `- [${post.title}](${post.metadata.canonical})\n  ${post.summary || ""}`).join("\n\n")}
+${publishedPosts.map((post) => `- [${post.title}](${post.metadata.canonical})\n  ${post.summary || ""}`).join("\n\n")}
 
 ## Technology Stack
 

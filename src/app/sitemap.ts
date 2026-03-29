@@ -1,14 +1,9 @@
 import type { MetadataRoute } from "next";
-import { cacheLife, cacheTag } from "next/cache";
 import { BASE_URL, navLinks } from "@/config";
 import projects from "@/data/projects";
 import { getPublishedPosts } from "@/lib/queries/posts";
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("sitemap");
-
   const publishedPosts = await getPublishedPosts();
 
   return [
