@@ -43,7 +43,7 @@ function SeriesPostsList({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between gap-4 border-b border-border pb-2">
+      <div className="flex items-center justify-between gap-4 border-border border-b pb-2">
         <span className="font-medium text-sm">In this series</span>
         <Link
           href={`/blog?series=${seriesSlug}` as Route}
@@ -106,7 +106,7 @@ export function SeriesNavigation({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 border-b border-border pb-6",
+        "flex flex-col gap-4 border-border border-b pb-6",
         className,
       )}
     >
