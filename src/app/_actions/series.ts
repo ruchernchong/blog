@@ -2,7 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import type { Route } from "next";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
@@ -23,6 +23,7 @@ export async function createSeries(input: CreateSeriesInput) {
   const [created] = await db.insert(series).values(input).returning();
 
   revalidatePath("/studio/series");
+  revalidateTag("series:list", "max");
   redirect("/studio/series" as Route);
 
   return created;
@@ -56,6 +57,7 @@ export async function updateSeries(id: string, input: UpdateSeriesInput) {
 
   revalidatePath("/studio/series");
   revalidatePath(`/studio/series/${id}/edit`);
+  revalidateTag("series:list", "max");
 
   return updated;
 }
@@ -69,6 +71,7 @@ export async function deleteSeries(id: string) {
     .where(eq(series.id, id));
 
   revalidatePath("/studio/series");
+  revalidateTag("series:list", "max");
 }
 
 export async function restoreSeries(id: string) {
@@ -80,4 +83,5 @@ export async function restoreSeries(id: string) {
     .where(eq(series.id, id));
 
   revalidatePath("/studio/series");
+  revalidateTag("series:list", "max");
 }

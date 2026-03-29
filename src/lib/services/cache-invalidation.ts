@@ -1,17 +1,9 @@
+import { revalidateTag } from "next/cache";
 import redis from "@/config/redis";
 import { CacheConfig } from "@/lib/config/cache.config";
 import { getPostsWithOverlappingTags } from "@/lib/queries/posts";
 import { removeFromPopular } from "@/lib/services/popular-posts";
 
-/**
- * Invalidate all caches for a single post
- *
- * Clears:
- * - Post statistics (views, likes)
- * - Related posts cache
- *
- * @param slug - Post slug to invalidate
- */
 export async function invalidatePost(slug: string): Promise<void> {
   const keysToDelete = [
     CacheConfig.REDIS_KEYS.POST_STATS(slug),
@@ -19,6 +11,11 @@ export async function invalidatePost(slug: string): Promise<void> {
   ];
 
   await redis.del(...keysToDelete);
+
+  // Invalidate Next.js Cache Components
+  revalidateTag(`post:${slug}`, "max");
+  revalidateTag("posts:list", "max");
+  revalidateTag("posts:count", "max");
 }
 
 /**
