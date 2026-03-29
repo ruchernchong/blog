@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { PostForm } from "@/app/studio/posts/new/_components/post-form";
+import { PostForm } from "@/app/studio/posts/new/components/post-form";
 import { getSeriesForSelector } from "@/lib/queries/series";
 
 async function NewPostContent() {

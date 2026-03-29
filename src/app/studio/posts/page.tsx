@@ -1,4 +1,4 @@
-import { PostsTable } from "@/app/studio/posts/_components/posts-table";
+import { PostsTable } from "@/app/studio/posts/components/posts-table";
 
 export default async function PostsPage() {
   return <PostsTable />;

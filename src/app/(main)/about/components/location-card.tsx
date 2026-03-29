@@ -1,6 +1,6 @@
 import { Location01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Globe } from "@/app/(main)/about/_components/globe";
+import { Globe } from "@/app/(main)/about/components/globe";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const LocationCard = () => (

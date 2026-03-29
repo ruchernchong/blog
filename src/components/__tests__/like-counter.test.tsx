@@ -4,7 +4,7 @@
 it.todo("re-enable when likes feature is restored");
 
 // import { fireEvent, render, screen } from "@testing-library/react";
-// import { LikeCounter } from "@/app/(main)/blog/_components/like-counter";
+// import { LikeCounter } from "@/app/(main)/blog/components/like-counter";
 
 // vi.mock("@/app/_actions/stats", () => ({
 //   incrementLikes: vi.fn(() =>

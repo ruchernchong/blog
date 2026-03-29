@@ -5,7 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useEffect, useEffectEvent, useState } from "react";
 import { incrementViews } from "@/app/_actions/stats";
 
-// import { LikeCounter } from "@/app/(main)/blog/_components/like-counter";
+// import { LikeCounter } from "@/app/(main)/blog/components/like-counter";
 // import { postStatsService } from "@/lib/services";
 // import { getIpAddress } from "@/utils/get-ip-address";
 // import { generateUserHash } from "@/utils/hash";

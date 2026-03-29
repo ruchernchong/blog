@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { SeriesPostsManager } from "@/app/studio/series/[id]/edit/_components/series-posts-manager";
+import { SeriesPostsManager } from "@/app/studio/series/[id]/edit/components/series-posts-manager";
 import { SeriesForm } from "@/components/studio/series-form";
 import { getSeriesById } from "@/lib/queries/series";
 

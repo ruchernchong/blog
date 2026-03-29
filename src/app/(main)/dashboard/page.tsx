@@ -1,10 +1,10 @@
 import { DashboardBrowsingIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
-import { LiveBadge } from "@/app/(main)/dashboard/_components/live-badge";
-import { StatsGrid } from "@/app/(main)/dashboard/_components/stats-grid";
-import { ViewsByPage } from "@/app/(main)/dashboard/_components/views-by-page";
-import { VisitsChart } from "@/app/(main)/dashboard/_components/visits-chart";
+import { LiveBadge } from "@/app/(main)/dashboard/components/live-badge";
+import { StatsGrid } from "@/app/(main)/dashboard/components/stats-grid";
+import { ViewsByPage } from "@/app/(main)/dashboard/components/views-by-page";
+import { VisitsChart } from "@/app/(main)/dashboard/components/visits-chart";
 import globalMetadata from "@/app/metadata";
 import { PageTitle } from "@/components/page-title";
 

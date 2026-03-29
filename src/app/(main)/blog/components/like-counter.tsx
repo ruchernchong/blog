@@ -1,7 +1,7 @@
 // "use client";
 
 // import { useState } from "react";
-// import LikeButton from "@/app/(main)/blog/_components/like-button";
+// import LikeButton from "@/app/(main)/blog/components/like-button";
 // import type { Likes } from "@/types";
 
 // interface Props {

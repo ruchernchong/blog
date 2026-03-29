@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ExperienceCard } from "@/app/(main)/about/_components/experience-card";
-import { LocationCard } from "@/app/(main)/about/_components/location-card";
+import { ExperienceCard } from "@/app/(main)/about/components/experience-card";
+import { LocationCard } from "@/app/(main)/about/components/location-card";
 import { Typography } from "@/components/typography";
 import { Button } from "@/components/ui/button";
 
