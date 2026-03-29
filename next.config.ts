@@ -42,6 +42,8 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["next-mdx-remote", "@mdx-js/mdx"],
   typedRoutes: true,
   experimental: {
+    appNewScrollHandler: true,
+    cachedNavigations: true,
     mcpServer: true,
     turbopackFileSystemCacheForBuild: true,
     typedEnv: true,
