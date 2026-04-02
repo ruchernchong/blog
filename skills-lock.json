@@ -101,6 +101,11 @@
       "sourceType": "github",
       "computedHash": "6b8b859d26f93aa059c9870d1ab76b44ab69e3d6757ce4a03cc94cb760888073"
     },
+    "redis-js": {
+      "source": "upstash/redis-js",
+      "sourceType": "github",
+      "computedHash": "be22591eea552df1eeab7bb947049b06dee4fd8543588a45b6ca5d3603233fff"
+    },
     "shadcn": {
       "source": "shadcn/ui",
       "sourceType": "github",
