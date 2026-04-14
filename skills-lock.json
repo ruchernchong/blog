@@ -96,6 +96,11 @@
       "sourceType": "github",
       "computedHash": "cfbc539377088ca7e44a813b30c306327385bbd973cd7a721e1743f60837dd62"
     },
+    "portless": {
+      "source": "vercel-labs/portless",
+      "sourceType": "github",
+      "computedHash": "b3f30d9b9f2b548d38c795a81c231b56d4f2f1e074b19207cf2a5a3f4d5b9787"
+    },
     "pptx": {
       "source": "anthropics/skills",
       "sourceType": "github",
