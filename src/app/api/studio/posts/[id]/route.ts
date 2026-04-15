@@ -82,6 +82,21 @@ export const PATCH = async (
 
     if (!existingPost) return notFoundResponse("Post");
 
+    const ifMatch = request.headers.get("If-Match");
+    if (ifMatch) {
+      const expectedUpdatedAt = ifMatch;
+      const currentUpdatedAt = existingPost.updatedAt.toISOString();
+      if (expectedUpdatedAt !== currentUpdatedAt) {
+        return NextResponse.json(
+          {
+            message:
+              "This post has been edited elsewhere. Refresh to see the latest version.",
+          },
+          { status: 409 },
+        );
+      }
+    }
+
     const {
       title,
       slug,

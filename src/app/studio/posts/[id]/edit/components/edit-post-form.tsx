@@ -8,11 +8,13 @@ import {
   useEffect,
   useEffectEvent,
   useId,
+  useRef,
   useState,
   useTransition,
 } from "react";
 import { ContentEditor } from "@/components/studio/content-editor";
 import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
+import { SaveStatusIndicator } from "@/components/studio/save-status-indicator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useAutoSave, useBeforeUnload } from "@/hooks/use-auto-save";
 
 interface Post {
   id: string;
@@ -37,6 +40,7 @@ interface Post {
   seriesId: string | null;
   coverImage: string | null;
   deletedAt: Date | null;
+  updatedAt: string;
 }
 
 interface SeriesOption {
@@ -49,24 +53,65 @@ interface EditPostFormProps {
   seriesOptions: SeriesOption[];
 }
 
+interface FormData {
+  title: string;
+  slug: string;
+  summary: string;
+  content: string;
+  status: "draft" | "published";
+  tags: string;
+  seriesId: string;
+  coverImage: string;
+}
+
+function isDirty(current: FormData, initial: FormData): boolean {
+  return (
+    current.title !== initial.title ||
+    current.slug !== initial.slug ||
+    current.summary !== initial.summary ||
+    current.content !== initial.content ||
+    current.status !== initial.status ||
+    current.tags !== initial.tags ||
+    current.seriesId !== initial.seriesId ||
+    current.coverImage !== initial.coverImage
+  );
+}
+
+function buildPatchData(formData: FormData) {
+  return {
+    title: formData.title,
+    slug: formData.slug,
+    summary: formData.summary,
+    content: formData.content,
+    status: formData.status,
+    tags: formData.tags
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean),
+    seriesId: formData.seriesId || null,
+    coverImage: formData.coverImage || null,
+  };
+}
+
 export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
   const router = useRouter();
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     title: "",
     slug: "",
     summary: "",
     content: "",
-    status: "draft" as "draft" | "published",
+    status: "draft",
     tags: "",
     seriesId: "",
     coverImage: "",
   });
 
-  // Generate unique IDs for form fields
+  const initialFormDataRef = useRef<FormData>(formData);
+
   const titleId = useId();
   const slugId = useId();
   const summaryId = useId();
@@ -75,13 +120,16 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
   const tagsId = useId();
   const coverImageId = useId();
 
+  const dirty = isDirty(formData, initialFormDataRef.current);
+
   const fetchPost = useEffectEvent(async (id: string) => {
     try {
       const response = await fetch(`/api/studio/posts/${id}`);
       if (!response.ok) throw new Error("Failed to fetch post");
       const data = await response.json();
       setPost(data);
-      setFormData({
+
+      const loaded: FormData = {
         title: data.title,
         slug: data.slug,
         summary: data.summary || "",
@@ -90,7 +138,9 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
         tags: Array.isArray(data.tags) ? data.tags.join(", ") : "",
         seriesId: data.seriesId || "",
         coverImage: data.coverImage || "",
-      });
+      };
+      setFormData(loaded);
+      initialFormDataRef.current = loaded;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load post");
     } finally {
@@ -102,25 +152,66 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
     fetchPost(postId);
   }, [postId]);
 
+  const handleAutoSave = async () => {
+    if (!dirty || !post || !!post.deletedAt) return;
+
+    const data = buildPatchData(formData);
+
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (post.updatedAt) {
+      headers["If-Match"] = post.updatedAt;
+    }
+
+    const response = await fetch(`/api/studio/posts/${postId}`, {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify(data),
+    });
+
+    if (response.status === 409) {
+      throw new Error(
+        "This post was edited elsewhere. Refresh to see the latest version.",
+      );
+    }
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.message || "Failed to auto-save");
+    }
+
+    const updated = await response.json();
+    setPost(updated);
+
+    const saved: FormData = {
+      title: updated.title,
+      slug: updated.slug,
+      summary: updated.summary || "",
+      content: updated.content,
+      status: updated.status,
+      tags: Array.isArray(updated.tags) ? updated.tags.join(", ") : "",
+      seriesId: updated.seriesId || "",
+      coverImage: updated.coverImage || "",
+    };
+    initialFormDataRef.current = saved;
+  };
+
+  const { saveStatus, lastSavedAt, triggerSave } = useAutoSave({
+    saveFn: handleAutoSave,
+    data: formData,
+    enabled: dirty && !isPending && !!post && !post.deletedAt,
+  });
+
+  useBeforeUnload(dirty && saveStatus !== "saved");
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     startTransition(async () => {
       setError(null);
 
-      const data = {
-        title: formData.title,
-        slug: formData.slug,
-        summary: formData.summary,
-        content: formData.content,
-        status: formData.status,
-        tags: formData.tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .filter(Boolean),
-        seriesId: formData.seriesId || null,
-        coverImage: formData.coverImage || null,
-      };
+      const data = buildPatchData(formData);
 
       try {
         const response = await fetch(`/api/studio/posts/${postId}`, {
@@ -180,7 +271,6 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
           throw new Error(error.message || "Failed to restore post");
         }
 
-        // Refetch the post to update UI
         await fetchPost(postId);
         router.refresh();
       } catch (err) {
@@ -402,7 +492,7 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
         />
 
         <div className="flex items-center justify-between">
-          <div className="flex gap-4">
+          <div className="flex items-center gap-4">
             {post.deletedAt ? (
               <Button
                 type="button"
@@ -422,6 +512,11 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
                 {isPending ? "Deleting..." : "Delete Post"}
               </Button>
             )}
+            <SaveStatusIndicator
+              status={saveStatus}
+              lastSavedAt={lastSavedAt}
+              onRetry={triggerSave}
+            />
           </div>
 
           <div className="flex gap-4">

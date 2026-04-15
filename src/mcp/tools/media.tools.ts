@@ -2,19 +2,37 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { mediaService } from "@/lib/services";
 
+function makeError(message: string) {
+  return {
+    content: [{ type: "text" as const, text: message }],
+    isError: true as const,
+  };
+}
+
 export function registerMediaTools(server: McpServer): void {
-  // List media with optional search
   server.registerTool(
     "list_media",
     {
       title: "List Media",
       description: "List uploaded media files with optional search",
-      inputSchema: {
-        search: z.string().optional(),
-        limit: z.number().min(1).max(100).optional(),
-        offset: z.number().min(0).optional(),
-      },
-      outputSchema: {
+      inputSchema: z.object({
+        search: z
+          .string()
+          .optional()
+          .describe("Search query to filter media by filename"),
+        limit: z
+          .number()
+          .min(1)
+          .max(100)
+          .optional()
+          .describe("Maximum number of items to return"),
+        offset: z
+          .number()
+          .min(0)
+          .optional()
+          .describe("Number of items to skip for pagination"),
+      }),
+      outputSchema: z.object({
         media: z.array(
           z.object({
             id: z.string(),
@@ -30,6 +48,9 @@ export function registerMediaTools(server: McpServer): void {
           }),
         ),
         total: z.number(),
+      }),
+      annotations: {
+        readOnlyHint: true,
       },
     },
     async ({ search, limit = 50, offset = 0 }) => {
@@ -63,16 +84,15 @@ export function registerMediaTools(server: McpServer): void {
     },
   );
 
-  // Get single media item
   server.registerTool(
     "get_media",
     {
       title: "Get Media",
       description: "Get a single media item by ID",
-      inputSchema: {
-        id: z.string(),
-      },
-      outputSchema: {
+      inputSchema: z.object({
+        id: z.string().describe("Media item UUID"),
+      }),
+      outputSchema: z.object({
         media: z
           .object({
             id: z.string(),
@@ -88,27 +108,32 @@ export function registerMediaTools(server: McpServer): void {
             createdAt: z.string(),
           })
           .nullable(),
+      }),
+      annotations: {
+        readOnlyHint: true,
       },
     },
     async ({ id }) => {
       const result = await mediaService.getMediaById(id);
 
+      if (!result) {
+        return makeError(`Media with id "${id}" not found`);
+      }
+
       const output = {
-        media: result
-          ? {
-              id: result.id,
-              key: result.key,
-              filename: result.filename,
-              url: result.url,
-              mimeType: result.mimeType,
-              size: result.size,
-              width: result.width,
-              height: result.height,
-              alt: result.alt,
-              caption: result.caption,
-              createdAt: result.createdAt.toISOString(),
-            }
-          : null,
+        media: {
+          id: result.id,
+          key: result.key,
+          filename: result.filename,
+          url: result.url,
+          mimeType: result.mimeType,
+          size: result.size,
+          width: result.width,
+          height: result.height,
+          alt: result.alt,
+          caption: result.caption,
+          createdAt: result.createdAt.toISOString(),
+        },
       };
 
       return {
@@ -118,22 +143,23 @@ export function registerMediaTools(server: McpServer): void {
     },
   );
 
-  // Request presigned upload URL
   server.registerTool(
     "request_upload",
     {
       title: "Request Upload",
       description: "Get a presigned URL for uploading media to R2",
-      inputSchema: {
-        filename: z.string(),
-        mimeType: z.string(),
-        size: z.number(),
-      },
-      outputSchema: {
+      inputSchema: z.object({
+        filename: z.string().describe("Name of the file to upload"),
+        mimeType: z
+          .string()
+          .describe("MIME type of the file (e.g., image/png)"),
+        size: z.number().describe("File size in bytes"),
+      }),
+      outputSchema: z.object({
         uploadUrl: z.string(),
         key: z.string(),
         publicUrl: z.string(),
-      },
+      }),
     },
     async ({ filename, mimeType, size }) => {
       const result = await mediaService.requestUpload({
@@ -155,29 +181,31 @@ export function registerMediaTools(server: McpServer): void {
     },
   );
 
-  // Confirm upload and create database record
   server.registerTool(
     "confirm_upload",
     {
       title: "Confirm Upload",
       description: "Confirm a completed upload and create the database record",
-      inputSchema: {
-        key: z.string(),
-        filename: z.string(),
-        url: z.string(),
-        mimeType: z.string(),
-        size: z.number(),
-        width: z.number().optional(),
-        height: z.number().optional(),
-        alt: z.string().optional(),
-        caption: z.string().optional(),
-      },
-      outputSchema: {
+      inputSchema: z.object({
+        key: z.string().describe("R2 object key from request_upload"),
+        filename: z.string().describe("Original filename"),
+        url: z.string().describe("Public URL of the uploaded file"),
+        mimeType: z.string().describe("MIME type of the file"),
+        size: z.number().describe("File size in bytes"),
+        width: z.number().optional().describe("Image width in pixels"),
+        height: z.number().optional().describe("Image height in pixels"),
+        alt: z.string().optional().describe("Alt text for accessibility"),
+        caption: z.string().optional().describe("Caption for the image"),
+      }),
+      outputSchema: z.object({
         media: z.object({
           id: z.string(),
           filename: z.string(),
           url: z.string(),
         }),
+      }),
+      annotations: {
+        idempotentHint: true,
       },
     },
     async ({
@@ -218,14 +246,13 @@ export function registerMediaTools(server: McpServer): void {
     },
   );
 
-  // Upload media from local file path
   server.registerTool(
     "upload_from_path",
     {
       title: "Upload From Path",
       description:
         "Upload an image from a local file path to R2 storage. The MCP server reads the file directly from disk.",
-      inputSchema: {
+      inputSchema: z.object({
         filePath: z
           .string()
           .describe(
@@ -233,8 +260,8 @@ export function registerMediaTools(server: McpServer): void {
           ),
         alt: z.string().optional().describe("Alt text for accessibility"),
         caption: z.string().optional().describe("Caption for the image"),
-      },
-      outputSchema: {
+      }),
+      outputSchema: z.object({
         media: z.object({
           id: z.string(),
           filename: z.string(),
@@ -242,7 +269,7 @@ export function registerMediaTools(server: McpServer): void {
           mimeType: z.string(),
           size: z.number(),
         }),
-      },
+      }),
     },
     async ({ filePath, alt, caption }) => {
       const result = await mediaService.uploadFromPath({
@@ -268,19 +295,18 @@ export function registerMediaTools(server: McpServer): void {
     },
   );
 
-  // Upload media from URL
   server.registerTool(
     "upload_from_url",
     {
       title: "Upload From URL",
       description:
         "Fetch an image from a public URL and upload it to R2 storage. IMPORTANT: Before calling this tool, you MUST confirm with the user: 1) The image URL to upload, 2) Alt text for accessibility. Only proceed after user confirms.",
-      inputSchema: {
+      inputSchema: z.object({
         url: z.string().url().describe("The public URL of the image to upload"),
         alt: z.string().optional().describe("Alt text for accessibility"),
         caption: z.string().optional().describe("Caption for the image"),
-      },
-      outputSchema: {
+      }),
+      outputSchema: z.object({
         media: z.object({
           id: z.string(),
           filename: z.string(),
@@ -288,7 +314,7 @@ export function registerMediaTools(server: McpServer): void {
           mimeType: z.string(),
           size: z.number(),
         }),
-      },
+      }),
     },
     async ({ url, alt, caption }) => {
       const result = await mediaService.uploadFromUrl({ url, alt, caption });
@@ -310,19 +336,21 @@ export function registerMediaTools(server: McpServer): void {
     },
   );
 
-  // Soft delete media
   server.registerTool(
     "delete_media",
     {
       title: "Delete Media",
       description:
         "Soft delete a media item. IMPORTANT: Before calling this tool, you MUST confirm with the user that they want to delete this specific media. Only proceed after explicit user confirmation.",
-      inputSchema: {
-        id: z.string(),
-      },
-      outputSchema: {
+      inputSchema: z.object({
+        id: z.string().describe("Media item UUID to delete"),
+      }),
+      outputSchema: z.object({
         success: z.boolean(),
         filename: z.string().nullable(),
+      }),
+      annotations: {
+        destructiveHint: true,
       },
     },
     async ({ id }) => {
