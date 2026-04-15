@@ -1,27 +1,50 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { and, desc, eq, isNull } from "drizzle-orm";
+import slugify from "slugify";
 import { z } from "zod";
 import { generatePostMetadata } from "@/lib/post-metadata";
 import {
   invalidatePopularPost,
+  invalidatePost,
   invalidateRelatedByTags,
 } from "@/lib/services/cache-invalidation";
 import { db, posts } from "@/schema";
 
+function makeError(message: string) {
+  return {
+    content: [{ type: "text" as const, text: message }],
+    isError: true as const,
+  };
+}
+
 export function registerPostTools(server: McpServer): void {
-  // List posts with optional filters
   server.registerTool(
     "list_posts",
     {
       title: "List Posts",
       description: "List all blog posts with optional status filter",
-      inputSchema: {
-        status: z.enum(["draft", "published"]).optional(),
-        limit: z.number().min(1).max(100).optional(),
-        offset: z.number().min(0).optional(),
-        includeDeleted: z.boolean().optional(),
-      },
-      outputSchema: {
+      inputSchema: z.object({
+        status: z
+          .enum(["draft", "published"])
+          .optional()
+          .describe("Filter by post status"),
+        limit: z
+          .number()
+          .min(1)
+          .max(100)
+          .optional()
+          .describe("Maximum number of posts to return"),
+        offset: z
+          .number()
+          .min(0)
+          .optional()
+          .describe("Number of posts to skip for pagination"),
+        includeDeleted: z
+          .boolean()
+          .optional()
+          .describe("Include soft-deleted posts in results"),
+      }),
+      outputSchema: z.object({
         posts: z.array(
           z.object({
             id: z.string(),
@@ -37,6 +60,9 @@ export function registerPostTools(server: McpServer): void {
           }),
         ),
         total: z.number(),
+      }),
+      annotations: {
+        readOnlyHint: true,
       },
     },
     async ({ status, limit = 50, offset = 0, includeDeleted = false }) => {
@@ -81,17 +107,16 @@ export function registerPostTools(server: McpServer): void {
     },
   );
 
-  // Get single post by ID or slug
   server.registerTool(
     "get_post",
     {
       title: "Get Post",
       description: "Get a single blog post by ID or slug",
-      inputSchema: {
-        id: z.string().optional(),
-        slug: z.string().optional(),
-      },
-      outputSchema: {
+      inputSchema: z.object({
+        id: z.string().optional().describe("Post UUID"),
+        slug: z.string().optional().describe("Post URL slug"),
+      }),
+      outputSchema: z.object({
         post: z
           .object({
             id: z.string(),
@@ -108,14 +133,17 @@ export function registerPostTools(server: McpServer): void {
             updatedAt: z.string(),
           })
           .nullable(),
+      }),
+      annotations: {
+        readOnlyHint: true,
       },
     },
     async ({ id, slug }) => {
       if (!id && !slug) {
-        throw new Error("Either id or slug must be provided");
+        return makeError("Either id or slug must be provided");
       }
 
-      const condition = id ? eq(posts.id, id) : eq(posts.slug, slug!);
+      const condition = id ? eq(posts.id, id) : eq(posts.slug, slug as string);
 
       const [result] = await db
         .select()
@@ -149,31 +177,40 @@ export function registerPostTools(server: McpServer): void {
     },
   );
 
-  // Create new post
   server.registerTool(
     "create_post",
     {
       title: "Create Post",
       description:
         "Create a new blog post with auto-generated metadata. IMPORTANT: Before calling this tool, you MUST first discuss and confirm with the user: 1) Post title and slug, 2) Content outline or full content, 3) Tags to apply, 4) Whether to publish immediately or save as draft. Only proceed after user confirms all details.",
-      inputSchema: {
-        title: z.string().min(1).max(200),
-        slug: z.string().min(1).max(100),
-        content: z.string().min(1),
-        summary: z.string().max(500).optional(),
-        status: z.enum(["draft", "published"]).optional(),
-        tags: z.array(z.string()).optional(),
-        coverImage: z.string().optional(),
-        featured: z.boolean().optional(),
-      },
-      outputSchema: {
+      inputSchema: z.object({
+        title: z.string().min(1).max(200).describe("Post title"),
+        slug: z.string().min(1).max(100).describe("URL-friendly post slug"),
+        content: z.string().min(1).describe("Post content in MDX format"),
+        summary: z
+          .string()
+          .max(500)
+          .optional()
+          .describe("Brief post summary for SEO and previews"),
+        status: z
+          .enum(["draft", "published"])
+          .optional()
+          .describe("Post status; defaults to draft"),
+        tags: z.array(z.string()).optional().describe("Array of tag strings"),
+        coverImage: z.string().optional().describe("Cover image URL"),
+        featured: z
+          .boolean()
+          .optional()
+          .describe("Whether the post is featured"),
+      }),
+      outputSchema: z.object({
         post: z.object({
           id: z.string(),
           slug: z.string(),
           title: z.string(),
           status: z.string(),
         }),
-      },
+      }),
     },
     async ({
       title,
@@ -226,25 +263,185 @@ export function registerPostTools(server: McpServer): void {
     },
   );
 
-  // Update existing post
+  server.registerTool(
+    "save_draft",
+    {
+      title: "Save Draft",
+      description:
+        "Save a draft post with minimal required fields. Use this for incremental drafting — start with a title, add content progressively. If an id is provided, updates an existing draft; otherwise creates a new one. Only works on drafts — published posts cannot be modified with this tool.",
+      inputSchema: z.object({
+        id: z
+          .string()
+          .optional()
+          .describe(
+            "Existing post ID to update. If omitted, a new draft is created.",
+          ),
+        title: z.string().min(1).max(200).describe("Post title (required)"),
+        slug: z
+          .string()
+          .max(100)
+          .optional()
+          .describe("URL-friendly slug. Auto-generated from title if omitted."),
+        content: z
+          .string()
+          .optional()
+          .describe(
+            "Post content in MDX format. Empty string if not yet written.",
+          ),
+        summary: z.string().max(500).optional().describe("Brief post summary"),
+        tags: z.array(z.string()).optional().describe("Array of tag strings"),
+      }),
+      outputSchema: z.object({
+        post: z.object({
+          id: z.string(),
+          slug: z.string(),
+          title: z.string(),
+          status: z.string(),
+        }),
+      }),
+      annotations: {
+        idempotentHint: true,
+      },
+    },
+    async ({ id, title, slug: slugInput, content, summary, tags = [] }) => {
+      const slug =
+        slugInput ||
+        slugify(title, { lower: true, strict: true }) ||
+        title.toLowerCase().replace(/\s+/g, "-");
+
+      const postContent = content ?? "";
+
+      if (id) {
+        const [existing] = await db
+          .select()
+          .from(posts)
+          .where(eq(posts.id, id))
+          .limit(1);
+
+        if (!existing) {
+          return makeError(`Post with id "${id}" not found`);
+        }
+
+        if (existing.status === "published") {
+          return makeError(
+            "Cannot use save_draft on a published post. Use update_post instead.",
+          );
+        }
+
+        const mergedTitle = title ?? existing.title;
+        const mergedSlug = slug ?? existing.slug;
+        const mergedContent = postContent || existing.content;
+        const mergedSummary = summary ?? existing.summary;
+
+        const metadata = generatePostMetadata(
+          mergedTitle,
+          mergedSlug,
+          mergedContent,
+          mergedSummary,
+          null,
+        );
+
+        const [updated] = await db
+          .update(posts)
+          .set({
+            title: mergedTitle,
+            slug: mergedSlug,
+            content: mergedContent,
+            summary: mergedSummary,
+            tags,
+            metadata,
+            updatedAt: new Date(),
+          })
+          .where(eq(posts.id, id))
+          .returning();
+
+        await invalidatePost(mergedSlug);
+
+        const output = {
+          post: {
+            id: updated.id,
+            slug: updated.slug,
+            title: updated.title,
+            status: updated.status,
+          },
+        };
+
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify(output) }],
+          structuredContent: output,
+        };
+      }
+
+      const metadata = generatePostMetadata(
+        title,
+        slug,
+        postContent,
+        summary ?? null,
+        null,
+      );
+
+      const [created] = await db
+        .insert(posts)
+        .values({
+          title,
+          slug,
+          content: postContent,
+          summary: summary ?? null,
+          status: "draft",
+          tags,
+          metadata,
+          publishedAt: null,
+        })
+        .returning();
+
+      const output = {
+        post: {
+          id: created.id,
+          slug: created.slug,
+          title: created.title,
+          status: created.status,
+        },
+      };
+
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify(output) }],
+        structuredContent: output,
+      };
+    },
+  );
+
   server.registerTool(
     "update_post",
     {
       title: "Update Post",
       description:
         "Update an existing blog post. IMPORTANT: Before calling this tool, you MUST confirm with the user which fields to update and their new values. Only proceed after user confirms all changes.",
-      inputSchema: {
-        id: z.string(),
-        title: z.string().min(1).max(200).optional(),
-        slug: z.string().min(1).max(100).optional(),
-        content: z.string().min(1).optional(),
-        summary: z.string().max(500).optional(),
-        status: z.enum(["draft", "published"]).optional(),
-        tags: z.array(z.string()).optional(),
-        coverImage: z.string().nullable().optional(),
-        featured: z.boolean().optional(),
-      },
-      outputSchema: {
+      inputSchema: z.object({
+        id: z.string().describe("Post ID to update"),
+        title: z.string().min(1).max(200).optional().describe("New post title"),
+        slug: z.string().min(1).max(100).optional().describe("New URL slug"),
+        content: z
+          .string()
+          .min(1)
+          .optional()
+          .describe("New post content in MDX format"),
+        summary: z.string().max(500).optional().describe("New post summary"),
+        status: z
+          .enum(["draft", "published"])
+          .optional()
+          .describe("New post status"),
+        tags: z
+          .array(z.string())
+          .optional()
+          .describe("New array of tag strings"),
+        coverImage: z
+          .string()
+          .nullable()
+          .optional()
+          .describe("New cover image URL, or null to remove"),
+        featured: z.boolean().optional().describe("New featured flag"),
+      }),
+      outputSchema: z.object({
         post: z
           .object({
             id: z.string(),
@@ -253,10 +450,12 @@ export function registerPostTools(server: McpServer): void {
             status: z.string(),
           })
           .nullable(),
+      }),
+      annotations: {
+        idempotentHint: true,
       },
     },
     async ({ id, ...updates }) => {
-      // Get existing post
       const [existing] = await db
         .select()
         .from(posts)
@@ -275,7 +474,6 @@ export function registerPostTools(server: McpServer): void {
       const oldSlug = existing.slug;
       const oldTags = existing.tags;
 
-      // Determine publishedAt
       let publishedAt = existing.publishedAt;
       if (updates.status === "published" && !existing.publishedAt) {
         publishedAt = new Date();
@@ -283,7 +481,6 @@ export function registerPostTools(server: McpServer): void {
         publishedAt = null;
       }
 
-      // Regenerate metadata
       const title = updates.title ?? existing.title;
       const slug = updates.slug ?? existing.slug;
       const content = updates.content ?? existing.content;
@@ -308,7 +505,6 @@ export function registerPostTools(server: McpServer): void {
         .where(eq(posts.id, id))
         .returning();
 
-      // Invalidate cache if slug or tags changed
       if (updates.slug && updates.slug !== oldSlug) {
         await invalidatePopularPost(oldSlug);
       }
@@ -335,19 +531,21 @@ export function registerPostTools(server: McpServer): void {
     },
   );
 
-  // Soft delete post
   server.registerTool(
     "delete_post",
     {
       title: "Delete Post",
       description:
         "Soft delete a blog post. IMPORTANT: Before calling this tool, you MUST confirm with the user that they want to delete this specific post. Only proceed after explicit user confirmation.",
-      inputSchema: {
-        id: z.string(),
-      },
-      outputSchema: {
+      inputSchema: z.object({
+        id: z.string().describe("Post ID to delete"),
+      }),
+      outputSchema: z.object({
         success: z.boolean(),
         slug: z.string().nullable(),
+      }),
+      annotations: {
+        destructiveHint: true,
       },
     },
     async ({ id }) => {
@@ -373,16 +571,15 @@ export function registerPostTools(server: McpServer): void {
     },
   );
 
-  // Restore soft-deleted post
   server.registerTool(
     "restore_post",
     {
       title: "Restore Post",
       description: "Restore a soft-deleted blog post",
-      inputSchema: {
-        id: z.string(),
-      },
-      outputSchema: {
+      inputSchema: z.object({
+        id: z.string().describe("Post ID to restore"),
+      }),
+      outputSchema: z.object({
         success: z.boolean(),
         post: z
           .object({
@@ -391,7 +588,7 @@ export function registerPostTools(server: McpServer): void {
             title: z.string(),
           })
           .nullable(),
-      },
+      }),
     },
     async ({ id }) => {
       const [restored] = await db
@@ -418,17 +615,16 @@ export function registerPostTools(server: McpServer): void {
     },
   );
 
-  // Publish a draft post
   server.registerTool(
     "publish_post",
     {
       title: "Publish Post",
       description:
         "Publish a draft blog post (sets publishedAt). IMPORTANT: Before calling this tool, you MUST confirm with the user that they want to publish this post. Only proceed after explicit user confirmation.",
-      inputSchema: {
-        id: z.string(),
-      },
-      outputSchema: {
+      inputSchema: z.object({
+        id: z.string().describe("Post ID to publish"),
+      }),
+      outputSchema: z.object({
         success: z.boolean(),
         post: z
           .object({
@@ -438,6 +634,9 @@ export function registerPostTools(server: McpServer): void {
             publishedAt: z.string(),
           })
           .nullable(),
+      }),
+      annotations: {
+        destructiveHint: true,
       },
     },
     async ({ id }) => {
@@ -457,6 +656,12 @@ export function registerPostTools(server: McpServer): void {
           ],
           structuredContent: { success: false, post: null },
         };
+      }
+
+      if (existing.status === "published") {
+        return makeError(
+          `Post "${existing.title}" is already published. Use update_post to modify it.`,
+        );
       }
 
       const publishedAt = existing.publishedAt ?? new Date();
@@ -485,7 +690,7 @@ export function registerPostTools(server: McpServer): void {
           id: published.id,
           slug: published.slug,
           title: published.title,
-          publishedAt: published.publishedAt!.toISOString(),
+          publishedAt: (published.publishedAt ?? new Date()).toISOString(),
         },
       };
 

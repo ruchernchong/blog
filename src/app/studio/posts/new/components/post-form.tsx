@@ -17,6 +17,7 @@ import slugify from "slugify";
 import { z } from "zod";
 import { ContentEditor } from "@/components/studio/content-editor";
 import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
+import { SaveStatusIndicator } from "@/components/studio/save-status-indicator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -40,6 +41,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useAutoSave, useBeforeUnload } from "@/hooks/use-auto-save";
 
 const newPostSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -71,8 +73,10 @@ export function PostForm({ seriesOptions }: PostFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [draftId, setDraftId] = useState<string | null>(null);
+  const [draftUpdatedAt, setDraftUpdatedAt] = useState<string | null>(null);
+  const [isCreatingDraft, setIsCreatingDraft] = useState(true);
 
-  // Generate unique IDs for form fields
   const titleId = useId();
   const slugId = useId();
   const summaryId = useId();
@@ -95,6 +99,45 @@ export function PostForm({ seriesOptions }: PostFormProps) {
     },
   });
 
+  const formValues = form.watch();
+  const isDirty = form.formState.isDirty;
+
+  const createAutoDraft = useEffectEvent(async () => {
+    try {
+      const slug = `draft-${Date.now()}`;
+      const response = await fetch("/api/studio/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: slug,
+          slug,
+          content: " ",
+          status: "draft",
+          tags: [],
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || "Failed to create draft");
+      }
+
+      const post = await response.json();
+      setDraftId(post.id);
+      setDraftUpdatedAt(post.updatedAt);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to initialise draft",
+      );
+    } finally {
+      setIsCreatingDraft(false);
+    }
+  });
+
+  useEffect(() => {
+    createAutoDraft();
+  }, []);
+
   const titleValue = form.watch("title");
 
   const updateSlugFromTitle = useEffectEvent((title: string) => {
@@ -103,13 +146,70 @@ export function PostForm({ seriesOptions }: PostFormProps) {
       : "";
 
     if (form.getValues("slug") !== generatedSlug) {
-      form.setValue("slug", generatedSlug);
+      form.setValue("slug", generatedSlug, { shouldDirty: true });
     }
   });
 
   useEffect(() => {
     updateSlugFromTitle(titleValue);
   }, [titleValue]);
+
+  const handleAutoSave = async () => {
+    if (!draftId) return;
+
+    const values = form.getValues();
+    const data = {
+      title: values.title || `Untitled draft`,
+      slug:
+        values.slug ||
+        slugify(values.title, { lower: true, strict: true }) ||
+        `draft-${draftId}`,
+      summary: values.summary ?? "",
+      content: values.content || " ",
+      status: values.status,
+      tags: (values.tags ?? "")
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean),
+      seriesId: values.seriesId || null,
+      coverImage: values.coverImage || null,
+    };
+
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (draftUpdatedAt) {
+      headers["If-Match"] = draftUpdatedAt;
+    }
+
+    const response = await fetch(`/api/studio/posts/${draftId}`, {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify(data),
+    });
+
+    if (response.status === 409) {
+      throw new Error(
+        "This post was edited elsewhere. Refresh to see the latest version.",
+      );
+    }
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.message || "Failed to auto-save");
+    }
+
+    const updated = await response.json();
+    setDraftUpdatedAt(updated.updatedAt);
+  };
+
+  const { saveStatus, lastSavedAt, triggerSave } = useAutoSave({
+    saveFn: handleAutoSave,
+    data: formValues,
+    enabled: draftId !== null && isDirty && !isPending,
+  });
+
+  useBeforeUnload(isDirty && saveStatus !== "saved");
 
   const handleSubmit = async (values: NewPostFormValues) => {
     startTransition(async () => {
@@ -133,15 +233,28 @@ export function PostForm({ seriesOptions }: PostFormProps) {
       };
 
       try {
-        const response = await fetch("/api/studio/posts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
+        if (draftId) {
+          const response = await fetch(`/api/studio/posts/${draftId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
 
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.message || "Failed to create post");
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Failed to create post");
+          }
+        } else {
+          const response = await fetch("/api/studio/posts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Failed to create post");
+          }
         }
 
         router.push("/studio/posts");
@@ -151,6 +264,16 @@ export function PostForm({ seriesOptions }: PostFormProps) {
       }
     });
   };
+
+  if (isCreatingDraft) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center py-12">
+          <p className="text-muted-foreground">Preparing editor...</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <FormProvider {...form}>
@@ -162,13 +285,20 @@ export function PostForm({ seriesOptions }: PostFormProps) {
               Write and publish a new blog post
             </p>
           </div>
-          <Button
-            variant="outline"
-            nativeButton={false}
-            render={<Link href="/studio/posts" />}
-          >
-            Back to Posts
-          </Button>
+          <div className="flex items-center gap-4">
+            <SaveStatusIndicator
+              status={saveStatus}
+              lastSavedAt={lastSavedAt}
+              onRetry={triggerSave}
+            />
+            <Button
+              variant="outline"
+              nativeButton={false}
+              render={<Link href="/studio/posts" />}
+            >
+              Back to Posts
+            </Button>
+          </div>
         </div>
 
         {error && (
