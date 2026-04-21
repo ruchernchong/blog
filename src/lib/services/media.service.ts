@@ -36,12 +36,14 @@ export interface UploadFromUrlInput {
   url: string;
   alt?: string;
   caption?: string;
+  uploadedById?: string;
 }
 
 export interface UploadFromPathInput {
   filePath: string;
   alt?: string;
   caption?: string;
+  uploadedById?: string;
 }
 
 export class MediaService {
@@ -66,7 +68,7 @@ export class MediaService {
   }
 
   async uploadFromUrl(input: UploadFromUrlInput): Promise<SelectMedia> {
-    const { url, alt, caption } = input;
+    const { url, alt, caption, uploadedById } = input;
 
     try {
       // Fetch the image from URL
@@ -126,6 +128,7 @@ export class MediaService {
           size: uploadResult.size,
           alt,
           caption,
+          uploadedById,
         })
         .returning();
 
@@ -137,7 +140,7 @@ export class MediaService {
   }
 
   async uploadFromPath(input: UploadFromPathInput): Promise<SelectMedia> {
-    const { filePath, alt, caption } = input;
+    const { filePath, alt, caption, uploadedById } = input;
 
     try {
       // Read the file
@@ -197,6 +200,7 @@ export class MediaService {
           size: uploadResult.size,
           alt,
           caption,
+          uploadedById,
         })
         .returning();
 

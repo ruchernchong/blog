@@ -1,14 +1,12 @@
+import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
+import { validateMcpAuth } from "@/lib/api/mcp-auth";
 import { createServer } from "@/mcp/server";
 
-function checkAuth(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  const token = authHeader?.replace("Bearer ", "");
-  return token === process.env.BLOG_MCP_AUTH_TOKEN;
-}
-
 export async function POST(request: Request) {
-  if (!checkAuth(request)) {
+  const authResult = await validateMcpAuth(request);
+
+  if (!authResult) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -20,20 +18,31 @@ export async function POST(request: Request) {
   const server = createServer();
   await server.connect(transport);
 
-  return transport.handleRequest(request);
+  const handleOptions: { authInfo?: AuthInfo } = {};
+  if (authResult.authInfo) {
+    handleOptions.authInfo = authResult.authInfo;
+  }
+
+  return transport.handleRequest(request, handleOptions);
 }
 
 export async function GET(request: Request) {
-  if (!checkAuth(request)) {
+  const authResult = await validateMcpAuth(request);
+
+  if (!authResult) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
+
   return Response.json({ status: "ok", service: "mcp-blog" });
 }
 
 export async function DELETE(request: Request) {
-  if (!checkAuth(request)) {
+  const authResult = await validateMcpAuth(request);
+
+  if (!authResult) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
+
   return new Response(null, { status: 204 });
 }
 
@@ -47,9 +56,12 @@ export async function OPTIONS() {
 }
 
 export async function HEAD(request: Request) {
-  if (!checkAuth(request)) {
+  const authResult = await validateMcpAuth(request);
+
+  if (!authResult) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
+
   return Response.json({ status: "ok", service: "mcp-blog" });
 }
 

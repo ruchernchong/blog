@@ -1,11 +1,244 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { mediaService } from "@/lib/services";
+import type { ToolExtra } from "./posts.tools";
 
-function makeError(message: string) {
+function makeError(message: string): CallToolResult {
   return {
     content: [{ type: "text" as const, text: message }],
     isError: true as const,
+  };
+}
+
+export async function listMediaHandler(args: {
+  search?: string;
+  limit?: number;
+  offset?: number;
+}): Promise<CallToolResult> {
+  const { search, limit = 50, offset = 0 } = args;
+
+  const result = await mediaService.getMediaList({
+    search,
+    limit,
+    offset,
+    verifyR2Existence: true,
+  });
+
+  const output = {
+    media: result.map((m) => ({
+      id: m.id,
+      filename: m.filename,
+      url: m.url,
+      mimeType: m.mimeType,
+      size: m.size,
+      width: m.width,
+      height: m.height,
+      alt: m.alt,
+      caption: m.caption,
+      createdAt: m.createdAt.toISOString(),
+    })),
+    total: result.length,
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
+  };
+}
+
+export async function getMediaHandler(args: {
+  id: string;
+}): Promise<CallToolResult> {
+  const { id } = args;
+
+  const result = await mediaService.getMediaById(id);
+
+  if (!result) {
+    return makeError(`Media with id "${id}" not found`);
+  }
+
+  const output = {
+    media: {
+      id: result.id,
+      key: result.key,
+      filename: result.filename,
+      url: result.url,
+      mimeType: result.mimeType,
+      size: result.size,
+      width: result.width,
+      height: result.height,
+      alt: result.alt,
+      caption: result.caption,
+      createdAt: result.createdAt.toISOString(),
+    },
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
+  };
+}
+
+export async function requestUploadHandler(args: {
+  filename: string;
+  mimeType: string;
+  size: number;
+}): Promise<CallToolResult> {
+  const { filename, mimeType, size } = args;
+
+  const result = await mediaService.requestUpload({
+    filename,
+    mimeType,
+    size,
+  });
+
+  const output = {
+    uploadUrl: result.uploadUrl,
+    key: result.key,
+    publicUrl: result.publicUrl,
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
+  };
+}
+
+export async function confirmUploadHandler(
+  args: {
+    key: string;
+    filename: string;
+    url: string;
+    mimeType: string;
+    size: number;
+    width?: number;
+    height?: number;
+    alt?: string;
+    caption?: string;
+  },
+  extra: ToolExtra,
+): Promise<CallToolResult> {
+  const { key, filename, url, mimeType, size, width, height, alt, caption } =
+    args;
+
+  const uploadedById =
+    (extra.authInfo?.extra?.userId as string | undefined) ?? undefined;
+
+  const result = await mediaService.confirmUpload({
+    key,
+    filename,
+    url,
+    mimeType,
+    size,
+    width,
+    height,
+    alt,
+    caption,
+    uploadedById,
+  });
+
+  const output = {
+    media: {
+      id: result.id,
+      filename: result.filename,
+      url: result.url,
+    },
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
+  };
+}
+
+export async function uploadFromPathHandler(
+  args: {
+    filePath: string;
+    alt?: string;
+    caption?: string;
+  },
+  extra: ToolExtra,
+): Promise<CallToolResult> {
+  const { filePath, alt, caption } = args;
+
+  const uploadedById =
+    (extra.authInfo?.extra?.userId as string | undefined) ?? undefined;
+
+  const result = await mediaService.uploadFromPath({
+    filePath,
+    alt,
+    caption,
+    uploadedById,
+  });
+
+  const output = {
+    media: {
+      id: result.id,
+      filename: result.filename,
+      url: result.url,
+      mimeType: result.mimeType,
+      size: result.size,
+    },
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
+  };
+}
+
+export async function uploadFromUrlHandler(
+  args: {
+    url: string;
+    alt?: string;
+    caption?: string;
+  },
+  extra: ToolExtra,
+): Promise<CallToolResult> {
+  const { url, alt, caption } = args;
+
+  const uploadedById =
+    (extra.authInfo?.extra?.userId as string | undefined) ?? undefined;
+
+  const result = await mediaService.uploadFromUrl({
+    url,
+    alt,
+    caption,
+    uploadedById,
+  });
+
+  const output = {
+    media: {
+      id: result.id,
+      filename: result.filename,
+      url: result.url,
+      mimeType: result.mimeType,
+      size: result.size,
+    },
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
+  };
+}
+
+export async function deleteMediaHandler(args: {
+  id: string;
+}): Promise<CallToolResult> {
+  const { id } = args;
+
+  const deleted = await mediaService.softDeleteMedia(id);
+
+  const output = {
+    success: !!deleted,
+    filename: deleted?.filename ?? null,
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
   };
 }
 
@@ -53,35 +286,7 @@ export function registerMediaTools(server: McpServer): void {
         readOnlyHint: true,
       },
     },
-    async ({ search, limit = 50, offset = 0 }) => {
-      const result = await mediaService.getMediaList({
-        search,
-        limit,
-        offset,
-        verifyR2Existence: true,
-      });
-
-      const output = {
-        media: result.map((m) => ({
-          id: m.id,
-          filename: m.filename,
-          url: m.url,
-          mimeType: m.mimeType,
-          size: m.size,
-          width: m.width,
-          height: m.height,
-          alt: m.alt,
-          caption: m.caption,
-          createdAt: m.createdAt.toISOString(),
-        })),
-        total: result.length,
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args) => listMediaHandler(args),
   );
 
   server.registerTool(
@@ -113,34 +318,7 @@ export function registerMediaTools(server: McpServer): void {
         readOnlyHint: true,
       },
     },
-    async ({ id }) => {
-      const result = await mediaService.getMediaById(id);
-
-      if (!result) {
-        return makeError(`Media with id "${id}" not found`);
-      }
-
-      const output = {
-        media: {
-          id: result.id,
-          key: result.key,
-          filename: result.filename,
-          url: result.url,
-          mimeType: result.mimeType,
-          size: result.size,
-          width: result.width,
-          height: result.height,
-          alt: result.alt,
-          caption: result.caption,
-          createdAt: result.createdAt.toISOString(),
-        },
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args) => getMediaHandler(args),
   );
 
   server.registerTool(
@@ -161,24 +339,7 @@ export function registerMediaTools(server: McpServer): void {
         publicUrl: z.string(),
       }),
     },
-    async ({ filename, mimeType, size }) => {
-      const result = await mediaService.requestUpload({
-        filename,
-        mimeType,
-        size,
-      });
-
-      const output = {
-        uploadUrl: result.uploadUrl,
-        key: result.key,
-        publicUrl: result.publicUrl,
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args) => requestUploadHandler(args),
   );
 
   server.registerTool(
@@ -208,42 +369,7 @@ export function registerMediaTools(server: McpServer): void {
         idempotentHint: true,
       },
     },
-    async ({
-      key,
-      filename,
-      url,
-      mimeType,
-      size,
-      width,
-      height,
-      alt,
-      caption,
-    }) => {
-      const result = await mediaService.confirmUpload({
-        key,
-        filename,
-        url,
-        mimeType,
-        size,
-        width,
-        height,
-        alt,
-        caption,
-      });
-
-      const output = {
-        media: {
-          id: result.id,
-          filename: result.filename,
-          url: result.url,
-        },
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args, extra) => confirmUploadHandler(args, extra),
   );
 
   server.registerTool(
@@ -271,28 +397,7 @@ export function registerMediaTools(server: McpServer): void {
         }),
       }),
     },
-    async ({ filePath, alt, caption }) => {
-      const result = await mediaService.uploadFromPath({
-        filePath,
-        alt,
-        caption,
-      });
-
-      const output = {
-        media: {
-          id: result.id,
-          filename: result.filename,
-          url: result.url,
-          mimeType: result.mimeType,
-          size: result.size,
-        },
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args, extra) => uploadFromPathHandler(args, extra),
   );
 
   server.registerTool(
@@ -316,24 +421,7 @@ export function registerMediaTools(server: McpServer): void {
         }),
       }),
     },
-    async ({ url, alt, caption }) => {
-      const result = await mediaService.uploadFromUrl({ url, alt, caption });
-
-      const output = {
-        media: {
-          id: result.id,
-          filename: result.filename,
-          url: result.url,
-          mimeType: result.mimeType,
-          size: result.size,
-        },
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args, extra) => uploadFromUrlHandler(args, extra),
   );
 
   server.registerTool(
@@ -353,18 +441,6 @@ export function registerMediaTools(server: McpServer): void {
         destructiveHint: true,
       },
     },
-    async ({ id }) => {
-      const deleted = await mediaService.softDeleteMedia(id);
-
-      const output = {
-        success: !!deleted,
-        filename: deleted?.filename ?? null,
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args) => deleteMediaHandler(args),
   );
 }

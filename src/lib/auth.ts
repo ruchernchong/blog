@@ -2,6 +2,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { betterAuth } from "better-auth/minimal";
 import { nextCookies } from "better-auth/next-js";
 import { admin, lastLoginMethod, oAuthProxy } from "better-auth/plugins";
+import { bearer } from "better-auth/plugins/bearer";
 import { db } from "@/schema";
 
 /**
@@ -42,6 +43,7 @@ export const auth = betterAuth({
     oAuthProxy({
       productionURL: `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
     }),
+    bearer(),
     nextCookies(), // Must be the last plugin
   ],
 });

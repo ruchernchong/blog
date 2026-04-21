@@ -1,4 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { and, desc, eq, isNull } from "drizzle-orm";
 import slugify from "slugify";
 import { z } from "zod";
@@ -10,10 +11,501 @@ import {
 } from "@/lib/services/cache-invalidation";
 import { db, posts } from "@/schema";
 
-function makeError(message: string) {
+function makeError(message: string): CallToolResult {
   return {
     content: [{ type: "text" as const, text: message }],
     isError: true as const,
+  };
+}
+
+export interface ToolExtra {
+  authInfo?: {
+    extra?: Record<string, unknown>;
+  };
+}
+
+export async function listPostsHandler(args: {
+  status?: "draft" | "published";
+  limit?: number;
+  offset?: number;
+  includeDeleted?: boolean;
+}): Promise<CallToolResult> {
+  const { status, limit = 50, offset = 0, includeDeleted = false } = args;
+  const conditions = [];
+
+  if (!includeDeleted) {
+    conditions.push(isNull(posts.deletedAt));
+  }
+
+  if (status) {
+    conditions.push(eq(posts.status, status));
+  }
+
+  const result = await db
+    .select()
+    .from(posts)
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(desc(posts.updatedAt))
+    .limit(limit)
+    .offset(offset);
+
+  const output = {
+    posts: result.map((p) => ({
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      summary: p.summary,
+      status: p.status,
+      tags: p.tags,
+      featured: p.featured,
+      publishedAt: p.publishedAt?.toISOString() ?? null,
+      createdAt: p.createdAt.toISOString(),
+      updatedAt: p.updatedAt.toISOString(),
+    })),
+    total: result.length,
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
+  };
+}
+
+export async function getPostHandler(args: {
+  id?: string;
+  slug?: string;
+}): Promise<CallToolResult> {
+  const { id, slug } = args;
+
+  if (!id && !slug) {
+    return makeError("Either id or slug must be provided");
+  }
+
+  const condition = id ? eq(posts.id, id) : eq(posts.slug, slug as string);
+
+  const [result] = await db
+    .select()
+    .from(posts)
+    .where(and(condition, isNull(posts.deletedAt)))
+    .limit(1);
+
+  const output = {
+    post: result
+      ? {
+          id: result.id,
+          slug: result.slug,
+          title: result.title,
+          summary: result.summary,
+          content: result.content,
+          status: result.status,
+          tags: result.tags,
+          featured: result.featured,
+          coverImage: result.coverImage,
+          publishedAt: result.publishedAt?.toISOString() ?? null,
+          createdAt: result.createdAt.toISOString(),
+          updatedAt: result.updatedAt.toISOString(),
+        }
+      : null,
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
+  };
+}
+
+export async function createPostHandler(
+  args: {
+    title: string;
+    slug: string;
+    content: string;
+    summary?: string;
+    status?: "draft" | "published";
+    tags?: string[];
+    coverImage?: string;
+    featured?: boolean;
+  },
+  extra: ToolExtra,
+): Promise<CallToolResult> {
+  const {
+    title,
+    slug,
+    content,
+    summary,
+    status = "draft",
+    tags = [],
+    coverImage,
+    featured = false,
+  } = args;
+
+  const authorId =
+    (extra.authInfo?.extra?.userId as string | undefined) ?? null;
+  const publishedAt = status === "published" ? new Date() : null;
+  const metadata = generatePostMetadata(
+    title,
+    slug,
+    content,
+    summary ?? null,
+    publishedAt,
+  );
+
+  const [created] = await db
+    .insert(posts)
+    .values({
+      title,
+      slug,
+      content,
+      summary: summary ?? null,
+      status,
+      tags,
+      coverImage: coverImage ?? null,
+      featured,
+      metadata,
+      publishedAt,
+      authorId,
+    })
+    .returning();
+
+  const output = {
+    post: {
+      id: created.id,
+      slug: created.slug,
+      title: created.title,
+      status: created.status,
+    },
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
+  };
+}
+
+export async function saveDraftHandler(
+  args: {
+    id?: string;
+    title: string;
+    slug?: string;
+    content?: string;
+    summary?: string;
+    tags?: string[];
+  },
+  extra: ToolExtra,
+): Promise<CallToolResult> {
+  const { id, title, slug: slugInput, content, summary, tags = [] } = args;
+
+  const slug =
+    slugInput ||
+    slugify(title, { lower: true, strict: true }) ||
+    title.toLowerCase().replace(/\s+/g, "-");
+
+  const postContent = content ?? "";
+
+  if (id) {
+    const [existing] = await db
+      .select()
+      .from(posts)
+      .where(eq(posts.id, id))
+      .limit(1);
+
+    if (!existing) {
+      return makeError(`Post with id "${id}" not found`);
+    }
+
+    if (existing.status === "published") {
+      return makeError(
+        "Cannot use save_draft on a published post. Use update_post instead.",
+      );
+    }
+
+    const mergedTitle = title ?? existing.title;
+    const mergedSlug = slug ?? existing.slug;
+    const mergedContent = postContent || existing.content;
+    const mergedSummary = summary ?? existing.summary;
+
+    const metadata = generatePostMetadata(
+      mergedTitle,
+      mergedSlug,
+      mergedContent,
+      mergedSummary,
+      null,
+    );
+
+    const [updated] = await db
+      .update(posts)
+      .set({
+        title: mergedTitle,
+        slug: mergedSlug,
+        content: mergedContent,
+        summary: mergedSummary,
+        tags,
+        metadata,
+        updatedAt: new Date(),
+      })
+      .where(eq(posts.id, id))
+      .returning();
+
+    await invalidatePost(mergedSlug);
+
+    const output = {
+      post: {
+        id: updated.id,
+        slug: updated.slug,
+        title: updated.title,
+        status: updated.status,
+      },
+    };
+
+    return {
+      content: [{ type: "text" as const, text: JSON.stringify(output) }],
+      structuredContent: output,
+    };
+  }
+
+  const metadata = generatePostMetadata(
+    title,
+    slug,
+    postContent,
+    summary ?? null,
+    null,
+  );
+
+  const authorId =
+    (extra.authInfo?.extra?.userId as string | undefined) ?? null;
+
+  const [created] = await db
+    .insert(posts)
+    .values({
+      title,
+      slug,
+      content: postContent,
+      summary: summary ?? null,
+      status: "draft",
+      tags,
+      metadata,
+      publishedAt: null,
+      authorId,
+    })
+    .returning();
+
+  const output = {
+    post: {
+      id: created.id,
+      slug: created.slug,
+      title: created.title,
+      status: created.status,
+    },
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
+  };
+}
+
+export async function updatePostHandler(args: {
+  id: string;
+  title?: string;
+  slug?: string;
+  content?: string;
+  summary?: string;
+  status?: "draft" | "published";
+  tags?: string[];
+  coverImage?: string | null;
+  featured?: boolean;
+}): Promise<CallToolResult> {
+  const { id, ...updates } = args;
+
+  const [existing] = await db
+    .select()
+    .from(posts)
+    .where(eq(posts.id, id))
+    .limit(1);
+
+  if (!existing) {
+    return {
+      content: [
+        { type: "text" as const, text: JSON.stringify({ post: null }) },
+      ],
+      structuredContent: { post: null },
+    };
+  }
+
+  const oldSlug = existing.slug;
+  const oldTags = existing.tags;
+
+  let publishedAt = existing.publishedAt;
+  if (updates.status === "published" && !existing.publishedAt) {
+    publishedAt = new Date();
+  } else if (updates.status === "draft") {
+    publishedAt = null;
+  }
+
+  const title = updates.title ?? existing.title;
+  const slug = updates.slug ?? existing.slug;
+  const content = updates.content ?? existing.content;
+  const summary = updates.summary ?? existing.summary;
+
+  const metadata = generatePostMetadata(
+    title,
+    slug,
+    content,
+    summary,
+    publishedAt,
+  );
+
+  const [updated] = await db
+    .update(posts)
+    .set({
+      ...updates,
+      metadata,
+      publishedAt,
+      updatedAt: new Date(),
+    })
+    .where(eq(posts.id, id))
+    .returning();
+
+  if (updates.slug && updates.slug !== oldSlug) {
+    await invalidatePopularPost(oldSlug);
+  }
+  if (
+    updates.tags &&
+    JSON.stringify(updates.tags) !== JSON.stringify(oldTags)
+  ) {
+    await invalidateRelatedByTags([...oldTags, ...updates.tags], slug);
+  }
+
+  const output = {
+    post: {
+      id: updated.id,
+      slug: updated.slug,
+      title: updated.title,
+      status: updated.status,
+    },
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
+  };
+}
+
+export async function deletePostHandler(args: {
+  id: string;
+}): Promise<CallToolResult> {
+  const { id } = args;
+
+  const [deleted] = await db
+    .update(posts)
+    .set({ deletedAt: new Date() })
+    .where(eq(posts.id, id))
+    .returning();
+
+  if (deleted) {
+    await invalidatePopularPost(deleted.slug);
+  }
+
+  const output = {
+    success: !!deleted,
+    slug: deleted?.slug ?? null,
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
+  };
+}
+
+export async function restorePostHandler(args: {
+  id: string;
+}): Promise<CallToolResult> {
+  const { id } = args;
+
+  const [restored] = await db
+    .update(posts)
+    .set({ deletedAt: null, updatedAt: new Date() })
+    .where(eq(posts.id, id))
+    .returning();
+
+  const output = {
+    success: !!restored,
+    post: restored
+      ? {
+          id: restored.id,
+          slug: restored.slug,
+          title: restored.title,
+        }
+      : null,
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
+  };
+}
+
+export async function publishPostHandler(args: {
+  id: string;
+}): Promise<CallToolResult> {
+  const { id } = args;
+
+  const [existing] = await db
+    .select()
+    .from(posts)
+    .where(eq(posts.id, id))
+    .limit(1);
+
+  if (!existing) {
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: JSON.stringify({ success: false, post: null }),
+        },
+      ],
+      structuredContent: { success: false, post: null },
+    };
+  }
+
+  if (existing.status === "published") {
+    return makeError(
+      `Post "${existing.title}" is already published. Use update_post to modify it.`,
+    );
+  }
+
+  const publishedAt = existing.publishedAt ?? new Date();
+  const metadata = generatePostMetadata(
+    existing.title,
+    existing.slug,
+    existing.content,
+    existing.summary,
+    publishedAt,
+  );
+
+  const [published] = await db
+    .update(posts)
+    .set({
+      status: "published",
+      publishedAt,
+      metadata,
+      updatedAt: new Date(),
+    })
+    .where(eq(posts.id, id))
+    .returning();
+
+  const output = {
+    success: true,
+    post: {
+      id: published.id,
+      slug: published.slug,
+      title: published.title,
+      publishedAt: (published.publishedAt ?? new Date()).toISOString(),
+    },
+  };
+
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(output) }],
+    structuredContent: output,
   };
 }
 
@@ -65,46 +557,7 @@ export function registerPostTools(server: McpServer): void {
         readOnlyHint: true,
       },
     },
-    async ({ status, limit = 50, offset = 0, includeDeleted = false }) => {
-      const conditions = [];
-
-      if (!includeDeleted) {
-        conditions.push(isNull(posts.deletedAt));
-      }
-
-      if (status) {
-        conditions.push(eq(posts.status, status));
-      }
-
-      const result = await db
-        .select()
-        .from(posts)
-        .where(conditions.length > 0 ? and(...conditions) : undefined)
-        .orderBy(desc(posts.updatedAt))
-        .limit(limit)
-        .offset(offset);
-
-      const output = {
-        posts: result.map((p) => ({
-          id: p.id,
-          slug: p.slug,
-          title: p.title,
-          summary: p.summary,
-          status: p.status,
-          tags: p.tags,
-          featured: p.featured,
-          publishedAt: p.publishedAt?.toISOString() ?? null,
-          createdAt: p.createdAt.toISOString(),
-          updatedAt: p.updatedAt.toISOString(),
-        })),
-        total: result.length,
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args) => listPostsHandler(args),
   );
 
   server.registerTool(
@@ -138,43 +591,7 @@ export function registerPostTools(server: McpServer): void {
         readOnlyHint: true,
       },
     },
-    async ({ id, slug }) => {
-      if (!id && !slug) {
-        return makeError("Either id or slug must be provided");
-      }
-
-      const condition = id ? eq(posts.id, id) : eq(posts.slug, slug as string);
-
-      const [result] = await db
-        .select()
-        .from(posts)
-        .where(and(condition, isNull(posts.deletedAt)))
-        .limit(1);
-
-      const output = {
-        post: result
-          ? {
-              id: result.id,
-              slug: result.slug,
-              title: result.title,
-              summary: result.summary,
-              content: result.content,
-              status: result.status,
-              tags: result.tags,
-              featured: result.featured,
-              coverImage: result.coverImage,
-              publishedAt: result.publishedAt?.toISOString() ?? null,
-              createdAt: result.createdAt.toISOString(),
-              updatedAt: result.updatedAt.toISOString(),
-            }
-          : null,
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args) => getPostHandler(args),
   );
 
   server.registerTool(
@@ -212,55 +629,7 @@ export function registerPostTools(server: McpServer): void {
         }),
       }),
     },
-    async ({
-      title,
-      slug,
-      content,
-      summary,
-      status = "draft",
-      tags = [],
-      coverImage,
-      featured = false,
-    }) => {
-      const publishedAt = status === "published" ? new Date() : null;
-      const metadata = generatePostMetadata(
-        title,
-        slug,
-        content,
-        summary ?? null,
-        publishedAt,
-      );
-
-      const [created] = await db
-        .insert(posts)
-        .values({
-          title,
-          slug,
-          content,
-          summary: summary ?? null,
-          status,
-          tags,
-          coverImage: coverImage ?? null,
-          featured,
-          metadata,
-          publishedAt,
-        })
-        .returning();
-
-      const output = {
-        post: {
-          id: created.id,
-          slug: created.slug,
-          title: created.title,
-          status: created.status,
-        },
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args, extra) => createPostHandler(args, extra),
   );
 
   server.registerTool(
@@ -303,111 +672,7 @@ export function registerPostTools(server: McpServer): void {
         idempotentHint: true,
       },
     },
-    async ({ id, title, slug: slugInput, content, summary, tags = [] }) => {
-      const slug =
-        slugInput ||
-        slugify(title, { lower: true, strict: true }) ||
-        title.toLowerCase().replace(/\s+/g, "-");
-
-      const postContent = content ?? "";
-
-      if (id) {
-        const [existing] = await db
-          .select()
-          .from(posts)
-          .where(eq(posts.id, id))
-          .limit(1);
-
-        if (!existing) {
-          return makeError(`Post with id "${id}" not found`);
-        }
-
-        if (existing.status === "published") {
-          return makeError(
-            "Cannot use save_draft on a published post. Use update_post instead.",
-          );
-        }
-
-        const mergedTitle = title ?? existing.title;
-        const mergedSlug = slug ?? existing.slug;
-        const mergedContent = postContent || existing.content;
-        const mergedSummary = summary ?? existing.summary;
-
-        const metadata = generatePostMetadata(
-          mergedTitle,
-          mergedSlug,
-          mergedContent,
-          mergedSummary,
-          null,
-        );
-
-        const [updated] = await db
-          .update(posts)
-          .set({
-            title: mergedTitle,
-            slug: mergedSlug,
-            content: mergedContent,
-            summary: mergedSummary,
-            tags,
-            metadata,
-            updatedAt: new Date(),
-          })
-          .where(eq(posts.id, id))
-          .returning();
-
-        await invalidatePost(mergedSlug);
-
-        const output = {
-          post: {
-            id: updated.id,
-            slug: updated.slug,
-            title: updated.title,
-            status: updated.status,
-          },
-        };
-
-        return {
-          content: [{ type: "text" as const, text: JSON.stringify(output) }],
-          structuredContent: output,
-        };
-      }
-
-      const metadata = generatePostMetadata(
-        title,
-        slug,
-        postContent,
-        summary ?? null,
-        null,
-      );
-
-      const [created] = await db
-        .insert(posts)
-        .values({
-          title,
-          slug,
-          content: postContent,
-          summary: summary ?? null,
-          status: "draft",
-          tags,
-          metadata,
-          publishedAt: null,
-        })
-        .returning();
-
-      const output = {
-        post: {
-          id: created.id,
-          slug: created.slug,
-          title: created.title,
-          status: created.status,
-        },
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args, extra) => saveDraftHandler(args, extra),
   );
 
   server.registerTool(
@@ -455,80 +720,7 @@ export function registerPostTools(server: McpServer): void {
         idempotentHint: true,
       },
     },
-    async ({ id, ...updates }) => {
-      const [existing] = await db
-        .select()
-        .from(posts)
-        .where(eq(posts.id, id))
-        .limit(1);
-
-      if (!existing) {
-        return {
-          content: [
-            { type: "text" as const, text: JSON.stringify({ post: null }) },
-          ],
-          structuredContent: { post: null },
-        };
-      }
-
-      const oldSlug = existing.slug;
-      const oldTags = existing.tags;
-
-      let publishedAt = existing.publishedAt;
-      if (updates.status === "published" && !existing.publishedAt) {
-        publishedAt = new Date();
-      } else if (updates.status === "draft") {
-        publishedAt = null;
-      }
-
-      const title = updates.title ?? existing.title;
-      const slug = updates.slug ?? existing.slug;
-      const content = updates.content ?? existing.content;
-      const summary = updates.summary ?? existing.summary;
-
-      const metadata = generatePostMetadata(
-        title,
-        slug,
-        content,
-        summary,
-        publishedAt,
-      );
-
-      const [updated] = await db
-        .update(posts)
-        .set({
-          ...updates,
-          metadata,
-          publishedAt,
-          updatedAt: new Date(),
-        })
-        .where(eq(posts.id, id))
-        .returning();
-
-      if (updates.slug && updates.slug !== oldSlug) {
-        await invalidatePopularPost(oldSlug);
-      }
-      if (
-        updates.tags &&
-        JSON.stringify(updates.tags) !== JSON.stringify(oldTags)
-      ) {
-        await invalidateRelatedByTags([...oldTags, ...updates.tags], slug);
-      }
-
-      const output = {
-        post: {
-          id: updated.id,
-          slug: updated.slug,
-          title: updated.title,
-          status: updated.status,
-        },
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args) => updatePostHandler(args),
   );
 
   server.registerTool(
@@ -548,27 +740,7 @@ export function registerPostTools(server: McpServer): void {
         destructiveHint: true,
       },
     },
-    async ({ id }) => {
-      const [deleted] = await db
-        .update(posts)
-        .set({ deletedAt: new Date() })
-        .where(eq(posts.id, id))
-        .returning();
-
-      if (deleted) {
-        await invalidatePopularPost(deleted.slug);
-      }
-
-      const output = {
-        success: !!deleted,
-        slug: deleted?.slug ?? null,
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args) => deletePostHandler(args),
   );
 
   server.registerTool(
@@ -590,29 +762,7 @@ export function registerPostTools(server: McpServer): void {
           .nullable(),
       }),
     },
-    async ({ id }) => {
-      const [restored] = await db
-        .update(posts)
-        .set({ deletedAt: null, updatedAt: new Date() })
-        .where(eq(posts.id, id))
-        .returning();
-
-      const output = {
-        success: !!restored,
-        post: restored
-          ? {
-              id: restored.id,
-              slug: restored.slug,
-              title: restored.title,
-            }
-          : null,
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args) => restorePostHandler(args),
   );
 
   server.registerTool(
@@ -639,65 +789,6 @@ export function registerPostTools(server: McpServer): void {
         destructiveHint: true,
       },
     },
-    async ({ id }) => {
-      const [existing] = await db
-        .select()
-        .from(posts)
-        .where(eq(posts.id, id))
-        .limit(1);
-
-      if (!existing) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: JSON.stringify({ success: false, post: null }),
-            },
-          ],
-          structuredContent: { success: false, post: null },
-        };
-      }
-
-      if (existing.status === "published") {
-        return makeError(
-          `Post "${existing.title}" is already published. Use update_post to modify it.`,
-        );
-      }
-
-      const publishedAt = existing.publishedAt ?? new Date();
-      const metadata = generatePostMetadata(
-        existing.title,
-        existing.slug,
-        existing.content,
-        existing.summary,
-        publishedAt,
-      );
-
-      const [published] = await db
-        .update(posts)
-        .set({
-          status: "published",
-          publishedAt,
-          metadata,
-          updatedAt: new Date(),
-        })
-        .where(eq(posts.id, id))
-        .returning();
-
-      const output = {
-        success: true,
-        post: {
-          id: published.id,
-          slug: published.slug,
-          title: published.title,
-          publishedAt: (published.publishedAt ?? new Date()).toISOString(),
-        },
-      };
-
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify(output) }],
-        structuredContent: output,
-      };
-    },
+    (args) => publishPostHandler(args),
   );
 }
