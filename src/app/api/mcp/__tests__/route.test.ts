@@ -3,15 +3,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock(
   "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js",
   () => ({
-    WebStandardStreamableHTTPServerTransport: vi
-      .fn()
-      .mockImplementation(() => ({
-        handleRequest: vi
-          .fn()
-          .mockResolvedValue(
-            new Response(JSON.stringify({ result: "ok" }), { status: 200 }),
-          ),
-      })),
+    WebStandardStreamableHTTPServerTransport: vi.fn(() => ({
+      handleRequest: vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ result: "ok" }), { status: 200 }),
+        ),
+    })),
   }),
 );
 

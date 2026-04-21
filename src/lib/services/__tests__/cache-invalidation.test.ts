@@ -3,6 +3,10 @@ import { CacheConfig } from "@/lib/config/cache.config";
 import * as postsQueries from "@/lib/queries/posts";
 
 // Mock dependencies
+vi.mock("next/cache", () => ({
+  revalidateTag: vi.fn(),
+}));
+
 vi.mock("@/config/redis", () => ({
   default: {
     del: vi.fn(),
