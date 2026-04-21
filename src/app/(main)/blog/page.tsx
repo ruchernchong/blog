@@ -9,7 +9,8 @@ import { PageTitle } from "@/components/page-title";
 
 export const metadata: Metadata = {
   title: "Blog",
-  description: "My blog posts on coding, tech, and random thoughts.",
+  description:
+    "Writing on engineering, technology, and shipping side projects.",
 };
 
 export default function BlogPage() {
