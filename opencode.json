@@ -2,8 +2,11 @@
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
     "blog": {
-      "type": "local",
-      "command": ["pnpm", "mcp"]
+      "type": "remote",
+      "url": "https://ruchern.dev/api/mcp",
+      "headers": {
+        "Authorization": "Bearer ${BLOG_MCP_AUTH_TOKEN}"
+      }
     }
   }
 }
