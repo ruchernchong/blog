@@ -166,6 +166,8 @@ export async function createPostHandler(
     })
     .returning();
 
+  await invalidatePost(created.slug);
+
   const output = {
     post: {
       id: created.id,
@@ -365,7 +367,12 @@ export async function updatePostHandler(args: {
     .where(eq(posts.id, id))
     .returning();
 
+  await invalidatePost(slug);
+
   if (updates.slug && updates.slug !== oldSlug) {
+    await invalidatePopularPost(oldSlug);
+  }
+  if (updates.status === "draft" && existing.status === "published") {
     await invalidatePopularPost(oldSlug);
   }
   if (
@@ -426,6 +433,10 @@ export async function restorePostHandler(args: {
     .set({ deletedAt: null, updatedAt: new Date() })
     .where(eq(posts.id, id))
     .returning();
+
+  if (restored) {
+    await invalidatePost(restored.slug);
+  }
 
   const output = {
     success: !!restored,
@@ -492,6 +503,8 @@ export async function publishPostHandler(args: {
     })
     .where(eq(posts.id, id))
     .returning();
+
+  await invalidatePost(published.slug);
 
   const output = {
     success: true,
