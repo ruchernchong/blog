@@ -251,12 +251,13 @@ See `.env.example` for all required variables:
 
 ## Claude Code Skills
 
-Two project-specific skills are available in `.claude/skills/`:
+Project-specific skills are available in `.claude/skills/`:
 
 - **component-naming** - React component naming conventions (PascalCase, Domain+Role pattern, compound components)
 - **design-language-system** - Visual design tokens (coral OKLCH colours, typography, spacing, animations)
+- **blog-voice** - Personal writing voice for blog posts on ruchern.dev (Singapore English, structural patterns, anti-patterns)
 
-Invoke skills with `/component-naming` or `/design-language-system` when creating or modifying UI components.
+Invoke skills with `/component-naming`, `/design-language-system`, or `/blog-voice` when relevant.
 
 ## Documentation
 
