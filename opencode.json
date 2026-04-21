@@ -5,7 +5,7 @@
       "type": "remote",
       "url": "https://ruchern.dev/api/mcp",
       "headers": {
-        "Authorization": "Bearer ${BLOG_MCP_AUTH_TOKEN}"
+        "Authorization": "Bearer {env:BLOG_MCP_AUTH_TOKEN}"
       }
     }
   }
