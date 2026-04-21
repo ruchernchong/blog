@@ -1,10 +1,13 @@
 import { and, desc, eq, isNull } from "drizzle-orm";
-import { connection, NextResponse } from "next/server";
+import { cacheLife, cacheTag } from "next/cache";
+import { NextResponse } from "next/server";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { db, posts } from "@/schema";
 
-export const GET = async () => {
-  await connection();
+async function getLlmsContent() {
+  "use cache";
+  cacheTag("posts:list");
+  cacheLife("max");
 
   const publishedPosts = await db
     .select({
@@ -17,7 +20,7 @@ export const GET = async () => {
     .orderBy(desc(posts.publishedAt))
     .limit(10);
 
-  const content = `# ${SITE_NAME}'s Portfolio
+  return `# ${SITE_NAME}'s Portfolio
 
 > ${SITE_DESCRIPTION}
 
@@ -85,6 +88,10 @@ Public API endpoints:
 - Optimized images and caching strategies
 - Core Web Vitals monitoring
 `;
+}
+
+export async function GET() {
+  const content = await getLlmsContent();
 
   return new NextResponse(content, {
     headers: {
@@ -92,4 +99,4 @@ Public API endpoints:
       "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=1800",
     },
   });
-};
+}

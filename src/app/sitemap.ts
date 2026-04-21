@@ -1,9 +1,18 @@
 import type { MetadataRoute } from "next";
+import { cacheLife, cacheTag } from "next/cache";
 import { BASE_URL, navLinks } from "@/config";
 import projects from "@/data/projects";
 import { getPublishedPosts } from "@/lib/queries/posts";
 
-const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
+function formatLastModified(datetime: Date | string = new Date()): string {
+  return new Date(datetime).toISOString().split("T")[0];
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  "use cache";
+  cacheTag("posts:list");
+  cacheLife("max");
+
   const publishedPosts = await getPublishedPosts();
 
   return [
@@ -24,9 +33,4 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
       changeFrequency: "daily" as const,
     })),
   ];
-};
-
-const formatLastModified = (datetime: Date | string = new Date()): string =>
-  new Date(datetime).toISOString().split("T")[0];
-
-export default sitemap;
+}

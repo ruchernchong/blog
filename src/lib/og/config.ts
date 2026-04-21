@@ -27,3 +27,8 @@ export const OG_SIZE = {
   width: OG_CONFIG.width,
   height: OG_CONFIG.height,
 } as const;
+
+/** Cache-Control headers for OG images (URLs are fingerprinted) */
+export const OG_HEADERS = {
+  "Cache-Control": "public, max-age=31536000, immutable",
+} as const;

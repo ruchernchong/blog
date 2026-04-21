@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { ImageResponse } from "next/og";
-import { OG_SIZE } from "@/lib/og/config";
+import { OG_HEADERS, OG_SIZE } from "@/lib/og/config";
 import { getOGFonts } from "@/lib/og/fonts";
 import { Article } from "@/lib/og/templates/article";
 import {
@@ -42,5 +42,6 @@ export default async function Image({ params }: ImageProps) {
   return new ImageResponse(<Article title={title} date={formattedDate} />, {
     ...size,
     fonts,
+    headers: OG_HEADERS,
   });
 }
