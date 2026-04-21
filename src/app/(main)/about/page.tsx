@@ -14,7 +14,7 @@ import socials from "@/data/socials";
 
 const title = "About";
 const description =
-  "I'm Ru Chern, a frontend developer focused on optimizing performance and delivering excellent user experiences.";
+  "Software engineer from Singapore. Building web applications and writing about the details that matter.";
 const canonical = "/about";
 
 export const metadata: Metadata = {

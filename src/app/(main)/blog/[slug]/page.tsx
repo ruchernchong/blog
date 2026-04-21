@@ -10,7 +10,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Mdx } from "@/app/(main)/blog/components/mdx";
-// import { RelatedPosts } from "@/app/(main)/blog/components/related-posts";
+import { RelatedPosts } from "@/app/(main)/blog/components/related-posts";
 import { ScrollProgress } from "@/app/(main)/blog/components/scroll-progress";
 import { StatsBar } from "@/app/(main)/blog/components/stats-bar";
 import { StructuredData } from "@/app/components/structured-data";
@@ -133,7 +133,7 @@ async function PostContent({ slug }: { slug: string }) {
         >
           <CachedMdx content={post.content} slug={slug} />
         </Suspense>
-        {/*<RelatedPosts slug={post.slug} />*/}
+        <RelatedPosts slug={post.slug} />
       </article>
     </>
   );

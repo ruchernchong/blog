@@ -10,7 +10,8 @@ import globalMetadata from "@/app/metadata";
 import { PageTitle } from "@/components/page-title";
 
 const title = "Dashboard";
-const description = "Real-time analytics and GitHub statistics.";
+const description =
+  "Site visitor analytics and GitHub metrics, updated in real time.";
 const canonical = "/dashboard";
 
 export const metadata: Metadata = {

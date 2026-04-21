@@ -16,9 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 const title = {
-  default: "Home",
+  default: "Ru Chern — Software Developer",
   template: `%s - ${SITE_NAME}`,
-  absolute: `Home - ${SITE_NAME}`,
 };
 const description = SITE_DESCRIPTION;
 const url = new URL(BASE_URL);
