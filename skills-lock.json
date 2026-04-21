@@ -16,6 +16,11 @@
       "sourceType": "github",
       "computedHash": "4acd957088485aa114b142cf2f7f30a36f30104d690b06a53eb03dab5bf622f0"
     },
+    "copywriting": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "2e83eda2221e97166172a0798e9b0379e34080595e107e2fc0cf580e9b3bbf7b"
+    },
     "create-auth-skill": {
       "source": "better-auth/skills",
       "sourceType": "github",
@@ -61,10 +66,20 @@
       "sourceType": "github",
       "computedHash": "b3f30d9b9f2b548d38c795a81c231b56d4f2f1e074b19207cf2a5a3f4d5b9787"
     },
+    "programmatic-seo": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "40b8fe29a6c9cb0606e6fa77aff227cf275e3808adf66e5ef69e02dcf60a7303"
+    },
     "redis-js": {
       "source": "upstash/redis-js",
       "sourceType": "github",
       "computedHash": "be22591eea552df1eeab7bb947049b06dee4fd8543588a45b6ca5d3603233fff"
+    },
+    "seo-audit": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "1eef04180a5278a6869fab117c75fa2acf512bfda0a4b16569409b88b7bcb343"
     },
     "shadcn": {
       "source": "shadcn/ui",
