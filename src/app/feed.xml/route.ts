@@ -1,10 +1,15 @@
 import { and, desc, eq, isNull } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 import { NextResponse } from "next/server";
 import RSS from "rss";
 import { BASE_URL } from "@/config";
 import { db, posts } from "@/schema";
 
-export const GET = async () => {
+async function getFeedXml() {
+  "use cache";
+  cacheTag("posts:list");
+  cacheLife("max");
+
   const publishedPosts = await db
     .select({
       title: posts.title,
@@ -31,7 +36,11 @@ export const GET = async () => {
     });
   });
 
-  const xml = feed.xml({ indent: true });
+  return feed.xml({ indent: true });
+}
+
+export async function GET() {
+  const xml = await getFeedXml();
 
   return new NextResponse(xml, {
     headers: {
@@ -39,4 +48,4 @@ export const GET = async () => {
       "Cache-Control": "public, s-maxage=1200, stale-while-revalidate=600",
     },
   });
-};
+}
