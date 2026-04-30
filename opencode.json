@@ -7,6 +7,17 @@
       "headers": {
         "Authorization": "Bearer {env:BLOG_MCP_AUTH_TOKEN}"
       }
+    },
+    "heroui-pro": {
+      "type": "remote",
+      "url": "https://mcp.heroui.pro/mcp",
+      "headers": {
+        "x-heroui-personal-token": "{env:HEROUI_PERSONAL_TOKEN}"
+      }
+    },
+    "heroui-react": {
+      "type": "local",
+      "command": ["bunx", "-y", "@heroui/react-mcp@latest"]
     }
   }
 }
