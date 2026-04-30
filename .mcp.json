@@ -7,6 +7,16 @@
         "Authorization": "Bearer ${BLOG_MCP_AUTH_TOKEN}"
       }
     },
+    "heroui-pro": {
+      "url": "https://mcp.heroui.pro/mcp",
+      "headers": {
+        "x-heroui-personal-token": "${HEROUI_PERSONAL_TOKEN}"
+      }
+    },
+    "heroui-react": {
+      "command": "bunx",
+      "args": ["-y", "@heroui/react-mcp@latest"]
+    },
     "shadcn": {
       "command": "bunx",
       "args": ["shadcn@latest", "mcp"]
