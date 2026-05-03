@@ -38,6 +38,7 @@ const nextConfig: NextConfig = {
     fetches: {
       fullUrl: true,
     },
+    browserToTerminal: "warn",
   },
   serverExternalPackages: ["next-mdx-remote", "@mdx-js/mdx"],
   skipTrailingSlashRedirect: true,
