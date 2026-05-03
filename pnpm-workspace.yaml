@@ -1,0 +1,10 @@
+packages:
+  - .
+
+allowBuilds:
+  core-js: false
+  es5-ext: false
+  esbuild: false
+  msw: false
+  protobufjs: false
+  sharp: false
