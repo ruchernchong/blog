@@ -4,6 +4,10 @@ const UMAMI_API_URL = process.env.UMAMI_API_URL;
 const UMAMI_API_TOKEN = process.env.UMAMI_API_TOKEN;
 const UMAMI_WEBSITE_ID = process.env.UMAMI_WEBSITE_ID;
 
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+const VISITS_CHART_DAYS = 90;
+const TOP_PAGES_DAYS = 30;
+
 interface UmamiStats {
   pageviews: number;
   visitors: number;
@@ -85,7 +89,7 @@ export async function getVisits(): Promise<Visit[]> {
   await connection();
   // Generate dates after connection() to ensure we're in request context
   const endAt = Date.now();
-  const startAt = endAt - 30 * 24 * 60 * 60 * 1000;
+  const startAt = endAt - VISITS_CHART_DAYS * DAY_IN_MS;
   const data = await fetchUmami<{ pageviews: UmamiPageview[] }>("/pageviews", {
     startAt: startAt.toString(),
     endAt: endAt.toString(),
@@ -107,7 +111,7 @@ export async function getPages(): Promise<PageMetric[]> {
   await connection();
   // Generate dates after connection() to ensure we're in request context
   const endAt = Date.now();
-  const startAt = endAt - 30 * 24 * 60 * 60 * 1000;
+  const startAt = endAt - TOP_PAGES_DAYS * DAY_IN_MS;
   const metrics = await fetchUmami<UmamiMetric[]>("/metrics", {
     startAt: startAt.toString(),
     endAt: endAt.toString(),

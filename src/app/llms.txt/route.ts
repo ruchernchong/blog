@@ -63,7 +63,7 @@ Built with cutting-edge technologies:
 ### Content & Features
 - MDX blog posts with next-mdx-remote
 - Built-in CMS at /studio for content management
-- Custom analytics with privacy-focused IP hashing
+- Umami-backed dashboard analytics while PostHog warms up in parallel
 - Real-time visitor statistics visualization
 - SEO optimization with structured data
 
@@ -84,7 +84,7 @@ Public API endpoints:
 
 - Monorepo structure using Turborepo
 - Database-backed content with migrations
-- Custom privacy-focused analytics (IP hashing)
+- Parallel analytics instrumentation with Umami, PostHog, and Vercel Analytics
 - Optimized images and caching strategies
 - Core Web Vitals monitoring
 `;

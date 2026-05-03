@@ -134,7 +134,7 @@ A Next.js 16 portfolio website with an integrated blog system and Content Studio
 - **Related Posts**: Tag-based recommendations using Jaccard similarity
 - **OpenGraph Images**: Dynamic OG image generation via `opengraph-image.tsx` route files
 - **Series Support**: Organise posts into series with navigation and ordering
-- **Analytics**: Privacy-focused visitor tracking in `/dashboard`
+- **Analytics**: Umami-backed dashboard with PostHog and Vercel Analytics running in parallel during the PostHog warm-up period
 - **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers
 - **RSS Feed**: Dynamic `/feed.xml` endpoint
 
@@ -200,6 +200,8 @@ See `.env.example` for all required variables:
 - `UMAMI_API_URL` - Umami analytics API endpoint
 - `UMAMI_API_TOKEN` - Umami API authentication token
 - `UMAMI_WEBSITE_ID` - Umami website identifier
+- `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` - PostHog project token from the Vercel integration
+- `NEXT_PUBLIC_POSTHOG_HOST` - PostHog ingest host from the Vercel integration, using EU Cloud
 - `CLOUDFLARE_ACCOUNT_ID` - R2 storage
 - `R2_ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET_NAME/PUBLIC_URL` - R2 config
 - `BLOG_MCP_AUTH_TOKEN` - Bearer token for remote MCP access
