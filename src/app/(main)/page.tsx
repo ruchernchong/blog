@@ -1,10 +1,10 @@
-import { Suspense } from "react";
 import type { WebSite, WithContext } from "schema-dts";
 import { FeaturedWork } from "@/app/components/home/featured-work";
 import { HeroSection } from "@/app/components/home/hero-section";
 import { LatestPosts } from "@/app/components/home/latest-posts";
-import { QuickStats } from "@/app/components/home/quick-stats";
-import { SiteVisits } from "@/app/components/home/site-visits";
+// import { Suspense } from "react";
+// import { QuickStats } from "@/app/components/home/quick-stats";
+// import { SiteVisits } from "@/app/components/home/site-visits";
 import { StructuredData } from "@/app/components/structured-data";
 import { BASE_URL } from "@/config";
 import projects from "@/data/projects";
@@ -37,9 +37,10 @@ export default function HomePage() {
       <StructuredData data={structuredData} />
       <div className="flex flex-col gap-12">
         <HeroSection />
-        <Suspense fallback={<QuickStats />}>
+        {/* TODO: Re-enable homepage visits after caching Umami reads to avoid request-time function invocations. */}
+        {/* <Suspense fallback={<QuickStats />}>
           <SiteVisits />
-        </Suspense>
+        </Suspense> */}
         <FeaturedWork projects={projects} />
         <LatestPosts />
       </div>
