@@ -40,6 +40,7 @@ const nextConfig: NextConfig = {
     },
   },
   serverExternalPackages: ["next-mdx-remote", "@mdx-js/mdx"],
+  skipTrailingSlashRedirect: true,
   typedRoutes: true,
   experimental: {
     appNewScrollHandler: true,
@@ -82,6 +83,22 @@ const nextConfig: NextConfig = {
             value: "origin-when-cross-origin",
           },
         ],
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/ingest/static/:path*",
+        destination: "https://eu-assets.i.posthog.com/static/:path*",
+      },
+      {
+        source: "/ingest/array/:path*",
+        destination: "https://eu-assets.i.posthog.com/array/:path*",
+      },
+      {
+        source: "/ingest/:path*",
+        destination: "https://eu.i.posthog.com/:path*",
       },
     ];
   },
