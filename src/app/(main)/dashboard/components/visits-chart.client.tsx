@@ -26,7 +26,7 @@ export function VisitsChartClient({ data }: VisitsChartClientProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Site Visits</CardTitle>
+        <CardTitle>Recent Site Visits, 90 days</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-75 w-full">

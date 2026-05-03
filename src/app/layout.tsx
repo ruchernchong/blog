@@ -76,6 +76,7 @@ export default function RootLayout({
         <NuqsAdapter>{children}</NuqsAdapter>
         <VercelAnalytics />
         <SpeedInsights />
+        {/* Keep Umami during the PostHog 90-day production data warm-up. */}
         <Script
           defer
           src="https://umami.ruchern.dev/script.js"
