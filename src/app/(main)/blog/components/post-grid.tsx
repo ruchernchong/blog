@@ -1,26 +1,30 @@
-import { ViewIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getPublishedPostsForGrid } from "@/lib/queries/posts";
-import { getAllViewCounts } from "@/lib/services/post-stats";
 
-function formatViews(views: number): string {
-  if (views >= 1000) {
-    return `${(views / 1000).toFixed(1).replace(/\.0$/, "")}k`;
-  }
+// import { ViewIcon } from "@hugeicons/core-free-icons";
+// import { HugeiconsIcon } from "@hugeicons/react";
+// import { getAllViewCounts } from "@/lib/services/post-stats";
 
-  return views.toLocaleString();
-}
+// TODO: Re-enable when view count display is restored.
+// function formatViews(views: number): string {
+//   if (views >= 1000) {
+//     return `${(views / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+//   }
+//
+//   return views.toLocaleString();
+// }
 
 export async function PostGrid() {
-  const [gridPosts, viewCounts] = await Promise.all([
-    getPublishedPostsForGrid(),
-    getAllViewCounts(),
-  ]);
+  const gridPosts = await getPublishedPostsForGrid();
+  // TODO: Re-enable visible view counts after caching Redis reads for /blog.
+  // const [gridPosts, viewCounts] = await Promise.all([
+  //   getPublishedPostsForGrid(),
+  //   getAllViewCounts(),
+  // ]);
 
   if (gridPosts.length === 0) {
     return (
@@ -52,12 +56,13 @@ export async function PostGrid() {
                   >
                     {formattedDate}
                   </time>
-                  <div className="flex items-center gap-2 text-muted-foreground">
+                  {/* TODO: Re-enable view count display after caching Redis reads for /blog. */}
+                  {/* <div className="flex items-center gap-2 text-muted-foreground">
                     <HugeiconsIcon icon={ViewIcon} size={16} strokeWidth={2} />
                     <span className="text-sm">
                       {formatViews(viewCounts.get(post.slug) ?? 0)}
                     </span>
-                  </div>
+                  </div> */}
                 </div>
                 <CardTitle className="line-clamp-2 capitalize">
                   {post.title}

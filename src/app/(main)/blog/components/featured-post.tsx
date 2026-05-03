@@ -1,36 +1,41 @@
-import { ViewIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
 import { Typography } from "@/components/typography";
 import { Badge } from "@/components/ui/badge";
 import { getFeaturedPosts } from "@/lib/queries/posts";
-import { getPopularPosts } from "@/lib/services/popular-posts";
-import { getAllViewCounts } from "@/lib/services/post-stats";
 
-function formatViews(views: number): string {
-  if (views >= 1000) {
-    return `${(views / 1000).toFixed(1).replace(/\.0$/, "")}k`;
-  }
-  return views.toLocaleString();
-}
+// import { ViewIcon } from "@hugeicons/core-free-icons";
+// import { HugeiconsIcon } from "@hugeicons/react";
+// import { getPopularPosts } from "@/lib/services/popular-posts";
+// import { getAllViewCounts } from "@/lib/services/post-stats";
+
+// TODO: Re-enable when view count display is restored.
+// function formatViews(views: number): string {
+//   if (views >= 1000) {
+//     return `${(views / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+//   }
+//   return views.toLocaleString();
+// }
 
 export async function FeaturedPost() {
-  const [popularPosts, featuredPosts, viewCounts] = await Promise.all([
-    getPopularPosts(1),
-    getFeaturedPosts(),
-    getAllViewCounts(),
-  ]);
+  const featuredPosts = await getFeaturedPosts();
+  // TODO: Re-enable popular fallback and visible view counts after caching Redis reads for /blog.
+  // const [popularPosts, featuredPosts, viewCounts] = await Promise.all([
+  //   getPopularPosts(1),
+  //   getFeaturedPosts(),
+  //   getAllViewCounts(),
+  // ]);
 
   // Prefer explicitly featured post, fallback to most popular
-  const post = featuredPosts[0] ?? popularPosts[0];
+  const post = featuredPosts[0];
+  // const post = featuredPosts[0] ?? popularPosts[0];
 
   if (!post || !post.publishedAt) {
     return null;
   }
 
-  const views = viewCounts.get(post.slug) ?? 0;
+  // const views = viewCounts.get(post.slug) ?? 0;
   const formattedDate = format(post.publishedAt, "dd MMMM yyyy");
 
   return (
@@ -48,11 +53,12 @@ export async function FeaturedPost() {
           >
             {formattedDate}
           </time>
-          <div className="flex items-center gap-2 text-muted-foreground">
+          {/* TODO: Re-enable view count display after caching Redis reads for /blog. */}
+          {/* <div className="flex items-center gap-2 text-muted-foreground">
             <span>·</span>
             <HugeiconsIcon icon={ViewIcon} size={16} strokeWidth={2} />
             <span className="text-sm">{formatViews(views)}</span>
-          </div>
+          </div> */}
         </div>
 
         <Typography variant="h2" className="line-clamp-2 capitalize">

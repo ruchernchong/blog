@@ -1,8 +1,6 @@
 "use client";
 
-import { ViewIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { incrementViews } from "@/app/_actions/stats";
 
 // import { LikeCounter } from "@/app/(main)/blog/components/like-counter";
@@ -15,11 +13,12 @@ interface StatsBarProps {
 }
 
 export function StatsBar({ slug }: StatsBarProps) {
-  const [views, setViews] = useState<number | null>(null);
+  // const [views, setViews] = useState<number | null>(null);
 
   const onTrackViews = useEffectEvent(async () => {
-    const stats = await incrementViews(slug);
-    setViews(stats.views);
+    await incrementViews(slug);
+    // const stats = await incrementViews(slug);
+    // setViews(stats.views);
   });
 
   useEffect(() => {
@@ -30,17 +29,20 @@ export function StatsBar({ slug }: StatsBarProps) {
   // const totalLikes = await postStatsService.getTotalLikes(slug);
   // const likesByUser = await postStatsService.getLikesByUser(slug, userHash);
 
-  return (
-    <div className="flex items-center gap-2 text-muted-foreground">
-      {/* <LikeCounter
-        slug={slug}
-        initialTotalLikes={totalLikes}
-        initialLikesByUser={likesByUser}
-      /> */}
-      <HugeiconsIcon icon={ViewIcon} size={20} strokeWidth={2} />
-      <span className="text-sm">
-        {views !== null ? views.toLocaleString() : "—"}
-      </span>
-    </div>
-  );
+  // TODO: Re-enable visible post stats after tracking/display reads are optimised.
+  // return (
+  //   <div className="flex items-center gap-2 text-muted-foreground">
+  //     {/* <LikeCounter
+  //       slug={slug}
+  //       initialTotalLikes={totalLikes}
+  //       initialLikesByUser={likesByUser}
+  //     /> */}
+  //     <HugeiconsIcon icon={ViewIcon} size={20} strokeWidth={2} />
+  //     <span className="text-sm">
+  //       {views !== null ? views.toLocaleString() : "—"}
+  //     </span>
+  //   </div>
+  // );
+
+  return null;
 }
