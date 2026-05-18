@@ -8,3 +8,5 @@ allowBuilds:
   msw: false
   protobufjs: false
   sharp: false
+
+savePrefix: ""
