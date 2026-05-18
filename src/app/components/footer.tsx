@@ -7,7 +7,7 @@ import socials from "@/data/socials";
 
 export function Footer() {
   return (
-    <div className="mx-auto flex w-full max-w-4xl justify-center px-4 pb-6">
+    <div className="mx-auto flex w-full max-w-4xl justify-center px-4 pb-6 print:hidden">
       <footer className="w-full rounded-2xl border border-border bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">

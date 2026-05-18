@@ -24,6 +24,7 @@ export const navLinks: NavLink[] = [
   { title: "Dashboard", href: "/dashboard" },
   { title: "About", href: "/about" },
   { title: "Projects", href: "/projects" },
+  { title: "Resume", href: "/resume" as Route },
 ];
 
 export const MAX_LIKES_PER_USER = 50;

@@ -46,4 +46,14 @@ describe("ExternalLink", () => {
     const link = screen.getByRole("link");
     expect(link).toHaveAttribute("aria-label", "Link to social media");
   });
+
+  it("allows a custom aria-label", () => {
+    render(
+      <ExternalLink href="https://example.com" ariaLabel="Open example website">
+        Example Link
+      </ExternalLink>,
+    );
+    const link = screen.getByRole("link");
+    expect(link).toHaveAttribute("aria-label", "Open example website");
+  });
 });
