@@ -153,7 +153,7 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
   }, [postId]);
 
   const handleAutoSave = async () => {
-    if (!dirty || !post || !!post.deletedAt) return;
+    if (!dirty || !post || post.deletedAt) return;
 
     const data = buildPatchData(formData);
 

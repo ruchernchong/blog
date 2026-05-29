@@ -31,7 +31,7 @@ export async function FeaturedPost() {
   const post = featuredPosts[0];
   // const post = featuredPosts[0] ?? popularPosts[0];
 
-  if (!post || !post.publishedAt) {
+  if (!post?.publishedAt) {
     return null;
   }
 

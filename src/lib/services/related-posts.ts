@@ -35,7 +35,7 @@ export async function getRelatedPosts(
   // Fetch current post tags
   const currentPost = await getPostBySlug(slug);
 
-  if (!currentPost || !currentPost.tags.length) return [];
+  if (!currentPost?.tags.length) return [];
 
   // Find posts with overlapping tags
   const relatedPosts = await getPostsWithOverlappingTags(
