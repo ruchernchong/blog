@@ -9,6 +9,9 @@
 /** Known agents. Parsers self-register; this is just for nicer typing/labels. */
 export type Agent = "claude" | "codex";
 
+/** Inference providers that bill the tokens, derived from the agent. */
+export type Provider = "anthropic" | "openai";
+
 export interface TokenBreakdown {
   input: number;
   output: number;
@@ -80,6 +83,7 @@ export interface UsageSummary {
   averagePerDay: number;
   maxCostInSingleDay: number;
   agents: string[];
+  providers: string[];
   models: string[];
   currentStreak: number;
   longestStreak: number;
@@ -87,7 +91,7 @@ export interface UsageSummary {
   favouriteModel: string | null;
 }
 
-/** Per-agent and per-model rollups for the breakdown charts. */
+/** Per-agent, per-provider, and per-model rollups for the breakdown charts. */
 export interface UsageBreakdownRow {
   key: string;
   tokens: number;
@@ -100,6 +104,7 @@ export interface UsageProfile {
   years: YearSummary[];
   contributions: DayContribution[];
   byAgent: UsageBreakdownRow[];
+  byProvider: UsageBreakdownRow[];
   byModel: UsageBreakdownRow[];
   /** All-time tokens split by category, for the token-mix bar. */
   tokenMix: TokenBreakdown;

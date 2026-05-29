@@ -1,3 +1,4 @@
+import { AGENT_PROVIDERS } from "./providers";
 import type { TokenBreakdown } from "./types";
 
 /**
@@ -10,12 +11,6 @@ import type { TokenBreakdown } from "./types";
  */
 
 const MODELS_DEV_API = "https://models.dev/api.json";
-
-/** Map an agent key to its first-party provider id on models.dev. */
-const AGENT_PROVIDER: Record<string, string> = {
-  claude: "anthropic",
-  codex: "openai",
-};
 
 /**
  * Resolve a known Codex internal model slug that no pricing DB lists (verified
@@ -99,7 +94,7 @@ export function buildPricing(api: ModelsDevApi): Pricing {
   function priceFor(model: string, agent?: string): ModelRate | null {
     // Resolve agent-specific aliases (e.g. codex-auto-review → gpt-5-codex).
     const canonical = (agent && MODEL_ALIASES[agent]?.[model]) ?? model;
-    const provider = agent ? AGENT_PROVIDER[agent] : undefined;
+    const provider = agent ? AGENT_PROVIDERS[agent] : undefined;
     if (provider && byProvider[provider]?.[canonical]) {
       return byProvider[provider][canonical];
     }

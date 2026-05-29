@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { sql } from "drizzle-orm";
 import { parseAllAgents } from "@/lib/usage/parsers";
 import { loadPricing } from "@/lib/usage/pricing";
+import { providerForAgent } from "@/lib/usage/providers";
 import type { TokenBreakdown } from "@/lib/usage/types";
 import { db, tokenUsage } from "@/schema";
 
@@ -20,6 +21,7 @@ const CHUNK_SIZE = 1000;
 interface Aggregate {
   date: string;
   agent: string;
+  provider: string;
   model: string;
   tokens: TokenBreakdown;
   messages: number;
@@ -56,6 +58,7 @@ async function main() {
       group = {
         date,
         agent: event.agent,
+        provider: providerForAgent(event.agent),
         model: event.model,
         tokens: emptyTokens(),
         messages: 0,
@@ -81,6 +84,7 @@ async function main() {
     return {
       date: group.date,
       agent: group.agent,
+      provider: group.provider,
       model: group.model,
       inputTokens: group.tokens.input,
       outputTokens: group.tokens.output,
@@ -103,6 +107,7 @@ async function main() {
       .onConflictDoUpdate({
         target: [tokenUsage.date, tokenUsage.agent, tokenUsage.model],
         set: {
+          provider: sql`excluded.provider`,
           inputTokens: sql`excluded.input_tokens`,
           outputTokens: sql`excluded.output_tokens`,
           cacheReadTokens: sql`excluded.cache_read_tokens`,

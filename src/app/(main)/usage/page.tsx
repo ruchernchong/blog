@@ -60,11 +60,16 @@ export default async function UsagePage() {
 
       <UsageTokenMix tokenMix={profile.tokenMix} />
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <UsageBreakdown
           description="Tokens and cost grouped by model"
           rows={profile.byModel}
           title="By model"
+        />
+        <UsageBreakdown
+          description="Tokens and cost grouped by provider"
+          rows={profile.byProvider}
+          title="By provider"
         />
         <UsageBreakdown
           description="Tokens and cost grouped by agent"
