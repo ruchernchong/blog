@@ -11,8 +11,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "biome check",
-    "typecheck": "tsc --noEmit",
     "format": "biome format --write",
+    "typecheck": "next typegen && tsc --noEmit",
     "auth:generate": "pnpm dlx auth@latest generate --output src/schema/auth.ts --yes",
     "db:drop": "drizzle-kit drop",
     "db:generate": "drizzle-kit generate",
@@ -92,7 +92,7 @@
     "zod": "4"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.9",
+    "@biomejs/biome": "2.4.16",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@commitlint/types": "^20.5.0",
