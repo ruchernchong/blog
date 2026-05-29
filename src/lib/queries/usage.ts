@@ -42,6 +42,7 @@ export async function getUsageProfile(): Promise<UsageProfile> {
   // --- Fold rows into per-day aggregates ------------------------------------
   const dayMap = new Map<string, DayAggregate>();
   const agentTotals = new Map<string, RollupAggregate>();
+  const providerTotals = new Map<string, RollupAggregate>();
   const modelTotals = new Map<string, RollupAggregate>();
   const tokenMix = emptyTokenBreakdown();
   let lastUpdated = rows[0].updatedAt;
@@ -67,6 +68,11 @@ export async function getUsageProfile(): Promise<UsageProfile> {
     agent.messages += row.messages;
     agent.costValues.push(row.costUsd);
 
+    const provider = getOrCreateRollup(providerTotals, row.provider);
+    provider.tokens += row.totalTokens;
+    provider.messages += row.messages;
+    provider.costValues.push(row.costUsd);
+
     const model = getOrCreateRollup(modelTotals, row.model);
     model.tokens += row.totalTokens;
     model.messages += row.messages;
@@ -91,15 +97,17 @@ export async function getUsageProfile(): Promise<UsageProfile> {
 
   // --- Breakdowns, years, summary ------------------------------------------
   const byAgent = rollupRows(agentTotals);
+  const byProvider = rollupRows(providerTotals);
   const byModel = rollupRows(modelTotals);
   const years = buildYears(contributions);
-  const summary = buildSummary(contributions, byAgent, byModel);
+  const summary = buildSummary(contributions, byAgent, byProvider, byModel);
 
   return {
     summary,
     years,
     contributions,
     byAgent,
+    byProvider,
     byModel,
     tokenMix,
     lastUpdated: lastUpdated.toISOString(),
@@ -300,6 +308,7 @@ function buildYears(contributions: DayContribution[]): YearSummary[] {
 function buildSummary(
   contributions: DayContribution[],
   byAgent: UsageBreakdownRow[],
+  byProvider: UsageBreakdownRow[],
   byModel: UsageBreakdownRow[],
 ): UsageSummary {
   let totalTokens = 0;
@@ -339,6 +348,7 @@ function buildSummary(
     averagePerDay: activeDays > 0 ? totalCost / activeDays : 0,
     maxCostInSingleDay,
     agents: byAgent.map((row) => row.key),
+    providers: byProvider.map((row) => row.key),
     models: byModel.map((row) => row.key),
     currentStreak,
     longestStreak,
@@ -357,6 +367,7 @@ function emptyProfile(): UsageProfile {
       averagePerDay: 0,
       maxCostInSingleDay: 0,
       agents: [],
+      providers: [],
       models: [],
       currentStreak: 0,
       longestStreak: 0,
@@ -366,6 +377,7 @@ function emptyProfile(): UsageProfile {
     years: [],
     contributions: [],
     byAgent: [],
+    byProvider: [],
     byModel: [],
     tokenMix: emptyTokenBreakdown(),
     lastUpdated: null,
