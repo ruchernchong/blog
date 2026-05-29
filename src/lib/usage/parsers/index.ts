@@ -1,6 +1,7 @@
 import type { UsageEvent } from "../types";
 import * as claude from "./claude";
 import * as codex from "./codex";
+import * as opencode from "./opencode";
 
 export interface AgentParser {
   /** Stable agent key stored in the DB (e.g. "claude", "codex"). */
@@ -15,6 +16,7 @@ export interface AgentParser {
 const PARSERS: AgentParser[] = [
   { name: "claude", detect: claude.detect, parse: claude.parse },
   { name: "codex", detect: codex.detect, parse: codex.parse },
+  { name: "opencode", detect: opencode.detect, parse: opencode.parse },
 ];
 
 /** Parsers whose log store actually exists on this machine. */

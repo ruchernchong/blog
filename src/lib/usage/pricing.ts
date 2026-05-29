@@ -5,8 +5,9 @@ import type { TokenBreakdown } from "./types";
  * Model pricing, fetched live from the models.dev API at ingest time.
  *
  * models.dev exposes one endpoint keyed by provider → models → `cost`
- * (USD per 1M tokens). We resolve each model under its agent's provider first
- * (e.g. Claude → anthropic, Codex → openai), then fall back to a global lookup.
+ * (USD per 1M tokens). We resolve each model under its provider first — given
+ * explicitly (multi-provider agents like OpenCode) or derived from the agent
+ * (Claude → anthropic, Codex → openai) — then fall back to a global lookup.
  * Pricing runs only in the local ingest script, never in the browser.
  */
 
@@ -37,10 +38,24 @@ export interface ModelRate {
   cacheWrite: number;
 }
 
+/**
+ * How to resolve a model's provider for pricing. Pass `provider` directly for
+ * multi-provider agents (OpenCode); `agent` derives it (claude/codex) and also
+ * selects {@link MODEL_ALIASES}.
+ */
+export interface PriceOpts {
+  agent?: string;
+  provider?: string;
+}
+
 export interface Pricing {
-  priceFor(model: string, agent?: string): ModelRate | null;
+  priceFor(model: string, opts?: PriceOpts): ModelRate | null;
   /** Cost in USD, or `null` when the model cannot be priced (rendered "N.A."). */
-  costOf(tokens: TokenBreakdown, model: string, agent?: string): number | null;
+  costOf(
+    tokens: TokenBreakdown,
+    model: string,
+    opts?: PriceOpts,
+  ): number | null;
 }
 
 interface ModelsDevCost {
@@ -91,10 +106,13 @@ export function buildPricing(api: ModelsDevApi): Pricing {
 
   const warned = new Set<string>();
 
-  function priceFor(model: string, agent?: string): ModelRate | null {
+  function priceFor(model: string, opts?: PriceOpts): ModelRate | null {
+    const agent = opts?.agent;
     // Resolve agent-specific aliases (e.g. codex-auto-review → gpt-5-codex).
     const canonical = (agent && MODEL_ALIASES[agent]?.[model]) ?? model;
-    const provider = agent ? AGENT_PROVIDERS[agent] : undefined;
+    // Prefer an explicit provider (multi-provider agents), else derive from agent.
+    const provider =
+      opts?.provider ?? (agent ? AGENT_PROVIDERS[agent] : undefined);
     if (provider && byProvider[provider]?.[canonical]) {
       return byProvider[provider][canonical];
     }
@@ -104,9 +122,9 @@ export function buildPricing(api: ModelsDevApi): Pricing {
   function costOf(
     tokens: TokenBreakdown,
     model: string,
-    agent?: string,
+    opts?: PriceOpts,
   ): number | null {
-    const rate = priceFor(model, agent);
+    const rate = priceFor(model, opts);
     if (!rate) {
       // No price (e.g. legacy Codex "unknown"): cost is N.A., not $0.
       if (!warned.has(model)) {

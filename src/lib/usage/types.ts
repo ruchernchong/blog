@@ -7,10 +7,14 @@
  */
 
 /** Known agents. Parsers self-register; this is just for nicer typing/labels. */
-export type Agent = "claude" | "codex";
+export type Agent = "claude" | "codex" | "opencode";
 
-/** Inference providers that bill the tokens, derived from the agent. */
-export type Provider = "anthropic" | "openai";
+/**
+ * Inference provider that bills the tokens. Usually derived from the agent, but
+ * some agents are multi-provider and carry it per-event (e.g. OpenCode routes to
+ * openai, fireworks-ai, ollama, opencode, opencode-go), so this is open-ended.
+ */
+export type Provider = string;
 
 export interface TokenBreakdown {
   input: number;
@@ -25,6 +29,12 @@ export interface UsageEvent {
   /** ISO timestamp of the message. Only the calendar date is ever persisted. */
   ts: string;
   agent: string;
+  /**
+   * Inference provider that billed this event, when the agent records it
+   * per-message (multi-provider agents like OpenCode). Omitted for single-
+   * provider agents (claude/codex), whose provider is derived from the agent.
+   */
+  provider?: string;
   model: string;
   tokens: TokenBreakdown;
 }

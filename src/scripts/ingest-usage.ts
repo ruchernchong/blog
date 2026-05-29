@@ -3,13 +3,14 @@ import { format } from "date-fns";
 import { sql } from "drizzle-orm";
 import { parseAllAgents } from "@/lib/usage/parsers";
 import { loadPricing } from "@/lib/usage/pricing";
-import { providerForAgent } from "@/lib/usage/providers";
+import { resolveProvider } from "@/lib/usage/providers";
 import type { TokenBreakdown } from "@/lib/usage/types";
 import { db, tokenUsage } from "@/schema";
 
 /**
  * Parse local agent logs, price them via models.dev, fold to per-(date, agent,
- * model) daily aggregates, and upsert into `token_usage`. Run `pnpm usage:ingest`.
+ * provider, model) daily aggregates, and upsert into `token_usage`. Run
+ * `pnpm usage:ingest`.
  *
  * Idempotent: re-running recomputes from the logs (the source of truth) and
  * upserts on the composite primary key. Days are bucketed in the machine's local
@@ -52,13 +53,14 @@ async function main() {
     if (Number.isNaN(parsed.getTime())) continue;
     const date = format(parsed, "yyyy-MM-dd");
 
-    const key = `${date}|${event.agent}|${event.model}`;
+    const provider = resolveProvider(event);
+    const key = `${date}|${event.agent}|${provider}|${event.model}`;
     let group = groups.get(key);
     if (!group) {
       group = {
         date,
         agent: event.agent,
-        provider: providerForAgent(event.agent),
+        provider,
         model: event.model,
         tokens: emptyTokens(),
         messages: 0,
@@ -80,7 +82,10 @@ async function main() {
       group.tokens.cacheRead +
       group.tokens.cacheWrite +
       group.tokens.reasoning;
-    const cost = pricing.costOf(group.tokens, group.model, group.agent);
+    const cost = pricing.costOf(group.tokens, group.model, {
+      agent: group.agent,
+      provider: group.provider,
+    });
     return {
       date: group.date,
       agent: group.agent,
@@ -105,7 +110,12 @@ async function main() {
       .insert(tokenUsage)
       .values(chunk)
       .onConflictDoUpdate({
-        target: [tokenUsage.date, tokenUsage.agent, tokenUsage.model],
+        target: [
+          tokenUsage.date,
+          tokenUsage.agent,
+          tokenUsage.provider,
+          tokenUsage.model,
+        ],
         set: {
           provider: sql`excluded.provider`,
           inputTokens: sql`excluded.input_tokens`,
