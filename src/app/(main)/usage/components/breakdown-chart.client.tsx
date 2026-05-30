@@ -45,7 +45,7 @@ export function BreakdownChartClient({ rows }: BreakdownChartClientProps) {
       />
       <BarChart.Bar
         dataKey="tokens"
-        fill="var(--color-primary)"
+        fill="var(--color-accent)"
         name="Tokens"
         radius={[0, 8, 8, 0]}
       />
@@ -58,7 +58,7 @@ export function BreakdownChartClient({ rows }: BreakdownChartClientProps) {
             <ChartTooltip>
               <ChartTooltip.Header>{point.key}</ChartTooltip.Header>
               <ChartTooltip.Item>
-                <ChartTooltip.Indicator color="var(--color-primary)" />
+                <ChartTooltip.Indicator color="var(--color-accent)" />
                 <ChartTooltip.Label>Tokens</ChartTooltip.Label>
                 <ChartTooltip.Value>
                   {formatTokens(point.tokens)}
