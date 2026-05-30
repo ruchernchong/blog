@@ -1,5 +1,5 @@
 import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns";
-import { asc } from "drizzle-orm";
+import { asc, getTableColumns, type SQL, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import type {
   AgentDayBreakdown,
@@ -11,7 +11,81 @@ import type {
   UsageSummary,
   YearSummary,
 } from "@/lib/usage/types";
-import { db, tokenUsage } from "@/schema";
+import { db, type InsertTokenUsage, tokenUsage } from "@/schema";
+
+/** Postgres caps bound parameters per statement; chunk large upserts under it. */
+const UPSERT_CHUNK_SIZE = 1000;
+
+/**
+ * Composite primary key of `token_usage`. A conflict on these four columns means
+ * we already have that daily aggregate and should overwrite it.
+ */
+const CONFLICT_TARGET = [
+  tokenUsage.date,
+  tokenUsage.agent,
+  tokenUsage.provider,
+  tokenUsage.model,
+] as const;
+
+/** Columns refreshed from the incoming row on conflict (everything but the key). */
+const UPDATE_COLUMNS = [
+  "inputTokens",
+  "outputTokens",
+  "cacheReadTokens",
+  "cacheWriteTokens",
+  "reasoningTokens",
+  "totalTokens",
+  "costUsd",
+  "messages",
+] as const satisfies (keyof typeof tokenUsage.$inferInsert)[];
+
+/**
+ * Mirror the Drizzle `casing: "snake_case"` config (see `drizzle.config.ts`).
+ * Columns are declared without explicit DB names, so `Column.name` holds the
+ * camelCase property key and the snake_case mapping is applied only at
+ * query-build time — it is *not* available on the column object. The `excluded.`
+ * pseudo-row in an upsert needs the real DB column name, so convert it here.
+ */
+function toSnakeCase(name: string): string {
+  return name.replace(/[A-Z]/g, (char) => `_${char.toLowerCase()}`);
+}
+
+/**
+ * Build the `onConflictDoUpdate` set object from the table definition, pointing
+ * each column at its `excluded` (incoming) value, so the column list is never
+ * hand-written. See the Drizzle upsert guide.
+ */
+function excludedColumns(
+  columns: readonly (keyof InsertTokenUsage)[],
+): Record<string, SQL> {
+  const cols = getTableColumns(tokenUsage);
+  const set: Record<string, SQL> = {};
+  for (const column of columns) {
+    set[column] = sql.raw(`excluded.${toSnakeCase(cols[column].name)}`);
+  }
+  return set;
+}
+
+/**
+ * Upsert daily `token_usage` aggregates on the composite key
+ * (date, agent, provider, model). Idempotent: re-ingesting a day overwrites it
+ * with freshly recomputed totals. Shared by the local `usage:ingest` script
+ * (direct write) and `POST /api/usage/ingest` (remote write into whichever DB
+ * the deployment is configured for). Returns the number of rows upserted.
+ */
+export async function upsertTokenUsage(
+  rows: InsertTokenUsage[],
+): Promise<number> {
+  const set = { ...excludedColumns(UPDATE_COLUMNS), updatedAt: sql`now()` };
+  for (let i = 0; i < rows.length; i += UPSERT_CHUNK_SIZE) {
+    const chunk = rows.slice(i, i + UPSERT_CHUNK_SIZE);
+    await db
+      .insert(tokenUsage)
+      .values(chunk)
+      .onConflictDoUpdate({ target: [...CONFLICT_TARGET], set });
+  }
+  return rows.length;
+}
 
 /**
  * Build the public `UsageProfile` from the daily `token_usage` aggregates.
