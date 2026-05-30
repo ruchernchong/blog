@@ -5,6 +5,7 @@ import globalMetadata from "@/app/metadata";
 import { PageTitle } from "@/components/page-title";
 import { getUsageProfile } from "@/lib/queries/usage";
 import { UsageBreakdown } from "./components/usage-breakdown";
+import { UsageHeatmap } from "./components/usage-heatmap";
 import { UsageStats } from "./components/usage-stats";
 import { UsageTokenMix } from "./components/usage-token-mix";
 import { UsageTrend } from "./components/usage-trend";
@@ -54,7 +55,7 @@ export default async function UsagePage() {
 
       <UsageStats summary={profile.summary} />
 
-      {/* Contribution heatmap — KIV (blog-608). */}
+      <UsageHeatmap contributions={profile.contributions} />
 
       <UsageTrend contributions={profile.contributions} />
 
