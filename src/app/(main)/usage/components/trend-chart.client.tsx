@@ -25,10 +25,10 @@ export function TrendChartClient({ data }: TrendChartClientProps) {
       <AreaChart.Area
         dataKey="tokens"
         dot={false}
-        fill="var(--color-primary)"
+        fill="var(--color-accent)"
         fillOpacity={0.15}
         name="Tokens"
-        stroke="var(--color-primary)"
+        stroke="var(--color-accent)"
         strokeWidth={2}
         type="monotone"
       />
