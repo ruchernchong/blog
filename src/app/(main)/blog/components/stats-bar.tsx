@@ -31,7 +31,7 @@ export function StatsBar({ slug }: StatsBarProps) {
 
   // TODO: Re-enable visible post stats after tracking/display reads are optimised.
   // return (
-  //   <div className="flex items-center gap-2 text-muted-foreground">
+  //   <div className="flex items-center gap-2 text-muted">
   //     {/* <LikeCounter
   //       slug={slug}
   //       initialTotalLikes={totalLikes}

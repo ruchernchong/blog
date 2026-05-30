@@ -14,21 +14,21 @@ const Employment = ({ companies }: EmploymentProps) => {
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-accent/10">
             <HugeiconsIcon
               icon={Briefcase01Icon}
               size={20}
-              className="text-primary"
+              className="text-accent"
             />
           </div>
           <Typography variant="h2">Career</Typography>
         </div>
-        <Typography variant="body" className="text-muted-foreground">
+        <Typography variant="body" className="text-muted">
           Some cool companies I have worked with. Feel free to connect with me
           on{" "}
           <ExternalLink
             href="https://linkedin.com/in/ruchernchong"
-            className="text-primary underline decoration-primary/30 underline-offset-4 transition-colors duration-200 hover:decoration-primary"
+            className="text-accent underline decoration-primary/30 underline-offset-4 transition-colors duration-200 hover:decoration-primary"
           >
             LinkedIn
           </ExternalLink>

@@ -1,5 +1,20 @@
 "use client";
 
+import {
+  Button,
+  Card,
+  Description,
+  FieldError,
+  Input,
+  Label,
+  ListBox,
+  ScrollShadow,
+  Select,
+  TextArea,
+  TextField,
+} from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
+import { Resizable } from "@heroui-pro/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,7 +23,6 @@ import {
   Suspense,
   useEffect,
   useEffectEvent,
-  useId,
   useState,
   useTransition,
 } from "react";
@@ -18,30 +32,9 @@ import { z } from "zod";
 import { ContentEditor } from "@/components/studio/content-editor";
 import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
 import { SaveStatusIndicator } from "@/components/studio/save-status-indicator";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useAutoSave, useBeforeUnload } from "@/hooks/use-auto-save";
+
+const NO_SERIES = "__none__";
 
 const newPostSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -76,14 +69,6 @@ export function PostForm({ seriesOptions }: PostFormProps) {
   const [draftId, setDraftId] = useState<string | null>(null);
   const [draftUpdatedAt, setDraftUpdatedAt] = useState<string | null>(null);
   const [isCreatingDraft, setIsCreatingDraft] = useState(true);
-
-  const titleId = useId();
-  const slugId = useId();
-  const summaryId = useId();
-  const statusId = useId();
-  const seriesFieldId = useId();
-  const tagsId = useId();
-  const coverImageId = useId();
 
   const form = useForm<NewPostFormValues>({
     resolver: zodResolver(newPostSchema),
@@ -268,9 +253,9 @@ export function PostForm({ seriesOptions }: PostFormProps) {
   if (isCreatingDraft) {
     return (
       <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Preparing editor...</p>
-        </CardContent>
+        <Card.Content className="flex items-center justify-center py-12">
+          <p className="text-muted">Preparing editor...</p>
+        </Card.Content>
       </Card>
     );
   }
@@ -281,9 +266,7 @@ export function PostForm({ seriesOptions }: PostFormProps) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-bold text-3xl">Create New Post</h1>
-            <p className="mb-2 text-muted-foreground">
-              Write and publish a new blog post
-            </p>
+            <p className="mb-2 text-muted">Write and publish a new blog post</p>
           </div>
           <div className="flex items-center gap-4">
             <SaveStatusIndicator
@@ -291,21 +274,20 @@ export function PostForm({ seriesOptions }: PostFormProps) {
               lastSavedAt={lastSavedAt}
               onRetry={triggerSave}
             />
-            <Button
-              variant="outline"
-              nativeButton={false}
-              render={<Link href="/studio/posts" />}
+            <Link
+              className={buttonVariants({ variant: "outline" })}
+              href="/studio/posts"
             >
               Back to Posts
-            </Button>
+            </Link>
           </div>
         </div>
 
         {error && (
-          <Card className="border-destructive">
-            <CardContent className="pt-6">
-              <p className="text-destructive text-sm">{error}</p>
-            </CardContent>
+          <Card className="border-danger">
+            <Card.Content className="pt-6">
+              <p className="text-danger text-sm">{error}</p>
+            </Card.Content>
           </Card>
         )}
 
@@ -313,62 +295,61 @@ export function PostForm({ seriesOptions }: PostFormProps) {
           onSubmit={form.handleSubmit(handleSubmit)}
           className="flex flex-1 flex-col gap-4"
         >
-          <ResizablePanelGroup
-            direction="horizontal"
+          <Resizable
+            orientation="horizontal"
             className="flex-1 rounded-lg border"
           >
             {/* Editor Panel */}
-            <ResizablePanel defaultSize={70} minSize={50}>
+            <Resizable.Panel defaultSize={70} minSize={50}>
               <div className="flex h-full flex-col">
                 <Controller
                   control={form.control}
                   name="content"
                   render={({ field, fieldState }) => (
-                    <Field className="flex h-full flex-col">
+                    <div className="flex h-full flex-col">
                       <ContentEditor
                         markdown={field.value}
                         onChange={field.onChange}
                       />
                       {fieldState.error && (
-                        <FieldError className="px-4">
+                        <p className="px-4 text-danger text-sm">
                           {fieldState.error.message}
-                        </FieldError>
+                        </p>
                       )}
-                    </Field>
+                    </div>
                   )}
                 />
               </div>
-            </ResizablePanel>
+            </Resizable.Panel>
 
-            <ResizableHandle withHandle />
+            <Resizable.Handle withIndicator />
 
             {/* Post Details Sidebar */}
-            <ResizablePanel defaultSize={30} minSize={25} maxSize={40}>
+            <Resizable.Panel defaultSize={30} minSize={25} maxSize={40}>
               <div className="flex h-full flex-col">
                 <div className="border-b p-4">
                   <h2 className="font-semibold text-lg">Post Details</h2>
                 </div>
-                <ScrollArea className="flex-1">
+                <ScrollShadow className="flex-1">
                   <div className="flex flex-col gap-4 p-4">
                     <Controller
                       control={form.control}
                       name="title"
                       render={({ field, fieldState }) => (
-                        <Field data-invalid={!!fieldState.error}>
-                          <FieldLabel htmlFor={titleId}>
-                            Title <span className="text-destructive">*</span>
-                          </FieldLabel>
+                        <TextField
+                          isInvalid={!!fieldState.error}
+                          value={field.value ?? ""}
+                          onChange={field.onChange}
+                        >
+                          <Label isRequired>Title</Label>
                           <Input
-                            id={titleId}
                             placeholder="My Awesome Post"
                             autoComplete="off"
-                            aria-invalid={!!fieldState.error}
-                            {...field}
                           />
                           {fieldState.error && (
                             <FieldError>{fieldState.error.message}</FieldError>
                           )}
-                        </Field>
+                        </TextField>
                       )}
                     />
 
@@ -376,23 +357,24 @@ export function PostForm({ seriesOptions }: PostFormProps) {
                       control={form.control}
                       name="slug"
                       render={({ field, fieldState }) => (
-                        <Field data-invalid={!!fieldState.error}>
-                          <FieldLabel htmlFor={slugId}>Slug</FieldLabel>
+                        <TextField
+                          isReadOnly
+                          isInvalid={!!fieldState.error}
+                          value={field.value ?? ""}
+                          onChange={field.onChange}
+                        >
+                          <Label>Slug</Label>
                           <Input
-                            id={slugId}
                             placeholder="auto-generated-from-title"
                             autoComplete="off"
-                            readOnly
-                            className="cursor-not-allowed bg-muted"
-                            {...field}
                           />
-                          <FieldDescription>
+                          <Description>
                             Auto-generated from the post title
-                          </FieldDescription>
+                          </Description>
                           {fieldState.error && (
                             <FieldError>{fieldState.error.message}</FieldError>
                           )}
-                        </Field>
+                        </TextField>
                       )}
                     />
 
@@ -400,19 +382,21 @@ export function PostForm({ seriesOptions }: PostFormProps) {
                       control={form.control}
                       name="summary"
                       render={({ field, fieldState }) => (
-                        <Field data-invalid={!!fieldState.error}>
-                          <FieldLabel htmlFor={summaryId}>Summary</FieldLabel>
-                          <Textarea
-                            id={summaryId}
+                        <TextField
+                          isInvalid={!!fieldState.error}
+                          value={field.value ?? ""}
+                          onChange={field.onChange}
+                        >
+                          <Label>Summary</Label>
+                          <TextArea
                             placeholder="A brief description..."
                             rows={3}
                             autoComplete="off"
-                            {...field}
                           />
                           {fieldState.error && (
                             <FieldError>{fieldState.error.message}</FieldError>
                           )}
-                        </Field>
+                        </TextField>
                       )}
                     />
 
@@ -420,26 +404,35 @@ export function PostForm({ seriesOptions }: PostFormProps) {
                       control={form.control}
                       name="status"
                       render={({ field, fieldState }) => (
-                        <Field data-invalid={!!fieldState.error}>
-                          <FieldLabel>Status</FieldLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                          >
-                            <SelectTrigger id={statusId}>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="draft">Draft</SelectItem>
-                              <SelectItem value="published">
+                        <Select
+                          isInvalid={!!fieldState.error}
+                          value={field.value}
+                          onChange={field.onChange}
+                        >
+                          <Label>Status</Label>
+                          <Select.Trigger>
+                            <Select.Value />
+                            <Select.Indicator />
+                          </Select.Trigger>
+                          <Select.Popover>
+                            <ListBox>
+                              <ListBox.Item id="draft" textValue="Draft">
+                                Draft
+                                <ListBox.ItemIndicator />
+                              </ListBox.Item>
+                              <ListBox.Item
+                                id="published"
+                                textValue="Published"
+                              >
                                 Published
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
+                                <ListBox.ItemIndicator />
+                              </ListBox.Item>
+                            </ListBox>
+                          </Select.Popover>
                           {fieldState.error && (
                             <FieldError>{fieldState.error.message}</FieldError>
                           )}
-                        </Field>
+                        </Select>
                       )}
                     />
 
@@ -447,31 +440,43 @@ export function PostForm({ seriesOptions }: PostFormProps) {
                       control={form.control}
                       name="seriesId"
                       render={({ field, fieldState }) => (
-                        <Field data-invalid={!!fieldState.error}>
-                          <FieldLabel>Series</FieldLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                          >
-                            <SelectTrigger id={seriesFieldId}>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="">None</SelectItem>
+                        <Select
+                          isInvalid={!!fieldState.error}
+                          value={field.value || NO_SERIES}
+                          onChange={(value) =>
+                            field.onChange(value === NO_SERIES ? "" : value)
+                          }
+                        >
+                          <Label>Series</Label>
+                          <Select.Trigger>
+                            <Select.Value />
+                            <Select.Indicator />
+                          </Select.Trigger>
+                          <Select.Popover>
+                            <ListBox>
+                              <ListBox.Item id={NO_SERIES} textValue="None">
+                                None
+                                <ListBox.ItemIndicator />
+                              </ListBox.Item>
                               {seriesOptions.map((option) => (
-                                <SelectItem key={option.id} value={option.id}>
+                                <ListBox.Item
+                                  key={option.id}
+                                  id={option.id}
+                                  textValue={option.title}
+                                >
                                   {option.title}
-                                </SelectItem>
+                                  <ListBox.ItemIndicator />
+                                </ListBox.Item>
                               ))}
-                            </SelectContent>
-                          </Select>
-                          <FieldDescription>
+                            </ListBox>
+                          </Select.Popover>
+                          <Description>
                             Assign this post to a series
-                          </FieldDescription>
+                          </Description>
                           {fieldState.error && (
                             <FieldError>{fieldState.error.message}</FieldError>
                           )}
-                        </Field>
+                        </Select>
                       )}
                     />
 
@@ -479,19 +484,21 @@ export function PostForm({ seriesOptions }: PostFormProps) {
                       control={form.control}
                       name="tags"
                       render={({ field, fieldState }) => (
-                        <Field data-invalid={!!fieldState.error}>
-                          <FieldLabel htmlFor={tagsId}>Tags</FieldLabel>
+                        <TextField
+                          isInvalid={!!fieldState.error}
+                          value={field.value ?? ""}
+                          onChange={field.onChange}
+                        >
+                          <Label>Tags</Label>
                           <Input
-                            id={tagsId}
                             placeholder="nextjs, react"
                             autoComplete="off"
-                            {...field}
                           />
-                          <FieldDescription>Comma-separated</FieldDescription>
+                          <Description>Comma-separated</Description>
                           {fieldState.error && (
                             <FieldError>{fieldState.error.message}</FieldError>
                           )}
-                        </Field>
+                        </TextField>
                       )}
                     />
 
@@ -499,73 +506,72 @@ export function PostForm({ seriesOptions }: PostFormProps) {
                       control={form.control}
                       name="coverImage"
                       render={({ field, fieldState }) => (
-                        <Field data-invalid={!!fieldState.error}>
-                          <FieldLabel htmlFor={coverImageId}>
-                            Cover Image URL
-                          </FieldLabel>
-                          <div className="flex gap-2">
-                            <Input
-                              id={coverImageId}
-                              type="url"
-                              placeholder="https://example.com/image.jpg"
-                              autoComplete="off"
-                              {...field}
-                            />
-                            <Suspense fallback={null}>
-                              <ImagePickerDialog
-                                onSelect={(url) =>
-                                  form.setValue("coverImage", url)
-                                }
-                                trigger={
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                  >
-                                    Browse
-                                  </Button>
-                                }
+                        <div className="flex flex-col gap-4">
+                          <TextField
+                            type="url"
+                            isInvalid={!!fieldState.error}
+                            value={field.value ?? ""}
+                            onChange={field.onChange}
+                          >
+                            <Label>Cover Image URL</Label>
+                            <div className="flex gap-2">
+                              <Input
+                                placeholder="https://example.com/image.jpg"
+                                autoComplete="off"
                               />
-                            </Suspense>
-                          </div>
-                          <FieldDescription>
-                            Optional cover image URL
-                          </FieldDescription>
-                          {fieldState.error && (
-                            <FieldError>{fieldState.error.message}</FieldError>
-                          )}
-                          {field.value && (
-                            <div className="mb-4">
-                              <Image
-                                src={field.value}
-                                alt="Cover preview"
-                                width={800}
-                                height={160}
-                                className="h-auto max-h-40 w-full rounded-md object-cover"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = "none";
-                                }}
-                              />
+                              <Suspense fallback={null}>
+                                <ImagePickerDialog
+                                  onSelect={(url) =>
+                                    form.setValue("coverImage", url)
+                                  }
+                                  trigger={
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                    >
+                                      Browse
+                                    </Button>
+                                  }
+                                />
+                              </Suspense>
                             </div>
+                            <Description>Optional cover image URL</Description>
+                            {fieldState.error && (
+                              <FieldError>
+                                {fieldState.error.message}
+                              </FieldError>
+                            )}
+                          </TextField>
+                          {field.value && (
+                            <Image
+                              src={field.value}
+                              alt="Cover preview"
+                              width={800}
+                              height={160}
+                              className="h-auto max-h-40 w-full rounded-md object-cover"
+                              onError={(e) => {
+                                e.currentTarget.style.display = "none";
+                              }}
+                            />
                           )}
-                        </Field>
+                        </div>
                       )}
                     />
                   </div>
-                </ScrollArea>
+                </ScrollShadow>
               </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
+            </Resizable.Panel>
+          </Resizable>
 
           <div className="flex justify-end gap-4">
-            <Button
-              variant="outline"
-              nativeButton={false}
-              render={<Link href="/studio/posts" />}
+            <Link
+              className={buttonVariants({ variant: "outline" })}
+              href="/studio/posts"
             >
               Cancel
-            </Button>
-            <Button type="submit" disabled={isPending}>
+            </Link>
+            <Button type="submit" isDisabled={isPending}>
               {isPending ? "Creating..." : "Create Post"}
             </Button>
           </div>

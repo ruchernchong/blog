@@ -1,248 +1,167 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import "@heroui/styles";
+@import "@heroui-pro/react/css";
 
 @plugin "@tailwindcss/typography";
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-}
-
-@layer utilities {
-  .prose :is(h2, h3, h4, h5, h6) {
-    @apply scroll-mt-8;
-  }
-
-  .permalink {
-    @apply invisible cursor-pointer pr-4;
-  }
-
-  .permalink:hover {
-    @apply visible;
-  }
-
-  .permalink::after {
-    @apply ml-2 content-['#'];
-  }
-
-  *:hover > .permalink {
-    @apply visible text-inherit;
-  }
-
-  h1 .permalink::after {
-    @apply content-none;
-  }
-}
-
-/* View Transitions API CSS */
-@layer base {
-  /* Prevent layout shift and flicker */
-  html {
+  :root {
     color-scheme: light;
+
+    --white: oklch(100% 0 0);
+    --black: oklch(0% 0 0);
+    --snow: oklch(0.9911 0 0);
+    --eclipse: oklch(0.2103 0.0059 285.89);
+
+    /* Spacing scale */
+    --spacing: 0.25rem;
+
+    /* Border */
+    --border-width: 1px;
+    --field-border-width: 0px;
+    --disabled-opacity: 0.5;
+
+    /* Ring offset - Used for focus ring */
+    --ring-offset-width: 2px;
+
+    /* Cursor */
+    --cursor-interactive: pointer;
+    --cursor-disabled: not-allowed;
+
+    /* Radius */
+    --radius: 0.5rem;
+    --field-radius: calc(var(--radius) * 1.5);
+
+    /* == Light Theme Variables == */
+
+    /* Base Colors */
+    --background: oklch(0.9702 0 0);
+    --foreground: var(--eclipse);
+
+    /* Surface: Used for non-overlay components (cards, accordions, disclosure groups) */
+    --surface: var(--white);
+    --surface-foreground: var(--foreground);
+
+    /* Overlay: Used for floating/overlay components (tooltips, popovers, modals, menus) */
+    --overlay: var(--white);
+    --overlay-foreground: var(--foreground);
+
+    --muted: oklch(0.5517 0.0138 285.94);
+    --scrollbar: oklch(87.1% 0.006 286.286);
+
+    --default: oklch(94% 0.001 286.375);
+    --default-foreground: var(--eclipse);
+
+    /* Brand / primary action = coral */
+    --accent: oklch(0.6 0.18 25);
+    --accent-foreground: var(--snow);
+
+    /* Form Field Defaults - Colors */
+    --field-background: var(--white);
+    --field-foreground: oklch(0.2103 0.0059 285.89);
+    --field-placeholder: var(--muted);
+    --field-border: transparent; /* no border by default on form fields */
+
+    /* Status Colors */
+    --success: oklch(0.7329 0.1935 150.81);
+    --success-foreground: var(--eclipse);
+
+    --warning: oklch(0.7819 0.1585 72.33);
+    --warning-foreground: var(--eclipse);
+
+    --danger: oklch(0.6532 0.2328 25.74);
+    --danger-foreground: var(--snow);
+
+    /* Component Colors */
+    --segment: var(--white);
+    --segment-foreground: var(--eclipse);
+
+    /* Misc Colors */
+    --border: oklch(92% 0.004 286.32);
+    --separator: oklch(92% 0.004 286.32);
+    --focus: var(--accent);
+    --link: var(--foreground);
+
+    /* Backdrop */
+    --backdrop: rgba(0, 0, 0, 0.5);
+
+    /* Shadows */
+    --surface-shadow:
+      0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+      0 0 1px 0 rgba(0, 0, 0, 0.06);
+    /* Overlay shadow */
+    --overlay-shadow:
+      0 4px 16px 0 rgba(24, 24, 27, 0.08), 0 8px 24px 0 rgba(24, 24, 27, 0.09);
+    --field-shadow:
+      0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+      0 0 1px 0 rgba(0, 0, 0, 0.06);
+    /* Skeleton Default Global Animation */
+    --skeleton-animation: shimmer; /* shimmer, pulse, none */
+
+    --chart-1: oklch(from var(--accent) calc(l - 0.24) c h);
+    --chart-2: oklch(from var(--accent) calc(l - 0.12) c h);
+    --chart-3: var(--accent);
+    --chart-4: oklch(from var(--accent) calc(l + 0.12) c h);
+    --chart-5: oklch(from var(--accent) calc(l + 0.24) c h);
   }
 
-  /* Smooth view transitions */
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 0.25s;
-    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  }
+  .dark,
+  [data-theme="dark"] {
+    color-scheme: dark;
 
-  ::view-transition-old(root) {
-    animation-name: slide-out;
-  }
+    /* Base Colors */
+    --background: oklch(12% 0.005 285.823);
+    --foreground: var(--snow);
 
-  ::view-transition-new(root) {
-    animation-name: slide-in;
-  }
+    /* Surface: Used for non-overlay components (cards, accordions, disclosure groups) */
+    --surface: oklch(0.2103 0.0059 285.89);
+    --surface-foreground: var(--foreground);
 
-  @keyframes slide-out {
-    from {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    to {
-      opacity: 0;
-    }
-  }
+    /* Overlay: Used for floating/overlay components (tooltips, popovers, modals, menus) - lighter for contrast */
+    --overlay: oklch(
+      0.22 0.0059 285.89
+    ); /* A bit lighter than surface for visibility in dark mode */
+    --overlay-foreground: var(--foreground);
 
-  @keyframes slide-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
+    --muted: oklch(70.5% 0.015 286.067);
+    --scrollbar: oklch(70.5% 0.015 286.067);
 
-  /* Respect reduced motion preference */
-  @media (prefers-reduced-motion: reduce) {
-    ::view-transition-old(root),
-    ::view-transition-new(root) {
-      animation: none;
-    }
-  }
-}
+    --default: oklch(27.4% 0.006 286.033);
+    --default-foreground: var(--snow);
 
-/* Page Title Animations */
-@layer utilities {
-  @keyframes slide-in-left {
-    from {
-      transform: translateX(-30px);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
+    /* Form Field Defaults - Colors (only the ones that are different from light theme) */
+    --field-background: var(--default);
+    --field-foreground: var(--foreground);
 
-  @keyframes slide-in-left-delayed {
-    from {
-      transform: translateX(-30px);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
+    /* Status Colors */
+    --warning: oklch(0.8203 0.1388 76.34);
+    --warning-foreground: var(--eclipse);
 
-  .animate-slide-in-left {
-    animation: slide-in-left 0.6s ease-out;
-  }
+    --danger: oklch(0.594 0.1967 24.63);
+    --danger-foreground: var(--snow);
 
-  .animate-slide-in-left-delayed {
-    animation: slide-in-left-delayed 0.6s ease-out 0.1s both;
-  }
+    /* Component Colors */
+    --segment: oklch(0.3964 0.01 285.93);
+    --segment-foreground: var(--foreground);
 
-  /* Respect reduced motion preference for page title animations */
-  @media (prefers-reduced-motion: reduce) {
-    .animate-slide-in-left,
-    .animate-slide-in-left-delayed {
-      animation: none;
-    }
-  }
-}
+    /* Misc Colors */
+    --border: oklch(22% 0.006 286.033);
+    --separator: oklch(22% 0.006 286.033);
+    --focus: var(--accent);
+    --link: var(--foreground);
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
-}
+    /* Backdrop */
+    --backdrop: rgba(0, 0, 0, 0.6);
 
-:root {
-  /* Base - Warm paper white */
-  --background: oklch(0.985 0.005 90);
-  --foreground: oklch(0.15 0.01 270);
+    /* Shadows */
+    --surface-shadow: 0 0 0 0 transparent inset; /* No shadow on dark mode */
+    --overlay-shadow: 0 0 0 0 transparent inset; /* No shadow on dark mode */
+    --field-shadow: 0 0 0 0 transparent inset; /* Transparent shadow to allow ring utilities to work */
 
-  /* Cards & Surfaces */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.01 270);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.01 270);
-
-  /* Coral Accent */
-  --primary: oklch(0.6 0.18 25);
-  --primary-foreground: oklch(0.98 0.01 25);
-
-  /* Secondary */
-  --secondary: oklch(0.96 0.005 90);
-  --secondary-foreground: oklch(0.15 0.01 270);
-
-  /* Muted */
-  --muted: oklch(0.96 0.005 90);
-  --muted-foreground: oklch(0.45 0.01 270);
-
-  /* Accent (matches muted for subtle highlighting) */
-  --accent: oklch(0.96 0.005 90);
-  --accent-foreground: oklch(0.15 0.01 270);
-
-  /* States */
-  --destructive: oklch(0.58 0.22 27);
-
-  /* Borders & Inputs */
-  --border: oklch(0.9 0.005 90);
-  --input: oklch(0.9 0.005 90);
-  --ring: oklch(0.7 0.15 25);
-
-  /* Chart colours - Coral-based palette */
-  --chart-1: oklch(0.65 0.18 25);
-  --chart-2: oklch(0.55 0.15 35);
-  --chart-3: oklch(0.5 0.12 45);
-  --chart-4: oklch(0.45 0.1 55);
-  --chart-5: oklch(0.4 0.08 65);
-
-  --radius: 0.625rem;
-
-  /* Sidebar */
-  --sidebar: oklch(0.985 0.005 90);
-  --sidebar-foreground: oklch(0.15 0.01 270);
-  --sidebar-primary: oklch(0.6 0.18 25);
-  --sidebar-primary-foreground: oklch(0.98 0.01 25);
-  --sidebar-accent: oklch(0.96 0.005 90);
-  --sidebar-accent-foreground: oklch(0.15 0.01 270);
-  --sidebar-border: oklch(0.9 0.005 90);
-  --sidebar-ring: oklch(0.7 0.15 25);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
+    --chart-1: oklch(from var(--accent) calc(l - 0.24) c h);
+    --chart-2: oklch(from var(--accent) calc(l - 0.12) c h);
+    --chart-3: var(--accent);
+    --chart-4: oklch(from var(--accent) calc(l + 0.12) c h);
+    --chart-5: oklch(from var(--accent) calc(l + 0.24) c h);
   }
 }

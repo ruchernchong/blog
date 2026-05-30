@@ -1,10 +1,10 @@
+import { cn } from "@heroui/react";
 import {
   type IconType,
   SiGithub,
   SiLinkedin,
   SiX,
 } from "@icons-pack/react-simple-icons";
-import { cn } from "@/lib/utils";
 import type { SocialMedia } from "@/types";
 
 type SocialIcon = {

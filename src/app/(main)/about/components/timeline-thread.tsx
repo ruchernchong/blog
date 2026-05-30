@@ -1,9 +1,7 @@
+import { Card, Chip, cn } from "@heroui/react";
 import { Briefcase01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import type { Company } from "@/types";
 
 interface TimelineThreadProps {
@@ -45,10 +43,10 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                   {/* Node dot */}
                   <div
                     className={cn(
-                      "flex items-center justify-center rounded-full border-2 bg-card transition-all duration-200",
+                      "flex items-center justify-center rounded-full border-2 bg-surface transition-all duration-200",
                       isCurrentRole
-                        ? "size-11 border-primary shadow-[0_0_16px_-4px_oklch(0.60_0.18_25_/_0.6)] md:size-12"
-                        : "size-9 border-border group-hover:border-primary/50 md:size-10",
+                        ? "size-11 border-accent shadow-[0_0_16px_-4px_oklch(0.60_0.18_25_/_0.6)] md:size-12"
+                        : "size-9 border-border group-hover:border-accent/50 md:size-10",
                     )}
                   >
                     {logo ? (
@@ -68,7 +66,7 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                       <HugeiconsIcon
                         icon={Briefcase01Icon}
                         size={isCurrentRole ? 18 : 16}
-                        className="text-muted-foreground"
+                        className="text-muted"
                       />
                     )}
                   </div>
@@ -78,8 +76,8 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                     className={cn(
                       "mt-1 font-mono text-xs tabular-nums",
                       isCurrentRole
-                        ? "font-semibold text-primary"
-                        : "text-muted-foreground",
+                        ? "font-semibold text-accent"
+                        : "text-muted",
                     )}
                   >
                     {startYear}
@@ -88,8 +86,8 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                   {/* Pulse for current */}
                   {isCurrentRole && (
                     <span className="absolute top-0 -right-0.5 flex size-2.5">
-                      <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-75" />
-                      <span className="relative inline-flex size-2.5 rounded-full bg-primary" />
+                      <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-75" />
+                      <span className="relative inline-flex size-2.5 rounded-full bg-accent" />
                     </span>
                   )}
                 </div>
@@ -106,28 +104,27 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                       className={cn(
                         "py-4 transition-all duration-200 hover:-translate-y-0.5",
                         isCurrentRole
-                          ? "ring-1 ring-primary/20 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25_/_0.25)]"
+                          ? "ring-1 ring-accent/20 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25_/_0.25)]"
                           : "hover:shadow-[0_8px_30px_-10px_oklch(0_0_0_/_0.08)]",
                       )}
                     >
-                      <CardContent className="flex flex-col gap-4">
+                      <Card.Content className="flex flex-col gap-4">
                         <div className="flex flex-wrap items-start justify-between gap-2">
                           <div className="flex flex-col">
                             <span className="font-semibold text-lg tracking-tight">
                               {name}
                             </span>
                             {!hasRoles && (
-                              <span className="text-muted-foreground">
-                                {title}
-                              </span>
+                              <span className="text-muted">{title}</span>
                             )}
                           </div>
-                          <Badge
-                            variant={isCurrentRole ? "default" : "outline"}
+                          <Chip
+                            color={isCurrentRole ? "accent" : "default"}
+                            variant={isCurrentRole ? "primary" : "secondary"}
                             className="shrink-0"
                           >
                             {isCurrentRole ? "Present" : dateEnd}
-                          </Badge>
+                          </Chip>
                         </div>
 
                         {/* Nested roles */}
@@ -149,8 +146,8 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                                     className={cn(
                                       "absolute -left-4 size-2 rounded-full",
                                       isCurrentSubRole
-                                        ? "bg-primary"
-                                        : "bg-muted-foreground",
+                                        ? "bg-accent"
+                                        : "bg-muted",
                                     )}
                                   />
 
@@ -158,21 +155,18 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                                     <span
                                       className={cn(
                                         "font-medium",
-                                        isCurrentSubRole && "text-primary",
+                                        isCurrentSubRole && "text-accent",
                                       )}
                                     >
                                       {role.title}
                                     </span>
                                     {role.team && (
-                                      <Badge
-                                        variant="secondary"
-                                        className="text-xs"
-                                      >
+                                      <Chip size="sm" variant="secondary">
                                         {role.team}
-                                      </Badge>
+                                      </Chip>
                                     )}
                                   </div>
-                                  <span className="text-muted-foreground text-sm">
+                                  <span className="text-muted text-sm">
                                     {role.dateStart} —{" "}
                                     {role.dateEnd ?? "Present"}
                                   </span>
@@ -182,7 +176,7 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                           </div>
                         )}
 
-                        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                        <div className="flex items-center gap-2 text-muted text-sm">
                           {!hasRoles && (
                             <>
                               <span>{durationText}</span>
@@ -191,7 +185,7 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                           )}
                           <span>{location}</span>
                         </div>
-                      </CardContent>
+                      </Card.Content>
                     </Card>
                   </a>
                 </div>

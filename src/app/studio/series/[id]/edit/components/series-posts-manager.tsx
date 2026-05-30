@@ -1,5 +1,7 @@
 "use client";
 
+import { Button, Card, Chip } from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
 import { DragDropVerticalIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Reorder, useDragControls } from "motion/react";
@@ -7,8 +9,6 @@ import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface SeriesPost {
   id: string;
@@ -80,12 +80,12 @@ export function SeriesPostsManager({ seriesId }: SeriesPostsManagerProps) {
   if (isLoading) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle>Posts in Series</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">Loading posts...</p>
-        </CardContent>
+        <Card.Header>
+          <Card.Title>Posts in Series</Card.Title>
+        </Card.Header>
+        <Card.Content>
+          <p className="text-muted">Loading posts...</p>
+        </Card.Content>
       </Card>
     );
   }
@@ -93,30 +93,30 @@ export function SeriesPostsManager({ seriesId }: SeriesPostsManagerProps) {
   if (posts.length === 0) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle>Posts in Series</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
+        <Card.Header>
+          <Card.Title>Posts in Series</Card.Title>
+        </Card.Header>
+        <Card.Content>
+          <p className="text-muted">
             No posts in this series yet. Assign posts to this series from the
             post editor.
           </p>
-        </CardContent>
+        </Card.Content>
       </Card>
     );
   }
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Posts in Series ({posts.length})</CardTitle>
+      <Card.Header className="flex flex-row items-center justify-between">
+        <Card.Title>Posts in Series ({posts.length})</Card.Title>
         {hasChanges && (
-          <Button size="sm" onClick={handleSave} disabled={isPending}>
+          <Button size="sm" onPress={handleSave} isDisabled={isPending}>
             {isPending ? "Saving..." : "Save Order"}
           </Button>
         )}
-      </CardHeader>
-      <CardContent>
+      </Card.Header>
+      <Card.Content>
         <Reorder.Group
           axis="y"
           values={posts}
@@ -127,7 +127,7 @@ export function SeriesPostsManager({ seriesId }: SeriesPostsManagerProps) {
             <ReorderItem key={post.id} post={post} />
           ))}
         </Reorder.Group>
-      </CardContent>
+      </Card.Content>
     </Card>
   );
 }
@@ -140,12 +140,12 @@ function ReorderItem({ post }: { post: SeriesPost }) {
       value={post}
       dragListener={false}
       dragControls={controls}
-      className="flex items-center gap-4 rounded-lg border bg-card p-4"
+      className="flex items-center gap-4 rounded-lg border bg-surface p-4"
     >
       <button
         type="button"
         onPointerDown={(e) => controls.start(e)}
-        className="cursor-grab touch-none text-muted-foreground hover:text-foreground"
+        className="cursor-grab touch-none text-muted hover:text-foreground"
       >
         <HugeiconsIcon icon={DragDropVerticalIcon} size={20} />
       </button>
@@ -153,27 +153,23 @@ function ReorderItem({ post }: { post: SeriesPost }) {
       <div className="flex flex-1 items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <span className="font-medium">{post.title}</span>
-          <span className="text-muted-foreground text-xs">{post.slug}</span>
+          <span className="text-muted text-xs">{post.slug}</span>
         </div>
 
         <div className="flex items-center gap-4">
-          <span
-            className={`rounded-full px-2 py-0.5 text-xs ${
-              post.status === "published"
-                ? "bg-green-100 text-green-800"
-                : "bg-yellow-100 text-yellow-800"
-            }`}
+          <Chip
+            size="sm"
+            variant="soft"
+            color={post.status === "published" ? "success" : "warning"}
           >
             {post.status}
-          </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            nativeButton={false}
-            render={<Link href={`/studio/posts/${post.id}/edit` as Route} />}
+          </Chip>
+          <Link
+            className={buttonVariants({ variant: "ghost", size: "sm" })}
+            href={`/studio/posts/${post.id}/edit` as Route}
           >
             Edit
-          </Button>
+          </Link>
         </div>
       </div>
     </Reorder.Item>

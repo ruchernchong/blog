@@ -2,7 +2,6 @@ import { DashboardBrowsingIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { LiveBadge } from "@/app/(main)/dashboard/components/live-badge";
 import { StatsGrid } from "@/app/(main)/dashboard/components/stats-grid";
 import { ViewsByPage } from "@/app/(main)/dashboard/components/views-by-page";
 import { VisitsChart } from "@/app/(main)/dashboard/components/visits-chart";
@@ -40,15 +39,14 @@ export default function DashboardPage() {
         title="Dashboard"
         description="Real-time analytics. All data updates automatically."
         icon={
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-accent/10">
             <HugeiconsIcon
               icon={DashboardBrowsingIcon}
               size={20}
-              className="text-primary"
+              className="text-accent"
             />
           </div>
         }
-        action={<LiveBadge />}
       />
 
       <Suspense fallback={<div>Loading stats...</div>}>

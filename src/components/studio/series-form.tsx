@@ -1,5 +1,7 @@
 "use client";
 
+import { Button, Card } from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Route } from "next";
 import Link from "next/link";
@@ -13,8 +15,6 @@ import {
   type SeriesFormValues,
   seriesFormSchema,
 } from "@/components/studio/series-form-fields";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import type { SelectSeries } from "@/schema";
 
 interface SeriesFormProps {
@@ -95,26 +95,25 @@ export function SeriesForm({ series }: SeriesFormProps) {
             <h1 className="font-bold text-3xl tracking-tight">
               {isEditing ? "Edit Series" : "Create New Series"}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted">
               {isEditing
                 ? "Update series details and settings"
                 : "Group related posts into an ordered collection"}
             </p>
           </div>
-          <Button
-            variant="outline"
-            nativeButton={false}
-            render={<Link href={"/studio/series" as Route} />}
+          <Link
+            className={buttonVariants({ variant: "outline" })}
+            href={"/studio/series" as Route}
           >
             Back to Series
-          </Button>
+          </Link>
         </div>
 
         {error && (
-          <Card className="border-destructive">
-            <CardContent className="py-6">
-              <p className="text-destructive text-sm">{error}</p>
-            </CardContent>
+          <Card className="border-danger">
+            <Card.Content className="py-6">
+              <p className="text-danger text-sm">{error}</p>
+            </Card.Content>
           </Card>
         )}
 
@@ -123,20 +122,19 @@ export function SeriesForm({ series }: SeriesFormProps) {
           className="flex flex-col gap-6"
         >
           <Card>
-            <CardContent className="flex flex-col gap-4 py-6">
+            <Card.Content className="flex flex-col gap-4 py-6">
               <SeriesFormFields slugReadOnly={!isEditing} />
-            </CardContent>
+            </Card.Content>
           </Card>
 
           <div className="flex justify-end gap-4">
-            <Button
-              variant="outline"
-              nativeButton={false}
-              render={<Link href={"/studio/series" as Route} />}
+            <Link
+              className={buttonVariants({ variant: "outline" })}
+              href={"/studio/series" as Route}
             >
               Cancel
-            </Button>
-            <Button type="submit" disabled={isPending}>
+            </Link>
+            <Button type="submit" isDisabled={isPending}>
               {isPending
                 ? isEditing
                   ? "Saving..."

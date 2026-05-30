@@ -1,6 +1,4 @@
-"use client";
-
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import ExternalLink from "@/components/external-link";
 import * as Icons from "@/components/icons";
 import socials from "@/data/socials";
@@ -33,7 +31,7 @@ export function HeroSection() {
       {/* Decorative coral accent */}
       <motion.div
         variants={item}
-        className="size-3 rounded-full bg-primary"
+        className="size-3 rounded-full bg-accent"
         style={{ boxShadow: "0 0 20px oklch(0.60 0.18 25 / 0.5)" }}
       />
 
@@ -48,13 +46,13 @@ export function HeroSection() {
       {/* Role */}
       <motion.p
         variants={item}
-        className="font-medium text-2xl text-muted-foreground tracking-tight sm:text-3xl"
+        className="font-medium text-2xl text-muted tracking-tight sm:text-3xl"
       >
         Software Engineer
       </motion.p>
 
       {/* Tagline */}
-      <motion.p variants={item} className="text-lg text-muted-foreground">
+      <motion.p variants={item} className="text-lg text-muted">
         Shipping code by day. Chasing ideas by night. 🚀💡
       </motion.p>
 
@@ -64,7 +62,7 @@ export function HeroSection() {
           <ExternalLink
             key={name}
             href={link}
-            className="rounded-full bg-muted p-3 text-muted-foreground transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary hover:text-primary-foreground"
+            className="rounded-full bg-default p-3 text-muted transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent hover:text-accent-foreground"
           >
             <Icons.Social name={name} className="size-5" />
           </ExternalLink>

@@ -17,7 +17,7 @@ pnpm build           # Build for production
 - **Framework**: Next.js 16.1 with App Router and React 19.2
 - **Language**: TypeScript 5.2 (strict mode)
 - **Styling**: Tailwind CSS v4 (PostCSS-only config)
-- **UI Components**: shadcn/ui built on Base UI with HugeIcons
+- **UI Components**: HeroUI v3 (Pro + OSS) with HugeIcons
 - **Animation**: Motion, React Spring, View Transitions API
 
 ### Backend & Data

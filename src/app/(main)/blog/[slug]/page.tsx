@@ -95,7 +95,7 @@ async function PostContent({ slug }: { slug: string }) {
       <article className="prose mx-auto mb-16 flex max-w-4xl flex-col gap-12 prose-img:rounded-2xl prose-a:text-foreground prose-a:underline">
         <div className="flex flex-col items-center gap-4 text-center">
           <StatsBar slug={post.slug} />
-          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-muted">
             <div className="flex items-center gap-2">
               <HugeiconsIcon icon={Calendar01Icon} size={20} strokeWidth={2} />
               {post.publishedAt && (
@@ -118,7 +118,7 @@ async function PostContent({ slug }: { slug: string }) {
           </div>
           <Typography variant="h1">{post.title}</Typography>
         </div>
-        <aside className="relative rounded-md border-l-4 border-l-border bg-muted p-6">
+        <aside className="relative rounded-md border-l-4 border-l-border bg-default p-6">
           <div className="absolute top-0 left-0 -translate-x-[50%] -translate-y-[50%] rounded-full bg-background p-2 text-foreground">
             <HugeiconsIcon
               icon={InformationCircleIcon}

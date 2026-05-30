@@ -1,37 +1,21 @@
 "use client";
 
+import {
+  AlertDialog,
+  Button,
+  Card,
+  Checkbox,
+  Chip,
+  Input,
+  ListBox,
+  Select,
+  TextField,
+} from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
+import { EmptyState } from "@heroui-pro/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useEffectEvent, useState, useTransition } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import type { SelectPost } from "@/schema";
 
 type PostWithAuthor = SelectPost & {
@@ -233,21 +217,16 @@ export const PostsTable = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-bold text-3xl">Content Studio</h1>
-            <p className="mb-2 text-muted-foreground">Manage your blog posts</p>
+            <p className="mb-2 text-muted">Manage your blog posts</p>
           </div>
-          <Button
-            nativeButton={false}
-            render={<Link href="/studio/posts/new" />}
-          >
+          <Link className={buttonVariants()} href="/studio/posts/new">
             Create Post
-          </Button>
+          </Link>
         </div>
         <Card>
-          <CardContent className="py-12">
-            <p className="text-center text-muted-foreground">
-              Loading posts...
-            </p>
-          </CardContent>
+          <Card.Content className="py-12">
+            <p className="text-center text-muted">Loading posts...</p>
+          </Card.Content>
         </Card>
       </div>
     );
@@ -258,68 +237,87 @@ export const PostsTable = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-3xl">Content Studio</h1>
-          <p className="mb-2 text-muted-foreground">Manage your blog posts</p>
+          <p className="mb-2 text-muted">Manage your blog posts</p>
         </div>
-        <Button nativeButton={false} render={<Link href="/studio/posts/new" />}>
+        <Link className={buttonVariants()} href="/studio/posts/new">
           Create Post
-        </Button>
+        </Link>
       </div>
 
       {allPosts.length === 0 ? (
         <Card>
-          <CardContent className="py-12">
-            <Empty>
-              <EmptyHeader>
-                <EmptyTitle>No posts yet</EmptyTitle>
-                <EmptyDescription>
+          <Card.Content className="py-12">
+            <EmptyState>
+              <EmptyState.Header>
+                <EmptyState.Title>No posts yet</EmptyState.Title>
+                <EmptyState.Description>
                   Get started by creating your first blog post
-                </EmptyDescription>
-              </EmptyHeader>
-              <EmptyContent>
-                <Button
-                  nativeButton={false}
-                  render={<Link href="/studio/posts/new" />}
-                >
+                </EmptyState.Description>
+              </EmptyState.Header>
+              <EmptyState.Content>
+                <Link className={buttonVariants()} href="/studio/posts/new">
                   Create Post
-                </Button>
-              </EmptyContent>
-            </Empty>
-          </CardContent>
+                </Link>
+              </EmptyState.Content>
+            </EmptyState>
+          </Card.Content>
         </Card>
       ) : (
         <>
           <div className="flex items-center gap-4">
             <div className="flex-1">
-              <Input
+              <TextField
+                aria-label="Search posts"
                 type="search"
-                placeholder="Search posts by title or slug..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="max-w-md"
-              />
+                onChange={setSearchQuery}
+              >
+                <Input
+                  className="max-w-md"
+                  placeholder="Search posts by title or slug..."
+                />
+              </TextField>
             </div>
             <Select
+              aria-label="Filter by status"
+              className="w-[180px]"
               value={statusFilter}
-              onValueChange={(
-                value: "all" | "draft" | "published" | "deleted" | null,
-              ) => {
-                if (value) setStatusFilter(value);
+              onChange={(value) => {
+                if (value)
+                  setStatusFilter(
+                    value as "all" | "draft" | "published" | "deleted",
+                  );
               }}
             >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Posts</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
-                <SelectItem value="deleted">Deleted</SelectItem>
-              </SelectContent>
+              <Select.Trigger>
+                <Select.Value />
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  <ListBox.Item id="all" textValue="All Posts">
+                    All Posts
+                    <ListBox.ItemIndicator />
+                  </ListBox.Item>
+                  <ListBox.Item id="draft" textValue="Draft">
+                    Draft
+                    <ListBox.ItemIndicator />
+                  </ListBox.Item>
+                  <ListBox.Item id="published" textValue="Published">
+                    Published
+                    <ListBox.ItemIndicator />
+                  </ListBox.Item>
+                  <ListBox.Item id="deleted" textValue="Deleted">
+                    Deleted
+                    <ListBox.ItemIndicator />
+                  </ListBox.Item>
+                </ListBox>
+              </Select.Popover>
             </Select>
           </div>
 
           {selectedPosts.size > 0 && (
-            <div className="flex items-center gap-4 rounded-lg border bg-muted p-4">
+            <div className="flex items-center gap-4 rounded-lg border bg-default p-4">
               <span className="text-sm">
                 {selectedPosts.size} post(s) selected
               </span>
@@ -327,23 +325,23 @@ export const PostsTable = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleBulkPublish}
-                  disabled={isPending}
+                  onPress={handleBulkPublish}
+                  isDisabled={isPending}
                 >
                   {isPending ? "Publishing..." : "Publish Selected"}
                 </Button>
                 <Button
-                  variant="destructive"
+                  variant="danger"
                   size="sm"
-                  onClick={handleBulkDelete}
-                  disabled={isPending}
+                  onPress={handleBulkDelete}
+                  isDisabled={isPending}
                 >
                   {isPending ? "Deleting..." : "Delete Selected"}
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setSelectedPosts(new Set())}
+                  onPress={() => setSelectedPosts(new Set())}
                 >
                   Clear Selection
                 </Button>
@@ -353,52 +351,56 @@ export const PostsTable = () => {
 
           {filteredPosts.length === 0 ? (
             <Card>
-              <CardContent className="py-12">
-                <Empty>
-                  <EmptyHeader>
-                    <EmptyTitle>No posts found</EmptyTitle>
-                    <EmptyDescription>
+              <Card.Content className="py-12">
+                <EmptyState>
+                  <EmptyState.Header>
+                    <EmptyState.Title>No posts found</EmptyState.Title>
+                    <EmptyState.Description>
                       Try adjusting your search or filter criteria
-                    </EmptyDescription>
-                  </EmptyHeader>
-                  <EmptyContent>
+                    </EmptyState.Description>
+                  </EmptyState.Header>
+                  <EmptyState.Content>
                     <Button
                       variant="outline"
-                      onClick={() => {
+                      onPress={() => {
                         setSearchQuery("");
                         setStatusFilter("all");
                       }}
                     >
                       Clear Filters
                     </Button>
-                  </EmptyContent>
-                </Empty>
-              </CardContent>
+                  </EmptyState.Content>
+                </EmptyState>
+              </Card.Content>
             </Card>
           ) : (
             <Card>
-              <CardHeader>
-                <CardTitle>
+              <Card.Header>
+                <Card.Title>
                   All Posts ({filteredPosts.length}
                   {filteredPosts.length !== allPosts.length &&
                     ` of ${allPosts.length}`}
                   )
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
+                </Card.Title>
+              </Card.Header>
+              <Card.Content className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
                       <tr className="border-b">
                         <th className="w-12 px-6 py-3">
                           <Checkbox
-                            checked={
+                            isSelected={
                               filteredPosts.length > 0 &&
                               selectedPosts.size === filteredPosts.length
                             }
-                            onCheckedChange={toggleAllPosts}
+                            onChange={() => toggleAllPosts()}
                             aria-label="Select all posts"
-                          />
+                          >
+                            <Checkbox.Control>
+                              <Checkbox.Indicator />
+                            </Checkbox.Control>
+                          </Checkbox>
                         </th>
                         <th className="px-6 py-3 text-left font-medium text-sm">
                           Title
@@ -424,23 +426,25 @@ export const PostsTable = () => {
                       {filteredPosts.map((post) => (
                         <tr
                           key={post.id}
-                          className={`border-b last:border-0 hover:bg-muted/50 ${
+                          className={`border-b last:border-0 hover:bg-default/50 ${
                             post.deletedAt ? "opacity-60" : ""
                           }`}
                         >
                           <td className="px-6 py-4">
                             <Checkbox
-                              checked={selectedPosts.has(post.id)}
-                              onCheckedChange={() =>
-                                togglePostSelection(post.id)
-                              }
+                              isSelected={selectedPosts.has(post.id)}
+                              onChange={() => togglePostSelection(post.id)}
                               aria-label={`Select ${post.title}`}
-                            />
+                            >
+                              <Checkbox.Control>
+                                <Checkbox.Indicator />
+                              </Checkbox.Control>
+                            </Checkbox>
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex flex-col">
                               <span className="font-medium">{post.title}</span>
-                              <span className="text-muted-foreground text-xs">
+                              <span className="text-muted text-xs">
                                 {post.slug}
                               </span>
                             </div>
@@ -453,19 +457,21 @@ export const PostsTable = () => {
                           <td className="px-6 py-4">
                             <div className="flex flex-wrap gap-2">
                               {post.deletedAt ? (
-                                <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 font-medium text-red-800 text-xs">
+                                <Chip size="sm" variant="soft" color="danger">
                                   deleted
-                                </span>
+                                </Chip>
                               ) : (
-                                <span
-                                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-medium text-xs ${
+                                <Chip
+                                  size="sm"
+                                  variant="soft"
+                                  color={
                                     post.status === "published"
-                                      ? "bg-green-100 text-green-800"
-                                      : "bg-yellow-100 text-yellow-800"
-                                  }`}
+                                      ? "success"
+                                      : "warning"
+                                  }
                                 >
                                   {post.status}
-                                </span>
+                                </Chip>
                               )}
                             </div>
                           </td>
@@ -474,27 +480,24 @@ export const PostsTable = () => {
                               {Array.isArray(post.tags) &&
                               post.tags.length > 0 ? (
                                 post.tags.slice(0, 3).map((tag) => (
-                                  <span
-                                    key={tag}
-                                    className="inline-flex items-center rounded-md bg-muted px-2 py-1 text-muted-foreground text-xs"
-                                  >
+                                  <Chip key={tag} size="sm" variant="secondary">
                                     {tag}
-                                  </span>
+                                  </Chip>
                                 ))
                               ) : (
-                                <span className="text-muted-foreground text-xs">
+                                <span className="text-muted text-xs">
                                   No tags
                                 </span>
                               )}
                               {Array.isArray(post.tags) &&
                                 post.tags.length > 3 && (
-                                  <span className="text-muted-foreground text-xs">
+                                  <span className="text-muted text-xs">
                                     +{post.tags.length - 3}
                                   </span>
                                 )}
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-muted-foreground text-sm">
+                          <td className="px-6 py-4 text-muted text-sm">
                             {new Date(post.updatedAt).toLocaleDateString(
                               "en-US",
                               {
@@ -510,60 +513,67 @@ export const PostsTable = () => {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => handleRestore(post.id)}
-                                  disabled={isPending}
+                                  onPress={() => handleRestore(post.id)}
+                                  isDisabled={isPending}
                                 >
                                   {isPending ? "Restoring..." : "Restore"}
                                 </Button>
                               ) : (
                                 <>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    nativeButton={false}
-                                    render={
-                                      <Link
-                                        href={`/studio/posts/${post.id}/edit`}
-                                      />
-                                    }
+                                  <Link
+                                    className={buttonVariants({
+                                      variant: "ghost",
+                                      size: "sm",
+                                    })}
+                                    href={`/studio/posts/${post.id}/edit`}
                                   >
                                     Edit
-                                  </Button>
+                                  </Link>
                                   <AlertDialog>
-                                    <AlertDialogTrigger
-                                      render={
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          disabled={isPending}
-                                        />
-                                      }
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      isDisabled={isPending}
                                     >
                                       Delete
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                      <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                          Are you sure?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                          This will delete the post &ldquo;
-                                          {post.title}&rdquo;. You can restore
-                                          it later from the Deleted filter.
-                                        </AlertDialogDescription>
-                                      </AlertDialogHeader>
-                                      <AlertDialogFooter>
-                                        <AlertDialogCancel>
-                                          Cancel
-                                        </AlertDialogCancel>
-                                        <AlertDialogAction
-                                          onClick={() => handleDelete(post.id)}
-                                          className="bg-destructive hover:bg-destructive/90"
-                                        >
-                                          Delete
-                                        </AlertDialogAction>
-                                      </AlertDialogFooter>
-                                    </AlertDialogContent>
+                                    </Button>
+                                    <AlertDialog.Backdrop>
+                                      <AlertDialog.Container>
+                                        <AlertDialog.Dialog>
+                                          <AlertDialog.Header>
+                                            <AlertDialog.Icon status="danger" />
+                                            <AlertDialog.Heading>
+                                              Are you sure?
+                                            </AlertDialog.Heading>
+                                          </AlertDialog.Header>
+                                          <AlertDialog.Body>
+                                            <p>
+                                              This will delete the post &ldquo;
+                                              {post.title}&rdquo;. You can
+                                              restore it later from the Deleted
+                                              filter.
+                                            </p>
+                                          </AlertDialog.Body>
+                                          <AlertDialog.Footer>
+                                            <Button
+                                              slot="close"
+                                              variant="tertiary"
+                                            >
+                                              Cancel
+                                            </Button>
+                                            <Button
+                                              slot="close"
+                                              variant="danger"
+                                              onPress={() =>
+                                                handleDelete(post.id)
+                                              }
+                                            >
+                                              Delete
+                                            </Button>
+                                          </AlertDialog.Footer>
+                                        </AlertDialog.Dialog>
+                                      </AlertDialog.Container>
+                                    </AlertDialog.Backdrop>
                                   </AlertDialog>
                                 </>
                               )}
@@ -574,7 +584,7 @@ export const PostsTable = () => {
                     </tbody>
                   </table>
                 </div>
-              </CardContent>
+              </Card.Content>
             </Card>
           )}
         </>

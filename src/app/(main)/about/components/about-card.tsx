@@ -1,12 +1,10 @@
-"use client";
-
+import { buttonVariants } from "@heroui/styles";
 import Link from "next/link";
 import { ExperienceCard } from "@/app/(main)/about/components/experience-card";
 import { LocationCard } from "@/app/(main)/about/components/location-card";
 import { Typography } from "@/components/typography";
-import { Button } from "@/components/ui/button";
 
-export const AboutCard = () => {
+export function AboutCard() {
   return (
     <div className="flex flex-col items-center gap-6">
       <Typography variant="h2">About Me</Typography>
@@ -19,14 +17,10 @@ export const AboutCard = () => {
         </div>
       </div>
       <div className="flex items-center justify-center">
-        <Button
-          variant="ghost"
-          nativeButton={false}
-          render={<Link href="/about" />}
-        >
+        <Link className={buttonVariants({ variant: "ghost" })} href="/about">
           More About Me
-        </Button>
+        </Link>
       </div>
     </div>
   );
-};
+}

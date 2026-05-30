@@ -1,12 +1,12 @@
 "use client";
 
+import { cn } from "@heroui/react";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { PropsWithChildren } from "react";
 import { Logo } from "@/components/logo";
 import { navLinks } from "@/config";
-import { cn } from "@/lib/utils";
 
 interface NavItemProps extends PropsWithChildren {
   href: Route;
@@ -22,7 +22,7 @@ export function Header() {
       <div className="flex items-center justify-between">
         <NavItem
           href="/"
-          className="font-bold text-foreground text-lg transition-all duration-200 hover:text-primary"
+          className="font-bold text-foreground text-lg transition-all duration-200 hover:text-accent"
           title="Ru Chern"
         >
           <Logo />
@@ -39,8 +39,8 @@ export function Header() {
                 className={cn(
                   "font-medium text-sm transition-all duration-200",
                   isActive
-                    ? "text-primary underline decoration-2 decoration-primary underline-offset-4"
-                    : "text-muted-foreground hover:text-foreground",
+                    ? "text-accent underline decoration-2 decoration-primary underline-offset-4"
+                    : "text-muted hover:text-foreground",
                 )}
                 title={title}
               >

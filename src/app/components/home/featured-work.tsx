@@ -1,11 +1,9 @@
-"use client";
-
-import { motion } from "motion/react";
+import { Chip } from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
+import * as motion from "motion/react-client";
 import type { Route } from "next";
 import Link from "next/link";
 import { Typography } from "@/components/typography";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import type { Project } from "@/types";
 
 interface FeaturedWorkProps {
@@ -29,12 +27,12 @@ function ProjectCard({ project }: { project: Project }) {
     <motion.div
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2 }}
-      className="group flex flex-col gap-4 rounded-2xl bg-muted/50 p-6"
+      className="group flex flex-col gap-4 rounded-2xl bg-default/50 p-6"
     >
       <div className="flex flex-col gap-2">
         <h3 className="font-semibold text-xl">{project.name}</h3>
         {project.description && (
-          <p className="text-muted-foreground text-sm leading-relaxed">
+          <p className="text-muted text-sm leading-relaxed">
             {project.description}
           </p>
         )}
@@ -42,37 +40,30 @@ function ProjectCard({ project }: { project: Project }) {
 
       <div className="flex flex-wrap gap-2">
         {project.skills.slice(0, 4).map((skill) => (
-          <Badge key={skill} variant="secondary" className="text-xs">
+          <Chip key={skill} size="sm" variant="secondary">
             {skill}
-          </Badge>
+          </Chip>
         ))}
         {project.skills.length > 4 && (
-          <Badge variant="secondary" className="text-xs">
+          <Chip size="sm" variant="secondary">
             +{project.skills.length - 4}
-          </Badge>
+          </Chip>
         )}
       </div>
 
       <div className="mt-auto flex gap-2">
         {liveUrl && (
-          <Button
-            variant="default"
-            size="sm"
-            nativeButton={false}
-            render={<Link href={liveUrl} />}
-          >
+          <Link className={buttonVariants({ size: "sm" })} href={liveUrl}>
             View Live
-          </Button>
+          </Link>
         )}
         {githubUrl && (
-          <Button
-            variant="outline"
-            size="sm"
-            nativeButton={false}
-            render={<Link href={githubUrl} />}
+          <Link
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+            href={githubUrl}
           >
             GitHub
-          </Button>
+          </Link>
         )}
       </div>
     </motion.div>
@@ -97,14 +88,12 @@ export function FeaturedWork({ projects }: FeaturedWorkProps) {
         <Typography variant="label" className="text-foreground">
           Featured Work
         </Typography>
-        <Button
-          variant="ghost"
-          size="sm"
-          nativeButton={false}
-          render={<Link href="/projects" />}
+        <Link
+          className={buttonVariants({ variant: "ghost", size: "sm" })}
+          href="/projects"
         >
           View All
-        </Button>
+        </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">

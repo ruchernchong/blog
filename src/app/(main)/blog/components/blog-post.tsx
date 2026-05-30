@@ -24,17 +24,17 @@ const BlogPost = ({
     <div className="group relative cursor-pointer">
       <div className="mb-4 flex flex-col-reverse md:flex-row md:justify-between">
         <div className="w-full basis-2/3">
-          <Link href={canonical} className="group-hover:text-muted-foreground">
+          <Link href={canonical} className="group-hover:text-muted">
             <Typography variant="h3" className="capitalize">
               {title}
             </Typography>
           </Link>
-          <p className="line-clamp-2 text-muted-foreground">{excerpt}</p>
+          <p className="line-clamp-2 text-muted">{excerpt}</p>
         </div>
         <time
           dateTime={formatISO(parseISO(publishedAt))}
           title={formattedDate}
-          className="text-muted-foreground italic"
+          className="text-muted italic"
         >
           {formattedDate}
         </time>

@@ -1,10 +1,10 @@
+import { Card } from "@heroui/react";
 import { ViewIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
 import { Typography } from "@/components/typography";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getPopularPosts } from "@/lib/services/popular-posts";
 
 export const PopularPosts = async () => {
@@ -33,16 +33,16 @@ export const PopularPosts = async () => {
                 href={post.metadata.canonical as Route}
                 className="flex h-full flex-col"
               >
-                <CardHeader>
+                <Card.Header>
                   <div className="flex items-center justify-between gap-4">
                     <time
                       dateTime={formatISO(post.publishedAt)}
                       title={formattedDate}
-                      className="text-muted-foreground text-sm italic"
+                      className="text-muted text-sm italic"
                     >
                       {formattedDate}
                     </time>
-                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                    <div className="flex items-center gap-2 text-muted text-sm">
                       <HugeiconsIcon
                         icon={ViewIcon}
                         size={16}
@@ -51,9 +51,9 @@ export const PopularPosts = async () => {
                       <span>{post.views}</span>
                     </div>
                   </div>
-                  <CardTitle className="capitalize">{post.title}</CardTitle>
-                </CardHeader>
-                <CardContent>{post.summary}</CardContent>
+                  <Card.Title className="capitalize">{post.title}</Card.Title>
+                </Card.Header>
+                <Card.Content>{post.summary}</Card.Content>
               </Link>
             </Card>
           );

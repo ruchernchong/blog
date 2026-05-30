@@ -1,11 +1,10 @@
+import { Card, cn } from "@heroui/react";
 import { UserMultipleIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Fragment } from "react";
 import { LinkWithIcon } from "@/components/link-with-icon";
 import { Typography } from "@/components/typography";
-import { Card } from "@/components/ui/card";
 import type { GitHubProfile } from "@/lib/github";
-import { cn } from "@/lib/utils";
 import type { StackOverflowProfile } from "@/utils/stackoverflow";
 
 const STACK_OVERFLOW_BADGES: Record<string, string> = {
@@ -28,7 +27,7 @@ const Contributions = ({
           <HugeiconsIcon icon={UserMultipleIcon} size={32} strokeWidth={2} />
           <Typography variant="h2">Contributions</Typography>
         </div>
-        <Typography variant="body" className="text-muted-foreground">
+        <Typography variant="body" className="text-muted">
           My contributions to open-source platforms. I believe that by sharing
           my knowledge and expertise, I can help others to learn and grow too.
         </Typography>
@@ -39,7 +38,7 @@ const Contributions = ({
             <div className="flex flex-col gap-2">
               <div>
                 <Typography variant="h3">GitHub</Typography>
-                <p className="text-muted-foreground text-sm italic">
+                <p className="text-muted text-sm italic">
                   (Powered by GitHub GraphQL API)
                 </p>
               </div>
@@ -64,7 +63,7 @@ const Contributions = ({
             <div className="flex flex-col gap-2">
               <div>
                 <Typography variant="h3">Stack Overflow</Typography>
-                <p className="text-muted-foreground text-sm italic">
+                <p className="text-muted text-sm italic">
                   (Powered by Stack Exchange API)
                 </p>
               </div>

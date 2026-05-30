@@ -1,15 +1,7 @@
 "use client";
 
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@heroui/react";
+import { ChartTooltip, LineChart } from "@heroui-pro/react";
 import type { Visit } from "@/lib/umami";
 
 interface VisitsChartClientProps {
@@ -25,33 +17,54 @@ const formatDate = (date: string) =>
 export function VisitsChartClient({ data }: VisitsChartClientProps) {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Recent Site Visits, 90 days</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="h-75 w-full">
-          <ResponsiveContainer>
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" tickFormatter={formatDate} />
-              <YAxis />
-              <Tooltip
-                labelFormatter={formatDate}
-                formatter={(value) => [value, "Visits"]}
-              />
-              <Line
-                type="monotone"
-                dataKey="visits"
-                strokeWidth={2}
-                activeDot={{
-                  r: 6,
-                }}
-                stroke="var(--chart-1)"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </CardContent>
+      <Card.Header>
+        <Card.Title>Recent Site Visits, 90 days</Card.Title>
+      </Card.Header>
+      <Card.Content>
+        <LineChart data={data} height={300}>
+          <LineChart.Grid vertical={false} />
+          <LineChart.XAxis
+            dataKey="date"
+            tickFormatter={formatDate}
+            tickMargin={8}
+          />
+          <LineChart.YAxis width={30} />
+          <LineChart.Line
+            dataKey="visits"
+            name="Visits"
+            stroke="var(--chart-1)"
+            strokeWidth={2}
+            dot={false}
+            type="monotone"
+            activeDot={{ r: 6 }}
+          />
+          <LineChart.Tooltip
+            // biome-ignore lint/suspicious/noExplicitAny: Recharts tooltip payload is loosely typed
+            content={({ active, label, payload }: any) => {
+              if (!active || !payload?.length) return null;
+
+              return (
+                <ChartTooltip>
+                  <ChartTooltip.Header>
+                    {formatDate(String(label))}
+                  </ChartTooltip.Header>
+                  {payload.map((entry: any) => (
+                    <ChartTooltip.Item key={String(entry.dataKey)}>
+                      <ChartTooltip.Indicator
+                        color={entry.color ?? entry.stroke}
+                      />
+                      <ChartTooltip.Label>Visits</ChartTooltip.Label>
+                      <ChartTooltip.Value>
+                        {Number(entry.value).toLocaleString()}
+                      </ChartTooltip.Value>
+                    </ChartTooltip.Item>
+                  ))}
+                </ChartTooltip>
+              );
+            }}
+          />
+        </LineChart>
+      </Card.Content>
     </Card>
   );
 }
