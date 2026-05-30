@@ -1,8 +1,11 @@
 import { buildPricing, type ModelsDevApi } from "../pricing";
 
 /**
- * Fixture mirroring the models.dev payload shape. Note `gpt-5.5` is priced
- * differently under `openai` vs `fireworks-ai` to prove provider selection.
+ * Fixture mirroring the models.dev payload shape. `gpt-5.5` is priced under both
+ * `openai` and `fireworks-ai` to prove provider selection. Note `gpt-5.5-fast`
+ * is deliberately absent: it is the fast-tier model id that models.dev does not
+ * list, so it resolves only via the hardcoded `PRIORITY_RATES` override (and
+ * stays null under any other provider, proving the override is provider-scoped).
  */
 const api: ModelsDevApi = {
   anthropic: {
@@ -48,6 +51,22 @@ describe("buildPricing", () => {
     ).toBe(99);
   });
 
+  it("should override the fast-tier model id with the priority rate (openai-scoped)", () => {
+    // gpt-5.5-fast is OpenCode's priority-tier model id; models.dev lacks it.
+    expect(
+      pricing.priceFor("gpt-5.5-fast", { provider: "openai" })?.input,
+    ).toBe(12.5);
+    expect(
+      pricing.priceFor("gpt-5.5-fast", { provider: "openai" })?.output,
+    ).toBe(75);
+    // Plain gpt-5.5 is the standard tier and keeps its models.dev rate.
+    expect(pricing.priceFor("gpt-5.5", { provider: "openai" })?.input).toBe(1);
+    // The override is provider-scoped: no rate under a different provider.
+    expect(
+      pricing.priceFor("gpt-5.5-fast", { provider: "fireworks-ai" }),
+    ).toBeNull();
+  });
+
   it("should return null for an unpriceable model", () => {
     expect(pricing.priceFor("ghost-model", { provider: "openai" })).toBeNull();
     expect(
@@ -73,5 +92,21 @@ describe("buildPricing", () => {
       { provider: "openai" },
     );
     expect(cost).toBeCloseTo(3, 6);
+  });
+
+  it("should price the fast-tier model at the priority override rate", () => {
+    // 1M input @ $12.50 + 1M output @ $75 + 1M cache-read @ $1.25 = $88.75.
+    const cost = pricing.costOf(
+      {
+        input: 1_000_000,
+        output: 1_000_000,
+        cacheRead: 1_000_000,
+        cacheWrite: 0,
+        reasoning: 0,
+      },
+      "gpt-5.5-fast",
+      { provider: "openai" },
+    );
+    expect(cost).toBeCloseTo(88.75, 6);
   });
 });

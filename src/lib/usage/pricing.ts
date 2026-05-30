@@ -39,6 +39,23 @@ export interface ModelRate {
 }
 
 /**
+ * Fast-tier model ids that no pricing DB lists. OpenCode logs OpenAI's fast
+ * (priority) service tier as the distinct model id `gpt-5.5-fast` — the `-fast`
+ * suffix is the tier signal — but models.dev, OpenRouter, and LiteLLM all either
+ * omit it or price it wrongly, so it otherwise resolves to "N.A.". We override
+ * with OpenAI's published priority rate (2.5x the standard `gpt-5.5` rate: input
+ * $12.50/M, cached input $1.25/M, output $75/M). Plain `gpt-5.5` is the standard
+ * tier and is deliberately NOT overridden — models.dev prices it correctly.
+ * Keyed provider → model to mirror `byProvider`; returned ahead of the models.dev
+ * lookup so the cost is baked straight into the stored `costUsd`.
+ */
+const PRIORITY_RATES: Record<string, Record<string, ModelRate>> = {
+  openai: {
+    "gpt-5.5-fast": { input: 12.5, output: 75, cacheRead: 1.25, cacheWrite: 0 },
+  },
+};
+
+/**
  * How to resolve a model's provider for pricing. Pass `provider` directly for
  * multi-provider agents (OpenCode); `agent` derives it (claude/codex) and also
  * selects {@link MODEL_ALIASES}.
@@ -113,6 +130,10 @@ export function buildPricing(api: ModelsDevApi): Pricing {
     // Prefer an explicit provider (multi-provider agents), else derive from agent.
     const provider =
       opts?.provider ?? (agent ? AGENT_PROVIDERS[agent] : undefined);
+    // Always-priority models override the standard models.dev rate.
+    if (provider && PRIORITY_RATES[provider]?.[canonical]) {
+      return PRIORITY_RATES[provider][canonical];
+    }
     if (provider && byProvider[provider]?.[canonical]) {
       return byProvider[provider][canonical];
     }
