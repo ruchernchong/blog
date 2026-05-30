@@ -1,10 +1,10 @@
 "use client";
 
+import { cn } from "@heroui/react";
 import { buttonVariants } from "@heroui/styles";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { BackgroundEffects } from "@/components/background-effects";
-import { cn } from "@/lib/utils";
 
 export default function NotFound() {
   return (
@@ -16,7 +16,7 @@ export default function NotFound() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="select-none font-bold text-[clamp(8rem,25vw,14rem)] text-primary leading-none tracking-tighter"
+          className="select-none font-bold text-[clamp(8rem,25vw,14rem)] text-accent leading-none tracking-tighter"
         >
           404
         </motion.h1>
@@ -31,7 +31,7 @@ export default function NotFound() {
           <p className="font-medium text-foreground text-xl tracking-tight">
             This page has wandered off
           </p>
-          <p className="max-w-md text-muted-foreground">
+          <p className="max-w-md text-muted">
             The page you&apos;re looking for doesn&apos;t exist, or perhaps it
             never did. Either way, let&apos;s get you back on track.
           </p>

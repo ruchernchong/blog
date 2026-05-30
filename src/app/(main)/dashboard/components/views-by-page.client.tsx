@@ -50,9 +50,9 @@ function ViewsByPageRow({
           {page.count.toLocaleString()}
         </span>
       </div>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-default">
         <div
-          className="h-full rounded-full bg-primary transition-all duration-500"
+          className="h-full rounded-full bg-accent transition-all duration-500"
           style={{ width: `${barWidth}%` }}
         />
       </div>

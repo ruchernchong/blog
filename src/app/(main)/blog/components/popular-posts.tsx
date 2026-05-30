@@ -38,11 +38,11 @@ export const PopularPosts = async () => {
                     <time
                       dateTime={formatISO(post.publishedAt)}
                       title={formattedDate}
-                      className="text-muted-foreground text-sm italic"
+                      className="text-muted text-sm italic"
                     >
                       {formattedDate}
                     </time>
-                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                    <div className="flex items-center gap-2 text-muted text-sm">
                       <HugeiconsIcon
                         icon={ViewIcon}
                         size={16}

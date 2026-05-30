@@ -20,11 +20,11 @@ export default function BlogPage() {
         title="Blog"
         description="My blog posts on coding, tech, and random thoughts."
         icon={
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-accent/10">
             <HugeiconsIcon
               icon={Notebook02Icon}
               size={20}
-              className="text-primary"
+              className="text-accent"
             />
           </div>
         }

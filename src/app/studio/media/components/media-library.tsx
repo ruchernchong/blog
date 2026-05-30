@@ -130,16 +130,14 @@ export function MediaLibrary() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-bold text-3xl">Media Library</h1>
-            <p className="mb-2 text-muted-foreground">
+            <p className="mb-2 text-muted">
               Manage your images and media files
             </p>
           </div>
         </div>
         <Card>
           <Card.Content className="py-12">
-            <p className="text-center text-muted-foreground">
-              Loading media...
-            </p>
+            <p className="text-center text-muted">Loading media...</p>
           </Card.Content>
         </Card>
       </div>
@@ -151,9 +149,7 @@ export function MediaLibrary() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-3xl">Media Library</h1>
-          <p className="mb-2 text-muted-foreground">
-            Manage your images and media files
-          </p>
+          <p className="mb-2 text-muted">Manage your images and media files</p>
         </div>
         <MediaUpload onUploadComplete={handleUploadComplete} />
       </div>
@@ -185,13 +181,13 @@ export function MediaLibrary() {
                 <Checkbox.Indicator />
               </Checkbox.Control>
             </Checkbox>
-            <span className="text-muted-foreground text-sm">Select all</span>
+            <span className="text-muted text-sm">Select all</span>
           </div>
         )}
       </div>
 
       {selectedItems.size > 0 && (
-        <div className="flex items-center gap-4 rounded-lg border bg-muted p-4">
+        <div className="flex items-center gap-4 rounded-lg border bg-default p-4">
           <span className="text-sm">{selectedItems.size} item(s) selected</span>
           <div className="ml-auto flex gap-4">
             <Button
@@ -235,7 +231,7 @@ export function MediaLibrary() {
             <Card
               key={item.id}
               className={`group relative overflow-hidden ${
-                selectedItems.has(item.id) ? "ring-2 ring-primary" : ""
+                selectedItems.has(item.id) ? "ring-2 ring-accent" : ""
               }`}
             >
               <div className="absolute top-2 left-2 z-10">
@@ -261,7 +257,7 @@ export function MediaLibrary() {
               </div>
               <Card.Content className="p-2">
                 <p className="truncate font-medium text-sm">{item.filename}</p>
-                <p className="text-muted-foreground text-xs">
+                <p className="text-muted text-xs">
                   {formatFileSize(item.size)}
                 </p>
               </Card.Content>

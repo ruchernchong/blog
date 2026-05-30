@@ -163,7 +163,7 @@ export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
               <Modal.Heading>Upload Media</Modal.Heading>
             </Modal.Header>
             <Modal.Body className="flex flex-col gap-4">
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted text-sm">
                 Drag and drop an image or click to browse
               </p>
 
@@ -171,7 +171,7 @@ export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
                 type="button"
                 className={`relative w-full cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
                   dragActive
-                    ? "border-primary bg-primary/5"
+                    ? "border-accent bg-accent/5"
                     : "border-muted-foreground/25"
                 }`}
                 onClick={() => inputRef.current?.click()}
@@ -189,7 +189,7 @@ export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
                 />
 
                 <div className="flex flex-col items-center gap-2">
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted text-sm">
                     {isPending ? "Uploading..." : "Drop your image here, or"}
                   </p>
                   <Button
@@ -201,13 +201,13 @@ export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
                   >
                     Browse Files
                   </Button>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-muted text-xs">
                     Max file size: {R2Config.MAX_FILE_SIZE / 1024 / 1024}MB
                   </p>
                 </div>
               </button>
 
-              {error && <p className="text-destructive text-sm">{error}</p>}
+              {error && <p className="text-danger text-sm">{error}</p>}
             </Modal.Body>
           </Modal.Dialog>
         </Modal.Container>

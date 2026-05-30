@@ -254,7 +254,7 @@ export function PostForm({ seriesOptions }: PostFormProps) {
     return (
       <Card>
         <Card.Content className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Preparing editor...</p>
+          <p className="text-muted">Preparing editor...</p>
         </Card.Content>
       </Card>
     );
@@ -266,9 +266,7 @@ export function PostForm({ seriesOptions }: PostFormProps) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-bold text-3xl">Create New Post</h1>
-            <p className="mb-2 text-muted-foreground">
-              Write and publish a new blog post
-            </p>
+            <p className="mb-2 text-muted">Write and publish a new blog post</p>
           </div>
           <div className="flex items-center gap-4">
             <SaveStatusIndicator
@@ -286,9 +284,9 @@ export function PostForm({ seriesOptions }: PostFormProps) {
         </div>
 
         {error && (
-          <Card className="border-destructive">
+          <Card className="border-danger">
             <Card.Content className="pt-6">
-              <p className="text-destructive text-sm">{error}</p>
+              <p className="text-danger text-sm">{error}</p>
             </Card.Content>
           </Card>
         )}
@@ -314,7 +312,7 @@ export function PostForm({ seriesOptions }: PostFormProps) {
                         onChange={field.onChange}
                       />
                       {fieldState.error && (
-                        <p className="px-4 text-destructive text-sm">
+                        <p className="px-4 text-danger text-sm">
                           {fieldState.error.message}
                         </p>
                       )}

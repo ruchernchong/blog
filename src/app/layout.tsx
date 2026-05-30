@@ -1,3 +1,4 @@
+import { cn } from "@heroui/react";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
@@ -6,7 +7,6 @@ import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { ReactNode } from "react";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
-import { cn } from "@/lib/utils";
 import "@/app/globals.css";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });

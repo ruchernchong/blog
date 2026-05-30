@@ -175,11 +175,10 @@ className="fixed top-0 left-0 z-50 w-full border-b border-border
 
 ## Component Rules
 
-1. **NEVER modify** `components/ui/*` (shadcn/ui primitives)
-2. Use composition via `components/shared/` wrappers
+1. **Use HeroUI for UI**: HeroUI Pro (`@heroui-pro/react`) first, then HeroUI OSS (`@heroui/react`)
+2. Use composition via wrapper components
 3. Styling changes go in CSS or wrapper components
-4. Use `cn()` utility for conditional classes
-5. Use CVA for component variants
+4. Use `cn()` from `@heroui/react` for conditional classes
 
 ---
 

@@ -68,7 +68,7 @@ export function Mermaid({ chart }: MermaidProps) {
   if (error) {
     return (
       <figure className="my-8">
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive">
+        <div className="rounded-lg border border-danger/50 bg-danger/10 p-4 text-danger">
           <p className="text-sm">{error}</p>
           <pre className="mt-2 text-xs opacity-70">{chart}</pre>
         </div>
@@ -79,7 +79,7 @@ export function Mermaid({ chart }: MermaidProps) {
   if (!svg) {
     return (
       <figure className="my-8">
-        <div className="h-32 w-full animate-pulse rounded-lg bg-muted" />
+        <div className="h-32 w-full animate-pulse rounded-lg bg-default" />
       </figure>
     );
   }

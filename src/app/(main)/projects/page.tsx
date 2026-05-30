@@ -1,4 +1,4 @@
-import { Card, Chip } from "@heroui/react";
+import { Card, Chip, cn } from "@heroui/react";
 import { CodeIcon, LinkSquare01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
@@ -8,7 +8,6 @@ import Link from "next/link";
 import globalMetadata from "@/app/metadata";
 import { PageTitle } from "@/components/page-title";
 import projects from "@/data/projects";
-import { cn } from "@/lib/utils";
 import type { Project } from "@/types";
 
 const title = "Projects";
@@ -62,7 +61,7 @@ function ProjectCard({
       className={cn(
         "overflow-hidden transition-all duration-200 hover:-translate-y-0.5",
         featured
-          ? "ring-1 ring-primary/20 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25/0.25)]"
+          ? "ring-1 ring-accent/20 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25/0.25)]"
           : "hover:shadow-[0_8px_30px_-10px_oklch(0_0_0/0.08)]",
       )}
     >
@@ -91,7 +90,7 @@ function ProjectCard({
               )}
             </div>
             {project.description && (
-              <p className="line-clamp-2 text-muted-foreground text-sm">
+              <p className="line-clamp-2 text-muted text-sm">
                 {project.description}
               </p>
             )}
@@ -152,8 +151,8 @@ export default function ProjectsPage() {
         title="Projects"
         description="A showcase of completed projects and experiments with new technologies."
         icon={
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
-            <HugeiconsIcon icon={CodeIcon} size={20} className="text-primary" />
+          <div className="flex size-10 items-center justify-center rounded-xl bg-accent/10">
+            <HugeiconsIcon icon={CodeIcon} size={20} className="text-accent" />
           </div>
         }
       />
@@ -161,9 +160,7 @@ export default function ProjectsPage() {
       {/* Featured Section */}
       {featuredProjects.length > 0 && (
         <section className="mb-12">
-          <h2 className="mb-6 font-semibold text-lg text-muted-foreground">
-            Featured
-          </h2>
+          <h2 className="mb-6 font-semibold text-lg text-muted">Featured</h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {featuredProjects.map((project) => (
               <ProjectCard key={project.slug} project={project} featured />
@@ -175,7 +172,7 @@ export default function ProjectsPage() {
       {/* Other Projects */}
       {otherProjects.length > 0 && (
         <section>
-          <h2 className="mb-6 font-semibold text-lg text-muted-foreground">
+          <h2 className="mb-6 font-semibold text-lg text-muted">
             More Projects
           </h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

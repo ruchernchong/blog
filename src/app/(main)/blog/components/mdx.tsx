@@ -25,7 +25,7 @@ function CustomLink({ href, children, ...props }: CustomLinkProps) {
     return (
       <Link
         href={href as Route}
-        className="text-foreground underline hover:text-muted-foreground"
+        className="text-foreground underline hover:text-muted"
         {...props}
       >
         {children}
@@ -38,7 +38,7 @@ function CustomLink({ href, children, ...props }: CustomLinkProps) {
       href={href}
       target="_blank"
       rel="noopener noreferrer nofollow"
-      className="text-foreground underline hover:text-muted-foreground"
+      className="text-foreground underline hover:text-muted"
       {...props}
     >
       <span>
@@ -71,7 +71,7 @@ function ImageComponent({ alt = "", ...props }: ImageComponentProps) {
         {...props}
       />
       {alt && (
-        <figcaption className="text-center font-bold text-muted-foreground text-xs italic">
+        <figcaption className="text-center font-bold text-muted text-xs italic">
           {alt}
         </figcaption>
       )}
@@ -83,7 +83,7 @@ const components: MDXComponents = {
   a: CustomLink,
   h1: (props) => <Typography variant="h1" {...props} />,
   h2: (props) => (
-    <Typography variant="h2" className="text-3xl text-primary" {...props} />
+    <Typography variant="h2" className="text-3xl text-accent" {...props} />
   ),
   h3: (props) => <Typography variant="h3" className="text-2xl" {...props} />,
   img: ImageComponent,

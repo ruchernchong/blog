@@ -95,7 +95,7 @@ export function SeriesForm({ series }: SeriesFormProps) {
             <h1 className="font-bold text-3xl tracking-tight">
               {isEditing ? "Edit Series" : "Create New Series"}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted">
               {isEditing
                 ? "Update series details and settings"
                 : "Group related posts into an ordered collection"}
@@ -110,9 +110,9 @@ export function SeriesForm({ series }: SeriesFormProps) {
         </div>
 
         {error && (
-          <Card className="border-destructive">
+          <Card className="border-danger">
             <Card.Content className="py-6">
-              <p className="text-destructive text-sm">{error}</p>
+              <p className="text-danger text-sm">{error}</p>
             </Card.Content>
           </Card>
         )}

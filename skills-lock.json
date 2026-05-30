@@ -87,11 +87,6 @@
       "sourceType": "github",
       "computedHash": "1eef04180a5278a6869fab117c75fa2acf512bfda0a4b16569409b88b7bcb343"
     },
-    "shadcn": {
-      "source": "shadcn/ui",
-      "sourceType": "github",
-      "computedHash": "507f011a70e8b3ae242bdc0bb5b39fd91a1d4049a0f3c281991ccf84973d591c"
-    },
     "skill-creator": {
       "source": "anthropics/skills",
       "sourceType": "github",

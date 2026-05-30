@@ -1,12 +1,11 @@
 "use client";
 
-import { Button, Card } from "@heroui/react";
+import { Button, Card, cn } from "@heroui/react";
 import type { ComponentPropsWithoutRef } from "react";
 import { useState } from "react";
 import { ERROR_IDS } from "@/constants/error-ids";
 import { authClient } from "@/lib/auth-client";
 import { logError } from "@/lib/logger";
-import { cn } from "@/lib/utils";
 
 export const LoginForm = ({
   className,
@@ -43,8 +42,8 @@ export const LoginForm = ({
         </Card.Header>
         <Card.Content>
           {error && (
-            <div className="mb-4 rounded-lg border border-destructive bg-destructive/10 p-3">
-              <p className="text-destructive text-sm">{error}</p>
+            <div className="mb-4 rounded-lg border border-danger bg-danger/10 p-3">
+              <p className="text-danger text-sm">{error}</p>
             </div>
           )}
           <Button

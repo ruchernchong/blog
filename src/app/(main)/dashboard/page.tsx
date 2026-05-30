@@ -39,11 +39,11 @@ export default function DashboardPage() {
         title="Dashboard"
         description="Real-time analytics. All data updates automatically."
         icon={
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-accent/10">
             <HugeiconsIcon
               icon={DashboardBrowsingIcon}
               size={20}
-              className="text-primary"
+              className="text-accent"
             />
           </div>
         }

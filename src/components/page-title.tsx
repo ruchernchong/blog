@@ -1,6 +1,6 @@
+import { cn } from "@heroui/react";
 import type { ReactNode } from "react";
 import { Typography } from "@/components/typography";
-import { cn } from "@/lib/utils";
 
 interface PageTitleProps {
   title: string;
@@ -32,7 +32,7 @@ export function PageTitle({
         <Typography
           variant="body-lg"
           className={cn(
-            "text-muted-foreground",
+            "text-muted",
             animate && "animate-slide-in-left-delayed",
           )}
         >

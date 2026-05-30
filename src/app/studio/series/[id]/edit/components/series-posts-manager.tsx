@@ -84,7 +84,7 @@ export function SeriesPostsManager({ seriesId }: SeriesPostsManagerProps) {
           <Card.Title>Posts in Series</Card.Title>
         </Card.Header>
         <Card.Content>
-          <p className="text-muted-foreground">Loading posts...</p>
+          <p className="text-muted">Loading posts...</p>
         </Card.Content>
       </Card>
     );
@@ -97,7 +97,7 @@ export function SeriesPostsManager({ seriesId }: SeriesPostsManagerProps) {
           <Card.Title>Posts in Series</Card.Title>
         </Card.Header>
         <Card.Content>
-          <p className="text-muted-foreground">
+          <p className="text-muted">
             No posts in this series yet. Assign posts to this series from the
             post editor.
           </p>
@@ -140,12 +140,12 @@ function ReorderItem({ post }: { post: SeriesPost }) {
       value={post}
       dragListener={false}
       dragControls={controls}
-      className="flex items-center gap-4 rounded-lg border bg-card p-4"
+      className="flex items-center gap-4 rounded-lg border bg-surface p-4"
     >
       <button
         type="button"
         onPointerDown={(e) => controls.start(e)}
-        className="cursor-grab touch-none text-muted-foreground hover:text-foreground"
+        className="cursor-grab touch-none text-muted hover:text-foreground"
       >
         <HugeiconsIcon icon={DragDropVerticalIcon} size={20} />
       </button>
@@ -153,7 +153,7 @@ function ReorderItem({ post }: { post: SeriesPost }) {
       <div className="flex flex-1 items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <span className="font-medium">{post.title}</span>
-          <span className="text-muted-foreground text-xs">{post.slug}</span>
+          <span className="text-muted text-xs">{post.slug}</span>
         </div>
 
         <div className="flex items-center gap-4">
