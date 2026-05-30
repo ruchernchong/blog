@@ -11,9 +11,7 @@ export function MarkdownPreview({ markdown }: MarkdownPreviewProps) {
   if (!markdown.trim()) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-muted-foreground text-sm">
-          Start writing to see preview
-        </p>
+        <p className="text-muted text-sm">Start writing to see preview</p>
       </div>
     );
   }

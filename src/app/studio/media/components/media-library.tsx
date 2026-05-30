@@ -1,29 +1,17 @@
 "use client";
 
+import {
+  AlertDialog,
+  Button,
+  Card,
+  Checkbox,
+  Input,
+  TextField,
+} from "@heroui/react";
+import { EmptyState } from "@heroui-pro/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { Input } from "@/components/ui/input";
 import type { SelectMedia } from "@/schema";
 import { MediaUpload } from "./media-upload";
 
@@ -142,17 +130,15 @@ export function MediaLibrary() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-bold text-3xl">Media Library</h1>
-            <p className="mb-2 text-muted-foreground">
+            <p className="mb-2 text-muted">
               Manage your images and media files
             </p>
           </div>
         </div>
         <Card>
-          <CardContent className="py-12">
-            <p className="text-center text-muted-foreground">
-              Loading media...
-            </p>
-          </CardContent>
+          <Card.Content className="py-12">
+            <p className="text-center text-muted">Loading media...</p>
+          </Card.Content>
         </Card>
       </div>
     );
@@ -163,51 +149,59 @@ export function MediaLibrary() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-3xl">Media Library</h1>
-          <p className="mb-2 text-muted-foreground">
-            Manage your images and media files
-          </p>
+          <p className="mb-2 text-muted">Manage your images and media files</p>
         </div>
         <MediaUpload onUploadComplete={handleUploadComplete} />
       </div>
 
       <div className="flex items-center gap-4">
         <div className="flex-1">
-          <Input
+          <TextField
+            aria-label="Search media"
             type="search"
-            placeholder="Search by filename or alt text..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-md"
-          />
+            onChange={setSearchQuery}
+          >
+            <Input
+              className="max-w-md"
+              placeholder="Search by filename or alt text..."
+            />
+          </TextField>
         </div>
         {media.length > 0 && (
           <div className="flex items-center gap-2">
             <Checkbox
-              checked={media.length > 0 && selectedItems.size === media.length}
-              onCheckedChange={toggleAll}
+              isSelected={
+                media.length > 0 && selectedItems.size === media.length
+              }
+              onChange={() => toggleAll()}
               aria-label="Select all"
-            />
-            <span className="text-muted-foreground text-sm">Select all</span>
+            >
+              <Checkbox.Control>
+                <Checkbox.Indicator />
+              </Checkbox.Control>
+            </Checkbox>
+            <span className="text-muted text-sm">Select all</span>
           </div>
         )}
       </div>
 
       {selectedItems.size > 0 && (
-        <div className="flex items-center gap-4 rounded-lg border bg-muted p-4">
+        <div className="flex items-center gap-4 rounded-lg border bg-default p-4">
           <span className="text-sm">{selectedItems.size} item(s) selected</span>
           <div className="ml-auto flex gap-4">
             <Button
-              variant="destructive"
+              variant="danger"
               size="sm"
-              onClick={handleBulkDelete}
-              disabled={isPending}
+              onPress={handleBulkDelete}
+              isDisabled={isPending}
             >
               {isPending ? "Deleting..." : "Delete Selected"}
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setSelectedItems(new Set())}
+              onPress={() => setSelectedItems(new Set())}
             >
               Clear Selection
             </Button>
@@ -217,19 +211,19 @@ export function MediaLibrary() {
 
       {media.length === 0 ? (
         <Card>
-          <CardContent className="py-12">
-            <Empty>
-              <EmptyHeader>
-                <EmptyTitle>No media yet</EmptyTitle>
-                <EmptyDescription>
+          <Card.Content className="py-12">
+            <EmptyState>
+              <EmptyState.Header>
+                <EmptyState.Title>No media yet</EmptyState.Title>
+                <EmptyState.Description>
                   Upload your first image to get started
-                </EmptyDescription>
-              </EmptyHeader>
-              <EmptyContent>
+                </EmptyState.Description>
+              </EmptyState.Header>
+              <EmptyState.Content>
                 <MediaUpload onUploadComplete={handleUploadComplete} />
-              </EmptyContent>
-            </Empty>
-          </CardContent>
+              </EmptyState.Content>
+            </EmptyState>
+          </Card.Content>
         </Card>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
@@ -237,15 +231,20 @@ export function MediaLibrary() {
             <Card
               key={item.id}
               className={`group relative overflow-hidden ${
-                selectedItems.has(item.id) ? "ring-2 ring-primary" : ""
+                selectedItems.has(item.id) ? "ring-2 ring-accent" : ""
               }`}
             >
               <div className="absolute top-2 left-2 z-10">
                 <Checkbox
-                  checked={selectedItems.has(item.id)}
-                  onCheckedChange={() => toggleSelection(item.id)}
+                  isSelected={selectedItems.has(item.id)}
+                  onChange={() => toggleSelection(item.id)}
                   className="bg-background/80"
-                />
+                  aria-label={`Select ${item.filename}`}
+                >
+                  <Checkbox.Control>
+                    <Checkbox.Indicator />
+                  </Checkbox.Control>
+                </Checkbox>
               </div>
               <div className="relative aspect-square">
                 <Image
@@ -256,25 +255,25 @@ export function MediaLibrary() {
                   sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                 />
               </div>
-              <CardContent className="p-2">
+              <Card.Content className="p-2">
                 <p className="truncate font-medium text-sm">{item.filename}</p>
-                <p className="text-muted-foreground text-xs">
+                <p className="text-muted text-xs">
                   {formatFileSize(item.size)}
                 </p>
-              </CardContent>
+              </Card.Content>
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => copyToClipboard(item.url)}
+                  onPress={() => copyToClipboard(item.url)}
                 >
                   Copy URL
                 </Button>
                 <Button
-                  variant="destructive"
+                  variant="danger"
                   size="sm"
-                  onClick={() => handleDelete(item)}
-                  disabled={isPending}
+                  onPress={() => handleDelete(item)}
+                  isDisabled={isPending}
                 >
                   Delete
                 </Button>
@@ -284,28 +283,34 @@ export function MediaLibrary() {
         </div>
       )}
 
-      <AlertDialog
-        open={!!deleteTarget}
-        onOpenChange={(open) => !open && setDeleteTarget(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete media?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will delete &ldquo;{deleteTarget?.filename}&rdquo;. This
-              action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
+      <AlertDialog>
+        <AlertDialog.Backdrop
+          isOpen={!!deleteTarget}
+          onOpenChange={(open) => !open && setDeleteTarget(null)}
+        >
+          <AlertDialog.Container>
+            <AlertDialog.Dialog>
+              <AlertDialog.Header>
+                <AlertDialog.Icon status="danger" />
+                <AlertDialog.Heading>Delete media?</AlertDialog.Heading>
+              </AlertDialog.Header>
+              <AlertDialog.Body>
+                <p>
+                  This will delete &ldquo;{deleteTarget?.filename}&rdquo;. This
+                  action cannot be undone.
+                </p>
+              </AlertDialog.Body>
+              <AlertDialog.Footer>
+                <Button slot="close" variant="tertiary">
+                  Cancel
+                </Button>
+                <Button slot="close" variant="danger" onPress={confirmDelete}>
+                  Delete
+                </Button>
+              </AlertDialog.Footer>
+            </AlertDialog.Dialog>
+          </AlertDialog.Container>
+        </AlertDialog.Backdrop>
       </AlertDialog>
     </div>
   );

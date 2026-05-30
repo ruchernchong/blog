@@ -62,17 +62,17 @@ export default async function AboutPage() {
             title="About Me"
             description={currentPosition}
             icon={
-              <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-accent/10">
                 <HugeiconsIcon
                   icon={UserIcon}
                   size={20}
-                  className="text-primary"
+                  className="text-accent"
                 />
               </div>
             }
           />
           <div className="flex flex-col gap-4">
-            <p className="text-muted-foreground">{description}</p>
+            <p className="text-muted">{description}</p>
             <div className="flex gap-4">
               {socials.map(({ name, link }) => (
                 <ExternalLink

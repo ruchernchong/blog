@@ -122,8 +122,7 @@ Files use **kebab-case** matching the component name:
 
 | Location                               | Purpose                              |
 | -------------------------------------- | ------------------------------------ |
-| `src/components/`                      | Reusable components (not shadcn/ui)  |
-| `src/components/ui/`                   | shadcn/ui primitives (DO NOT MODIFY) |
+| `src/components/`                      | Reusable components                  |
 | `src/components/auth/`                 | Authentication components            |
 | `src/app/components/`                  | App-level shared components          |
 | `src/app/(main)/about/components/`     | About page components                |
@@ -178,4 +177,3 @@ When reviewing component names:
 
 - `.claude/skills/design-language-system/SKILL.md` - Design system guidelines
 - `src/components/` - Blog components
-- `src/components/ui/` - shadcn/ui (do not modify)

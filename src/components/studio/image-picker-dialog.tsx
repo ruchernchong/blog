@@ -1,19 +1,10 @@
 "use client";
 
+import { Button, Input, Modal, TextField } from "@heroui/react";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
 import type { ReactElement } from "react";
 import { useEffect, useState, useTransition } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import type { SelectMedia } from "@/schema";
 
 interface ImagePickerDialogProps {
@@ -59,75 +50,79 @@ export function ImagePickerDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      {trigger ? (
-        <DialogTrigger render={trigger}>{null}</DialogTrigger>
-      ) : (
-        <DialogTrigger render={<Button type="button" variant="outline" />}>
+    <Modal>
+      {trigger ?? (
+        <Button type="button" variant="outline">
           Browse Media
-        </DialogTrigger>
+        </Button>
       )}
-      <DialogContent className="max-w-4xl">
-        <DialogHeader>
-          <DialogTitle>Select Image</DialogTitle>
-          <DialogDescription>
-            Choose an image from your media library
-          </DialogDescription>
-        </DialogHeader>
+      <Modal.Backdrop isOpen={open} onOpenChange={setOpen}>
+        <Modal.Container>
+          <Modal.Dialog className="max-w-4xl">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading>Select Image</Modal.Heading>
+            </Modal.Header>
+            <Modal.Body className="flex flex-col gap-4">
+              <p className="text-muted text-sm">
+                Choose an image from your media library
+              </p>
 
-        <div className="flex flex-col gap-4">
-          <Input
-            type="search"
-            placeholder="Search by filename or alt text..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+              <TextField
+                aria-label="Search media"
+                type="search"
+                value={searchQuery}
+                onChange={setSearchQuery}
+              >
+                <Input placeholder="Search by filename or alt text..." />
+              </TextField>
 
-          {isPending && media.length === 0 ? (
-            <p className="py-8 text-center text-muted-foreground">Loading...</p>
-          ) : media.length === 0 ? (
-            <p className="py-8 text-center text-muted-foreground">
-              No media found. Upload images in the Media Library first.
-            </p>
-          ) : (
-            <div className="grid max-h-96 grid-cols-4 gap-2 overflow-y-auto">
-              {media.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setSelected(item)}
-                  className={`relative aspect-square overflow-hidden rounded-md border-2 transition-colors ${
-                    selected?.id === item.id
-                      ? "border-primary"
-                      : "border-transparent hover:border-muted-foreground/50"
-                  }`}
-                >
-                  <Image
-                    src={item.url}
-                    alt={item.alt || item.filename}
-                    fill
-                    className="object-cover"
-                    sizes="150px"
-                  />
-                </button>
-              ))}
-            </div>
-          )}
-
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="button" onClick={handleSelect} disabled={!selected}>
-              Select
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+              {isPending && media.length === 0 ? (
+                <p className="py-8 text-center text-muted">Loading...</p>
+              ) : media.length === 0 ? (
+                <p className="py-8 text-center text-muted">
+                  No media found. Upload images in the Media Library first.
+                </p>
+              ) : (
+                <div className="grid max-h-96 grid-cols-4 gap-2 overflow-y-auto">
+                  {media.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setSelected(item)}
+                      className={`relative aspect-square overflow-hidden rounded-md border-2 transition-colors ${
+                        selected?.id === item.id
+                          ? "border-accent"
+                          : "border-transparent hover:border-muted-foreground/50"
+                      }`}
+                    >
+                      <Image
+                        src={item.url}
+                        alt={item.alt || item.filename}
+                        fill
+                        className="object-cover"
+                        sizes="150px"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </Modal.Body>
+            <Modal.Footer>
+              <Button slot="close" type="button" variant="outline">
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onPress={handleSelect}
+                isDisabled={!selected}
+              >
+                Select
+              </Button>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
   );
 }

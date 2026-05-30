@@ -1,8 +1,8 @@
+import { Chip } from "@heroui/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
 import { Typography } from "@/components/typography";
-import { Badge } from "@/components/ui/badge";
 import { getFeaturedPosts } from "@/lib/queries/posts";
 
 // import { ViewIcon } from "@hugeicons/core-free-icons";
@@ -41,20 +41,22 @@ export async function FeaturedPost() {
   return (
     <Link
       href={post.metadata.canonical as Route}
-      className="group relative block overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-lg md:p-8"
+      className="group relative block overflow-hidden rounded-2xl border border-border bg-surface p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/20 hover:shadow-lg md:p-8"
     >
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge className="bg-primary text-primary-foreground">Featured</Badge>
+          <Chip color="accent" variant="primary">
+            Featured
+          </Chip>
           <time
             dateTime={formatISO(post.publishedAt)}
             title={formattedDate}
-            className="text-muted-foreground text-sm"
+            className="text-muted text-sm"
           >
             {formattedDate}
           </time>
           {/* TODO: Re-enable view count display after caching Redis reads for /blog. */}
-          {/* <div className="flex items-center gap-2 text-muted-foreground">
+          {/* <div className="flex items-center gap-2 text-muted">
             <span>·</span>
             <HugeiconsIcon icon={ViewIcon} size={16} strokeWidth={2} />
             <span className="text-sm">{formatViews(views)}</span>
@@ -66,10 +68,7 @@ export async function FeaturedPost() {
         </Typography>
 
         {post.summary && (
-          <Typography
-            variant="body"
-            className="line-clamp-3 text-muted-foreground"
-          >
+          <Typography variant="body" className="line-clamp-3 text-muted">
             {post.summary}
           </Typography>
         )}
@@ -77,13 +76,9 @@ export async function FeaturedPost() {
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {post.tags.slice(0, 3).map((tag) => (
-              <Badge
-                key={tag}
-                variant="secondary"
-                className="text-muted-foreground"
-              >
+              <Chip key={tag} size="sm" variant="secondary">
                 {tag}
-              </Badge>
+              </Chip>
             ))}
           </div>
         )}

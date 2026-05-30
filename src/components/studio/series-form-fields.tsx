@@ -1,26 +1,21 @@
 "use client";
 
+import {
+  Button,
+  Description,
+  FieldError,
+  Input,
+  Label,
+  ListBox,
+  Select,
+  TextArea,
+  TextField,
+} from "@heroui/react";
 import Image from "next/image";
-import { Suspense, useId } from "react";
+import { Suspense } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
-import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 
 export const seriesFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -45,33 +40,23 @@ export function SeriesFormFields({
 }: SeriesFormFieldsProps) {
   const form = useFormContext<SeriesFormValues>();
 
-  const titleId = useId();
-  const slugId = useId();
-  const descriptionId = useId();
-  const statusId = useId();
-  const coverImageId = useId();
-
   return (
     <>
       <Controller
         control={form.control}
         name="title"
         render={({ field, fieldState }) => (
-          <Field data-invalid={!!fieldState.error}>
-            <FieldLabel htmlFor={titleId}>
-              Title <span className="text-destructive">*</span>
-            </FieldLabel>
-            <Input
-              id={titleId}
-              placeholder="Next.js Deep Dive"
-              autoComplete="off"
-              aria-invalid={!!fieldState.error}
-              {...field}
-            />
+          <TextField
+            isInvalid={!!fieldState.error}
+            value={field.value ?? ""}
+            onChange={field.onChange}
+          >
+            <Label isRequired>Title</Label>
+            <Input placeholder="Next.js Deep Dive" autoComplete="off" />
             {fieldState.error && (
               <FieldError>{fieldState.error.message}</FieldError>
             )}
-          </Field>
+          </TextField>
         )}
       />
 
@@ -79,33 +64,28 @@ export function SeriesFormFields({
         control={form.control}
         name="slug"
         render={({ field, fieldState }) => (
-          <Field data-invalid={!!fieldState.error}>
-            <FieldLabel htmlFor={slugId}>
-              Slug{" "}
-              {!slugReadOnly && <span className="text-destructive">*</span>}
-            </FieldLabel>
+          <TextField
+            isInvalid={!!fieldState.error}
+            isReadOnly={slugReadOnly}
+            value={field.value ?? ""}
+            onChange={field.onChange}
+          >
+            <Label isRequired={!slugReadOnly}>Slug</Label>
             <Input
-              id={slugId}
               placeholder={
                 slugReadOnly ? "auto-generated-from-title" : "nextjs-deep-dive"
               }
               autoComplete="off"
-              readOnly={slugReadOnly}
-              className={
-                slugReadOnly ? "cursor-not-allowed bg-muted" : undefined
-              }
-              aria-invalid={!!fieldState.error}
-              {...field}
             />
-            <FieldDescription>
+            <Description>
               {slugReadOnly
                 ? "Auto-generated from the series title"
                 : "URL-friendly identifier for this series"}
-            </FieldDescription>
+            </Description>
             {fieldState.error && (
               <FieldError>{fieldState.error.message}</FieldError>
             )}
-          </Field>
+          </TextField>
         )}
       />
 
@@ -113,22 +93,22 @@ export function SeriesFormFields({
         control={form.control}
         name="description"
         render={({ field, fieldState }) => (
-          <Field data-invalid={!!fieldState.error}>
-            <FieldLabel htmlFor={descriptionId}>Description</FieldLabel>
-            <Textarea
-              id={descriptionId}
+          <TextField
+            isInvalid={!!fieldState.error}
+            value={field.value ?? ""}
+            onChange={field.onChange}
+          >
+            <Label>Description</Label>
+            <TextArea
               placeholder="A comprehensive guide to building with Next.js..."
               rows={4}
               autoComplete="off"
-              {...field}
             />
-            <FieldDescription>
-              Briefly describe what this series covers
-            </FieldDescription>
+            <Description>Briefly describe what this series covers</Description>
             {fieldState.error && (
               <FieldError>{fieldState.error.message}</FieldError>
             )}
-          </Field>
+          </TextField>
         )}
       />
 
@@ -136,21 +116,32 @@ export function SeriesFormFields({
         control={form.control}
         name="status"
         render={({ field, fieldState }) => (
-          <Field data-invalid={!!fieldState.error}>
-            <FieldLabel>Status</FieldLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
-              <SelectTrigger id={statusId}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
-              </SelectContent>
-            </Select>
+          <Select
+            isInvalid={!!fieldState.error}
+            value={field.value}
+            onChange={field.onChange}
+          >
+            <Label>Status</Label>
+            <Select.Trigger>
+              <Select.Value />
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover>
+              <ListBox>
+                <ListBox.Item id="draft" textValue="Draft">
+                  Draft
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+                <ListBox.Item id="published" textValue="Published">
+                  Published
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+              </ListBox>
+            </Select.Popover>
             {fieldState.error && (
               <FieldError>{fieldState.error.message}</FieldError>
             )}
-          </Field>
+          </Select>
         )}
       />
 
@@ -158,19 +149,18 @@ export function SeriesFormFields({
         control={form.control}
         name="coverImage"
         render={({ field, fieldState }) => (
-          <Field
-            data-invalid={!!fieldState.error}
-            className="flex flex-col gap-4"
-          >
-            <div className="flex flex-col gap-2">
-              <FieldLabel htmlFor={coverImageId}>Cover Image URL</FieldLabel>
+          <div className="flex flex-col gap-4">
+            <TextField
+              type="url"
+              isInvalid={!!fieldState.error}
+              value={field.value ?? ""}
+              onChange={field.onChange}
+            >
+              <Label>Cover Image URL</Label>
               <div className="flex gap-2">
                 <Input
-                  id={coverImageId}
-                  type="url"
                   placeholder="https://example.com/image.jpg"
                   autoComplete="off"
-                  {...field}
                 />
                 <Suspense fallback={null}>
                   <ImagePickerDialog
@@ -183,13 +173,11 @@ export function SeriesFormFields({
                   />
                 </Suspense>
               </div>
-              <FieldDescription>
-                Optional cover image for the series
-              </FieldDescription>
+              <Description>Optional cover image for the series</Description>
               {fieldState.error && (
                 <FieldError>{fieldState.error.message}</FieldError>
               )}
-            </div>
+            </TextField>
             {field.value && (
               <Image
                 src={field.value}
@@ -202,7 +190,7 @@ export function SeriesFormFields({
                 }}
               />
             )}
-          </Field>
+          </div>
         )}
       />
     </>

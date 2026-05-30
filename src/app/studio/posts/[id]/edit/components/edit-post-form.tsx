@@ -1,5 +1,17 @@
 "use client";
 
+import {
+  Button,
+  Card,
+  Description,
+  Input,
+  Label,
+  ListBox,
+  Select,
+  TextArea,
+  TextField,
+} from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -7,7 +19,6 @@ import {
   Suspense,
   useEffect,
   useEffectEvent,
-  useId,
   useRef,
   useState,
   useTransition,
@@ -15,19 +26,9 @@ import {
 import { ContentEditor } from "@/components/studio/content-editor";
 import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
 import { SaveStatusIndicator } from "@/components/studio/save-status-indicator";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useAutoSave, useBeforeUnload } from "@/hooks/use-auto-save";
+
+const NO_SERIES = "__none__";
 
 interface Post {
   id: string;
@@ -111,14 +112,6 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
   });
 
   const initialFormDataRef = useRef<FormData>(formData);
-
-  const titleId = useId();
-  const slugId = useId();
-  const summaryId = useId();
-  const statusId = useId();
-  const seriesFieldId = useId();
-  const tagsId = useId();
-  const coverImageId = useId();
 
   const dirty = isDirty(formData, initialFormDataRef.current);
 
@@ -282,9 +275,9 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
   if (isLoading) {
     return (
       <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Loading...</p>
-        </CardContent>
+        <Card.Content className="flex items-center justify-center py-12">
+          <p className="text-muted">Loading...</p>
+        </Card.Content>
       </Card>
     );
   }
@@ -292,16 +285,15 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
   if (!post) {
     return (
       <Card>
-        <CardContent className="py-12 text-center">
-          <p className="mb-4 text-muted-foreground">Post not found</p>
-          <Button
-            variant="outline"
-            nativeButton={false}
-            render={<Link href="/studio/posts" />}
+        <Card.Content className="py-12 text-center">
+          <p className="mb-4 text-muted">Post not found</p>
+          <Link
+            className={buttonVariants({ variant: "outline" })}
+            href="/studio/posts"
           >
             Back to Posts
-          </Button>
-        </CardContent>
+          </Link>
+        </Card.Content>
       </Card>
     );
   }
@@ -311,161 +303,157 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-3xl">Edit Post</h1>
-          <p className="mb-2 text-muted-foreground">
-            Update your blog post details
-          </p>
+          <p className="mb-2 text-muted">Update your blog post details</p>
         </div>
-        <Button
-          variant="outline"
-          nativeButton={false}
-          render={<Link href="/studio/posts" />}
+        <Link
+          className={buttonVariants({ variant: "outline" })}
+          href="/studio/posts"
         >
           Back to Posts
-        </Button>
+        </Link>
       </div>
 
       {post.deletedAt && (
         <Card className="border-red-500 bg-red-50">
-          <CardContent className="pt-6">
+          <Card.Content className="pt-6">
             <p className="font-medium text-red-800 text-sm">
               This post has been deleted. Restore it to make edits or view it on
               the public site.
             </p>
-          </CardContent>
+          </Card.Content>
         </Card>
       )}
 
       {error && (
-        <Card className="border-destructive">
-          <CardContent className="pt-6">
-            <p className="text-destructive text-sm">{error}</p>
-          </CardContent>
+        <Card className="border-danger">
+          <Card.Content className="pt-6">
+            <p className="text-danger text-sm">{error}</p>
+          </Card.Content>
         </Card>
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <Card>
-          <CardHeader>
-            <CardTitle>Post Details</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
+          <Card.Header>
+            <Card.Title>Post Details</Card.Title>
+          </Card.Header>
+          <Card.Content className="flex flex-col gap-4">
             <div className="grid gap-4 md:grid-cols-2">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor={titleId}>
-                  Title <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id={titleId}
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  placeholder="My Awesome Post"
-                  required
-                />
-              </div>
+              <TextField
+                isRequired
+                value={formData.title}
+                onChange={(value) => setFormData({ ...formData, title: value })}
+              >
+                <Label>Title</Label>
+                <Input placeholder="My Awesome Post" />
+              </TextField>
 
-              <div className="flex flex-col gap-2">
-                <Label htmlFor={slugId}>
-                  Slug <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id={slugId}
-                  value={formData.slug}
-                  onChange={(e) =>
-                    setFormData({ ...formData, slug: e.target.value })
-                  }
-                  placeholder="my-awesome-post"
-                  required
-                />
-              </div>
+              <TextField
+                isRequired
+                value={formData.slug}
+                onChange={(value) => setFormData({ ...formData, slug: value })}
+              >
+                <Label>Slug</Label>
+                <Input placeholder="my-awesome-post" />
+              </TextField>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor={summaryId}>Summary</Label>
-              <Textarea
-                id={summaryId}
-                value={formData.summary}
-                onChange={(e) =>
-                  setFormData({ ...formData, summary: e.target.value })
-                }
+            <TextField
+              value={formData.summary}
+              onChange={(value) => setFormData({ ...formData, summary: value })}
+            >
+              <Label>Summary</Label>
+              <TextArea
                 placeholder="A brief description of your post..."
                 rows={3}
               />
-            </div>
+            </TextField>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor={statusId}>Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value: "draft" | "published" | null) => {
-                    if (value) setFormData({ ...formData, status: value });
-                  }}
-                >
-                  <SelectTrigger id={statusId}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="published">Published</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Select
+                value={formData.status}
+                onChange={(value) => {
+                  if (value)
+                    setFormData({
+                      ...formData,
+                      status: value as "draft" | "published",
+                    });
+                }}
+              >
+                <Label>Status</Label>
+                <Select.Trigger>
+                  <Select.Value />
+                  <Select.Indicator />
+                </Select.Trigger>
+                <Select.Popover>
+                  <ListBox>
+                    <ListBox.Item id="draft" textValue="Draft">
+                      Draft
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                    <ListBox.Item id="published" textValue="Published">
+                      Published
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                  </ListBox>
+                </Select.Popover>
+              </Select>
 
-              <div className="flex flex-col gap-2">
-                <Label htmlFor={seriesFieldId}>Series</Label>
-                <Select
-                  value={formData.seriesId}
-                  onValueChange={(value: string | null) => {
-                    setFormData({ ...formData, seriesId: value || "" });
-                  }}
-                >
-                  <SelectTrigger id={seriesFieldId}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">None</SelectItem>
-                    {seriesOptions.map((option) => (
-                      <SelectItem key={option.id} value={option.id}>
-                        {option.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-muted-foreground text-xs">
-                  Assign this post to a series
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor={tagsId}>Tags</Label>
-              <Input
-                id={tagsId}
-                value={formData.tags}
-                onChange={(e) =>
-                  setFormData({ ...formData, tags: e.target.value })
+              <Select
+                value={formData.seriesId || NO_SERIES}
+                onChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    seriesId: value === NO_SERIES ? "" : String(value),
+                  })
                 }
-                placeholder="nextjs, react, typescript"
-              />
-              <p className="text-muted-foreground text-xs">
-                Comma-separated tags
-              </p>
+              >
+                <Label>Series</Label>
+                <Select.Trigger>
+                  <Select.Value />
+                  <Select.Indicator />
+                </Select.Trigger>
+                <Select.Popover>
+                  <ListBox>
+                    <ListBox.Item id={NO_SERIES} textValue="None">
+                      None
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                    {seriesOptions.map((option) => (
+                      <ListBox.Item
+                        key={option.id}
+                        id={option.id}
+                        textValue={option.title}
+                      >
+                        {option.title}
+                        <ListBox.ItemIndicator />
+                      </ListBox.Item>
+                    ))}
+                  </ListBox>
+                </Select.Popover>
+                <Description>Assign this post to a series</Description>
+              </Select>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor={coverImageId}>Cover Image URL</Label>
+            <TextField
+              value={formData.tags}
+              onChange={(value) => setFormData({ ...formData, tags: value })}
+            >
+              <Label>Tags</Label>
+              <Input placeholder="nextjs, react, typescript" />
+              <Description>Comma-separated tags</Description>
+            </TextField>
+
+            <TextField
+              type="url"
+              value={formData.coverImage}
+              onChange={(value) =>
+                setFormData({ ...formData, coverImage: value })
+              }
+            >
+              <Label>Cover Image URL</Label>
               <div className="flex gap-2">
-                <Input
-                  id={coverImageId}
-                  type="url"
-                  value={formData.coverImage}
-                  onChange={(e) =>
-                    setFormData({ ...formData, coverImage: e.target.value })
-                  }
-                  placeholder="https://example.com/image.jpg"
-                />
+                <Input placeholder="https://example.com/image.jpg" />
                 <Suspense fallback={null}>
                   <ImagePickerDialog
                     onSelect={(url) =>
@@ -479,11 +467,9 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
                   />
                 </Suspense>
               </div>
-              <p className="text-muted-foreground text-xs">
-                Optional cover image URL
-              </p>
-            </div>
-          </CardContent>
+              <Description>Optional cover image URL</Description>
+            </TextField>
+          </Card.Content>
         </Card>
 
         <ContentEditor
@@ -496,18 +482,17 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
             {post.deletedAt ? (
               <Button
                 type="button"
-                variant="default"
-                onClick={handleRestore}
-                disabled={isPending}
+                onPress={handleRestore}
+                isDisabled={isPending}
               >
                 {isPending ? "Restoring..." : "Restore Post"}
               </Button>
             ) : (
               <Button
                 type="button"
-                variant="destructive"
-                onClick={handleDelete}
-                disabled={isPending}
+                variant="danger"
+                onPress={handleDelete}
+                isDisabled={isPending}
               >
                 {isPending ? "Deleting..." : "Delete Post"}
               </Button>
@@ -520,14 +505,13 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
           </div>
 
           <div className="flex gap-4">
-            <Button
-              variant="outline"
-              nativeButton={false}
-              render={<Link href="/studio/posts" />}
+            <Link
+              className={buttonVariants({ variant: "outline" })}
+              href="/studio/posts"
             >
               Cancel
-            </Button>
-            <Button type="submit" disabled={isPending || !!post.deletedAt}>
+            </Link>
+            <Button type="submit" isDisabled={isPending || !!post.deletedAt}>
               {isPending ? "Saving..." : "Save Changes"}
             </Button>
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
+import { cn } from "@heroui/react";
 import { parseAsString, useQueryState } from "nuqs";
-import { cn } from "@/lib/utils";
 
 interface TagSelectorProps {
   tags: string[];
@@ -35,8 +35,8 @@ export function TagSelector({ tags, className }: TagSelectorProps) {
         className={cn(
           "shrink-0 rounded-full px-4 py-2 font-medium text-sm transition-all duration-200 hover:-translate-y-0.5",
           activeTag === null
-            ? "bg-primary text-primary-foreground"
-            : "bg-muted text-muted-foreground hover:bg-muted/80",
+            ? "bg-accent text-accent-foreground"
+            : "bg-default text-muted hover:bg-default/80",
         )}
       >
         All
@@ -50,8 +50,8 @@ export function TagSelector({ tags, className }: TagSelectorProps) {
             className={cn(
               "shrink-0 rounded-full px-4 py-2 font-medium text-sm transition-all duration-200 hover:-translate-y-0.5",
               activeTag === tag
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80",
+                ? "bg-accent text-accent-foreground"
+                : "bg-default text-muted hover:bg-default/80",
             )}
           >
             {tag}

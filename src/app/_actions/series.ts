@@ -11,7 +11,7 @@ import type { CreateSeriesInput, UpdateSeriesInput } from "@/types/api";
 
 async function requireAdmin() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (session.user?.role !== "admin") {
+  if (!session || session.user?.role !== "admin") {
     throw new Error("Unauthorised");
   }
   return session;

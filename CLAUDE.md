@@ -122,6 +122,7 @@ A Next.js 16 portfolio website with an integrated blog system and Content Studio
 - **Storage**: Cloudflare R2 for media assets
 - **Authentication**: Better Auth with OAuth (GitHub, Google)
 - **Cache**: Upstash Redis for related posts, analytics, and post statistics
+- **UI**: HeroUI v3 — Pro (`@heroui-pro/react`) + OSS (`@heroui/react`)
 - **Styling**: Tailwind CSS v4
 - **Testing**: Vitest with React Testing Library
 - **Code Quality**: Biome for linting/formatting, TypeScript strict mode
@@ -153,8 +154,7 @@ src/
 │   └── login/        # Auth pages
 ├── components/
 │   ├── auth/         # Authentication components
-│   ├── studio/       # CMS-specific components
-│   └── ui/           # shadcn/ui primitives (DO NOT MODIFY)
+│   └── studio/       # CMS-specific components
 ├── lib/
 │   ├── api/          # API route utilities (auth, validation, errors)
 │   ├── config/       # Configuration constants
@@ -231,9 +231,14 @@ See `.env.example` for all required variables:
 
 ### Components
 
-- **Do not modify `src/components/ui/`** - use composition instead
+- **Use HeroUI for UI**: HeroUI Pro (`@heroui-pro/react`) first, then HeroUI OSS
+  (`@heroui/react`) as fallback. shadcn has been fully removed.
+- HeroUI v3 conventions: `onPress` (not `onClick`), `isDisabled` (not `disabled`), compound
+  components (`Card.Header`, `Select.Trigger`, `Modal.Backdrop`); `TextField` owns controlled
+  `value`/`onChange(string)`; badges are `Chip`; style links as buttons with
+  `buttonVariants()` from `@heroui/styles` on a Next `Link` (avoid `render` props)
+- Icons come from `@hugeicons/*` (HeroUI ships none)
 - Use `cn()` utility for conditional class merging
-- Use class-variance-authority (CVA) for variants
 - Follow component-naming skill conventions
 
 ### Tailwind CSS v4
