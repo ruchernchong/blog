@@ -27,9 +27,7 @@ export async function PostGrid() {
 
   if (gridPosts.length === 0) {
     return (
-      <p className="col-span-full text-center text-muted-foreground">
-        No posts found.
-      </p>
+      <p className="col-span-full text-center text-muted">No posts found.</p>
     );
   }
 
@@ -51,12 +49,12 @@ export async function PostGrid() {
                   <time
                     dateTime={formatISO(post.publishedAt)}
                     title={formattedDate}
-                    className="text-muted-foreground text-sm"
+                    className="text-muted text-sm"
                   >
                     {formattedDate}
                   </time>
                   {/* TODO: Re-enable view count display after caching Redis reads for /blog. */}
-                  {/* <div className="flex items-center gap-2 text-muted-foreground">
+                  {/* <div className="flex items-center gap-2 text-muted">
                     <HugeiconsIcon icon={ViewIcon} size={16} strokeWidth={2} />
                     <span className="text-sm">
                       {formatViews(viewCounts.get(post.slug) ?? 0)}
@@ -68,9 +66,7 @@ export async function PostGrid() {
                 </Card.Title>
               </Card.Header>
               <Card.Content className="flex flex-1 flex-col gap-4">
-                <p className="line-clamp-2 flex-1 text-muted-foreground">
-                  {post.summary}
-                </p>
+                <p className="line-clamp-2 flex-1 text-muted">{post.summary}</p>
                 {post.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {post.tags.slice(0, 2).map((postTag) => {

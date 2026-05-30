@@ -172,9 +172,7 @@ export function SeriesTable() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-bold text-3xl">Series</h1>
-            <p className="mb-2 text-muted-foreground">
-              Manage your blog series
-            </p>
+            <p className="mb-2 text-muted">Manage your blog series</p>
           </div>
           <Link
             className={buttonVariants()}
@@ -185,9 +183,7 @@ export function SeriesTable() {
         </div>
         <Card>
           <Card.Content className="py-12">
-            <p className="text-center text-muted-foreground">
-              Loading series...
-            </p>
+            <p className="text-center text-muted">Loading series...</p>
           </Card.Content>
         </Card>
       </div>
@@ -199,7 +195,7 @@ export function SeriesTable() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-3xl">Series</h1>
-          <p className="mb-2 text-muted-foreground">Manage your blog series</p>
+          <p className="mb-2 text-muted">Manage your blog series</p>
         </div>
         <Link className={buttonVariants()} href={"/studio/series/new" as Route}>
           Create Series
@@ -259,7 +255,7 @@ export function SeriesTable() {
       </div>
 
       {selectedSeries.size > 0 && (
-        <div className="flex items-center gap-4 rounded-lg border bg-muted p-4">
+        <div className="flex items-center gap-4 rounded-lg border bg-default p-4">
           <span className="text-sm">{selectedSeries.size} series selected</span>
           <div className="ml-auto flex gap-4">
             <Button
@@ -352,7 +348,7 @@ export function SeriesTable() {
                   {filteredSeries.map((series) => (
                     <tr
                       key={series.id}
-                      className={`border-b last:border-0 hover:bg-muted/50 ${
+                      className={`border-b last:border-0 hover:bg-default/50 ${
                         series.deletedAt ? "opacity-60" : ""
                       }`}
                     >
@@ -370,7 +366,7 @@ export function SeriesTable() {
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
                           <span className="font-medium">{series.title}</span>
-                          <span className="text-muted-foreground text-xs">
+                          <span className="text-muted text-xs">
                             {series.slug}
                           </span>
                         </div>
@@ -396,7 +392,7 @@ export function SeriesTable() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-muted-foreground text-sm">
+                      <td className="px-6 py-4 text-muted text-sm">
                         {new Date(series.updatedAt).toLocaleDateString(
                           "en-SG",
                           {

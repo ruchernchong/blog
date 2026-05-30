@@ -153,8 +153,7 @@ src/
 │   └── login/        # Auth pages
 ├── components/
 │   ├── auth/         # Authentication components
-│   ├── studio/       # CMS-specific components
-│   └── ui/           # shadcn/ui primitives (DO NOT MODIFY)
+│   └── studio/       # CMS-specific components
 ├── lib/
 │   ├── api/          # API route utilities (auth, validation, errors)
 │   ├── config/       # Configuration constants
@@ -231,9 +230,8 @@ See `.env.example` for all required variables:
 
 ### Components
 
-- **Do not modify `src/components/ui/`** - use composition instead
-- Use `cn()` utility for conditional class merging
-- Use class-variance-authority (CVA) for variants
+- **Use HeroUI for UI**: HeroUI Pro (`@heroui-pro/react`) first, then HeroUI OSS (`@heroui/react`) as fallback
+- Use `cn()` from `@heroui/react` for conditional class merging
 - Follow component-naming skill conventions
 
 ### Tailwind CSS v4

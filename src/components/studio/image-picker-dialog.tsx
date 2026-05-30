@@ -64,7 +64,7 @@ export function ImagePickerDialog({
               <Modal.Heading>Select Image</Modal.Heading>
             </Modal.Header>
             <Modal.Body className="flex flex-col gap-4">
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted text-sm">
                 Choose an image from your media library
               </p>
 
@@ -78,11 +78,9 @@ export function ImagePickerDialog({
               </TextField>
 
               {isPending && media.length === 0 ? (
-                <p className="py-8 text-center text-muted-foreground">
-                  Loading...
-                </p>
+                <p className="py-8 text-center text-muted">Loading...</p>
               ) : media.length === 0 ? (
-                <p className="py-8 text-center text-muted-foreground">
+                <p className="py-8 text-center text-muted">
                   No media found. Upload images in the Media Library first.
                 </p>
               ) : (
@@ -94,7 +92,7 @@ export function ImagePickerDialog({
                       onClick={() => setSelected(item)}
                       className={`relative aspect-square overflow-hidden rounded-md border-2 transition-colors ${
                         selected?.id === item.id
-                          ? "border-primary"
+                          ? "border-accent"
                           : "border-transparent hover:border-muted-foreground/50"
                       }`}
                     >

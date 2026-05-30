@@ -8,7 +8,7 @@ import socials from "@/data/socials";
 export function Footer() {
   return (
     <div className="mx-auto flex w-full max-w-4xl justify-center px-4 pb-6">
-      <footer className="w-full rounded-2xl border border-border bg-card p-6 shadow-sm">
+      <footer className="w-full rounded-2xl border border-border bg-surface p-6 shadow-sm">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
             <Logo />
@@ -16,7 +16,7 @@ export function Footer() {
               <div className="flex flex-col gap-4">
                 <Link
                   href="/"
-                  className="font-medium text-muted-foreground text-sm transition-all duration-200 hover:text-primary"
+                  className="font-medium text-muted text-sm transition-all duration-200 hover:text-accent"
                 >
                   Home
                 </Link>
@@ -25,7 +25,7 @@ export function Footer() {
                     <Link
                       key={title}
                       href={href}
-                      className="font-medium text-muted-foreground text-sm transition-all duration-200 hover:text-primary"
+                      className="font-medium text-muted text-sm transition-all duration-200 hover:text-accent"
                     >
                       {title}
                     </Link>
@@ -37,7 +37,7 @@ export function Footer() {
                   <div key={name}>
                     <ExternalLink
                       href={link}
-                      className="font-medium text-muted-foreground text-sm transition-all duration-200 hover:text-primary"
+                      className="font-medium text-muted text-sm transition-all duration-200 hover:text-accent"
                     >
                       <div className="inline-flex items-center gap-2">
                         <Icons.Social name={name} className="h-4 w-4" />
@@ -50,7 +50,7 @@ export function Footer() {
             </div>
           </div>
           <div className="border-border border-t" />
-          <div className="text-center text-muted-foreground text-sm md:text-right">
+          <div className="text-center text-muted text-sm md:text-right">
             <span>v{VERSION}</span>
           </div>
         </div>

@@ -38,20 +38,20 @@ export async function LatestPosts() {
             <Link
               key={latestPost.slug}
               href={latestPost.metadata.canonical as Route}
-              className="group flex items-center justify-between gap-4 rounded-xl px-4 py-3 transition-colors hover:bg-muted/50"
+              className="group flex items-center justify-between gap-4 rounded-xl px-4 py-3 transition-colors hover:bg-default/50"
             >
               <div className="flex flex-col gap-1">
-                <span className="font-medium transition-colors group-hover:text-primary">
+                <span className="font-medium transition-colors group-hover:text-accent">
                   {latestPost.title}
                 </span>
                 <time
                   dateTime={formatISO(latestPost.publishedAt)}
-                  className="text-muted-foreground text-sm"
+                  className="text-muted text-sm"
                 >
                   {formattedDate}
                 </time>
               </div>
-              <span className="shrink-0 text-muted-foreground text-sm">
+              <span className="shrink-0 text-muted text-sm">
                 {latestPost.metadata.readingTime}
               </span>
             </Link>

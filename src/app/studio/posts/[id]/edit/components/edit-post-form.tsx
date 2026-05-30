@@ -276,7 +276,7 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
     return (
       <Card>
         <Card.Content className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted">Loading...</p>
         </Card.Content>
       </Card>
     );
@@ -286,7 +286,7 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
     return (
       <Card>
         <Card.Content className="py-12 text-center">
-          <p className="mb-4 text-muted-foreground">Post not found</p>
+          <p className="mb-4 text-muted">Post not found</p>
           <Link
             className={buttonVariants({ variant: "outline" })}
             href="/studio/posts"
@@ -303,9 +303,7 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-3xl">Edit Post</h1>
-          <p className="mb-2 text-muted-foreground">
-            Update your blog post details
-          </p>
+          <p className="mb-2 text-muted">Update your blog post details</p>
         </div>
         <Link
           className={buttonVariants({ variant: "outline" })}
@@ -327,9 +325,9 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
       )}
 
       {error && (
-        <Card className="border-destructive">
+        <Card className="border-danger">
           <Card.Content className="pt-6">
-            <p className="text-destructive text-sm">{error}</p>
+            <p className="text-danger text-sm">{error}</p>
           </Card.Content>
         </Card>
       )}

@@ -28,13 +28,13 @@ it.todo("re-enable when likes feature is restored");
 //     render(<LikeButton {...mockProps} />);
 //     const button = screen.getByRole("button");
 //     expect(button).toBeInTheDocument();
-//     expect(button).toHaveClass("text-muted-foreground");
+//     expect(button).toHaveClass("text-muted");
 //   });
 
 //   it("renders solid heart icon when user has liked", () => {
 //     render(<LikeButton {...mockProps} likesByUser={1} />);
 //     const button = screen.getByRole("button");
-//     expect(button).toHaveClass("text-primary");
+//     expect(button).toHaveClass("text-accent");
 //   });
 
 //   it("calls onLikeUpdateAction when button is clicked", async () => {

@@ -41,7 +41,7 @@ export async function FeaturedPost() {
   return (
     <Link
       href={post.metadata.canonical as Route}
-      className="group relative block overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-lg md:p-8"
+      className="group relative block overflow-hidden rounded-2xl border border-border bg-surface p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/20 hover:shadow-lg md:p-8"
     >
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -51,12 +51,12 @@ export async function FeaturedPost() {
           <time
             dateTime={formatISO(post.publishedAt)}
             title={formattedDate}
-            className="text-muted-foreground text-sm"
+            className="text-muted text-sm"
           >
             {formattedDate}
           </time>
           {/* TODO: Re-enable view count display after caching Redis reads for /blog. */}
-          {/* <div className="flex items-center gap-2 text-muted-foreground">
+          {/* <div className="flex items-center gap-2 text-muted">
             <span>·</span>
             <HugeiconsIcon icon={ViewIcon} size={16} strokeWidth={2} />
             <span className="text-sm">{formatViews(views)}</span>
@@ -68,10 +68,7 @@ export async function FeaturedPost() {
         </Typography>
 
         {post.summary && (
-          <Typography
-            variant="body"
-            className="line-clamp-3 text-muted-foreground"
-          >
+          <Typography variant="body" className="line-clamp-3 text-muted">
             {post.summary}
           </Typography>
         )}

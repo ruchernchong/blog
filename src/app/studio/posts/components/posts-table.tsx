@@ -217,7 +217,7 @@ export const PostsTable = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-bold text-3xl">Content Studio</h1>
-            <p className="mb-2 text-muted-foreground">Manage your blog posts</p>
+            <p className="mb-2 text-muted">Manage your blog posts</p>
           </div>
           <Link className={buttonVariants()} href="/studio/posts/new">
             Create Post
@@ -225,9 +225,7 @@ export const PostsTable = () => {
         </div>
         <Card>
           <Card.Content className="py-12">
-            <p className="text-center text-muted-foreground">
-              Loading posts...
-            </p>
+            <p className="text-center text-muted">Loading posts...</p>
           </Card.Content>
         </Card>
       </div>
@@ -239,7 +237,7 @@ export const PostsTable = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold text-3xl">Content Studio</h1>
-          <p className="mb-2 text-muted-foreground">Manage your blog posts</p>
+          <p className="mb-2 text-muted">Manage your blog posts</p>
         </div>
         <Link className={buttonVariants()} href="/studio/posts/new">
           Create Post
@@ -319,7 +317,7 @@ export const PostsTable = () => {
           </div>
 
           {selectedPosts.size > 0 && (
-            <div className="flex items-center gap-4 rounded-lg border bg-muted p-4">
+            <div className="flex items-center gap-4 rounded-lg border bg-default p-4">
               <span className="text-sm">
                 {selectedPosts.size} post(s) selected
               </span>
@@ -428,7 +426,7 @@ export const PostsTable = () => {
                       {filteredPosts.map((post) => (
                         <tr
                           key={post.id}
-                          className={`border-b last:border-0 hover:bg-muted/50 ${
+                          className={`border-b last:border-0 hover:bg-default/50 ${
                             post.deletedAt ? "opacity-60" : ""
                           }`}
                         >
@@ -446,7 +444,7 @@ export const PostsTable = () => {
                           <td className="px-6 py-4">
                             <div className="flex flex-col">
                               <span className="font-medium">{post.title}</span>
-                              <span className="text-muted-foreground text-xs">
+                              <span className="text-muted text-xs">
                                 {post.slug}
                               </span>
                             </div>
@@ -487,19 +485,19 @@ export const PostsTable = () => {
                                   </Chip>
                                 ))
                               ) : (
-                                <span className="text-muted-foreground text-xs">
+                                <span className="text-muted text-xs">
                                   No tags
                                 </span>
                               )}
                               {Array.isArray(post.tags) &&
                                 post.tags.length > 3 && (
-                                  <span className="text-muted-foreground text-xs">
+                                  <span className="text-muted text-xs">
                                     +{post.tags.length - 3}
                                   </span>
                                 )}
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-muted-foreground text-sm">
+                          <td className="px-6 py-4 text-muted text-sm">
                             {new Date(post.updatedAt).toLocaleDateString(
                               "en-US",
                               {

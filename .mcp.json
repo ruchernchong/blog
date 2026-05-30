@@ -13,10 +13,6 @@
       "headers": {
         "x-heroui-personal-token": "${HEROUI_PERSONAL_TOKEN}"
       }
-    },
-    "shadcn": {
-      "command": "bunx",
-      "args": ["shadcn@latest", "mcp"]
     }
   }
 }

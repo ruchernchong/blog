@@ -28,7 +28,7 @@ export function SaveStatusIndicator({
   }
 
   return (
-    <span className="text-muted-foreground text-sm">
+    <span className="text-muted text-sm">
       {status === "saving" && "Saving..."}
       {status === "saved" &&
         lastSavedAt &&
@@ -40,7 +40,7 @@ export function SaveStatusIndicator({
             <button
               type="button"
               onClick={onRetry}
-              className="ml-1 text-primary underline hover:no-underline"
+              className="ml-1 text-accent underline hover:no-underline"
             >
               Retry
             </button>

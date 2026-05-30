@@ -29,12 +29,12 @@ function ProjectCard({ project }: { project: Project }) {
     <motion.div
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2 }}
-      className="group flex flex-col gap-4 rounded-2xl bg-muted/50 p-6"
+      className="group flex flex-col gap-4 rounded-2xl bg-default/50 p-6"
     >
       <div className="flex flex-col gap-2">
         <h3 className="font-semibold text-xl">{project.name}</h3>
         {project.description && (
-          <p className="text-muted-foreground text-sm leading-relaxed">
+          <p className="text-muted text-sm leading-relaxed">
             {project.description}
           </p>
         )}

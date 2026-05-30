@@ -8,8 +8,8 @@ interface StatCardProps {
 
 export function StatCard({ icon, label, value }: StatCardProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25/0.4)]">
-      <div className="flex items-center gap-2 text-muted-foreground">
+    <div className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-6 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25/0.4)]">
+      <div className="flex items-center gap-2 text-muted">
         {icon}
         <span className="font-medium text-xs uppercase tracking-wider">
           {label}

@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "@heroui/styles";
 @import "@heroui-pro/react/css";
-@import "tw-animate-css";
 
 @plugin "@tailwindcss/typography";
 
@@ -142,39 +141,11 @@
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* Fonts (wired from next/font in layout.tsx) */
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
+
+  /* Radius scale derived from --radius (HeroUI ships only --radius) */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -184,124 +155,64 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
-:root {
-  /* Base - Warm paper white */
-  --background: oklch(0.985 0.005 90);
-  --foreground: oklch(0.15 0.01 270);
-
-  /* Cards & Surfaces */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.01 270);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.01 270);
-
-  /* Coral Accent */
-  --primary: oklch(0.6 0.18 25);
-  --primary-foreground: oklch(0.98 0.01 25);
-
-  /* Secondary */
-  --secondary: oklch(0.96 0.005 90);
-  --secondary-foreground: oklch(0.15 0.01 270);
-
-  /* Muted */
-  --muted: oklch(0.96 0.005 90);
-  --muted-foreground: oklch(0.45 0.01 270);
-
-  /* Accent (matches muted for subtle highlighting) */
-  --accent: oklch(0.96 0.005 90);
-  --accent-foreground: oklch(0.15 0.01 270);
-
-  /* States */
-  --destructive: oklch(0.58 0.22 27);
-
-  /* Borders & Inputs */
-  --border: oklch(0.9 0.005 90);
-  --input: oklch(0.9 0.005 90);
-  --ring: oklch(0.7 0.15 25);
-
-  /* Chart colours - Coral-based palette */
-  --chart-1: oklch(0.65 0.18 25);
-  --chart-2: oklch(0.55 0.15 35);
-  --chart-3: oklch(0.5 0.12 45);
-  --chart-4: oklch(0.45 0.1 55);
-  --chart-5: oklch(0.4 0.08 65);
-
-  --radius: 0.625rem;
-
-  /* Sidebar */
-  --sidebar: oklch(0.985 0.005 90);
-  --sidebar-foreground: oklch(0.15 0.01 270);
-  --sidebar-primary: oklch(0.6 0.18 25);
-  --sidebar-primary-foreground: oklch(0.98 0.01 25);
-  --sidebar-accent: oklch(0.96 0.005 90);
-  --sidebar-accent-foreground: oklch(0.15 0.01 270);
-  --sidebar-border: oklch(0.9 0.005 90);
-  --sidebar-ring: oklch(0.7 0.15 25);
-}
-
 /*
-  HeroUI v3 theme bridge.
-
-  HeroUI (OSS + Pro) reads its own semantic tokens (--accent, --surface,
-  --overlay, --danger, --focus, --field-*, ...) which differ in name and
-  meaning from shadcn's (--primary, --card, --popover, --destructive, --ring).
-  This block remaps HeroUI's tokens onto the existing coral palette so HeroUI
-  components match the current shadcn look during the migration. It is placed
-  AFTER both `@import "@heroui/styles"` and the shadcn `:root` block so these
-  values win the cascade.
-
-  Note (transition): shadcn's `--muted` is a light *background*, whereas
-  HeroUI's `--muted` is a mid-tone *text* colour. We keep `--muted` at shadcn's
-  light value so existing `bg-muted` (28 uses) stays correct; HeroUI's internal
-  muted/placeholder text is therefore slightly light until Phase F removes
-  shadcn and `--muted` is finalised to its HeroUI meaning.
+  Brand theme. Overrides HeroUI v3's own semantic tokens with the coral /
+  warm-paper palette. HeroUI's defaults are blue on grey, so these overrides
+  must be present for the brand look; HeroUI generates the Tailwind colour
+  utilities (bg-accent, text-muted, bg-surface, text-danger, ...) from them.
+  Light-mode only — the site forces `color-scheme: light`.
 */
 :root {
   /* Brand / primary action = coral */
-  --accent: var(--primary);
-  --accent-foreground: var(--primary-foreground);
+  --accent: oklch(0.6 0.18 25);
+  --accent-foreground: oklch(0.98 0.01 25);
   --accent-hover: oklch(0.55 0.18 25);
   --accent-soft: oklch(0.6 0.18 25 / 12%);
-  --accent-soft-foreground: var(--primary);
+  --accent-soft-foreground: oklch(0.6 0.18 25);
 
-  /* Neutral default surface (chips, secondary buttons, fills) */
-  --default: var(--secondary);
-  --default-foreground: var(--secondary-foreground);
+  /* Canvas & primary text */
+  --background: oklch(0.985 0.005 90); /* warm paper */
+  --foreground: oklch(0.15 0.01 270);
+  --muted: oklch(0.45 0.01 270); /* mid-tone text -> text-muted */
+
+  /* Neutral fill (chips, secondary buttons, was bg-muted) */
+  --default: oklch(0.96 0.005 90);
+  --default-foreground: oklch(0.15 0.01 270);
   --default-hover: oklch(0.93 0.005 90);
 
-  /* Surfaces & overlays */
-  --surface: var(--card);
-  --surface-foreground: var(--card-foreground);
-  --surface-secondary: var(--secondary);
-  --surface-secondary-foreground: var(--secondary-foreground);
-  --overlay: var(--popover);
-  --overlay-foreground: var(--popover-foreground);
+  /* Surfaces & overlays (cards, popovers, modals) */
+  --surface: oklch(1 0 0);
+  --surface-foreground: oklch(0.15 0.01 270);
+  --surface-secondary: oklch(0.96 0.005 90);
+  --surface-secondary-foreground: oklch(0.15 0.01 270);
+  --overlay: oklch(1 0 0);
+  --overlay-foreground: oklch(0.15 0.01 270);
 
   /* Status */
-  --danger: var(--destructive);
+  --danger: oklch(0.58 0.22 27);
   --danger-foreground: oklch(0.98 0.01 25);
   --danger-soft: oklch(0.58 0.22 27 / 12%);
-  --danger-soft-foreground: var(--destructive);
+  --danger-soft-foreground: oklch(0.58 0.22 27);
 
   /* Lines, focus & links */
-  --separator: var(--border);
-  --focus: var(--ring);
-  --link: var(--primary);
+  --border: oklch(0.9 0.005 90);
+  --separator: oklch(0.9 0.005 90);
+  --focus: oklch(0.7 0.15 25);
+  --link: oklch(0.6 0.18 25);
 
-  /* Radius base shared with shadcn (0.625rem) */
   --radius: 0.625rem;
 
-  /* Form fields — white surface, existing input border, coral focus */
-  --field-background: var(--card);
-  --field-foreground: var(--foreground);
-  --field-placeholder: var(--muted-foreground);
-  --field-border: var(--input);
-  --field-border-focus: var(--ring);
+  /* Form fields — white surface, neutral border, coral focus */
+  --field-background: oklch(1 0 0);
+  --field-foreground: oklch(0.15 0.01 270);
+  --field-placeholder: oklch(0.45 0.01 270);
+  --field-border: oklch(0.9 0.005 90);
+  --field-border-focus: oklch(0.7 0.15 25);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-focus/50;
   }
   body {
     @apply bg-background text-foreground;

@@ -1,4 +1,4 @@
-import { Button, Popover, ScrollShadow } from "@heroui/react";
+import { Button, cn, Popover, ScrollShadow } from "@heroui/react";
 import {
   ArrowDown01Icon,
   ArrowLeft02Icon,
@@ -8,7 +8,6 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Route } from "next";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 
 interface SeriesPost {
   slug: string;
@@ -42,7 +41,7 @@ function SeriesPostsList({
         <span className="font-medium text-sm">In this series</span>
         <Link
           href={`/blog?series=${seriesSlug}` as Route}
-          className="text-muted-foreground text-xs transition-colors hover:text-foreground"
+          className="text-muted text-xs transition-colors hover:text-foreground"
         >
           View all
         </Link>
@@ -60,23 +59,23 @@ function SeriesPostsList({
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
                   isCurrent
-                    ? "bg-primary/10 font-medium text-primary"
-                    : "text-foreground hover:bg-muted",
+                    ? "bg-accent/10 font-medium text-accent"
+                    : "text-foreground hover:bg-default",
                 )}
               >
                 <span
                   className={cn(
                     "flex size-6 shrink-0 items-center justify-center rounded-full font-medium text-xs",
                     isCurrent
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground",
+                      ? "bg-accent text-accent-foreground"
+                      : "bg-default text-muted",
                   )}
                 >
                   {index + 1}
                 </span>
                 <span className="line-clamp-2">{post.title}</span>
                 {isCurrent && (
-                  <span className="ml-auto text-primary text-xs">Current</span>
+                  <span className="ml-auto text-accent text-xs">Current</span>
                 )}
               </Link>
             );
@@ -123,7 +122,7 @@ export function SeriesNavigation({
           </Popover.Content>
         </Popover>
 
-        <span className="text-muted-foreground text-sm">
+        <span className="text-muted text-sm">
           Part {currentPosition} of {totalPosts}
         </span>
       </div>
@@ -132,7 +131,7 @@ export function SeriesNavigation({
         {previousPost ? (
           <Link
             href={`/blog/${previousPost.slug}` as Route}
-            className="group flex items-center gap-2 text-muted-foreground text-sm transition-colors hover:text-foreground"
+            className="group flex items-center gap-2 text-muted text-sm transition-colors hover:text-foreground"
             title={previousPost.title}
           >
             <HugeiconsIcon
@@ -151,7 +150,7 @@ export function SeriesNavigation({
         {nextPost ? (
           <Link
             href={`/blog/${nextPost.slug}` as Route}
-            className="group flex items-center gap-2 text-muted-foreground text-sm transition-colors hover:text-foreground"
+            className="group flex items-center gap-2 text-muted text-sm transition-colors hover:text-foreground"
             title={nextPost.title}
           >
             <span className="line-clamp-1 max-w-32 md:max-w-48">
