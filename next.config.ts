@@ -44,8 +44,6 @@ const nextConfig: NextConfig = {
   skipTrailingSlashRedirect: true,
   typedRoutes: true,
   experimental: {
-    appNewScrollHandler: true,
-    cachedNavigations: true,
     mcpServer: true,
     turbopackFileSystemCacheForBuild: true,
     typedEnv: true,
