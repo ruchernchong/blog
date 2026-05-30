@@ -18,36 +18,44 @@ interface HeatmapGridClientProps {
 export function HeatmapGridClient({ layout }: HeatmapGridClientProps) {
   const { weeks, monthLabels } = layout;
 
-  return (
-    <div className="overflow-x-auto">
-      <div className="inline-flex flex-col gap-2">
-        {/* Month labels: one slot per week column, label at its start column. */}
-        <div className="grid grid-flow-col grid-rows-1 gap-1 text-muted text-xs">
-          {weeks.map((_, weekIndex) => {
-            const month = monthLabels.find((m) => m.weekIndex === weekIndex);
-            return (
-              <div
-                className="h-4 w-3"
-                // biome-ignore lint/suspicious/noArrayIndexKey: week columns are positional
-                key={weekIndex}
-              >
-                {month?.label}
-              </div>
-            );
-          })}
-        </div>
+  // One stretchable column per week so the grid fills its container's full
+  // width; cells stay square via `aspect-square`.
+  const columns = `repeat(${weeks.length}, minmax(0, 1fr))`;
 
-        <div className="grid grid-flow-col grid-rows-7 gap-1">
-          {weeks.map((week, weekIndex) =>
-            week.map((cell, dayIndex) => (
-              <Cell
-                cell={cell}
-                // biome-ignore lint/suspicious/noArrayIndexKey: grid position is the identity
-                key={`${weekIndex}-${dayIndex}`}
-              />
-            )),
-          )}
-        </div>
+  return (
+    <div className="flex w-full flex-col gap-2">
+      {/* Month labels: one slot per week column, label at its start column. */}
+      <div
+        className="grid gap-1 text-muted text-xs"
+        style={{ gridTemplateColumns: columns }}
+      >
+        {weeks.map((_, weekIndex) => {
+          const month = monthLabels.find((m) => m.weekIndex === weekIndex);
+          return (
+            <div
+              className="h-4"
+              // biome-ignore lint/suspicious/noArrayIndexKey: week columns are positional
+              key={weekIndex}
+            >
+              {month?.label}
+            </div>
+          );
+        })}
+      </div>
+
+      <div
+        className="grid grid-flow-col grid-rows-7 gap-1"
+        style={{ gridTemplateColumns: columns }}
+      >
+        {weeks.map((week, weekIndex) =>
+          week.map((cell, dayIndex) => (
+            <Cell
+              cell={cell}
+              // biome-ignore lint/suspicious/noArrayIndexKey: grid position is the identity
+              key={`${weekIndex}-${dayIndex}`}
+            />
+          )),
+        )}
       </div>
     </div>
   );
@@ -62,7 +70,7 @@ function Cell({ cell }: { cell: HeatmapCell }) {
     return (
       <div
         className={cn(
-          "size-3 rounded-sm",
+          "aspect-square w-full rounded-sm",
           day ? INTENSITY_CLASSES[0] : "bg-transparent",
         )}
       />
@@ -76,7 +84,7 @@ function Cell({ cell }: { cell: HeatmapCell }) {
       <button
         aria-label={`${label}: ${formatTokens(day.totals.tokens)} tokens, ${formatCost(day.totals.cost)}, ${formatNumber(day.totals.messages)} messages`}
         className={cn(
-          "size-3 rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+          "aspect-square w-full rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
           INTENSITY_CLASSES[day.intensity],
         )}
         type="button"
