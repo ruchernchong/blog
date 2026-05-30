@@ -61,23 +61,29 @@ export default async function UsagePage() {
 
       <UsageTokenMix tokenMix={profile.tokenMix} />
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <UsageBreakdown
-          description="Tokens and cost grouped by model"
-          rows={profile.byModel}
-          title="By model"
-        />
-        <UsageBreakdown
-          description="Tokens and cost grouped by provider"
-          rows={profile.byProvider}
-          title="By provider"
-        />
-        <UsageBreakdown
-          description="Tokens and cost grouped by agent"
-          rows={profile.byAgent}
-          title="By agent"
-        />
-      </div>
+      <UsageBreakdown
+        title="Breakdown"
+        views={[
+          {
+            id: "model",
+            label: "Model",
+            description: "Tokens and cost grouped by model",
+            rows: profile.byModel,
+          },
+          {
+            id: "provider",
+            label: "Provider",
+            description: "Tokens and cost grouped by provider",
+            rows: profile.byProvider,
+          },
+          {
+            id: "agent",
+            label: "Agent",
+            description: "Tokens and cost grouped by agent",
+            rows: profile.byAgent,
+          },
+        ]}
+      />
     </div>
   );
 }
