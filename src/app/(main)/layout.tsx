@@ -11,7 +11,7 @@ export default function MainLayout({
       <BackgroundEffects />
       <div className="flex min-h-screen flex-col">
         <Header />
-        <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24">
+        <main className="mx-auto my-16 w-screen max-w-4xl grow px-4 py-24 print:my-0 print:max-w-none print:px-0 print:py-0">
           {children}
         </main>
         <Footer />
