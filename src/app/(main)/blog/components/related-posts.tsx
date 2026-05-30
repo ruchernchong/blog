@@ -1,9 +1,9 @@
+import { Card } from "@heroui/react";
 import { Tag01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import Link from "next/link";
 import { Typography } from "@/components/typography";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getRelatedPosts } from "@/lib/services/related-posts";
 
 interface RelatedPostsProps {
@@ -30,7 +30,7 @@ export const RelatedPosts = async ({ slug }: RelatedPostsProps) => {
                 href={`/blog/${post.slug}`}
                 className="flex h-full flex-col"
               >
-                <CardHeader>
+                <Card.Header>
                   <div className="flex items-center justify-between gap-4">
                     <time
                       dateTime={formatISO(post.publishedAt)}
@@ -51,9 +51,9 @@ export const RelatedPosts = async ({ slug }: RelatedPostsProps) => {
                       </span>
                     </div>
                   </div>
-                  <CardTitle className="capitalize">{post.title}</CardTitle>
-                </CardHeader>
-                <CardContent>{post.summary}</CardContent>
+                  <Card.Title className="capitalize">{post.title}</Card.Title>
+                </Card.Header>
+                <Card.Content>{post.summary}</Card.Content>
               </Link>
             </Card>
           );

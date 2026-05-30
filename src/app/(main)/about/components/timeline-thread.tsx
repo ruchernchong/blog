@@ -1,8 +1,7 @@
+import { Card, Chip } from "@heroui/react";
 import { Briefcase01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { Company } from "@/types";
 
@@ -110,7 +109,7 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                           : "hover:shadow-[0_8px_30px_-10px_oklch(0_0_0_/_0.08)]",
                       )}
                     >
-                      <CardContent className="flex flex-col gap-4">
+                      <Card.Content className="flex flex-col gap-4">
                         <div className="flex flex-wrap items-start justify-between gap-2">
                           <div className="flex flex-col">
                             <span className="font-semibold text-lg tracking-tight">
@@ -122,12 +121,13 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                               </span>
                             )}
                           </div>
-                          <Badge
-                            variant={isCurrentRole ? "default" : "outline"}
+                          <Chip
+                            color={isCurrentRole ? "accent" : "default"}
+                            variant={isCurrentRole ? "primary" : "secondary"}
                             className="shrink-0"
                           >
                             {isCurrentRole ? "Present" : dateEnd}
-                          </Badge>
+                          </Chip>
                         </div>
 
                         {/* Nested roles */}
@@ -164,12 +164,9 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                                       {role.title}
                                     </span>
                                     {role.team && (
-                                      <Badge
-                                        variant="secondary"
-                                        className="text-xs"
-                                      >
+                                      <Chip size="sm" variant="secondary">
                                         {role.team}
-                                      </Badge>
+                                      </Chip>
                                     )}
                                   </div>
                                   <span className="text-muted-foreground text-sm">
@@ -191,7 +188,7 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                           )}
                           <span>{location}</span>
                         </div>
-                      </CardContent>
+                      </Card.Content>
                     </Card>
                   </a>
                 </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Sidebar } from "@heroui-pro/react";
 import {
   File01Icon,
   Image01Icon,
@@ -7,20 +8,9 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Route } from "next";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarRail,
-} from "@/components/ui/sidebar";
+import { usePathname, useRouter } from "next/navigation";
+import type { ReactNode } from "react";
+import { UserMenu } from "@/components/auth/user-menu";
 
 const navItems = [
   {
@@ -40,35 +30,44 @@ const navItems = [
   },
 ];
 
-export function AppSidebar() {
+export function StudioShell({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const pathname = usePathname();
 
   return (
-    <Sidebar>
-      <SidebarHeader>
-        <span className="p-2 font-semibold">Content Studio</span>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Content</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
+    <Sidebar.Provider navigate={(href) => router.push(href as Route)}>
+      <Sidebar>
+        <Sidebar.Header>
+          <span className="p-2 font-semibold">Content Studio</span>
+        </Sidebar.Header>
+        <Sidebar.Content>
+          <Sidebar.Group>
+            <Sidebar.GroupLabel>Content</Sidebar.GroupLabel>
+            <Sidebar.Menu>
               {navItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    isActive={pathname.startsWith(item.url)}
-                    render={<Link href={item.url} />}
-                  >
+                <Sidebar.MenuItem
+                  key={item.title}
+                  href={item.url}
+                  isCurrent={pathname.startsWith(item.url)}
+                >
+                  <Sidebar.MenuIcon>
                     <HugeiconsIcon icon={item.icon} size={18} />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                  </Sidebar.MenuIcon>
+                  <Sidebar.MenuLabel>{item.title}</Sidebar.MenuLabel>
+                </Sidebar.MenuItem>
               ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarRail />
-    </Sidebar>
+            </Sidebar.Menu>
+          </Sidebar.Group>
+        </Sidebar.Content>
+        <Sidebar.Rail />
+      </Sidebar>
+      <Sidebar.Main>
+        <header className="flex h-14 items-center justify-between border-b px-4">
+          <Sidebar.Trigger />
+          <UserMenu />
+        </header>
+        <main className="p-4">{children}</main>
+      </Sidebar.Main>
+    </Sidebar.Provider>
   );
 }

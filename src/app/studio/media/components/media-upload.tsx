@@ -1,16 +1,8 @@
 "use client";
 
+import { Button, Modal } from "@heroui/react";
 import type { ChangeEvent, DragEvent } from "react";
 import { useRef, useState, useTransition } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { R2Config } from "@/lib/config/r2.config";
 
 interface MediaUploadProps {
@@ -161,58 +153,65 @@ export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button />}>Upload</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Upload Media</DialogTitle>
-          <DialogDescription>
-            Drag and drop an image or click to browse
-          </DialogDescription>
-        </DialogHeader>
+    <Modal>
+      <Button>Upload</Button>
+      <Modal.Backdrop isOpen={open} onOpenChange={setOpen}>
+        <Modal.Container>
+          <Modal.Dialog>
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Heading>Upload Media</Modal.Heading>
+            </Modal.Header>
+            <Modal.Body className="flex flex-col gap-4">
+              <p className="text-muted-foreground text-sm">
+                Drag and drop an image or click to browse
+              </p>
 
-        <button
-          type="button"
-          className={`relative w-full cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
-            dragActive
-              ? "border-primary bg-primary/5"
-              : "border-muted-foreground/25"
-          }`}
-          onClick={() => inputRef.current?.click()}
-          onDragEnter={handleDrag}
-          onDragLeave={handleDrag}
-          onDragOver={handleDrag}
-          onDrop={handleDrop}
-        >
-          <input
-            ref={inputRef}
-            type="file"
-            accept={R2Config.ALLOWED_MIME_TYPES.join(",")}
-            onChange={handleChange}
-            className="hidden"
-          />
+              <button
+                type="button"
+                className={`relative w-full cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
+                  dragActive
+                    ? "border-primary bg-primary/5"
+                    : "border-muted-foreground/25"
+                }`}
+                onClick={() => inputRef.current?.click()}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+              >
+                <input
+                  ref={inputRef}
+                  type="file"
+                  accept={R2Config.ALLOWED_MIME_TYPES.join(",")}
+                  onChange={handleChange}
+                  className="hidden"
+                />
 
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-muted-foreground text-sm">
-              {isPending ? "Uploading..." : "Drop your image here, or"}
-            </p>
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={() => inputRef.current?.click()}
-              disabled={isPending}
-            >
-              Browse Files
-            </Button>
-            <p className="text-muted-foreground text-xs">
-              Max file size: {R2Config.MAX_FILE_SIZE / 1024 / 1024}MB
-            </p>
-          </div>
-        </button>
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-muted-foreground text-sm">
+                    {isPending ? "Uploading..." : "Drop your image here, or"}
+                  </p>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onPress={() => inputRef.current?.click()}
+                    isDisabled={isPending}
+                  >
+                    Browse Files
+                  </Button>
+                  <p className="text-muted-foreground text-xs">
+                    Max file size: {R2Config.MAX_FILE_SIZE / 1024 / 1024}MB
+                  </p>
+                </div>
+              </button>
 
-        {error && <p className="text-destructive text-sm">{error}</p>}
-      </DialogContent>
-    </Dialog>
+              {error && <p className="text-destructive text-sm">{error}</p>}
+            </Modal.Body>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
   );
 }

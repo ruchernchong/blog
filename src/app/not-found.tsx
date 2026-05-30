@@ -1,9 +1,10 @@
 "use client";
 
+import { buttonVariants } from "@heroui/styles";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { BackgroundEffects } from "@/components/background-effects";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function NotFound() {
   return (
@@ -43,24 +44,27 @@ export default function NotFound() {
           transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
           className="flex gap-4"
         >
-          <Button
-            nativeButton={false}
-            render={<Link href="/" />}
-            className="transition-all duration-200 hover:scale-[1.02]"
+          <Link
+            href="/"
+            className={cn(
+              buttonVariants(),
+              "transition-all duration-200 hover:scale-[1.02]",
+            )}
             style={{
               boxShadow: "0 8px 30px -10px oklch(0.60 0.18 25 / 0.4)",
             }}
           >
             Return Home
-          </Button>
-          <Button
-            nativeButton={false}
-            render={<Link href="/blog" />}
-            variant="outline"
-            className="transition-all duration-200 hover:scale-[1.02]"
+          </Link>
+          <Link
+            href="/blog"
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "transition-all duration-200 hover:scale-[1.02]",
+            )}
           >
             Read the Blog
-          </Button>
+          </Link>
         </motion.div>
 
         {/* Decorative line */}
