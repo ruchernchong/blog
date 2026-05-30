@@ -3,6 +3,7 @@ packages:
 
 allowBuilds:
   '@heroui-pro/react': true
+  '@zowe/secrets-for-zowe-sdk': false
   core-js: false
   es5-ext: false
   esbuild: false
