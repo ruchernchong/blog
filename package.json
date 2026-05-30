@@ -23,6 +23,8 @@
     "db:up": "drizzle-kit up",
     "db:studio": "drizzle-kit studio",
     "db:seed": "NODE_ENV=development tsx src/scripts/seed.ts",
+    "usage:ingest": "tsx src/scripts/ingest-usage.ts",
+    "usage:ingest:prod": "USAGE_INGEST_TARGET=prod tsx src/scripts/ingest-usage.ts",
     "prepare": "husky",
     "release": "semantic-release",
     "vercel-build": "pnpm db:migrate && pnpm build",
