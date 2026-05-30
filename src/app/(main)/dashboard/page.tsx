@@ -2,7 +2,6 @@ import { DashboardBrowsingIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { LiveBadge } from "@/app/(main)/dashboard/components/live-badge";
 import { StatsGrid } from "@/app/(main)/dashboard/components/stats-grid";
 import { ViewsByPage } from "@/app/(main)/dashboard/components/views-by-page";
 import { VisitsChart } from "@/app/(main)/dashboard/components/visits-chart";
@@ -48,7 +47,6 @@ export default function DashboardPage() {
             />
           </div>
         }
-        action={<LiveBadge />}
       />
 
       <Suspense fallback={<div>Loading stats...</div>}>

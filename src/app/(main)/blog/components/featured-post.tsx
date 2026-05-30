@@ -1,8 +1,8 @@
+import { Chip } from "@heroui/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
 import { Typography } from "@/components/typography";
-import { Badge } from "@/components/ui/badge";
 import { getFeaturedPosts } from "@/lib/queries/posts";
 
 // import { ViewIcon } from "@hugeicons/core-free-icons";
@@ -45,7 +45,9 @@ export async function FeaturedPost() {
     >
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge className="bg-primary text-primary-foreground">Featured</Badge>
+          <Chip color="accent" variant="primary">
+            Featured
+          </Chip>
           <time
             dateTime={formatISO(post.publishedAt)}
             title={formattedDate}
@@ -77,13 +79,9 @@ export async function FeaturedPost() {
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {post.tags.slice(0, 3).map((tag) => (
-              <Badge
-                key={tag}
-                variant="secondary"
-                className="text-muted-foreground"
-              >
+              <Chip key={tag} size="sm" variant="secondary">
                 {tag}
-              </Badge>
+              </Chip>
             ))}
           </div>
         )}

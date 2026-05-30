@@ -1,16 +1,11 @@
 "use client";
 
+import { Chip, Popover, ScrollShadow } from "@heroui/react";
 import { LibraryIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface SeriesPost {
@@ -49,7 +44,7 @@ function SeriesPostsList({
         </span>
       </div>
 
-      <ScrollArea className="max-h-64">
+      <ScrollShadow className="max-h-64">
         <div className="flex flex-col gap-1">
           {posts.map((post, index) => (
             <Link
@@ -64,7 +59,7 @@ function SeriesPostsList({
             </Link>
           ))}
         </div>
-      </ScrollArea>
+      </ScrollShadow>
     </div>
   );
 }
@@ -85,7 +80,7 @@ export function SeriesCardsClient({
       <div className="scrollbar-hide -mx-4 flex gap-4 overflow-x-auto px-4 pb-2 md:-mx-0 md:px-0">
         {series.map((item) => (
           <Popover key={item.id}>
-            <PopoverTrigger className="group relative flex w-64 shrink-0 cursor-pointer flex-col gap-4 overflow-hidden rounded-2xl border border-border bg-card p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-md">
+            <Popover.Trigger className="group relative flex w-64 shrink-0 cursor-pointer flex-col gap-4 overflow-hidden rounded-2xl border border-border bg-card p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-md">
               {item.coverImage ? (
                 <div className="relative h-24 w-full overflow-hidden rounded-lg">
                   <Image
@@ -112,14 +107,16 @@ export function SeriesCardsClient({
                     {item.description}
                   </p>
                 )}
-                <span className="w-fit rounded-full bg-primary/10 px-3 py-1 text-primary text-sm">
+                <Chip color="accent" variant="soft" size="sm">
                   {item.postCount} {item.postCount === 1 ? "part" : "parts"}
-                </span>
+                </Chip>
               </div>
-            </PopoverTrigger>
-            <PopoverContent sideOffset={8} align="start">
-              <SeriesPostsList title={item.title} posts={item.posts} />
-            </PopoverContent>
+            </Popover.Trigger>
+            <Popover.Content placement="bottom start">
+              <Popover.Dialog>
+                <SeriesPostsList title={item.title} posts={item.posts} />
+              </Popover.Dialog>
+            </Popover.Content>
           </Popover>
         ))}
       </div>

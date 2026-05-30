@@ -1,7 +1,7 @@
+import { Card } from "@heroui/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SelectPost } from "@/schema";
 
 interface FeaturedPostsProps {
@@ -26,7 +26,7 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
                 href={post.metadata.canonical as Route}
                 className="flex h-full flex-col"
               >
-                <CardHeader>
+                <Card.Header>
                   <time
                     dateTime={formatISO(post.publishedAt)}
                     title={formattedDate}
@@ -34,9 +34,9 @@ const FeaturedPosts = ({ featuredPosts }: FeaturedPostsProps) => {
                   >
                     {formattedDate}
                   </time>
-                  <CardTitle className="capitalize">{post.title}</CardTitle>
-                </CardHeader>
-                <CardContent>{post.summary}</CardContent>
+                  <Card.Title className="capitalize">{post.title}</Card.Title>
+                </Card.Header>
+                <Card.Content>{post.summary}</Card.Content>
               </Link>
             </Card>
           );

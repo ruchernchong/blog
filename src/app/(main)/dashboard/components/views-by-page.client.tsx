@@ -1,8 +1,7 @@
 "use client";
 
+import { Card, Chip } from "@heroui/react";
 import { motion } from "motion/react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PageData {
   path: string;
@@ -43,9 +42,9 @@ function ViewsByPageRow({
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-2">
           <span className="truncate font-medium text-sm">{pageName}</span>
-          <Badge variant="secondary" className="shrink-0 text-xs">
+          <Chip size="sm" variant="secondary" className="shrink-0">
             {pageType}
-          </Badge>
+          </Chip>
         </div>
         <span className="shrink-0 font-medium text-sm tabular-nums">
           {page.count.toLocaleString()}
@@ -77,14 +76,14 @@ export function ViewsByPageClient({ data }: ViewsByPageClientProps) {
       transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
       <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25/0.4)]">
-        <CardHeader>
-          <CardTitle>Views by Page</CardTitle>
-        </CardHeader>
-        <CardContent>
+        <Card.Header>
+          <Card.Title>Views by Page</Card.Title>
+        </Card.Header>
+        <Card.Content>
           {topPages.map((page) => (
             <ViewsByPageRow key={page.path} page={page} maxCount={maxCount} />
           ))}
-        </CardContent>
+        </Card.Content>
       </Card>
     </motion.section>
   );

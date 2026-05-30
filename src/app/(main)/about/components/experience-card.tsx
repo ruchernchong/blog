@@ -1,9 +1,9 @@
 "use client";
 
+import { Card } from "@heroui/react";
 import { Briefcase01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import companies from "@/data/companies";
 
 export const ExperienceCard = () => {
@@ -15,14 +15,14 @@ export const ExperienceCard = () => {
     .slice(0, 3);
 
   return (
-    <Card className="border border-border bg-card">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 font-medium text-base">
+    <Card>
+      <Card.Header>
+        <Card.Title className="flex items-center gap-2 font-medium text-base">
           <HugeiconsIcon icon={Briefcase01Icon} size={16} strokeWidth={2} />
           <span>Experience</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </Card.Title>
+      </Card.Header>
+      <Card.Content>
         <div className="flex flex-col gap-8">
           {recentCompanies.map((company) => (
             <div key={company.name}>
@@ -46,7 +46,7 @@ export const ExperienceCard = () => {
             </div>
           ))}
         </div>
-      </CardContent>
+      </Card.Content>
     </Card>
   );
 };

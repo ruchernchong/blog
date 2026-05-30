@@ -1,13 +1,9 @@
 "use client";
 
+import { Tabs } from "@heroui/react";
+import { Resizable } from "@heroui-pro/react";
 import type { RefObject } from "react";
 import { useImperativeHandle, useRef, useState } from "react";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MarkdownEditor, type MarkdownEditorMethods } from "./markdown-editor";
 import { MarkdownPreview } from "./markdown-preview";
 
@@ -43,14 +39,25 @@ export function ContentEditor({
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b px-4 py-2">
         <Tabs
-          value={viewMode}
-          onValueChange={(value) => setViewMode(value as ViewMode)}
+          selectedKey={viewMode}
+          onSelectionChange={(key) => setViewMode(key as ViewMode)}
         >
-          <TabsList>
-            <TabsTrigger value="source">Source</TabsTrigger>
-            <TabsTrigger value="split">Split</TabsTrigger>
-            <TabsTrigger value="preview">Preview</TabsTrigger>
-          </TabsList>
+          <Tabs.ListContainer>
+            <Tabs.List aria-label="Editor view mode">
+              <Tabs.Tab id="source">
+                Source
+                <Tabs.Indicator />
+              </Tabs.Tab>
+              <Tabs.Tab id="split">
+                Split
+                <Tabs.Indicator />
+              </Tabs.Tab>
+              <Tabs.Tab id="preview">
+                Preview
+                <Tabs.Indicator />
+              </Tabs.Tab>
+            </Tabs.List>
+          </Tabs.ListContainer>
         </Tabs>
       </div>
 
@@ -66,8 +73,8 @@ export function ContentEditor({
         {viewMode === "preview" && <MarkdownPreview markdown={markdown} />}
 
         {viewMode === "split" && (
-          <ResizablePanelGroup direction="horizontal" className="h-full">
-            <ResizablePanel defaultSize={50} minSize={30}>
+          <Resizable orientation="horizontal" className="h-full">
+            <Resizable.Panel defaultSize={50} minSize={30}>
               <div className="h-full overflow-auto">
                 <MarkdownEditor
                   ref={innerRef}
@@ -75,12 +82,12 @@ export function ContentEditor({
                   onChange={onChange}
                 />
               </div>
-            </ResizablePanel>
-            <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={50} minSize={30}>
+            </Resizable.Panel>
+            <Resizable.Handle withIndicator />
+            <Resizable.Panel defaultSize={50} minSize={30}>
               <MarkdownPreview markdown={markdown} />
-            </ResizablePanel>
-          </ResizablePanelGroup>
+            </Resizable.Panel>
+          </Resizable>
         )}
       </div>
     </div>

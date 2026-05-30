@@ -2,9 +2,12 @@ packages:
   - .
 
 allowBuilds:
+  '@heroui-pro/react': true
   core-js: false
   es5-ext: false
   esbuild: false
+  heroui-native-pro: true
+  heroui-pro: true
   msw: false
   protobufjs: false
   sharp: false

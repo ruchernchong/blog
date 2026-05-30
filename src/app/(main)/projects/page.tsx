@@ -1,3 +1,4 @@
+import { Card, Chip } from "@heroui/react";
 import { CodeIcon, LinkSquare01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
@@ -6,8 +7,6 @@ import Image from "next/image";
 import Link from "next/link";
 import globalMetadata from "@/app/metadata";
 import { PageTitle } from "@/components/page-title";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import projects from "@/data/projects";
 import { cn } from "@/lib/utils";
 import type { Project } from "@/types";
@@ -78,14 +77,18 @@ function ProjectCard({
           className="object-cover"
         />
       </div>
-      <CardContent>
+      <Card.Content>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-foreground text-lg">
                 {project.name}
               </h3>
-              {featured && <Badge variant="default">Featured</Badge>}
+              {featured && (
+                <Chip color="accent" variant="primary">
+                  Featured
+                </Chip>
+              )}
             </div>
             {project.description && (
               <p className="line-clamp-2 text-muted-foreground text-sm">
@@ -96,22 +99,19 @@ function ProjectCard({
 
           <div className="flex flex-wrap gap-2">
             {displayedSkills.map((skill) => (
-              <Badge
-                key={skill}
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
-              >
+              <Chip key={skill} color="accent" variant="primary">
                 {skill}
-              </Badge>
+              </Chip>
             ))}
             {remainingCount > 0 && (
-              <Badge className="bg-primary text-primary-foreground hover:bg-primary/90">
+              <Chip color="accent" variant="primary">
                 +{remainingCount}
-              </Badge>
+              </Chip>
             )}
           </div>
         </div>
-      </CardContent>
-      <CardFooter>
+      </Card.Content>
+      <Card.Footer>
         <div className="flex gap-2">
           {project.links.map((link) => {
             return (
@@ -137,7 +137,7 @@ function ProjectCard({
             );
           })}
         </div>
-      </CardFooter>
+      </Card.Footer>
     </Card>
   );
 }

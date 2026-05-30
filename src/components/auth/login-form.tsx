@@ -1,15 +1,8 @@
 "use client";
 
+import { Button, Card } from "@heroui/react";
 import type { ComponentPropsWithoutRef } from "react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { ERROR_IDS } from "@/constants/error-ids";
 import { authClient } from "@/lib/auth-client";
 import { logError } from "@/lib/logger";
@@ -44,11 +37,11 @@ export const LoginForm = ({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>Login with your Google account</CardDescription>
-        </CardHeader>
-        <CardContent>
+        <Card.Header className="text-center">
+          <Card.Title className="text-xl">Welcome back</Card.Title>
+          <Card.Description>Login with your Google account</Card.Description>
+        </Card.Header>
+        <Card.Content>
           {error && (
             <div className="mb-4 rounded-lg border border-destructive bg-destructive/10 p-3">
               <p className="text-destructive text-sm">{error}</p>
@@ -57,8 +50,8 @@ export const LoginForm = ({
           <Button
             variant="outline"
             className="w-full"
-            onClick={handleGoogleSignIn}
-            disabled={isLoading !== null}
+            onPress={handleGoogleSignIn}
+            isDisabled={isLoading !== null}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +68,7 @@ export const LoginForm = ({
             </svg>
             {isLoading === "google" ? "Signing in..." : "Login with Google"}
           </Button>
-        </CardContent>
+        </Card.Content>
       </Card>
     </div>
   );

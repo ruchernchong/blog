@@ -1,6 +1,7 @@
 @import "tailwindcss";
+@import "@heroui/styles";
+@import "@heroui-pro/react/css";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @plugin "@tailwindcss/typography";
 
@@ -236,6 +237,66 @@
   --sidebar-accent-foreground: oklch(0.15 0.01 270);
   --sidebar-border: oklch(0.9 0.005 90);
   --sidebar-ring: oklch(0.7 0.15 25);
+}
+
+/*
+  HeroUI v3 theme bridge.
+
+  HeroUI (OSS + Pro) reads its own semantic tokens (--accent, --surface,
+  --overlay, --danger, --focus, --field-*, ...) which differ in name and
+  meaning from shadcn's (--primary, --card, --popover, --destructive, --ring).
+  This block remaps HeroUI's tokens onto the existing coral palette so HeroUI
+  components match the current shadcn look during the migration. It is placed
+  AFTER both `@import "@heroui/styles"` and the shadcn `:root` block so these
+  values win the cascade.
+
+  Note (transition): shadcn's `--muted` is a light *background*, whereas
+  HeroUI's `--muted` is a mid-tone *text* colour. We keep `--muted` at shadcn's
+  light value so existing `bg-muted` (28 uses) stays correct; HeroUI's internal
+  muted/placeholder text is therefore slightly light until Phase F removes
+  shadcn and `--muted` is finalised to its HeroUI meaning.
+*/
+:root {
+  /* Brand / primary action = coral */
+  --accent: var(--primary);
+  --accent-foreground: var(--primary-foreground);
+  --accent-hover: oklch(0.55 0.18 25);
+  --accent-soft: oklch(0.6 0.18 25 / 12%);
+  --accent-soft-foreground: var(--primary);
+
+  /* Neutral default surface (chips, secondary buttons, fills) */
+  --default: var(--secondary);
+  --default-foreground: var(--secondary-foreground);
+  --default-hover: oklch(0.93 0.005 90);
+
+  /* Surfaces & overlays */
+  --surface: var(--card);
+  --surface-foreground: var(--card-foreground);
+  --surface-secondary: var(--secondary);
+  --surface-secondary-foreground: var(--secondary-foreground);
+  --overlay: var(--popover);
+  --overlay-foreground: var(--popover-foreground);
+
+  /* Status */
+  --danger: var(--destructive);
+  --danger-foreground: oklch(0.98 0.01 25);
+  --danger-soft: oklch(0.58 0.22 27 / 12%);
+  --danger-soft-foreground: var(--destructive);
+
+  /* Lines, focus & links */
+  --separator: var(--border);
+  --focus: var(--ring);
+  --link: var(--primary);
+
+  /* Radius base shared with shadcn (0.625rem) */
+  --radius: 0.625rem;
+
+  /* Form fields — white surface, existing input border, coral focus */
+  --field-background: var(--card);
+  --field-foreground: var(--foreground);
+  --field-placeholder: var(--muted-foreground);
+  --field-border: var(--input);
+  --field-border-focus: var(--ring);
 }
 
 @layer base {

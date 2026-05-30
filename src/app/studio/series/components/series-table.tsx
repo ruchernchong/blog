@@ -1,38 +1,22 @@
 "use client";
 
+import {
+  AlertDialog,
+  Button,
+  Card,
+  Checkbox,
+  Chip,
+  Input,
+  ListBox,
+  Select,
+  TextField,
+} from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
+import { EmptyState } from "@heroui-pro/react";
 import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import type { SelectSeries } from "@/schema";
 
 export function SeriesTable() {
@@ -192,19 +176,19 @@ export function SeriesTable() {
               Manage your blog series
             </p>
           </div>
-          <Button
-            nativeButton={false}
-            render={<Link href={"/studio/series/new" as Route} />}
+          <Link
+            className={buttonVariants()}
+            href={"/studio/series/new" as Route}
           >
             Create Series
-          </Button>
+          </Link>
         </div>
         <Card>
-          <CardContent className="py-12">
+          <Card.Content className="py-12">
             <p className="text-center text-muted-foreground">
               Loading series...
             </p>
-          </CardContent>
+          </Card.Content>
         </Card>
       </div>
     );
@@ -217,41 +201,60 @@ export function SeriesTable() {
           <h1 className="font-bold text-3xl">Series</h1>
           <p className="mb-2 text-muted-foreground">Manage your blog series</p>
         </div>
-        <Button
-          nativeButton={false}
-          render={<Link href={"/studio/series/new" as Route} />}
-        >
+        <Link className={buttonVariants()} href={"/studio/series/new" as Route}>
           Create Series
-        </Button>
+        </Link>
       </div>
 
       <div className="flex items-center gap-4">
         <div className="flex-1">
-          <Input
+          <TextField
+            aria-label="Search series"
             type="search"
-            placeholder="Search series by title or slug..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-md"
-          />
+            onChange={setSearchQuery}
+          >
+            <Input
+              className="max-w-md"
+              placeholder="Search series by title or slug..."
+            />
+          </TextField>
         </div>
         <Select
+          aria-label="Filter by status"
+          className="w-45"
           value={statusFilter}
-          onValueChange={(
-            value: "all" | "draft" | "published" | "deleted" | null,
-          ) => {
-            if (value) setStatusFilter(value);
+          onChange={(value) => {
+            if (value)
+              setStatusFilter(
+                value as "all" | "draft" | "published" | "deleted",
+              );
           }}
         >
-          <SelectTrigger className="w-45">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Series</SelectItem>
-            <SelectItem value="draft">Draft</SelectItem>
-            <SelectItem value="published">Published</SelectItem>
-            <SelectItem value="deleted">Deleted</SelectItem>
-          </SelectContent>
+          <Select.Trigger>
+            <Select.Value />
+            <Select.Indicator />
+          </Select.Trigger>
+          <Select.Popover>
+            <ListBox>
+              <ListBox.Item id="all" textValue="All Series">
+                All Series
+                <ListBox.ItemIndicator />
+              </ListBox.Item>
+              <ListBox.Item id="draft" textValue="Draft">
+                Draft
+                <ListBox.ItemIndicator />
+              </ListBox.Item>
+              <ListBox.Item id="published" textValue="Published">
+                Published
+                <ListBox.ItemIndicator />
+              </ListBox.Item>
+              <ListBox.Item id="deleted" textValue="Deleted">
+                Deleted
+                <ListBox.ItemIndicator />
+              </ListBox.Item>
+            </ListBox>
+          </Select.Popover>
         </Select>
       </div>
 
@@ -260,17 +263,17 @@ export function SeriesTable() {
           <span className="text-sm">{selectedSeries.size} series selected</span>
           <div className="ml-auto flex gap-4">
             <Button
-              variant="destructive"
+              variant="danger"
               size="sm"
-              onClick={handleBulkDelete}
-              disabled={isPending}
+              onPress={handleBulkDelete}
+              isDisabled={isPending}
             >
               {isPending ? "Deleting..." : "Delete Selected"}
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setSelectedSeries(new Set())}
+              onPress={() => setSelectedSeries(new Set())}
             >
               Clear Selection
             </Button>
@@ -280,52 +283,56 @@ export function SeriesTable() {
 
       {filteredSeries.length === 0 ? (
         <Card>
-          <CardContent className="py-12">
-            <Empty>
-              <EmptyHeader>
-                <EmptyTitle>No series found</EmptyTitle>
-                <EmptyDescription>
+          <Card.Content className="py-12">
+            <EmptyState>
+              <EmptyState.Header>
+                <EmptyState.Title>No series found</EmptyState.Title>
+                <EmptyState.Description>
                   Try adjusting your search or filter criteria
-                </EmptyDescription>
-              </EmptyHeader>
-              <EmptyContent>
+                </EmptyState.Description>
+              </EmptyState.Header>
+              <EmptyState.Content>
                 <Button
                   variant="outline"
-                  onClick={() => {
+                  onPress={() => {
                     setSearchQuery("");
                     setStatusFilter("all");
                   }}
                 >
                   Clear Filters
                 </Button>
-              </EmptyContent>
-            </Empty>
-          </CardContent>
+              </EmptyState.Content>
+            </EmptyState>
+          </Card.Content>
         </Card>
       ) : (
         <Card>
-          <CardHeader>
-            <CardTitle>
+          <Card.Header>
+            <Card.Title>
               All Series ({filteredSeries.length}
               {filteredSeries.length !== allSeries.length &&
                 ` of ${allSeries.length}`}
               )
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
+            </Card.Title>
+          </Card.Header>
+          <Card.Content className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
                     <th className="w-12 px-6 py-3">
                       <Checkbox
-                        checked={
+                        isSelected={
                           filteredSeries.length > 0 &&
                           selectedSeries.size === filteredSeries.length
                         }
-                        onCheckedChange={toggleAllSeries}
+                        onChange={() => toggleAllSeries()}
                         aria-label="Select all series"
-                      />
+                      >
+                        <Checkbox.Control>
+                          <Checkbox.Indicator />
+                        </Checkbox.Control>
+                      </Checkbox>
                     </th>
                     <th className="px-6 py-3 text-left font-medium text-sm">
                       Title
@@ -351,12 +358,14 @@ export function SeriesTable() {
                     >
                       <td className="px-6 py-4">
                         <Checkbox
-                          checked={selectedSeries.has(series.id)}
-                          onCheckedChange={() =>
-                            toggleSeriesSelection(series.id)
-                          }
+                          isSelected={selectedSeries.has(series.id)}
+                          onChange={() => toggleSeriesSelection(series.id)}
                           aria-label={`Select ${series.title}`}
-                        />
+                        >
+                          <Checkbox.Control>
+                            <Checkbox.Indicator />
+                          </Checkbox.Control>
+                        </Checkbox>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
@@ -369,19 +378,21 @@ export function SeriesTable() {
                       <td className="px-6 py-4">
                         <div className="flex flex-wrap gap-2">
                           {series.deletedAt ? (
-                            <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 font-medium text-red-800 text-xs">
+                            <Chip size="sm" variant="soft" color="danger">
                               deleted
-                            </span>
+                            </Chip>
                           ) : (
-                            <span
-                              className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-medium text-xs ${
+                            <Chip
+                              size="sm"
+                              variant="soft"
+                              color={
                                 series.status === "published"
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-yellow-100 text-yellow-800"
-                              }`}
+                                  ? "success"
+                                  : "warning"
+                              }
                             >
                               {series.status}
-                            </span>
+                            </Chip>
                           )}
                         </div>
                       </td>
@@ -401,62 +412,65 @@ export function SeriesTable() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleRestore(series.id)}
-                              disabled={isPending}
+                              onPress={() => handleRestore(series.id)}
+                              isDisabled={isPending}
                             >
                               {isPending ? "Restoring..." : "Restore"}
                             </Button>
                           ) : (
                             <>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                nativeButton={false}
-                                render={
-                                  <Link
-                                    href={
-                                      `/studio/series/${series.id}/edit` as Route
-                                    }
-                                  />
+                              <Link
+                                className={buttonVariants({
+                                  variant: "ghost",
+                                  size: "sm",
+                                })}
+                                href={
+                                  `/studio/series/${series.id}/edit` as Route
                                 }
                               >
                                 Edit
-                              </Button>
+                              </Link>
                               <AlertDialog>
-                                <AlertDialogTrigger
-                                  render={
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      disabled={isPending}
-                                    />
-                                  }
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  isDisabled={isPending}
                                 >
                                   Delete
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      Are you sure?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      This will delete the series &ldquo;
-                                      {series.title}&rdquo;. You can restore it
-                                      later from the Deleted filter.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                      Cancel
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={() => handleDelete(series.id)}
-                                      className="bg-destructive hover:bg-destructive/90"
-                                    >
-                                      Delete
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
+                                </Button>
+                                <AlertDialog.Backdrop>
+                                  <AlertDialog.Container>
+                                    <AlertDialog.Dialog>
+                                      <AlertDialog.Header>
+                                        <AlertDialog.Icon status="danger" />
+                                        <AlertDialog.Heading>
+                                          Are you sure?
+                                        </AlertDialog.Heading>
+                                      </AlertDialog.Header>
+                                      <AlertDialog.Body>
+                                        <p>
+                                          This will delete the series &ldquo;
+                                          {series.title}&rdquo;. You can restore
+                                          it later from the Deleted filter.
+                                        </p>
+                                      </AlertDialog.Body>
+                                      <AlertDialog.Footer>
+                                        <Button slot="close" variant="tertiary">
+                                          Cancel
+                                        </Button>
+                                        <Button
+                                          slot="close"
+                                          variant="danger"
+                                          onPress={() =>
+                                            handleDelete(series.id)
+                                          }
+                                        >
+                                          Delete
+                                        </Button>
+                                      </AlertDialog.Footer>
+                                    </AlertDialog.Dialog>
+                                  </AlertDialog.Container>
+                                </AlertDialog.Backdrop>
                               </AlertDialog>
                             </>
                           )}
@@ -467,7 +481,7 @@ export function SeriesTable() {
                 </tbody>
               </table>
             </div>
-          </CardContent>
+          </Card.Content>
         </Card>
       )}
     </div>

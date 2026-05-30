@@ -1,3 +1,4 @@
+import { Button, Popover, ScrollShadow } from "@heroui/react";
 import {
   ArrowDown01Icon,
   ArrowLeft02Icon,
@@ -7,12 +8,6 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Route } from "next";
 import Link from "next/link";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface SeriesPost {
@@ -53,7 +48,7 @@ function SeriesPostsList({
         </Link>
       </div>
 
-      <ScrollArea className="max-h-64">
+      <ScrollShadow className="max-h-64">
         <div className="flex flex-col gap-1">
           {posts.map((post, index) => {
             const isCurrent = post.slug === currentSlug;
@@ -87,7 +82,7 @@ function SeriesPostsList({
             );
           })}
         </div>
-      </ScrollArea>
+      </ScrollShadow>
     </div>
   );
 }
@@ -112,18 +107,20 @@ export function SeriesNavigation({
     >
       <div className="flex flex-wrap items-center justify-center gap-4">
         <Popover>
-          <PopoverTrigger className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-primary px-4 py-1.5 font-medium text-primary-foreground text-sm transition-all duration-200 hover:bg-primary/90">
+          <Button size="sm" className="rounded-full">
             <HugeiconsIcon icon={LibraryIcon} size={16} />
             {seriesTitle}
             <HugeiconsIcon icon={ArrowDown01Icon} size={14} />
-          </PopoverTrigger>
-          <PopoverContent sideOffset={8} align="center">
-            <SeriesPostsList
-              posts={seriesPosts}
-              currentSlug={currentSlug}
-              seriesSlug={seriesSlug}
-            />
-          </PopoverContent>
+          </Button>
+          <Popover.Content>
+            <Popover.Dialog>
+              <SeriesPostsList
+                posts={seriesPosts}
+                currentSlug={currentSlug}
+                seriesSlug={seriesSlug}
+              />
+            </Popover.Dialog>
+          </Popover.Content>
         </Popover>
 
         <span className="text-muted-foreground text-sm">
