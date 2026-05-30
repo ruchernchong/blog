@@ -37,6 +37,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `pnpm release` - Create semantic release
 
+### Usage Analytics Ingestion
+
+- `pnpm usage:ingest` - Parse local agent logs, price them, and upsert daily
+  `token_usage` aggregates into the `DATABASE_URL` database (local dev branch)
+- `pnpm usage:ingest:prod` - Same parse/price step locally, but POST the rows to
+  the deployed `POST /api/usage/ingest` route, which upserts them using the
+  deployment's own production `DATABASE_URL` (the prod connection string never
+  touches the local machine). Requires `BLOG_MCP_AUTH_TOKEN` and Vercel's
+  `VERCEL_PROJECT_PRODUCTION_URL` (or `VERCEL_URL`) in the environment.
+
 ### MCP Server
 
 - `pnpm mcp` - Start MCP server for blog management
