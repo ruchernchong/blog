@@ -1,6 +1,4 @@
-"use client";
-
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import ExternalLink from "@/components/external-link";
 import * as Icons from "@/components/icons";
 import socials from "@/data/socials";

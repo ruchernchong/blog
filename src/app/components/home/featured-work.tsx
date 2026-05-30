@@ -1,8 +1,6 @@
-"use client";
-
 import { Chip } from "@heroui/react";
 import { buttonVariants } from "@heroui/styles";
-import { motion } from "motion/react";
+import * as motion from "motion/react-client";
 import type { Route } from "next";
 import Link from "next/link";
 import { Typography } from "@/components/typography";
