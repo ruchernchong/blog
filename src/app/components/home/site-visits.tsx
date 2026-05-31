@@ -1,6 +1,6 @@
 import { getGitHubStars } from "@/lib/github";
+import { getTotalVisits } from "@/lib/posthog";
 import { getPublishedPostsCount } from "@/lib/queries/posts";
-import { getTotalVisits } from "@/lib/umami";
 import { StatsBar } from "./stats-bar";
 
 export async function SiteVisits() {

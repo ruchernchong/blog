@@ -12,7 +12,7 @@ import {
   getGitHubFollowers,
   getGitHubStars,
 } from "@/lib/github";
-import { getTotalVisits } from "@/lib/umami";
+import { getTotalVisits } from "@/lib/posthog";
 
 export async function StatsGrid() {
   await connection();

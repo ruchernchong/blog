@@ -1,7 +1,7 @@
 import { Card, Chip } from "@heroui/react";
 import * as motion from "motion/react-client";
 import { connection } from "next/server";
-import { getPages } from "@/lib/umami";
+import { getPages } from "@/lib/posthog";
 
 interface PageData {
   path: string;
