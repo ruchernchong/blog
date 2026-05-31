@@ -1,5 +1,5 @@
 import { connection } from "next/server";
-import { getVisits } from "@/lib/posthog";
+import { getVisits } from "@/lib/queries/posthog";
 import { VisitsChartClient } from "./visits-chart.client";
 
 export async function VisitsChart() {

@@ -1,5 +1,5 @@
 import { getGitHubStars } from "@/lib/github";
-import { getTotalVisits } from "@/lib/posthog";
+import { getTotalVisits } from "@/lib/queries/posthog";
 import { getPublishedPostsCount } from "@/lib/queries/posts";
 import { StatsBar } from "./stats-bar";
 
