@@ -46,6 +46,16 @@ async function queryPostHog<T>(query: string): Promise<T | null> {
   }
 }
 
+export async function getLastUpdated(): Promise<string | null> {
+  "use cache";
+  cacheTag("posthog:last-updated");
+  cacheLife("days");
+  const data = await queryPostHog<{ results: [[string]] }>(
+    "SELECT max(timestamp) FROM events WHERE event = '$pageview'",
+  );
+  return data?.results?.[0]?.[0] ?? null;
+}
+
 export async function getTotalVisits(): Promise<number> {
   "use cache";
   cacheTag("posthog:visits:total");
