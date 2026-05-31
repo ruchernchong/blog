@@ -68,7 +68,8 @@ export default function DashboardPage() {
       <div className="flex items-center justify-end">
         <Link
           href="https://posthog.com"
-          isExternal
+          target="_blank"
+          rel="noopener noreferrer"
           className="flex items-center gap-2"
         >
           <Typography type="body-xs" color="muted">
