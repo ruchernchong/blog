@@ -21,7 +21,7 @@ export const proxy = async (request: NextRequest) => {
   if (!request.nextUrl.pathname.startsWith("/studio")) {
     return postHogMiddleware({
       apiKey: process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN,
-      proxy: true,
+      proxy: { host: process.env.NEXT_PUBLIC_POSTHOG_HOST },
     })(request);
   }
 
@@ -55,7 +55,7 @@ export const proxy = async (request: NextRequest) => {
     // Session valid, allow access and seed the PostHog identity cookie
     return postHogMiddleware({
       apiKey: process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN,
-      proxy: true,
+      proxy: { host: process.env.NEXT_PUBLIC_POSTHOG_HOST },
     })(request);
   } catch (error) {
     // Unexpected error (network failure, timeout, etc.)
