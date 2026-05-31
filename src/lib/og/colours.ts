@@ -33,6 +33,20 @@ export const OG_COLOURS = {
     /** --primary: oklch(0.6 0.18 25) */
     end: "#D4513B",
   },
+
+  /**
+   * Heatmap intensity ramp (index = intensity 0–4).
+   *
+   * Satori cannot evaluate CSS variables or OKLCH relative-colour expressions,
+   * so --chart-1 through --chart-4 and --default are pre-converted to hex here.
+   *
+   * 0 → --default  oklch(0.94 0.001 286)
+   * 1 → --chart-4  oklch(0.72 0.18 25)
+   * 2 → --chart-3  oklch(0.60 0.18 25)  (= --accent)
+   * 3 → --chart-2  oklch(0.48 0.18 25)
+   * 4 → --chart-1  oklch(0.36 0.18 25)
+   */
+  chartRamp: ["#E9E9EA", "#E8806A", "#D4513B", "#A13527", "#6B1B0F"] as const,
 } as const;
 
 /**
