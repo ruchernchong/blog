@@ -1,4 +1,5 @@
 import { betterFetch } from "@better-fetch/fetch";
+import { postHogMiddleware } from "@posthog/next";
 import type { Session } from "better-auth/types";
 import { type NextRequest, NextResponse } from "next/server";
 import { ERROR_IDS } from "@/constants/error-ids";
@@ -16,6 +17,14 @@ import { logError } from "@/lib/logger";
  * @see {@link https://better-auth.com/docs/concepts/session Better Auth Sessions}
  */
 export const proxy = async (request: NextRequest) => {
+  // Public routes skip the auth check and only seed the PostHog identity cookie.
+  if (!request.nextUrl.pathname.startsWith("/studio")) {
+    return postHogMiddleware({
+      apiKey: process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN,
+      proxy: true,
+    })(request);
+  }
+
   try {
     const { data: session, error } = await betterFetch<Session>(
       "/api/auth/get-session",
@@ -43,8 +52,11 @@ export const proxy = async (request: NextRequest) => {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    // Session valid, allow access
-    return NextResponse.next();
+    // Session valid, allow access and seed the PostHog identity cookie
+    return postHogMiddleware({
+      apiKey: process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN,
+      proxy: true,
+    })(request);
   } catch (error) {
     // Unexpected error (network failure, timeout, etc.)
     logError(ERROR_IDS.AUTH_MIDDLEWARE_ERROR, error, {
@@ -56,5 +68,5 @@ export const proxy = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/studio/:path*"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)", "/studio/:path*"],
 };
