@@ -1,11 +1,11 @@
 import { connection } from "next/server";
-
-const POSTHOG_API_HOST = "https://eu.posthog.com";
-const POSTHOG_PROJECT_ID = process.env.POSTHOG_PROJECT_ID;
-const POSTHOG_API_KEY = process.env.POSTHOG_API_KEY;
-
-const VISITS_CHART_DAYS = 90;
-const TOP_PAGES_DAYS = 30;
+import {
+  POSTHOG_API_HOST,
+  POSTHOG_API_KEY,
+  POSTHOG_PROJECT_ID,
+  TOP_PAGES_DAYS,
+  VISITS_CHART_DAYS,
+} from "@/config/posthog";
 
 export type Visit = {
   date: string;
@@ -19,11 +19,6 @@ export type PageMetric = {
 };
 
 async function queryPostHog<T>(query: string): Promise<T | null> {
-  if (!POSTHOG_PROJECT_ID || !POSTHOG_API_KEY) {
-    console.error("PostHog Query API environment variables not configured");
-    return null;
-  }
-
   try {
     const response = await fetch(
       `${POSTHOG_API_HOST}/api/projects/${POSTHOG_PROJECT_ID}/query`,
@@ -63,12 +58,12 @@ export async function getTotalVisits(): Promise<number> {
 export async function getVisits(): Promise<Visit[]> {
   await connection();
   const data = await queryPostHog<{ results: [string, number][] }>(`
-    SELECT toDate(timestamp) AS date, count() AS visits
-    FROM events
-    WHERE event = '$pageview'
-      AND timestamp >= now() - INTERVAL ${VISITS_CHART_DAYS} DAY
-    GROUP BY date
-    ORDER BY date ASC
+      SELECT toDate(timestamp) AS date, count() AS visits
+      FROM events
+      WHERE event = '$pageview'
+        AND timestamp >= now() - INTERVAL ${VISITS_CHART_DAYS} DAY
+      GROUP BY date
+      ORDER BY date ASC
   `);
 
   if (!data?.results) return [];
@@ -78,13 +73,13 @@ export async function getVisits(): Promise<Visit[]> {
 export async function getPages(): Promise<PageMetric[]> {
   await connection();
   const data = await queryPostHog<{ results: [string, number][] }>(`
-    SELECT properties.$pathname AS path, count() AS views
-    FROM events
-    WHERE event = '$pageview'
-      AND timestamp >= now() - INTERVAL ${TOP_PAGES_DAYS} DAY
-    GROUP BY path
-    ORDER BY views DESC
-    LIMIT 10
+      SELECT properties.$pathname AS path, count() AS views
+      FROM events
+      WHERE event = '$pageview'
+        AND timestamp >= now() - INTERVAL ${TOP_PAGES_DAYS} DAY
+      GROUP BY path
+      ORDER BY views DESC
+          LIMIT 10
   `);
 
   if (!data?.results || data.results.length === 0) return [];
