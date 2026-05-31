@@ -73,7 +73,7 @@ export async function getVisits(): Promise<Visit[]> {
   cacheTag("posthog:visits");
   cacheLife("days");
   const data = await queryPostHog<{ results: [string, number][] }>(`
-      SELECT toDate(toTimezone(timestamp, '${POSTHOG_TIMEZONE}')) AS date, count() AS visits
+      SELECT toDate(toTimeZone(timestamp, '${POSTHOG_TIMEZONE}')) AS date, count() AS visits
       FROM events
       WHERE event = '$pageview'
         AND properties.$host = '${POSTHOG_PRODUCTION_HOST}'
