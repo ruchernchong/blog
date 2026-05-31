@@ -1,3 +1,52 @@
+## [1.13.0](https://github.com/ruchernchong/blog/compare/v1.12.1...v1.13.0) (2026-05-31)
+
+### Features
+
+* add /api/usage/ingest route for production usage ingestion ([e6a330c](https://github.com/ruchernchong/blog/commit/e6a330c3cb07f1cd9081101d55f513c5a8fad4a8))
+* add /usage token-activity contribution heatmap ([237f896](https://github.com/ruchernchong/blog/commit/237f896221e8986ede1c1cdb34fee8baf4a83f60))
+* add /usage token-usage profile page ([5255605](https://github.com/ruchernchong/blog/commit/525560501e3ddd5ac5b0f5df71f5c41d82fcb102))
+* add auto-save for Content Studio and save_draft MCP tool ([1973c97](https://github.com/ruchernchong/blog/commit/1973c97fa48a38fa4ea1e8ce33f5f038e194b2ce))
+* add auto-save for Content Studio drafts and save_draft MCP tool ([31f139f](https://github.com/ruchernchong/blog/commit/31f139f9c54a9a8b1bb428861a8f30721cf70a7e))
+* add blog-voice skill for personal writing style ([7bba330](https://github.com/ruchernchong/blog/commit/7bba330dc9dc5a8585f2d6207feeb0407dab1181))
+* add cache directives to query layer ([39b019e](https://github.com/ruchernchong/blog/commit/39b019e421ba3dd09b1a1c72e28c821a4ced8b7d))
+* add cache invalidation on post and series mutations ([9319883](https://github.com/ruchernchong/blog/commit/9319883a4b13a8b8ea517016dea39f1f63fafd1a))
+* add cached usage aggregation query ([948aa0f](https://github.com/ruchernchong/blog/commit/948aa0fc163d4eaad5f82ed264f391c3cdc597fa))
+* add caching to icons, OG images, and metadata routes ([55e8764](https://github.com/ruchernchong/blog/commit/55e876465bfe0442fb76a040ec9136c8bd1061fb))
+* add local token-usage ingestion script ([8817ba5](https://github.com/ruchernchong/blog/commit/8817ba5801de9a8874532f5faa54c247b749a0a8))
+* add OG image for usage page with activity heatmap ([2b7c280](https://github.com/ruchernchong/blog/commit/2b7c28027ec33745a361182dbdfdd4ebc17e6fd4))
+* add OpenCode agent to usage profile ([818da0f](https://github.com/ruchernchong/blog/commit/818da0fa3d7779e7ddd725e6cf45783db5a396c5))
+* add provider dimension derived from agent ([19581b6](https://github.com/ruchernchong/blog/commit/19581b6903dbd7efb076dcde048823b99d9ad270))
+* add remote blog MCP server config ([1fd3fea](https://github.com/ruchernchong/blog/commit/1fd3feaf125ee948f0dab82fa6d78226aab3ccd6))
+* add token_usage daily aggregate schema ([d459606](https://github.com/ruchernchong/blog/commit/d4596066784d7da4eae2da792941c9af2bc32789))
+* add token_usage table migration ([35e3ce6](https://github.com/ruchernchong/blog/commit/35e3ce654922c6b4c8c175c1369ff94523f84c33))
+* add token-usage parsers, pricing and types ([e23c129](https://github.com/ruchernchong/blog/commit/e23c129be5865b2b04978f0fa356126c96b2345d))
+* add Usage to site navigation ([1bd00a3](https://github.com/ruchernchong/blog/commit/1bd00a311f38cb1199a5ce1d80e90bd216fbfe66))
+* consolidate usage breakdown into segmented card ([84a3f6f](https://github.com/ruchernchong/blog/commit/84a3f6f4541258070b13013b6d83cff67415e6b5))
+* enable Next.js Cache Components ([681bbd2](https://github.com/ruchernchong/blog/commit/681bbd2bba1dbc04ad2cb362ed95bf33f19e1282))
+* implement Better Auth token validation for MCP API ([f769301](https://github.com/ruchernchong/blog/commit/f7693015a3f0f3714f1ff6c74d4c1ea9423d5a69)), closes [#278](https://github.com/ruchernchong/blog/issues/278)
+* migrate UI from shadcn to HeroUI v3 (OSS + Pro) ([def4046](https://github.com/ruchernchong/blog/commit/def40462eb90153e57183968c1b68487b38ef124))
+* price OpenAI gpt-5.5-fast usage at the priority tier rate ([a8df0fa](https://github.com/ruchernchong/blog/commit/a8df0fa857149511ff57ef42feda6e76d29f50e9))
+* split QuickStats for optimal caching with Suspense ([8de2183](https://github.com/ruchernchong/blog/commit/8de218313f7c6188952c02c028fdf3a0e6bcb65a))
+* split usage heatmap into per-year full-width grids ([c42130c](https://github.com/ruchernchong/blog/commit/c42130caedecaad8948b824aa4bd7432c29392cf))
+
+### Bug Fixes
+
+* add --no-git-checks to allow pnpm version on dirty tree ([e537dc2](https://github.com/ruchernchong/blog/commit/e537dc2533024ec532cc04c24204054ac8b0f5b0))
+* add missing cache invalidation in MCP post mutation handlers ([4e92cd1](https://github.com/ruchernchong/blog/commit/4e92cd11ca731acd052ee96fe0786932bc561448))
+* correct OpenCode MCP auth env var syntax to {env:XXX} ([315cd46](https://github.com/ruchernchong/blog/commit/315cd4687f0c6fb49e070324b4d34a11eb7f17b2))
+* reduce metrics rendering overhead ([efe342a](https://github.com/ruchernchong/blog/commit/efe342a6dcdf56378ce21ee91742a165d1b69ed0))
+* remove 'use cache' from routes with serialization issues ([31e92a5](https://github.com/ruchernchong/blog/commit/31e92a53b31410b1fa22c9dc38a8ed56cfaa7d93))
+* resolve 10s execution time on blog posts ([10ca1fd](https://github.com/ruchernchong/blog/commit/10ca1fd4fd249213cc33f3bff871c8ca5c094a34))
+* resolve Cache Components compatibility issues ([8c98c0d](https://github.com/ruchernchong/blog/commit/8c98c0dc822cb32f7b6979a89eeaa39dbe849706))
+* resolve Date.now() error in umami.ts ([2ca8da5](https://github.com/ruchernchong/blog/commit/2ca8da522ef1c3452c699f25d9ab6e5e6c2c0c05))
+* use accent colour token for usage charts ([81eae78](https://github.com/ruchernchong/blog/commit/81eae78db81eab6fea24facc73bb613fe8e79cd7))
+
+### Performance Improvements
+
+* cache feed.xml, llms.txt, sitemap and add OG Cache-Control ([489ee6d](https://github.com/ruchernchong/blog/commit/489ee6d2671171150a3429fa16555b42d65f5560))
+* cache Google Fonts for OG images ([e4804ba](https://github.com/ruchernchong/blog/commit/e4804baa2f9cdcfe4dc560f79b69268617a88559))
+* optimise static rendering with ISR ([c24b751](https://github.com/ruchernchong/blog/commit/c24b751996efb205a1e26be0341288d35345cb56))
+
 ## [1.12.1](https://github.com/ruchernchong/blog/compare/v1.12.0...v1.12.1) (2026-01-06)
 
 ### Bug Fixes
