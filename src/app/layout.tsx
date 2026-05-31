@@ -74,7 +74,10 @@ export default function RootLayout({
           geistMono.variable,
         )}
       >
-        <PostHogProvider clientOptions={{ api_host: "/ingest" }} bootstrapFlags>
+        <PostHogProvider
+          apiKey={process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN}
+          clientOptions={{ api_host: "/ingest" }}
+        >
           <PostHogPageView />
           <NuqsAdapter>{children}</NuqsAdapter>
           <VercelAnalytics />
