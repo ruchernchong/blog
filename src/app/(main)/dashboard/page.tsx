@@ -1,6 +1,8 @@
+import { Link, Typography } from "@heroui/react";
 import { DashboardBrowsingIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Suspense } from "react";
 import { LastUpdated } from "@/app/(main)/dashboard/components/last-updated";
 import { StatsGrid } from "@/app/(main)/dashboard/components/stats-grid";
@@ -62,6 +64,25 @@ export default function DashboardPage() {
       <Suspense>
         <VisitsChart />
       </Suspense>
+
+      <div className="flex items-center justify-end">
+        <Link
+          href="https://posthog.com"
+          isExternal
+          className="flex items-center gap-2"
+        >
+          <Typography type="body-xs" color="muted">
+            Powered by
+          </Typography>
+          <Image
+            src="/images/posthog-logo.svg"
+            alt="PostHog"
+            width={800}
+            height={140}
+            className="h-4 w-auto dark:invert"
+          />
+        </Link>
+      </div>
     </div>
   );
 }
