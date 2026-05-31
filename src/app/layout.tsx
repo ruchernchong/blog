@@ -1,4 +1,5 @@
 import { cn } from "@heroui/react";
+import { PostHogPageView, PostHogProvider } from "@posthog/next";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
@@ -73,16 +74,22 @@ export default function RootLayout({
           geistMono.variable,
         )}
       >
-        <NuqsAdapter>{children}</NuqsAdapter>
-        <VercelAnalytics />
-        <SpeedInsights />
-        {/* Keep Umami during the PostHog 90-day production data warm-up. */}
-        <Script
-          defer
-          src="https://umami.ruchern.dev/script.js"
-          data-website-id="23a07b6c-093c-4831-840e-9d2998eba9e9"
-          data-domains="ruchern.dev"
-        />
+        <PostHogProvider
+          apiKey={process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN}
+          clientOptions={{ api_host: "/ingest" }}
+        >
+          <PostHogPageView />
+          <NuqsAdapter>{children}</NuqsAdapter>
+          <VercelAnalytics />
+          <SpeedInsights />
+          {/* Keep Umami during the PostHog 90-day production data warm-up. */}
+          <Script
+            defer
+            src="https://umami.ruchern.dev/script.js"
+            data-website-id="23a07b6c-093c-4831-840e-9d2998eba9e9"
+            data-domains="ruchern.dev"
+          />
+        </PostHogProvider>
       </body>
     </html>
   );
