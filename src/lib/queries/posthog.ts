@@ -1,4 +1,4 @@
-import { connection } from "next/server";
+import { cacheLife, cacheTag } from "next/cache";
 import {
   POSTHOG_API_HOST,
   POSTHOG_API_KEY,
@@ -31,7 +31,6 @@ async function queryPostHog<T>(query: string): Promise<T | null> {
         body: JSON.stringify({
           query: { kind: "HogQLQuery", query },
         }),
-        next: { revalidate: 3600 },
       },
     );
 
@@ -48,7 +47,9 @@ async function queryPostHog<T>(query: string): Promise<T | null> {
 }
 
 export async function getTotalVisits(): Promise<number> {
-  await connection();
+  "use cache";
+  cacheTag("posthog:visits:total");
+  cacheLife("days");
   const data = await queryPostHog<{ results: [[number]] }>(
     "SELECT count() FROM events WHERE event = '$pageview'",
   );
@@ -56,7 +57,9 @@ export async function getTotalVisits(): Promise<number> {
 }
 
 export async function getVisits(): Promise<Visit[]> {
-  await connection();
+  "use cache";
+  cacheTag("posthog:visits");
+  cacheLife("days");
   const data = await queryPostHog<{ results: [string, number][] }>(`
       SELECT toDate(timestamp) AS date, count() AS visits
       FROM events
@@ -71,7 +74,9 @@ export async function getVisits(): Promise<Visit[]> {
 }
 
 export async function getPages(): Promise<PageMetric[]> {
-  await connection();
+  "use cache";
+  cacheTag("posthog:pages");
+  cacheLife("days");
   const data = await queryPostHog<{ results: [string, number][] }>(`
       SELECT properties.$pathname AS path, count() AS views
       FROM events
