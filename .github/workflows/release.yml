@@ -72,6 +72,7 @@ jobs:
       id-token: write
     env:
       HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
+      HUSKY: 0
 
     steps:
       - name: Checkout
