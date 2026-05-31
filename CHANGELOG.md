@@ -1,3 +1,16 @@
+## [1.15.0](https://github.com/ruchernchong/blog/compare/v1.14.0...v1.15.0) (2026-05-31)
+
+### Features
+
+* add "Powered by PostHog" attribution to dashboard ([965d07c](https://github.com/ruchernchong/blog/commit/965d07c2ea50dcbd44a8b7e1d889c42d64de290b))
+* add last updated timestamp from PostHog on dashboard ([4f65eb1](https://github.com/ruchernchong/blog/commit/4f65eb19b75c8bb1cd0f6f9f96b4ccb8ebc4d8ba))
+
+### Bug Fixes
+
+* replace isExternal with target and rel on PostHog link ([624cfa6](https://github.com/ruchernchong/blog/commit/624cfa6cc760f421c9d31771087804272d3796ce))
+* scope PostHog queries to production host and Singapore timezone ([3fa8762](https://github.com/ruchernchong/blog/commit/3fa876286153720cd090f90eaa5d53ed4d5dde9d))
+* use correct HogQL toTimeZone casing in visits query ([42b35bc](https://github.com/ruchernchong/blog/commit/42b35bc87e5e2dacf6dc41c95f27a65e66224d90))
+
 ## [1.14.0](https://github.com/ruchernchong/blog/compare/v1.13.1...v1.14.0) (2026-05-31)
 
 ### Features
