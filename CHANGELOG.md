@@ -1,3 +1,14 @@
+## [1.14.0](https://github.com/ruchernchong/blog/compare/v1.13.1...v1.14.0) (2026-05-31)
+
+### Features
+
+* migrate analytics to @posthog/next package ([cff676f](https://github.com/ruchernchong/blog/commit/cff676fcc84cc5c20c2844f68b656464da6c4d89))
+
+### Bug Fixes
+
+* pass apiKey explicitly to PostHogProvider ([59be121](https://github.com/ruchernchong/blog/commit/59be1218c09c58671f8ea9eb687b6bd91186f3fb))
+* route PostHog proxy traffic through EU ingest host ([bbc6501](https://github.com/ruchernchong/blog/commit/bbc650123b944f3a0afa8b1080ab6d302a56751b))
+
 ## [1.13.1](https://github.com/ruchernchong/blog/compare/v1.13.0...v1.13.1) (2026-05-31)
 
 ### Performance Improvements
