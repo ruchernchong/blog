@@ -2,7 +2,9 @@ import { cacheLife, cacheTag } from "next/cache";
 import {
   POSTHOG_API_HOST,
   POSTHOG_API_KEY,
+  POSTHOG_PRODUCTION_HOST,
   POSTHOG_PROJECT_ID,
+  POSTHOG_TIMEZONE,
   TOP_PAGES_DAYS,
   VISITS_CHART_DAYS,
 } from "@/config/posthog";
@@ -51,7 +53,7 @@ export async function getLastUpdated(): Promise<string | null> {
   cacheTag("posthog:last-updated");
   cacheLife("days");
   const data = await queryPostHog<{ results: [[string]] }>(
-    "SELECT max(timestamp) FROM events WHERE event = '$pageview'",
+    `SELECT max(timestamp) FROM events WHERE event = '$pageview' AND properties.$host = '${POSTHOG_PRODUCTION_HOST}'`,
   );
   return data?.results?.[0]?.[0] ?? null;
 }
@@ -61,7 +63,7 @@ export async function getTotalVisits(): Promise<number> {
   cacheTag("posthog:visits:total");
   cacheLife("days");
   const data = await queryPostHog<{ results: [[number]] }>(
-    "SELECT count() FROM events WHERE event = '$pageview'",
+    `SELECT count() FROM events WHERE event = '$pageview' AND properties.$host = '${POSTHOG_PRODUCTION_HOST}'`,
   );
   return data?.results?.[0]?.[0] ?? 0;
 }
@@ -71,9 +73,10 @@ export async function getVisits(): Promise<Visit[]> {
   cacheTag("posthog:visits");
   cacheLife("days");
   const data = await queryPostHog<{ results: [string, number][] }>(`
-      SELECT toDate(timestamp) AS date, count() AS visits
+      SELECT toDate(toTimezone(timestamp, '${POSTHOG_TIMEZONE}')) AS date, count() AS visits
       FROM events
       WHERE event = '$pageview'
+        AND properties.$host = '${POSTHOG_PRODUCTION_HOST}'
         AND timestamp >= now() - INTERVAL ${VISITS_CHART_DAYS} DAY
       GROUP BY date
       ORDER BY date ASC
@@ -91,6 +94,7 @@ export async function getPages(): Promise<PageMetric[]> {
       SELECT properties.$pathname AS path, count() AS views
       FROM events
       WHERE event = '$pageview'
+        AND properties.$host = '${POSTHOG_PRODUCTION_HOST}'
         AND timestamp >= now() - INTERVAL ${TOP_PAGES_DAYS} DAY
       GROUP BY path
       ORDER BY views DESC
