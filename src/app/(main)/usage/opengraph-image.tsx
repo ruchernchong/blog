@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { OG_SIZE } from "@/lib/og/config";
+import { OG_HEADERS, OG_SIZE } from "@/lib/og/config";
 import { getOGFonts } from "@/lib/og/fonts";
 import { UsageHeatmap } from "@/lib/og/templates/usage-heatmap";
 import { getUsageProfile } from "@/lib/queries/usage";
@@ -8,15 +8,19 @@ import { buildHeatmapLayout } from "@/lib/usage/heatmap-layout";
 export const alt = "Usage - Ru Chern";
 export const size = OG_SIZE;
 export const contentType = "image/png";
-export const revalidate = 86400;
 
 export default async function Image() {
   const [fonts, profile] = await Promise.all([getOGFonts(), getUsageProfile()]);
 
-  const currentYear = new Date().getFullYear().toString();
-  const yearContributions = profile.contributions.filter((c) =>
-    c.date.startsWith(currentYear),
-  );
+  // Derive the year from the data, not `new Date()`. A wall-clock read is a
+  // non-deterministic operation that makes this route dynamic under Cache
+  // Components; sourcing it from the (cached) profile keeps the route
+  // prerenderable so the image is served statically from the CDN. `years` is
+  // sorted ascending, so the last entry is the most recent year with activity.
+  const latestYear = profile.years.at(-1)?.year;
+  const yearContributions = latestYear
+    ? profile.contributions.filter((c) => c.date.startsWith(latestYear))
+    : [];
   const contributions =
     yearContributions.length > 0
       ? yearContributions
@@ -30,6 +34,6 @@ export default async function Image() {
       title="Usage"
       description="Tokens and cost across my AI coding agents over time."
     />,
-    { ...size, fonts },
+    { ...size, fonts, headers: OG_HEADERS },
   );
 }
