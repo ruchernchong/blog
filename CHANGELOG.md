@@ -1,3 +1,9 @@
+## [1.13.1](https://github.com/ruchernchong/blog/compare/v1.13.0...v1.13.1) (2026-05-31)
+
+### Performance Improvements
+
+* cache usage opengraph image at the CDN ([be02aa5](https://github.com/ruchernchong/blog/commit/be02aa5ec13c51c72744f90a4a480f3f8554b393))
+
 ## [1.13.0](https://github.com/ruchernchong/blog/compare/v1.12.1...v1.13.0) (2026-05-31)
 
 ### Features
