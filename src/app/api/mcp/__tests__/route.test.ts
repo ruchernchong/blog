@@ -3,13 +3,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock(
   "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js",
   () => ({
-    WebStandardStreamableHTTPServerTransport: vi.fn(() => ({
-      handleRequest: vi
+    // biome-ignore lint/complexity/useArrowFunction: must be a constructor for `new` in route.ts
+    WebStandardStreamableHTTPServerTransport: vi.fn(function (this: {
+      handleRequest: ReturnType<typeof vi.fn>;
+    }) {
+      this.handleRequest = vi
         .fn()
         .mockResolvedValue(
           new Response(JSON.stringify({ result: "ok" }), { status: 200 }),
-        ),
-    })),
+        );
+    }),
   }),
 );
 
