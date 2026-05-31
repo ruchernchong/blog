@@ -7,7 +7,7 @@ out/
 dist/
 
 # Environment variables
-.env
+.env.development.local
 .env.local
 .env.*.local
 !.env.example
@@ -79,3 +79,4 @@ coverage/
 .beads-credential-key
 .env*.local
 .vercel
+.env*
