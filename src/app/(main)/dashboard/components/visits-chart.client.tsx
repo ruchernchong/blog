@@ -2,7 +2,7 @@
 
 import { Card } from "@heroui/react";
 import { ChartTooltip, LineChart } from "@heroui-pro/react";
-import type { Visit } from "@/lib/umami";
+import type { Visit } from "@/lib/queries/posthog";
 
 interface VisitsChartClientProps {
   data: Visit[];

@@ -4,7 +4,6 @@ import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Figtree, Geist_Mono } from "next/font/google";
-import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { ReactNode } from "react";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
@@ -82,13 +81,6 @@ export default function RootLayout({
           <NuqsAdapter>{children}</NuqsAdapter>
           <VercelAnalytics />
           <SpeedInsights />
-          {/* Keep Umami during the PostHog 90-day production data warm-up. */}
-          <Script
-            defer
-            src="https://umami.ruchern.dev/script.js"
-            data-website-id="23a07b6c-093c-4831-840e-9d2998eba9e9"
-            data-domains="ruchern.dev"
-          />
         </PostHogProvider>
       </body>
     </html>
