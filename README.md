@@ -9,6 +9,7 @@ pnpm install         # Install dependencies
 pnpm dev             # Start dev server
 pnpm test            # Run tests
 pnpm build           # Build for production
+pnpm mcp:cf:deploy   # Deploy the MCP Worker with Alchemy
 ```
 
 ## Tech Stack
@@ -25,6 +26,7 @@ pnpm build           # Build for production
 - **Cache**: Upstash Redis for analytics and stats
 - **Storage**: Cloudflare R2 for media assets
 - **Auth**: Better Auth with OAuth (GitHub, Google)
+- **MCP IaC**: Alchemy-managed Cloudflare Worker for remote blog MCP access
 
 ### Content & Editor
 - **Content**: Database-backed MDX with next-mdx-remote
@@ -92,6 +94,7 @@ pnpm build           # Build for production
 See [CLAUDE.md](./CLAUDE.md) for complete command reference including:
 - Development, testing, and build commands
 - Database management (migrations, studio, seeding)
+- MCP Worker deployment with Alchemy
 - Code quality tools (linting, formatting, type checking)
 - Custom slash commands for Claude Code
 

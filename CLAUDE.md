@@ -225,8 +225,26 @@ See `.env.example` for all required variables:
 
 ### Cloudflare Worker MCP Runtime
 
-The Worker entrypoint is `src/mcp/worker.ts`. Infrastructure setup is intentionally not committed here; configure it
-externally when deploying with SST.
+The Worker entrypoint is `src/mcp/worker.ts`. Cloudflare infrastructure is managed with Alchemy in `alchemy.run.ts`.
+
+Alchemy commands:
+
+- `pnpm mcp:cf:dev` - Run the MCP Worker through Alchemy dev with `.env.local`
+- `pnpm mcp:cf:deploy` - Deploy the production MCP Worker stack
+- `pnpm mcp:cf:deploy:local` - Deploy production using `.env.local`
+- `pnpm mcp:cf:state` - List the production Alchemy state
+- `pnpm mcp:cf:destroy` - Destroy the production MCP Worker stack
+
+Required deploy-time Alchemy variables:
+
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `ALCHEMY_PASSWORD`
+- `ALCHEMY_STATE_TOKEN`
+
+`development` stage uses local Alchemy state and does not bind `mcp.ruchern.dev`. `production` stage uses
+Cloudflare-backed Alchemy state and binds the MCP Worker to `mcp.ruchern.dev`. This Cloudflare setup is only for the MCP
+Worker; the Next.js app is not deployed through Alchemy or Cloudflare Workers.
 
 Required Worker bindings:
 
