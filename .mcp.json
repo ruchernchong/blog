@@ -13,13 +13,6 @@
       "headers": {
         "x-heroui-personal-token": "${HEROUI_PERSONAL_TOKEN}"
       }
-    },
-    "posthog": {
-      "type": "http",
-      "url": "https://mcp.posthog.com/mcp",
-      "headers": {
-        "Authorization": "Bearer ${POSTHOG_PERSONAL_API_KEY}"
-      }
     }
   }
 }
