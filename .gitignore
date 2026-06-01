@@ -25,6 +25,7 @@ coverage/
 # Caches
 .cache/
 .turbo/
+.alchemy/
 
 # Misc
 .DS_Store

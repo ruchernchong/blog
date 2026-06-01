@@ -12,4 +12,6 @@ allowBuilds:
   msw: false
   protobufjs: false
   sharp: false
+  workerd: true
+
 savePrefix: ""

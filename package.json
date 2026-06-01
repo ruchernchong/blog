@@ -28,7 +28,12 @@
     "prepare": "husky",
     "release": "semantic-release",
     "vercel-build": "pnpm db:migrate && pnpm build",
-    "mcp": "tsx src/mcp/index.ts"
+    "mcp": "tsx src/mcp/index.ts",
+    "mcp:cf:dev": "alchemy dev alchemy.run.ts --stage development --env-file .env.local",
+    "mcp:cf:deploy": "alchemy deploy alchemy.run.ts --stage production",
+    "mcp:cf:deploy:local": "alchemy deploy alchemy.run.ts --stage production --env-file .env.local",
+    "mcp:cf:state": "alchemy state list alchemy.run.ts --stage production",
+    "mcp:cf:destroy": "alchemy destroy alchemy.run.ts --stage production"
   },
   "dependencies": {
     "@apollo/client": "^3.12.2",
@@ -106,6 +111,7 @@
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@commitlint/types": "^20.5.0",
+    "alchemy": "0.93.9",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/commit-analyzer": "13.0.1",
     "@semantic-release/exec": "7.1.0",
