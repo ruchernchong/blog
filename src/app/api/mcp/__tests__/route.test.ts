@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock(
   "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js",
   () => ({
-    // biome-ignore lint/complexity/useArrowFunction: must be a constructor for `new` in route.ts
     WebStandardStreamableHTTPServerTransport: vi.fn(function (this: {
       handleRequest: ReturnType<typeof vi.fn>;
     }) {

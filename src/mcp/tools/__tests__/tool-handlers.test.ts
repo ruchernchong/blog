@@ -45,6 +45,8 @@ import { mediaService } from "@/lib/services";
 import { db, posts } from "@/schema";
 import {
   confirmUploadHandler,
+  registerMediaTools,
+  unsupportedUploadFromPathHandler,
   uploadFromPathHandler,
   uploadFromUrlHandler,
 } from "../../tools/media.tools";
@@ -421,6 +423,41 @@ describe("MCP Tool Handlers", () => {
         }),
       );
       expect(result.structuredContent).toEqual({ media: mockMedia });
+    });
+  });
+
+  describe("unsupportedUploadFromPathHandler", () => {
+    it("should explain why path uploads are unavailable remotely", async () => {
+      const result = await unsupportedUploadFromPathHandler();
+
+      expect(result.isError).toBe(true);
+      expect(result.content[0].text).toContain("Cloudflare Worker");
+      expect(result.content[0].text).toContain("local machine");
+    });
+  });
+
+  describe("registerMediaTools", () => {
+    it("should register all media tools for remote clients", () => {
+      const registeredTools: string[] = [];
+      const server = {
+        registerTool: vi.fn((name: string) => {
+          registeredTools.push(name);
+        }),
+      };
+
+      registerMediaTools(server as any, {
+        uploadFromPathHandler: unsupportedUploadFromPathHandler,
+      });
+
+      expect(registeredTools).toEqual([
+        "list_media",
+        "get_media",
+        "request_upload",
+        "confirm_upload",
+        "upload_from_path",
+        "upload_from_url",
+        "delete_media",
+      ]);
     });
   });
 

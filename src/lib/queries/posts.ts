@@ -1,17 +1,17 @@
 import {
   and,
   arrayContains,
-  arrayOverlaps,
   count,
   desc,
   eq,
   inArray,
   isNotNull,
   isNull,
-  ne,
 } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import { db, posts } from "@/schema";
+
+export { getPostsWithOverlappingTags } from "@/lib/queries/post-tags";
 
 export const getPostBySlug = async (slug: string) => {
   const [post] = await db
@@ -132,23 +132,6 @@ export const getPublishedPostsBySlugs = async (slugs: string[]) => {
         inArray(posts.slug, slugs),
         eq(posts.status, "published"),
         isNotNull(posts.publishedAt),
-        isNull(posts.deletedAt),
-      ),
-    );
-};
-
-export const getPostsWithOverlappingTags = async (
-  tags: string[],
-  excludeSlug: string,
-) => {
-  return db
-    .select()
-    .from(posts)
-    .where(
-      and(
-        arrayOverlaps(posts.tags, tags),
-        ne(posts.slug, excludeSlug),
-        eq(posts.status, "published"),
         isNull(posts.deletedAt),
       ),
     );

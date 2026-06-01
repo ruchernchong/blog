@@ -1,16 +1,12 @@
 import { revalidateTag } from "next/cache";
-import redis from "@/config/redis";
-import { CacheConfig } from "@/lib/config/cache.config";
-import { getPostsWithOverlappingTags } from "@/lib/queries/posts";
-import { removeFromPopular } from "@/lib/services/popular-posts";
+import {
+  invalidatePopularPostData,
+  invalidatePostData,
+  invalidateRelatedDataByTags,
+} from "@/lib/services/cache-invalidation-data";
 
 export async function invalidatePost(slug: string): Promise<void> {
-  const keysToDelete = [
-    CacheConfig.REDIS_KEYS.POST_STATS(slug),
-    CacheConfig.REDIS_KEYS.RELATED_CACHE(slug),
-  ];
-
-  await redis.del(...keysToDelete);
+  await invalidatePostData(slug);
 
   // Invalidate Next.js Cache Components
   revalidateTag(`post:${slug}`, "max");
@@ -31,22 +27,7 @@ export async function invalidateRelatedByTags(
   tags: string[],
   excludeSlug?: string,
 ): Promise<void> {
-  if (!tags.length) return;
-
-  // Find all posts that share at least one tag
-  const postsWithTags = await getPostsWithOverlappingTags(
-    tags,
-    excludeSlug || "",
-  );
-
-  // Invalidate related cache for each post
-  const keysToDelete = postsWithTags.map((post) =>
-    CacheConfig.REDIS_KEYS.RELATED_CACHE(post.slug),
-  );
-
-  if (keysToDelete.length > 0) {
-    await redis.del(...keysToDelete);
-  }
+  await invalidateRelatedDataByTags(tags, excludeSlug);
 }
 
 /**
@@ -57,5 +38,8 @@ export async function invalidateRelatedByTags(
  * @param slug - Post slug to remove
  */
 export async function invalidatePopularPost(slug: string): Promise<void> {
-  await Promise.all([removeFromPopular(slug), invalidatePost(slug)]);
+  await invalidatePopularPostData(slug);
+  revalidateTag(`post:${slug}`, "max");
+  revalidateTag("posts:list", "max");
+  revalidateTag("posts:count", "max");
 }

@@ -188,6 +188,12 @@ export async function uploadFromPathHandler(
   };
 }
 
+export async function unsupportedUploadFromPathHandler(): Promise<CallToolResult> {
+  return makeError(
+    "upload_from_path is unavailable on the remote Cloudflare Worker because it cannot read files from your local machine. Use request_upload with confirm_upload, upload_from_url, or the local stdio MCP server instead.",
+  );
+}
+
 export async function uploadFromUrlHandler(
   args: {
     url: string;
@@ -242,7 +248,14 @@ export async function deleteMediaHandler(args: {
   };
 }
 
-export function registerMediaTools(server: McpServer): void {
+export interface RegisterMediaToolsOptions {
+  uploadFromPathHandler?: typeof uploadFromPathHandler;
+}
+
+export function registerMediaTools(
+  server: McpServer,
+  options: RegisterMediaToolsOptions = {},
+): void {
   server.registerTool(
     "list_media",
     {
@@ -397,7 +410,8 @@ export function registerMediaTools(server: McpServer): void {
         }),
       }),
     },
-    (args, extra) => uploadFromPathHandler(args, extra),
+    (args, extra) =>
+      (options.uploadFromPathHandler ?? uploadFromPathHandler)(args, extra),
   );
 
   server.registerTool(

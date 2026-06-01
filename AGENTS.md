@@ -63,20 +63,25 @@ An MCP (Model Context Protocol) server for managing blog posts and media via Cla
 - `get_media` - Get single media item
 - `request_upload` - Get presigned R2 upload URL
 - `confirm_upload` - Confirm upload and create database record
-- `upload_from_path` - Upload image directly from local file path
+- `upload_from_path` - Upload image directly from local file path when using the local stdio server. The remote
+  Cloudflare Worker endpoint keeps the tool name but returns an explicit unsupported error because it cannot read
+  client-local files.
 - `upload_from_url` - Upload image from a public URL
 - `delete_media` - Soft delete media
 
 ### Configuration
 
-The MCP server is configured in `.mcp.json` and uses stdio transport for local CLI integration.
+The MCP server is configured in `.mcp.json`. The local `pnpm mcp` command uses stdio transport. The remote endpoint
+uses Streamable HTTP and is prepared for Cloudflare Workers via `src/mcp/worker.ts`.
 
 ### Remote Access
 
 The MCP server is also available as a serverless API route for remote access from Claude Desktop, Claude Code, or the
 Claude mobile app.
 
-**Endpoint:** `https://ruchern.dev/api/mcp`
+**Primary remote endpoint:** `https://mcp.ruchern.dev/mcp`
+
+**Existing Next.js endpoint:** `https://ruchern.dev/api/mcp`
 
 **Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
 
@@ -84,7 +89,7 @@ Claude mobile app.
 {
   "mcpServers": {
     "blog": {
-      "url": "https://ruchern.dev/api/mcp",
+      "url": "https://mcp.ruchern.dev/mcp",
       "auth": {
         "type": "bearer",
         "token": "your-mcp-auth-token"
@@ -101,7 +106,7 @@ Claude mobile app.
   "mcpServers": {
     "blog-remote": {
       "type": "http",
-      "url": "https://ruchern.dev/api/mcp",
+      "url": "https://mcp.ruchern.dev/mcp",
       "headers": {
         "Authorization": "Bearer ${BLOG_MCP_AUTH_TOKEN}"
       }
@@ -204,6 +209,29 @@ See `.env.example` for all required variables:
 - `CLOUDFLARE_ACCOUNT_ID` - R2 storage
 - `R2_ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET_NAME/PUBLIC_URL` - R2 config
 - `BLOG_MCP_AUTH_TOKEN` - Bearer token for remote MCP access
+- `MCP_REVALIDATE_SECRET` - Shared secret allowing the Worker MCP to ask the Next.js app to revalidate cache tags
+- `MCP_REVALIDATE_URL` - Optional override for the Worker revalidation endpoint; defaults to
+  `${NEXT_PUBLIC_BASE_URL}/api/mcp/revalidate`
+
+### Cloudflare Worker MCP Runtime
+
+The Worker entrypoint is `src/mcp/worker.ts`. Infrastructure setup is intentionally not committed here; configure it
+externally when deploying with SST.
+
+Required Worker bindings:
+
+- `DATABASE_URL`
+- `UPSTASH_REDIS_REST_URL`
+- `UPSTASH_REDIS_REST_TOKEN`
+- `BLOG_MCP_AUTH_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `R2_ACCESS_KEY_ID`
+- `R2_SECRET_ACCESS_KEY`
+- `R2_BUCKET_NAME`
+- `R2_PUBLIC_URL`
+- `NEXT_PUBLIC_BASE_URL`
+- `MCP_REVALIDATE_SECRET`
+- `MCP_REVALIDATE_URL` (optional)
 
 ## Code Conventions
 
