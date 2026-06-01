@@ -14,13 +14,6 @@
       "headers": {
         "x-heroui-personal-token": "{env:HEROUI_PERSONAL_TOKEN}"
       }
-    },
-    "posthog": {
-      "type": "remote",
-      "url": "https://mcp.posthog.com/mcp",
-      "headers": {
-        "Authorization": "Bearer {env:POSTHOG_PERSONAL_API_KEY}"
-      }
     }
   }
 }
