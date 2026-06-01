@@ -2,7 +2,7 @@
   "mcpServers": {
     "blog": {
       "type": "http",
-      "url": "https://ruchern.dev/api/mcp",
+      "url": "https://mcp.ruchern.dev/mcp",
       "headers": {
         "Authorization": "Bearer ${BLOG_MCP_AUTH_TOKEN}"
       }

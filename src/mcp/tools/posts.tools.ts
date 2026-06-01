@@ -4,11 +4,6 @@ import { and, desc, eq, isNull } from "drizzle-orm";
 import slugify from "slugify";
 import { z } from "zod";
 import { generatePostMetadata } from "@/lib/post-metadata";
-import {
-  invalidatePopularPost,
-  invalidatePost,
-  invalidateRelatedByTags,
-} from "@/lib/services/cache-invalidation";
 import { db, posts } from "@/schema";
 
 function makeError(message: string): CallToolResult {
@@ -22,6 +17,22 @@ export interface ToolExtra {
   authInfo?: {
     extra?: Record<string, unknown>;
   };
+}
+
+export interface PostToolServices {
+  invalidatePost(slug: string): Promise<void>;
+  invalidatePopularPost(slug: string): Promise<void>;
+  invalidateRelatedByTags(tags: string[], excludeSlug?: string): Promise<void>;
+}
+
+async function getDefaultPostToolServices(): Promise<PostToolServices> {
+  return import("@/lib/services/cache-invalidation");
+}
+
+async function getPostToolServices(
+  services?: PostToolServices,
+): Promise<PostToolServices> {
+  return services ?? getDefaultPostToolServices();
 }
 
 export async function listPostsHandler(args: {
@@ -126,6 +137,7 @@ export async function createPostHandler(
     featured?: boolean;
   },
   extra: ToolExtra,
+  services?: PostToolServices,
 ): Promise<CallToolResult> {
   const {
     title,
@@ -166,7 +178,8 @@ export async function createPostHandler(
     })
     .returning();
 
-  await invalidatePost(created.slug);
+  const postToolServices = await getPostToolServices(services);
+  await postToolServices.invalidatePost(created.slug);
 
   const output = {
     post: {
@@ -193,6 +206,7 @@ export async function saveDraftHandler(
     tags?: string[];
   },
   extra: ToolExtra,
+  services?: PostToolServices,
 ): Promise<CallToolResult> {
   const { id, title, slug: slugInput, content, summary, tags = [] } = args;
 
@@ -247,7 +261,8 @@ export async function saveDraftHandler(
       .where(eq(posts.id, id))
       .returning();
 
-    await invalidatePost(mergedSlug);
+    const postToolServices = await getPostToolServices(services);
+    await postToolServices.invalidatePost(mergedSlug);
 
     const output = {
       post: {
@@ -305,17 +320,20 @@ export async function saveDraftHandler(
   };
 }
 
-export async function updatePostHandler(args: {
-  id: string;
-  title?: string;
-  slug?: string;
-  content?: string;
-  summary?: string;
-  status?: "draft" | "published";
-  tags?: string[];
-  coverImage?: string | null;
-  featured?: boolean;
-}): Promise<CallToolResult> {
+export async function updatePostHandler(
+  args: {
+    id: string;
+    title?: string;
+    slug?: string;
+    content?: string;
+    summary?: string;
+    status?: "draft" | "published";
+    tags?: string[];
+    coverImage?: string | null;
+    featured?: boolean;
+  },
+  services?: PostToolServices,
+): Promise<CallToolResult> {
   const { id, ...updates } = args;
 
   const [existing] = await db
@@ -367,19 +385,23 @@ export async function updatePostHandler(args: {
     .where(eq(posts.id, id))
     .returning();
 
-  await invalidatePost(slug);
+  const postToolServices = await getPostToolServices(services);
+  await postToolServices.invalidatePost(slug);
 
   if (updates.slug && updates.slug !== oldSlug) {
-    await invalidatePopularPost(oldSlug);
+    await postToolServices.invalidatePopularPost(oldSlug);
   }
   if (updates.status === "draft" && existing.status === "published") {
-    await invalidatePopularPost(oldSlug);
+    await postToolServices.invalidatePopularPost(oldSlug);
   }
   if (
     updates.tags &&
     JSON.stringify(updates.tags) !== JSON.stringify(oldTags)
   ) {
-    await invalidateRelatedByTags([...oldTags, ...updates.tags], slug);
+    await postToolServices.invalidateRelatedByTags(
+      [...oldTags, ...updates.tags],
+      slug,
+    );
   }
 
   const output = {
@@ -397,9 +419,12 @@ export async function updatePostHandler(args: {
   };
 }
 
-export async function deletePostHandler(args: {
-  id: string;
-}): Promise<CallToolResult> {
+export async function deletePostHandler(
+  args: {
+    id: string;
+  },
+  services?: PostToolServices,
+): Promise<CallToolResult> {
   const { id } = args;
 
   const [deleted] = await db
@@ -409,7 +434,8 @@ export async function deletePostHandler(args: {
     .returning();
 
   if (deleted) {
-    await invalidatePopularPost(deleted.slug);
+    const postToolServices = await getPostToolServices(services);
+    await postToolServices.invalidatePopularPost(deleted.slug);
   }
 
   const output = {
@@ -423,9 +449,12 @@ export async function deletePostHandler(args: {
   };
 }
 
-export async function restorePostHandler(args: {
-  id: string;
-}): Promise<CallToolResult> {
+export async function restorePostHandler(
+  args: {
+    id: string;
+  },
+  services?: PostToolServices,
+): Promise<CallToolResult> {
   const { id } = args;
 
   const [restored] = await db
@@ -435,7 +464,8 @@ export async function restorePostHandler(args: {
     .returning();
 
   if (restored) {
-    await invalidatePost(restored.slug);
+    const postToolServices = await getPostToolServices(services);
+    await postToolServices.invalidatePost(restored.slug);
   }
 
   const output = {
@@ -455,9 +485,12 @@ export async function restorePostHandler(args: {
   };
 }
 
-export async function publishPostHandler(args: {
-  id: string;
-}): Promise<CallToolResult> {
+export async function publishPostHandler(
+  args: {
+    id: string;
+  },
+  services?: PostToolServices,
+): Promise<CallToolResult> {
   const { id } = args;
 
   const [existing] = await db
@@ -504,7 +537,8 @@ export async function publishPostHandler(args: {
     .where(eq(posts.id, id))
     .returning();
 
-  await invalidatePost(published.slug);
+  const postToolServices = await getPostToolServices(services);
+  await postToolServices.invalidatePost(published.slug);
 
   const output = {
     success: true,
@@ -522,7 +556,14 @@ export async function publishPostHandler(args: {
   };
 }
 
-export function registerPostTools(server: McpServer): void {
+export interface RegisterPostToolsOptions {
+  services?: PostToolServices;
+}
+
+export function registerPostTools(
+  server: McpServer,
+  options: RegisterPostToolsOptions = {},
+): void {
   server.registerTool(
     "list_posts",
     {
@@ -642,7 +683,7 @@ export function registerPostTools(server: McpServer): void {
         }),
       }),
     },
-    (args, extra) => createPostHandler(args, extra),
+    (args, extra) => createPostHandler(args, extra, options.services),
   );
 
   server.registerTool(
@@ -685,7 +726,7 @@ export function registerPostTools(server: McpServer): void {
         idempotentHint: true,
       },
     },
-    (args, extra) => saveDraftHandler(args, extra),
+    (args, extra) => saveDraftHandler(args, extra, options.services),
   );
 
   server.registerTool(
@@ -733,7 +774,7 @@ export function registerPostTools(server: McpServer): void {
         idempotentHint: true,
       },
     },
-    (args) => updatePostHandler(args),
+    (args) => updatePostHandler(args, options.services),
   );
 
   server.registerTool(
@@ -753,7 +794,7 @@ export function registerPostTools(server: McpServer): void {
         destructiveHint: true,
       },
     },
-    (args) => deletePostHandler(args),
+    (args) => deletePostHandler(args, options.services),
   );
 
   server.registerTool(
@@ -775,7 +816,7 @@ export function registerPostTools(server: McpServer): void {
           .nullable(),
       }),
     },
-    (args) => restorePostHandler(args),
+    (args) => restorePostHandler(args, options.services),
   );
 
   server.registerTool(
@@ -802,6 +843,6 @@ export function registerPostTools(server: McpServer): void {
         destructiveHint: true,
       },
     },
-    (args) => publishPostHandler(args),
+    (args) => publishPostHandler(args, options.services),
   );
 }
