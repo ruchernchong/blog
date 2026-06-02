@@ -1,5 +1,3 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { and, desc, eq, ilike, isNull, or } from "drizzle-orm";
 import { ERROR_IDS } from "@/constants/error-ids";
 import { R2Config } from "@/lib/config/r2.config";
@@ -141,6 +139,10 @@ export class MediaService {
 
   async uploadFromPath(input: UploadFromPathInput): Promise<SelectMedia> {
     const { filePath, alt, caption, uploadedById } = input;
+    const [{ readFile }, path] = await Promise.all([
+      import("node:fs/promises"),
+      import("node:path"),
+    ]);
 
     try {
       // Read the file

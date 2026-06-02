@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "blog-mcp",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-06-02",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "NEXT_PUBLIC_BASE_URL": "https://ruchern.dev"
+  }
+}

@@ -11,6 +11,17 @@ function makeError(message: string): CallToolResult {
   };
 }
 
+export interface MediaToolServices {
+  uploadFromPathHandler(
+    args: {
+      filePath: string;
+      alt?: string;
+      caption?: string;
+    },
+    extra: ToolExtra,
+  ): Promise<CallToolResult>;
+}
+
 export async function listMediaHandler(args: {
   search?: string;
   limit?: number;
@@ -188,6 +199,16 @@ export async function uploadFromPathHandler(
   };
 }
 
+export async function unsupportedUploadFromPathHandler(): Promise<CallToolResult> {
+  return makeError(
+    "upload_from_path is unavailable in the Cloudflare Worker runtime. Use request_upload/confirm_upload or upload_from_url instead.",
+  );
+}
+
+const defaultMediaToolServices: MediaToolServices = {
+  uploadFromPathHandler,
+};
+
 export async function uploadFromUrlHandler(
   args: {
     url: string;
@@ -242,7 +263,10 @@ export async function deleteMediaHandler(args: {
   };
 }
 
-export function registerMediaTools(server: McpServer): void {
+export function registerMediaTools(
+  server: McpServer,
+  services: MediaToolServices = defaultMediaToolServices,
+): void {
   server.registerTool(
     "list_media",
     {
@@ -397,7 +421,7 @@ export function registerMediaTools(server: McpServer): void {
         }),
       }),
     },
-    (args, extra) => uploadFromPathHandler(args, extra),
+    (args, extra) => services.uploadFromPathHandler(args, extra),
   );
 
   server.registerTool(
