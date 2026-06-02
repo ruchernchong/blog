@@ -14,6 +14,7 @@
     "lint": {
       "outputs": []
     },
+    "format": {},
     "test": {
       "outputs": []
     },
