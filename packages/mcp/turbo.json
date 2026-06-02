@@ -1,0 +1,10 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "mcp": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

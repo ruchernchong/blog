@@ -1,5 +1,20 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "extends": ["//"],
-  "tasks": {}
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": [
+        ".source/**",
+        ".next/types/**",
+        ".next/dev/types/**",
+        "next-env.d.ts",
+        "tsconfig.tsbuildinfo"
+      ]
+    }
+  }
 }
