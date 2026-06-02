@@ -6,12 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Development
 
-- `pnpm dev` - Start development server
-- `pnpm build` - Build for production
-- `pnpm start` - Start production server
-- `pnpm lint` - Run linting with Biome
+- `pnpm dev` - Start the web development server via Turborepo
+- `pnpm build` - Build all workspace packages
+- `pnpm start` - Start the web production server
+- `pnpm lint` - Run linting across workspaces with Biome
 - `pnpm format` - Format code with Biome
-- `pnpm typecheck` - TypeScript type checking
+- `pnpm typecheck` - TypeScript type checking across workspaces
 
 ### Database
 
@@ -30,8 +30,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm test` - Run all tests
 - `pnpm test:watch` - Run tests in watch mode
 - `pnpm test:coverage` - Generate coverage report
-- `pnpm test <path>` - Run a specific test file (e.g.,
-  `pnpm test src/lib/services/__tests__/cache.service.test.ts`)
+- `pnpm --filter @workspace/web test <path>` - Run a specific web test file
 
 ### Release
 
@@ -39,7 +38,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### MCP Server
 
-- `pnpm mcp` - Start MCP server for blog management
+- `pnpm mcp` - Start the private workspace MCP server for blog management
 
 ## MCP Server
 
@@ -112,11 +111,12 @@ Claude mobile app.
 
 ## Architecture Overview
 
-A Next.js 16 portfolio website with an integrated blog system and Content Studio CMS.
+A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP server, and usage tooling.
 
 ### Tech Stack
 
 - **Framework**: Next.js 16.1 with App Router and React 19.2
+- **Monorepo**: pnpm workspaces with Turborepo
 - **Content**: Database-backed MDX with next-mdx-remote
 - **Database**: Neon PostgreSQL with Drizzle ORM
 - **Storage**: Cloudflare R2 for media assets
@@ -145,30 +145,17 @@ A Next.js 16 portfolio website with an integrated blog system and Content Studio
 ### Project Structure
 
 ```
-src/
-├── app/              # Next.js App Router
-│   ├── (main)/       # Public routes (blog, about, projects, dashboard)
-│   ├── studio/       # CMS routes (protected)
-│   ├── api/          # API routes
-│   └── login/        # Auth pages
-├── components/
-│   ├── auth/         # Authentication components
-│   └── studio/       # CMS-specific components
-├── lib/
-│   ├── api/          # API route utilities (auth, validation, errors)
-│   ├── config/       # Configuration constants
-│   ├── queries/      # Pure database queries (Drizzle ORM)
-│   ├── services/     # Business logic layer
-│   └── og/           # OpenGraph image generation
-├── mcp/              # MCP server for blog management
-│   ├── index.ts      # Entry point with stdio transport
-│   ├── server.ts     # McpServer configuration
-│   └── tools/        # Tool implementations (posts, media)
-├── server/           # tRPC routers (github, analytics)
-├── schema/           # Drizzle ORM database schemas
-├── utils/            # Pure utility functions (hash, truncate, etc.)
-├── data/             # Static data (projects, work experience)
-└── constants/        # Error IDs and app constants
+apps/
+└── web/              # @workspace/web Next.js app for ruchern.dev
+    ├── src/app/      # App Router routes, Studio, API routes, and auth pages
+    ├── src/components/
+    ├── src/lib/      # Web-owned queries, services, API utilities, and OG helpers
+    ├── src/schema/   # Drizzle ORM database schemas
+    ├── public/
+    └── migrations/
+packages/
+├── mcp/              # @workspace/mcp private MCP server package
+└── usage/            # @workspace/usage usage parsers, pricing, and heatmap helpers
 ```
 
 ### Layered Architecture
@@ -181,12 +168,12 @@ src/
 
 ### Database
 
-- **PostgreSQL**: Schema in `src/schema/` (posts, sessions, media, auth)
+- **PostgreSQL**: Schema in `apps/web/src/schema/` (posts, sessions, media, auth)
 - **Redis**: Post stats, popular posts, related posts cache, analytics
 
 ## Environment Variables
 
-See `.env.example` for all required variables:
+See `apps/web/.env.example` for all required variables:
 
 - `NEXT_PUBLIC_BASE_URL` - Base URL for the application (e.g., https://ruchern.dev)
 - `DATABASE_URL` - Neon PostgreSQL connection string
@@ -217,7 +204,7 @@ See `.env.example` for all required variables:
 
 ### File Structure
 
-- TypeScript strict mode with path aliases (`@/*`)
+- TypeScript strict mode with app-local path aliases (`@/*`) and private workspace packages (`@workspace/*`)
 - kebab-case for filenames
 - Tests in `__tests__/` directories
 - Named exports preferred
@@ -236,7 +223,7 @@ See `.env.example` for all required variables:
 
 ### Tailwind CSS v4
 
-- CSS-based configuration in `src/app/globals.css`
+- CSS-based configuration in `apps/web/src/app/globals.css`
 - OKLCH colour space for semantic tokens
 - Use `flex gap-*` instead of `space-y-*` or `space-x-*`
 - Use even spacing values: `gap-2, gap-4, gap-6, gap-8, gap-12`

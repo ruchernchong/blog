@@ -1,4 +1,4 @@
-# Blog
+# ruchern.dev
 
 A personal portfolio and blog built with Next.js 16, React 19, and TypeScript.
 
@@ -32,6 +32,7 @@ pnpm build           # Build for production
 - **Rich Text**: MDXEditor for content authoring
 
 ### Development & Quality
+- **Monorepo**: pnpm workspaces with Turborepo
 - **Testing**: Vitest with React Testing Library
 - **Linting**: Biome for code quality and formatting
 - **Git Hooks**: Husky with Commitlint and lint-staged
@@ -83,7 +84,7 @@ pnpm build           # Build for production
 ### Setup
 1. Clone the repository
 2. Install dependencies: `pnpm install`
-3. Copy `.env.example` to `.env` and configure
+3. Copy `apps/web/.env.example` to `apps/web/.env` and configure
 4. Run database migrations: `pnpm db:migrate`
 5. (Optional) Seed database: `pnpm db:seed`
 6. Start dev server: `pnpm dev`

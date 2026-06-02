@@ -1,0 +1,30 @@
+{
+  "name": "@workspace/mcp",
+  "version": "1.15.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "biome check .",
+    "mcp": "tsx src/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    "./server": "./src/server.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.45.2",
+    "slugify": "^1.6.6",
+    "zod": "4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.16",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.2.2",
+    "vitest": "^4.1.5"
+  }
+}
