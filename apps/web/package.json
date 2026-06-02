@@ -1,6 +1,6 @@
 {
   "name": "@workspace/web",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "type": "module",
   "private": true,
   "scripts": {
@@ -28,8 +28,6 @@
     "vercel-build": "pnpm db:migrate && pnpm build"
   },
   "dependencies": {
-    "@workspace/mcp": "workspace:*",
-    "@workspace/usage": "workspace:*",
     "@apollo/client": "^3.12.2",
     "@aws-sdk/client-s3": "3.1048.0",
     "@aws-sdk/s3-request-presigner": "3.1048.0",
@@ -55,6 +53,8 @@
     "@vercel/functions": "3.6.0",
     "@vercel/og": "^0.0.27",
     "@vercel/speed-insights": "^1.2.0",
+    "@workspace/mcp": "workspace:*",
+    "@workspace/usage": "workspace:*",
     "better-auth": "^1.6.5",
     "cobe": "^0.6.4",
     "date-fns": "^4.1.0",

@@ -1,3 +1,13 @@
+## [1.16.0](https://github.com/ruchernchong/blog/compare/v1.15.0...v1.16.0) (2026-06-02)
+
+### Features
+
+* convert project to monorepo ([1ad492d](https://github.com/ruchernchong/blog/commit/1ad492d4faa487b401c3e2c914e7c80a3c69cebc)), closes [#282](https://github.com/ruchernchong/blog/issues/282)
+
+### Bug Fixes
+
+* address monorepo review feedback ([4cde8e6](https://github.com/ruchernchong/blog/commit/4cde8e6f9425dd363e8a6e996abd05bf2ed69aef))
+
 ## [1.15.0](https://github.com/ruchernchong/blog/compare/v1.14.0...v1.15.0) (2026-05-31)
 
 ### Features
