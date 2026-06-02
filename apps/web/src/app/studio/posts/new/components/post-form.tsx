@@ -10,7 +10,6 @@ import {
   ListBox,
   ScrollShadow,
   Select,
-  TextArea,
   TextField,
 } from "@heroui/react";
 import { buttonVariants } from "@heroui/styles";
@@ -25,6 +24,11 @@ import { z } from "zod";
 import { ContentEditor } from "@/components/studio/content-editor";
 import { CoverImageField } from "@/components/studio/cover-image-field";
 import { SaveStatusIndicator } from "@/components/studio/save-status-indicator";
+import {
+  StudioStatusSelectController,
+  StudioTextAreaController,
+  StudioTextFieldController,
+} from "@/components/studio/studio-form-fields";
 import { useAutoSave, useBeforeUnload } from "@/hooks/use-auto-save";
 
 const NO_SERIES = "__none__";
@@ -325,108 +329,34 @@ export function PostForm({ seriesOptions }: PostFormProps) {
                 </div>
                 <ScrollShadow className="flex-1">
                   <div className="flex flex-col gap-4 p-4">
-                    <Controller
+                    <StudioTextFieldController
                       control={form.control}
                       name="title"
-                      render={({ field, fieldState }) => (
-                        <TextField
-                          isInvalid={!!fieldState.error}
-                          value={field.value ?? ""}
-                          onChange={field.onChange}
-                        >
-                          <Label isRequired>Title</Label>
-                          <Input
-                            placeholder="My Awesome Post"
-                            autoComplete="off"
-                          />
-                          {fieldState.error && (
-                            <FieldError>{fieldState.error.message}</FieldError>
-                          )}
-                        </TextField>
-                      )}
+                      label="Title"
+                      placeholder="My Awesome Post"
+                      isRequired
                     />
 
-                    <Controller
+                    <StudioTextFieldController
                       control={form.control}
                       name="slug"
-                      render={({ field, fieldState }) => (
-                        <TextField
-                          isReadOnly
-                          isInvalid={!!fieldState.error}
-                          value={field.value ?? ""}
-                          onChange={field.onChange}
-                        >
-                          <Label>Slug</Label>
-                          <Input
-                            placeholder="auto-generated-from-title"
-                            autoComplete="off"
-                          />
-                          <Description>
-                            Auto-generated from the post title
-                          </Description>
-                          {fieldState.error && (
-                            <FieldError>{fieldState.error.message}</FieldError>
-                          )}
-                        </TextField>
-                      )}
+                      label="Slug"
+                      placeholder="auto-generated-from-title"
+                      description="Auto-generated from the post title"
+                      isReadOnly
                     />
 
-                    <Controller
+                    <StudioTextAreaController
                       control={form.control}
                       name="summary"
-                      render={({ field, fieldState }) => (
-                        <TextField
-                          isInvalid={!!fieldState.error}
-                          value={field.value ?? ""}
-                          onChange={field.onChange}
-                        >
-                          <Label>Summary</Label>
-                          <TextArea
-                            placeholder="A brief description..."
-                            rows={3}
-                            autoComplete="off"
-                          />
-                          {fieldState.error && (
-                            <FieldError>{fieldState.error.message}</FieldError>
-                          )}
-                        </TextField>
-                      )}
+                      label="Summary"
+                      placeholder="A brief description..."
+                      rows={3}
                     />
 
-                    <Controller
+                    <StudioStatusSelectController
                       control={form.control}
                       name="status"
-                      render={({ field, fieldState }) => (
-                        <Select
-                          isInvalid={!!fieldState.error}
-                          value={field.value}
-                          onChange={field.onChange}
-                        >
-                          <Label>Status</Label>
-                          <Select.Trigger>
-                            <Select.Value />
-                            <Select.Indicator />
-                          </Select.Trigger>
-                          <Select.Popover>
-                            <ListBox>
-                              <ListBox.Item id="draft" textValue="Draft">
-                                Draft
-                                <ListBox.ItemIndicator />
-                              </ListBox.Item>
-                              <ListBox.Item
-                                id="published"
-                                textValue="Published"
-                              >
-                                Published
-                                <ListBox.ItemIndicator />
-                              </ListBox.Item>
-                            </ListBox>
-                          </Select.Popover>
-                          {fieldState.error && (
-                            <FieldError>{fieldState.error.message}</FieldError>
-                          )}
-                        </Select>
-                      )}
                     />
 
                     <Controller
