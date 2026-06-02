@@ -16,21 +16,14 @@ import {
 import { buttonVariants } from "@heroui/styles";
 import { Resizable } from "@heroui-pro/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  Suspense,
-  useEffect,
-  useEffectEvent,
-  useState,
-  useTransition,
-} from "react";
+import { useEffect, useEffectEvent, useState, useTransition } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import slugify from "slugify";
 import { z } from "zod";
 import { ContentEditor } from "@/components/studio/content-editor";
-import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
+import { CoverImageField } from "@/components/studio/cover-image-field";
 import { SaveStatusIndicator } from "@/components/studio/save-status-indicator";
 import { useAutoSave, useBeforeUnload } from "@/hooks/use-auto-save";
 
@@ -506,56 +499,13 @@ export function PostForm({ seriesOptions }: PostFormProps) {
                       control={form.control}
                       name="coverImage"
                       render={({ field, fieldState }) => (
-                        <div className="flex flex-col gap-4">
-                          <TextField
-                            type="url"
-                            isInvalid={!!fieldState.error}
-                            value={field.value ?? ""}
-                            onChange={field.onChange}
-                          >
-                            <Label>Cover Image URL</Label>
-                            <div className="flex gap-2">
-                              <Input
-                                placeholder="https://example.com/image.jpg"
-                                autoComplete="off"
-                              />
-                              <Suspense fallback={null}>
-                                <ImagePickerDialog
-                                  onSelect={(url) =>
-                                    form.setValue("coverImage", url)
-                                  }
-                                  trigger={
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="sm"
-                                    >
-                                      Browse
-                                    </Button>
-                                  }
-                                />
-                              </Suspense>
-                            </div>
-                            <Description>Optional cover image URL</Description>
-                            {fieldState.error && (
-                              <FieldError>
-                                {fieldState.error.message}
-                              </FieldError>
-                            )}
-                          </TextField>
-                          {field.value && (
-                            <Image
-                              src={field.value}
-                              alt="Cover preview"
-                              width={800}
-                              height={160}
-                              className="h-auto max-h-40 w-full rounded-md object-cover"
-                              onError={(e) => {
-                                e.currentTarget.style.display = "none";
-                              }}
-                            />
-                          )}
-                        </div>
+                        <CoverImageField
+                          value={field.value ?? ""}
+                          onChange={field.onChange}
+                          onSelect={(url) => form.setValue("coverImage", url)}
+                          errorMessage={fieldState.error?.message}
+                          description="Optional cover image URL"
+                        />
                       )}
                     />
                   </div>

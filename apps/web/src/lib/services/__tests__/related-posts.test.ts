@@ -24,6 +24,48 @@ vi.mock("@/lib/queries/posts", () => ({
 import redis from "@/config/redis";
 import { getRelatedPosts } from "../related-posts";
 
+interface PostFixture {
+  slug?: string;
+  title?: string;
+  summary?: string | null;
+  publishedAt?: Date;
+  tags?: string[];
+}
+
+const createPostFixture = ({
+  slug = "post-1",
+  title = "Post 1",
+  summary = null,
+  publishedAt = new Date(),
+  tags = [],
+}: PostFixture = {}) => ({
+  slug,
+  title,
+  summary,
+  publishedAt,
+  tags,
+});
+
+const mockCacheMiss = () => {
+  vi.mocked(redis.get).mockResolvedValue(null);
+};
+
+const mockCurrentPostTags = (tags: string[]) => {
+  vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
+    tags,
+  } as Awaited<ReturnType<typeof postsQueries.getPostBySlug>>);
+};
+
+const mockOverlappingPosts = (
+  posts: ReturnType<typeof createPostFixture>[],
+) => {
+  vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue(
+    posts as Awaited<
+      ReturnType<typeof postsQueries.getPostsWithOverlappingTags>
+    >,
+  );
+};
+
 describe("related-posts", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -54,36 +96,34 @@ describe("related-posts", () => {
     });
 
     it("should calculate Jaccard similarity and cache result", async () => {
-      vi.mocked(redis.get).mockResolvedValue(null);
-      vi.mocked(redis.set).mockResolvedValue(undefined as any);
+      mockCacheMiss();
+      vi.mocked(redis.set).mockResolvedValue(undefined);
 
-      vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
-        tags: ["typescript", "react", "testing"],
-      } as any);
+      mockCurrentPostTags(["typescript", "react", "testing"]);
 
-      vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue([
-        {
+      mockOverlappingPosts([
+        createPostFixture({
           slug: "post-1",
           title: "Post 1",
           summary: "Summary 1",
           publishedAt: new Date("2024-01-01"),
           tags: ["typescript", "react"],
-        },
-        {
+        }),
+        createPostFixture({
           slug: "post-2",
           title: "Post 2",
           summary: "Summary 2",
           publishedAt: new Date("2024-01-02"),
           tags: ["typescript"],
-        },
-        {
+        }),
+        createPostFixture({
           slug: "post-3",
           title: "Post 3",
           summary: "Summary 3",
           publishedAt: new Date("2024-01-03"),
           tags: ["typescript", "react", "testing"],
-        },
-      ] as any);
+        }),
+      ]);
 
       const result = await getRelatedPosts("test-post", 4);
 
@@ -103,35 +143,13 @@ describe("related-posts", () => {
     });
 
     it("should respect limit parameter", async () => {
-      vi.mocked(redis.get).mockResolvedValue(null);
-
-      vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
-        tags: ["tag1", "tag2"],
-      } as any);
-
-      vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue([
-        {
-          slug: "post-1",
-          title: "Post 1",
-          summary: null,
-          publishedAt: new Date(),
-          tags: ["tag1", "tag2"],
-        },
-        {
-          slug: "post-2",
-          title: "Post 2",
-          summary: null,
-          publishedAt: new Date(),
-          tags: ["tag1"],
-        },
-        {
-          slug: "post-3",
-          title: "Post 3",
-          summary: null,
-          publishedAt: new Date(),
-          tags: ["tag2"],
-        },
-      ] as any);
+      mockCacheMiss();
+      mockCurrentPostTags(["tag1", "tag2"]);
+      mockOverlappingPosts([
+        createPostFixture({ slug: "post-1", tags: ["tag1", "tag2"] }),
+        createPostFixture({ slug: "post-2", title: "Post 2", tags: ["tag1"] }),
+        createPostFixture({ slug: "post-3", title: "Post 3", tags: ["tag2"] }),
+      ]);
 
       const result = await getRelatedPosts("test-post", 2);
 
@@ -139,28 +157,20 @@ describe("related-posts", () => {
     });
 
     it("should filter out posts below minimum similarity threshold", async () => {
-      vi.mocked(redis.get).mockResolvedValue(null);
-
-      vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
-        tags: ["tag1", "tag2", "tag3", "tag4"],
-      } as any);
-
-      vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue([
-        {
+      mockCacheMiss();
+      mockCurrentPostTags(["tag1", "tag2", "tag3", "tag4"]);
+      mockOverlappingPosts([
+        createPostFixture({
           slug: "high-similarity",
           title: "High",
-          summary: null,
-          publishedAt: new Date(),
           tags: ["tag1", "tag2", "tag3"],
-        },
-        {
+        }),
+        createPostFixture({
           slug: "low-similarity",
           title: "Low",
-          summary: null,
-          publishedAt: new Date(),
           tags: ["tag1", "tag5", "tag6", "tag7", "tag8"],
-        },
-      ] as any);
+        }),
+      ]);
 
       const result = await getRelatedPosts("test-post", 10);
 
@@ -173,11 +183,8 @@ describe("related-posts", () => {
     });
 
     it("should return empty array when current post has no tags", async () => {
-      vi.mocked(redis.get).mockResolvedValue(null);
-
-      vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
-        tags: [],
-      } as any);
+      mockCacheMiss();
+      mockCurrentPostTags([]);
 
       const result = await getRelatedPosts("test-post");
 
@@ -186,7 +193,7 @@ describe("related-posts", () => {
     });
 
     it("should return empty array when current post is not found", async () => {
-      vi.mocked(redis.get).mockResolvedValue(null);
+      mockCacheMiss();
       vi.mocked(postsQueries.getPostBySlug).mockResolvedValue(
         undefined as unknown as { tags: string[] },
       );
@@ -197,21 +204,9 @@ describe("related-posts", () => {
     });
 
     it("should calculate common tag count correctly", async () => {
-      vi.mocked(redis.get).mockResolvedValue(null);
-
-      vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
-        tags: ["a", "b", "c"],
-      } as any);
-
-      vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue([
-        {
-          slug: "post-1",
-          title: "Post 1",
-          summary: null,
-          publishedAt: new Date(),
-          tags: ["a", "b"],
-        },
-      ] as any);
+      mockCacheMiss();
+      mockCurrentPostTags(["a", "b", "c"]);
+      mockOverlappingPosts([createPostFixture({ tags: ["a", "b"] })]);
 
       const result = await getRelatedPosts("test-post");
 
@@ -240,21 +235,15 @@ describe("related-posts", () => {
 
   describe("Jaccard similarity algorithm", () => {
     it("should calculate perfect similarity for identical tag sets", async () => {
-      vi.mocked(redis.get).mockResolvedValue(null);
-
-      vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
-        tags: ["a", "b", "c"],
-      } as any);
-
-      vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue([
-        {
+      mockCacheMiss();
+      mockCurrentPostTags(["a", "b", "c"]);
+      mockOverlappingPosts([
+        createPostFixture({
           slug: "identical",
           title: "Identical",
-          summary: null,
-          publishedAt: new Date(),
           tags: ["a", "b", "c"],
-        },
-      ] as any);
+        }),
+      ]);
 
       const result = await getRelatedPosts("test-post");
 
@@ -262,21 +251,15 @@ describe("related-posts", () => {
     });
 
     it("should calculate zero similarity for completely different tags", async () => {
-      vi.mocked(redis.get).mockResolvedValue(null);
-
-      vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
-        tags: ["a", "b"],
-      } as any);
-
-      vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue([
-        {
+      mockCacheMiss();
+      mockCurrentPostTags(["a", "b"]);
+      mockOverlappingPosts([
+        createPostFixture({
           slug: "different",
           title: "Different",
-          summary: null,
-          publishedAt: new Date(),
           tags: ["c", "d"],
-        },
-      ] as any);
+        }),
+      ]);
 
       const result = await getRelatedPosts("test-post");
 
@@ -284,21 +267,15 @@ describe("related-posts", () => {
     });
 
     it("should calculate partial similarity correctly", async () => {
-      vi.mocked(redis.get).mockResolvedValue(null);
-
-      vi.mocked(postsQueries.getPostBySlug).mockResolvedValue({
-        tags: ["a", "b", "c"],
-      } as any);
-
-      vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue([
-        {
+      mockCacheMiss();
+      mockCurrentPostTags(["a", "b", "c"]);
+      mockOverlappingPosts([
+        createPostFixture({
           slug: "partial",
           title: "Partial",
-          summary: null,
-          publishedAt: new Date(),
           tags: ["b", "c", "d"],
-        },
-      ] as any);
+        }),
+      ]);
 
       const result = await getRelatedPosts("test-post");
 

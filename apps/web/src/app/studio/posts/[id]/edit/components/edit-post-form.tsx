@@ -16,7 +16,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   type FormEvent,
-  Suspense,
   useEffect,
   useEffectEvent,
   useRef,
@@ -24,7 +23,7 @@ import {
   useTransition,
 } from "react";
 import { ContentEditor } from "@/components/studio/content-editor";
-import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
+import { CoverImageField } from "@/components/studio/cover-image-field";
 import { SaveStatusIndicator } from "@/components/studio/save-status-indicator";
 import { useAutoSave, useBeforeUnload } from "@/hooks/use-auto-save";
 
@@ -444,31 +443,15 @@ export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
               <Description>Comma-separated tags</Description>
             </TextField>
 
-            <TextField
-              type="url"
+            <CoverImageField
               value={formData.coverImage}
               onChange={(value) =>
                 setFormData({ ...formData, coverImage: value })
               }
-            >
-              <Label>Cover Image URL</Label>
-              <div className="flex gap-2">
-                <Input placeholder="https://example.com/image.jpg" />
-                <Suspense fallback={null}>
-                  <ImagePickerDialog
-                    onSelect={(url) =>
-                      setFormData({ ...formData, coverImage: url })
-                    }
-                    trigger={
-                      <Button type="button" variant="outline" size="sm">
-                        Browse
-                      </Button>
-                    }
-                  />
-                </Suspense>
-              </div>
-              <Description>Optional cover image URL</Description>
-            </TextField>
+              onSelect={(url) => setFormData({ ...formData, coverImage: url })}
+              description="Optional cover image URL"
+              showPreview={false}
+            />
           </Card.Content>
         </Card>
 

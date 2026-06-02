@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Button,
   Description,
   FieldError,
   Input,
@@ -11,11 +10,9 @@ import {
   TextArea,
   TextField,
 } from "@heroui/react";
-import Image from "next/image";
-import { Suspense } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
+import { CoverImageField } from "@/components/studio/cover-image-field";
 
 export const seriesFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -149,48 +146,13 @@ export function SeriesFormFields({
         control={form.control}
         name="coverImage"
         render={({ field, fieldState }) => (
-          <div className="flex flex-col gap-4">
-            <TextField
-              type="url"
-              isInvalid={!!fieldState.error}
-              value={field.value ?? ""}
-              onChange={field.onChange}
-            >
-              <Label>Cover Image URL</Label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="https://example.com/image.jpg"
-                  autoComplete="off"
-                />
-                <Suspense fallback={null}>
-                  <ImagePickerDialog
-                    onSelect={(url) => form.setValue("coverImage", url)}
-                    trigger={
-                      <Button type="button" variant="outline" size="sm">
-                        Browse
-                      </Button>
-                    }
-                  />
-                </Suspense>
-              </div>
-              <Description>Optional cover image for the series</Description>
-              {fieldState.error && (
-                <FieldError>{fieldState.error.message}</FieldError>
-              )}
-            </TextField>
-            {field.value && (
-              <Image
-                src={field.value}
-                alt="Cover preview"
-                width={800}
-                height={160}
-                className="h-auto max-h-40 w-full rounded-md object-cover"
-                onError={(e) => {
-                  e.currentTarget.style.display = "none";
-                }}
-              />
-            )}
-          </div>
+          <CoverImageField
+            value={field.value ?? ""}
+            onChange={field.onChange}
+            onSelect={(url) => form.setValue("coverImage", url)}
+            errorMessage={fieldState.error?.message}
+            description="Optional cover image for the series"
+          />
         )}
       />
     </>
