@@ -1,3 +1,9 @@
+## [1.16.1](https://github.com/ruchernchong/blog/compare/v1.16.0...v1.16.1) (2026-06-02)
+
+### Bug Fixes
+
+* update docs version during release ([01969e5](https://github.com/ruchernchong/blog/commit/01969e55229ed9b8f2ad52b685f1ec8ea6f8c992))
+
 ## [1.16.0](https://github.com/ruchernchong/blog/compare/v1.15.0...v1.16.0) (2026-06-02)
 
 ### Features
