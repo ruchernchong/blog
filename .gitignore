@@ -26,6 +26,7 @@ coverage/
 # Caches
 .cache/
 .turbo/
+apps/docs/.source/
 
 # Misc
 .DS_Store
