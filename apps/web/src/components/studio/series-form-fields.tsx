@@ -1,18 +1,13 @@
 "use client";
 
-import {
-  Description,
-  FieldError,
-  Input,
-  Label,
-  ListBox,
-  Select,
-  TextArea,
-  TextField,
-} from "@heroui/react";
 import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { CoverImageField } from "@/components/studio/cover-image-field";
+import {
+  StudioStatusSelectController,
+  StudioTextAreaController,
+  StudioTextFieldController,
+} from "@/components/studio/studio-form-fields";
 
 export const seriesFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -39,108 +34,40 @@ export function SeriesFormFields({
 
   return (
     <>
-      <Controller
+      <StudioTextFieldController
         control={form.control}
         name="title"
-        render={({ field, fieldState }) => (
-          <TextField
-            isInvalid={!!fieldState.error}
-            value={field.value ?? ""}
-            onChange={field.onChange}
-          >
-            <Label isRequired>Title</Label>
-            <Input placeholder="Next.js Deep Dive" autoComplete="off" />
-            {fieldState.error && (
-              <FieldError>{fieldState.error.message}</FieldError>
-            )}
-          </TextField>
-        )}
+        label="Title"
+        placeholder="Next.js Deep Dive"
+        isRequired
       />
 
-      <Controller
+      <StudioTextFieldController
         control={form.control}
         name="slug"
-        render={({ field, fieldState }) => (
-          <TextField
-            isInvalid={!!fieldState.error}
-            isReadOnly={slugReadOnly}
-            value={field.value ?? ""}
-            onChange={field.onChange}
-          >
-            <Label isRequired={!slugReadOnly}>Slug</Label>
-            <Input
-              placeholder={
-                slugReadOnly ? "auto-generated-from-title" : "nextjs-deep-dive"
-              }
-              autoComplete="off"
-            />
-            <Description>
-              {slugReadOnly
-                ? "Auto-generated from the series title"
-                : "URL-friendly identifier for this series"}
-            </Description>
-            {fieldState.error && (
-              <FieldError>{fieldState.error.message}</FieldError>
-            )}
-          </TextField>
-        )}
+        label="Slug"
+        placeholder={
+          slugReadOnly ? "auto-generated-from-title" : "nextjs-deep-dive"
+        }
+        description={
+          slugReadOnly
+            ? "Auto-generated from the series title"
+            : "URL-friendly identifier for this series"
+        }
+        isReadOnly={slugReadOnly}
+        isRequired={!slugReadOnly}
       />
 
-      <Controller
+      <StudioTextAreaController
         control={form.control}
         name="description"
-        render={({ field, fieldState }) => (
-          <TextField
-            isInvalid={!!fieldState.error}
-            value={field.value ?? ""}
-            onChange={field.onChange}
-          >
-            <Label>Description</Label>
-            <TextArea
-              placeholder="A comprehensive guide to building with Next.js..."
-              rows={4}
-              autoComplete="off"
-            />
-            <Description>Briefly describe what this series covers</Description>
-            {fieldState.error && (
-              <FieldError>{fieldState.error.message}</FieldError>
-            )}
-          </TextField>
-        )}
+        label="Description"
+        placeholder="A comprehensive guide to building with Next.js..."
+        rows={4}
+        description="Briefly describe what this series covers"
       />
 
-      <Controller
-        control={form.control}
-        name="status"
-        render={({ field, fieldState }) => (
-          <Select
-            isInvalid={!!fieldState.error}
-            value={field.value}
-            onChange={field.onChange}
-          >
-            <Label>Status</Label>
-            <Select.Trigger>
-              <Select.Value />
-              <Select.Indicator />
-            </Select.Trigger>
-            <Select.Popover>
-              <ListBox>
-                <ListBox.Item id="draft" textValue="Draft">
-                  Draft
-                  <ListBox.ItemIndicator />
-                </ListBox.Item>
-                <ListBox.Item id="published" textValue="Published">
-                  Published
-                  <ListBox.ItemIndicator />
-                </ListBox.Item>
-              </ListBox>
-            </Select.Popover>
-            {fieldState.error && (
-              <FieldError>{fieldState.error.message}</FieldError>
-            )}
-          </Select>
-        )}
-      />
+      <StudioStatusSelectController control={form.control} name="status" />
 
       <Controller
         control={form.control}
