@@ -63,8 +63,7 @@ export function HeroSection({
                   Software Engineer
                 </p>
                 <p className="max-w-2xl text-lg text-muted leading-relaxed">
-                  Shipping pragmatic software, writing about the details, and
-                  keeping a few small dashboards honest.
+                  Shipping code by day. Chasing ideas by night. 🚀💡
                 </p>
               </div>
             </div>
