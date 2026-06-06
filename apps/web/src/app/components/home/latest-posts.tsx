@@ -19,12 +19,7 @@ export async function LatestPosts() {
     >
       <Widget>
         <Widget.Header>
-          <div className="flex flex-col gap-1">
-            <Widget.Title>Latest Posts</Widget.Title>
-            <Widget.Description>
-              Recent notes on engineering, tooling, and shipping side projects.
-            </Widget.Description>
-          </div>
+          <Widget.Title>Latest Posts</Widget.Title>
           <Link
             className={buttonVariants({ variant: "ghost", size: "sm" })}
             href="/blog"

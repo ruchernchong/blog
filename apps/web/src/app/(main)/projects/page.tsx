@@ -62,17 +62,15 @@ function ProjectCard({
     return (
       <Widget>
         <Widget.Header>
-          <div className="flex flex-col gap-1">
-            <Widget.Title>{project.name}</Widget.Title>
-            {project.description && (
-              <Widget.Description>{project.description}</Widget.Description>
-            )}
-          </div>
+          <Widget.Title>{project.name}</Widget.Title>
           <Chip color="accent" variant="soft">
             Featured
           </Chip>
         </Widget.Header>
         <Widget.Content className="flex flex-col gap-5">
+          {project.description && (
+            <p className="text-muted text-sm">{project.description}</p>
+          )}
           <div className="relative h-48 w-full overflow-hidden rounded-2xl border border-border/70">
             <Image
               fill

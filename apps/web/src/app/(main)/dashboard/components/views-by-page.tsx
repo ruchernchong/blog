@@ -39,7 +39,7 @@ function ViewsByPageRow({
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-2">
           <span className="truncate font-medium text-sm">{pageName}</span>
-          <Chip size="sm" variant="flat" className="shrink-0">
+          <Chip size="sm" variant="soft" className="shrink-0">
             {pageType}
           </Chip>
         </div>
