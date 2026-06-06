@@ -1,4 +1,5 @@
-import { Card, Chip } from "@heroui/react";
+import { Chip } from "@heroui/react";
+import { Widget } from "@heroui-pro/react";
 import * as motion from "motion/react-client";
 import { connection } from "next/server";
 import { getPages } from "@/lib/queries/posthog";
@@ -38,7 +39,7 @@ function ViewsByPageRow({
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-2">
           <span className="truncate font-medium text-sm">{pageName}</span>
-          <Chip size="sm" variant="secondary" className="shrink-0">
+          <Chip size="sm" variant="flat" className="shrink-0">
             {pageType}
           </Chip>
         </div>
@@ -74,16 +75,17 @@ export async function ViewsByPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
-      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25/0.4)]">
-        <Card.Header>
-          <Card.Title>Views by Page</Card.Title>
-        </Card.Header>
-        <Card.Content>
+      <Widget className="transition-all duration-200 hover:-translate-y-0.5">
+        <Widget.Header>
+          <Widget.Title>Views by Page</Widget.Title>
+          <Widget.Description>Top 10 paths</Widget.Description>
+        </Widget.Header>
+        <Widget.Content>
           {topPages.map((page) => (
             <ViewsByPageRow key={page.path} page={page} maxCount={maxCount} />
           ))}
-        </Card.Content>
-      </Card>
+        </Widget.Content>
+      </Widget>
     </motion.section>
   );
 }

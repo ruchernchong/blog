@@ -1,4 +1,5 @@
-import { buttonVariants, Typography } from "@heroui/react";
+import { buttonVariants, Separator } from "@heroui/react";
+import { Widget } from "@heroui-pro/react";
 import { format, formatISO } from "date-fns";
 import * as motion from "motion/react-client";
 import type { Route } from "next";
@@ -16,48 +17,66 @@ export async function LatestPosts() {
       transition={{ duration: 0.6, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className="flex flex-col gap-6"
     >
-      <div className="flex items-center justify-between">
-        <Typography className="text-foreground">Latest Posts</Typography>
-        <Link
-          className={buttonVariants({ variant: "ghost", size: "sm" })}
-          href="/blog"
-        >
-          View All
-        </Link>
-      </div>
+      <Widget>
+        <Widget.Header>
+          <div className="flex flex-col gap-1">
+            <Widget.Title>Latest Posts</Widget.Title>
+            <Widget.Description>
+              Recent notes on engineering, tooling, and shipping side projects.
+            </Widget.Description>
+          </div>
+          <Link
+            className={buttonVariants({ variant: "ghost", size: "sm" })}
+            href="/blog"
+          >
+            View All
+          </Link>
+        </Widget.Header>
+        <Widget.Content className="p-0">
+          <div className="flex flex-col">
+            {latestPosts.map((latestPost, index) => {
+              if (!latestPost.publishedAt) {
+                return null;
+              }
 
-      <div className="flex flex-col">
-        {latestPosts.map((latestPost) => {
-          if (!latestPost.publishedAt) {
-            return null;
-          }
+              const formattedDate = format(
+                latestPost.publishedAt,
+                "dd MMM yyyy",
+              );
 
-          const formattedDate = format(latestPost.publishedAt, "dd MMM yyyy");
-
-          return (
-            <Link
-              key={latestPost.slug}
-              href={latestPost.metadata.canonical as Route}
-              className="group flex items-center justify-between gap-4 rounded-xl px-4 py-3 transition-colors hover:bg-default/50"
-            >
-              <div className="flex flex-col gap-1">
-                <span className="font-medium transition-colors group-hover:text-accent">
-                  {latestPost.title}
-                </span>
-                <time
-                  dateTime={formatISO(latestPost.publishedAt)}
-                  className="text-muted text-sm"
-                >
-                  {formattedDate}
-                </time>
-              </div>
-              <span className="shrink-0 text-muted text-sm">
-                {latestPost.metadata.readingTime}
-              </span>
-            </Link>
-          );
-        })}
-      </div>
+              return (
+                <div className="flex flex-col" key={latestPost.slug}>
+                  <Link
+                    href={latestPost.metadata.canonical as Route}
+                    className="group flex items-start justify-between gap-4 p-5 transition-colors hover:bg-default/40"
+                  >
+                    <div className="flex flex-col gap-2">
+                      <span className="font-semibold text-foreground transition-colors group-hover:text-accent">
+                        {latestPost.title}
+                      </span>
+                      {latestPost.summary && (
+                        <span className="line-clamp-2 text-muted text-sm leading-relaxed">
+                          {latestPost.summary}
+                        </span>
+                      )}
+                      <time
+                        dateTime={formatISO(latestPost.publishedAt)}
+                        className="text-muted text-sm"
+                      >
+                        {formattedDate}
+                      </time>
+                    </div>
+                    <span className="shrink-0 text-muted text-sm">
+                      {latestPost.metadata.readingTime}
+                    </span>
+                  </Link>
+                  {index < latestPosts.length - 1 && <Separator />}
+                </div>
+              );
+            })}
+          </div>
+        </Widget.Content>
+      </Widget>
     </motion.section>
   );
 }

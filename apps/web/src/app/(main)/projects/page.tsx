@@ -1,4 +1,6 @@
-import { Card, Chip, cn } from "@heroui/react";
+import { Chip, cn } from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
+import { ItemCard, Widget } from "@heroui-pro/react";
 import { CodeIcon, LinkSquare01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
@@ -56,62 +58,105 @@ function ProjectCard({
   const displayedSkills = project.skills.slice(0, 4);
   const remainingCount = project.skills.length - 4;
 
-  return (
-    <Card
-      className={cn(
-        "overflow-hidden transition-all duration-200 hover:-translate-y-0.5",
-        featured
-          ? "ring-1 ring-accent/20 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25/0.25)]"
-          : "hover:shadow-[0_8px_30px_-10px_oklch(0_0_0/0.08)]",
-      )}
-    >
-      <div className="relative h-56 w-full overflow-hidden">
-        <Image
-          fill
-          src={
-            project.coverImage ??
-            "https://images.unsplash.com/photo-1505238680356-667803448bb6?w=800&h=450&fit=crop"
-          }
-          alt={project.name}
-          className="object-cover"
-        />
-      </div>
-      <Card.Content>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-foreground text-lg">
-                {project.name}
-              </h3>
-              {featured && (
-                <Chip color="accent" variant="primary">
-                  Featured
-                </Chip>
-              )}
-            </div>
+  if (featured) {
+    return (
+      <Widget>
+        <Widget.Header>
+          <div className="flex flex-col gap-1">
+            <Widget.Title>{project.name}</Widget.Title>
             {project.description && (
-              <p className="line-clamp-2 text-muted text-sm">
-                {project.description}
-              </p>
+              <Widget.Description>{project.description}</Widget.Description>
             )}
+          </div>
+          <Chip color="accent" variant="soft">
+            Featured
+          </Chip>
+        </Widget.Header>
+        <Widget.Content className="flex flex-col gap-5">
+          <div className="relative h-48 w-full overflow-hidden rounded-2xl border border-border/70">
+            <Image
+              fill
+              loading="eager"
+              sizes="(min-width: 768px) 50vw, 100vw"
+              src={
+                project.coverImage ??
+                "https://images.unsplash.com/photo-1505238680356-667803448bb6?w=800&h=450&fit=crop"
+              }
+              alt={project.name}
+              className="object-cover transition-transform duration-200 hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/75 to-transparent" />
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {displayedSkills.map((skill) => (
-              <Chip key={skill} color="accent" variant="primary">
+            {project.skills.map((skill) => (
+              <Chip key={skill} color="accent" size="sm" variant="soft">
                 {skill}
               </Chip>
             ))}
-            {remainingCount > 0 && (
-              <Chip color="accent" variant="primary">
-                +{remainingCount}
-              </Chip>
-            )}
           </div>
+
+          <div className="flex gap-2">
+            {project.links.map((link) => (
+              <Link
+                key={link}
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={buttonVariants({
+                  size: "sm",
+                  variant: isGitHubLink(link) ? "outline" : "primary",
+                })}
+              >
+                {isGitHubLink(link) ? (
+                  <SiGithub className="size-4" />
+                ) : (
+                  <HugeiconsIcon
+                    icon={LinkSquare01Icon}
+                    size={16}
+                    strokeWidth={2}
+                  />
+                )}
+                {isGitHubLink(link) ? "Source" : "Live"}
+              </Link>
+            ))}
+          </div>
+        </Widget.Content>
+      </Widget>
+    );
+  }
+
+  return (
+    <ItemCard
+      className={cn(
+        "h-full transition-all duration-200 hover:-translate-y-0.5",
+        "hover:shadow-[0_8px_30px_-10px_oklch(0_0_0/0.08)]",
+      )}
+    >
+      <ItemCard.Icon className="hidden sm:flex">
+        <HugeiconsIcon icon={CodeIcon} size={18} />
+      </ItemCard.Icon>
+      <ItemCard.Content>
+        <ItemCard.Title>{project.name}</ItemCard.Title>
+        {project.description && (
+          <ItemCard.Description className="line-clamp-3">
+            {project.description}
+          </ItemCard.Description>
+        )}
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          {displayedSkills.map((skill) => (
+            <Chip key={skill} color="accent" size="sm" variant="soft">
+              {skill}
+            </Chip>
+          ))}
+          {remainingCount > 0 && (
+            <Chip size="sm" variant="soft">
+              +{remainingCount}
+            </Chip>
+          )}
         </div>
-      </Card.Content>
-      <Card.Footer>
-        <div className="flex gap-2">
+        <div className="mt-4 flex gap-2">
           {project.links.map((link) => {
             return (
               <Link
@@ -119,25 +164,27 @@ function ProjectCard({
                 href={link}
                 target="_blank"
                 rel="noopener noreferrer"
+                className={buttonVariants({
+                  size: "sm",
+                  variant: isGitHubLink(link) ? "outline" : "primary",
+                })}
               >
-                <div className="flex items-center gap-2 text-sm">
-                  {isGitHubLink(link) ? (
-                    <SiGithub className="size-4" />
-                  ) : (
-                    <HugeiconsIcon
-                      icon={LinkSquare01Icon}
-                      size={16}
-                      strokeWidth={2}
-                    />
-                  )}
-                  {isGitHubLink(link) ? "Source" : "Live"}
-                </div>
+                {isGitHubLink(link) ? (
+                  <SiGithub className="size-4" />
+                ) : (
+                  <HugeiconsIcon
+                    icon={LinkSquare01Icon}
+                    size={16}
+                    strokeWidth={2}
+                  />
+                )}
+                {isGitHubLink(link) ? "Source" : "Live"}
               </Link>
             );
           })}
         </div>
-      </Card.Footer>
-    </Card>
+      </ItemCard.Content>
+    </ItemCard>
   );
 }
 
@@ -157,10 +204,14 @@ export default function ProjectsPage() {
         }
       />
 
-      {/* Featured Section */}
       {featuredProjects.length > 0 && (
-        <section className="mb-12">
-          <h2 className="mb-6 font-semibold text-lg text-muted">Featured</h2>
+        <section className="flex flex-col gap-6">
+          <div className="flex flex-col gap-1">
+            <span className="font-medium text-accent text-sm">Featured</span>
+            <h2 className="font-semibold text-3xl text-foreground tracking-tight">
+              Work Worth Opening
+            </h2>
+          </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {featuredProjects.map((project) => (
               <ProjectCard key={project.slug} project={project} featured />
@@ -169,12 +220,14 @@ export default function ProjectsPage() {
         </section>
       )}
 
-      {/* Other Projects */}
       {otherProjects.length > 0 && (
-        <section>
-          <h2 className="mb-6 font-semibold text-lg text-muted">
-            More Projects
-          </h2>
+        <section className="flex flex-col gap-6">
+          <div className="flex flex-col gap-1">
+            <span className="font-medium text-accent text-sm">Archive</span>
+            <h2 className="font-semibold text-3xl text-foreground tracking-tight">
+              More Projects
+            </h2>
+          </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {otherProjects.map((project) => {
               return <ProjectCard key={project.slug} project={project} />;

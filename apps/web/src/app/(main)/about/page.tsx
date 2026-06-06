@@ -1,3 +1,5 @@
+import { buttonVariants } from "@heroui/styles";
+import { KPI, KPIGroup, Widget } from "@heroui-pro/react";
 import { UserIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
@@ -56,7 +58,7 @@ export default async function AboutPage() {
   return (
     <>
       <StructuredData data={structuredData} />
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-10">
         <div className="flex flex-col gap-8">
           <PageTitle
             title="About Me"
@@ -71,22 +73,69 @@ export default async function AboutPage() {
               </div>
             }
           />
-          <div className="flex flex-col gap-4">
-            <p className="text-muted">{description}</p>
-            <div className="flex gap-4">
-              {socials.map(({ name, link }) => (
-                <ExternalLink
-                  key={name}
-                  href={link}
-                  className="hover:text-foreground"
-                >
-                  <Icons.Social name={name} className="size-4" />
-                </ExternalLink>
-              ))}
-            </div>
-          </div>
+          <Widget>
+            <Widget.Content className="flex flex-col gap-8 p-6 md:p-8">
+              <div className="flex flex-col gap-4">
+                <p className="max-w-2xl text-lg text-muted leading-relaxed">
+                  {description}
+                </p>
+                <div className="flex gap-3">
+                  {socials.map(({ name, link }) => (
+                    <ExternalLink
+                      aria-label={name}
+                      className={`${buttonVariants({ variant: "outline" })} size-10 p-0`}
+                      href={link}
+                      key={name}
+                    >
+                      <Icons.Social name={name} className="size-5" />
+                    </ExternalLink>
+                  ))}
+                </div>
+              </div>
+
+              <KPIGroup className="grid gap-4 bg-transparent shadow-none md:grid-cols-3">
+                <KPI>
+                  <KPI.Header>
+                    <KPI.Title>Experience</KPI.Title>
+                  </KPI.Header>
+                  <KPI.Content>
+                    <KPI.Value className="text-4xl" value={8} />
+                    <span className="text-muted text-sm">
+                      years and counting
+                    </span>
+                  </KPI.Content>
+                </KPI>
+                <KPI>
+                  <KPI.Header>
+                    <KPI.Title>Companies</KPI.Title>
+                  </KPI.Header>
+                  <KPI.Content>
+                    <KPI.Value
+                      className="text-4xl"
+                      value={sortedCompanies.length}
+                    />
+                    <span className="text-muted text-sm">
+                      across Singapore and Australia
+                    </span>
+                  </KPI.Content>
+                </KPI>
+                <KPI>
+                  <KPI.Header>
+                    <KPI.Title>Current Role</KPI.Title>
+                  </KPI.Header>
+                  <KPI.Content>
+                    <span className="font-semibold text-2xl text-foreground tracking-tight">
+                      DBS
+                    </span>
+                    <span className="text-muted text-sm">
+                      application development
+                    </span>
+                  </KPI.Content>
+                </KPI>
+              </KPIGroup>
+            </Widget.Content>
+          </Widget>
         </div>
-        <hr className="border-border" />
         <Employment companies={sortedCompanies} />
       </div>
     </>

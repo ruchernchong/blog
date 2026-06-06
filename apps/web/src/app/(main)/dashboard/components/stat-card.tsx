@@ -1,3 +1,4 @@
+import { KPI } from "@heroui-pro/react";
 import type { ReactNode } from "react";
 
 interface StatCardProps {
@@ -8,14 +9,14 @@ interface StatCardProps {
 
 export function StatCard({ icon, label, value }: StatCardProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-6 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25/0.4)]">
-      <div className="flex items-center gap-2 text-muted">
-        {icon}
-        <span className="font-medium text-xs uppercase tracking-wider">
-          {label}
-        </span>
-      </div>
-      <span className="font-bold text-4xl">{value.toLocaleString()}</span>
-    </div>
+    <KPI className="transition-all duration-200 hover:-translate-y-0.5">
+      <KPI.Header>
+        <KPI.Icon status="success">{icon}</KPI.Icon>
+        <KPI.Title>{label}</KPI.Title>
+      </KPI.Header>
+      <KPI.Content>
+        <KPI.Value className="text-4xl" locale="en-SG" value={value} />
+      </KPI.Content>
+    </KPI>
   );
 }

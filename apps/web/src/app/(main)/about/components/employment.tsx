@@ -23,7 +23,7 @@ const Employment = ({ companies }: EmploymentProps) => {
           </div>
           <Typography variant="h2">Career</Typography>
         </div>
-        <Typography variant="body" className="text-muted">
+        <Typography variant="body-lg" className="max-w-2xl text-muted">
           Some cool companies I have worked with. Feel free to connect with me
           on{" "}
           <ExternalLink

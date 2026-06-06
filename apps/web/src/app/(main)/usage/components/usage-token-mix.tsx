@@ -1,4 +1,4 @@
-import { Card, Typography } from "@heroui/react";
+import { Typography } from "@heroui/react";
 import { formatTokens } from "@workspace/usage/format";
 import type { TokenBreakdown } from "@workspace/usage/types";
 import { type MixSegment, TokenMixChartClient } from "./token-mix-chart.client";
@@ -70,31 +70,21 @@ export function UsageTokenMix({ tokenMix }: UsageTokenMixProps) {
   );
 
   return (
-    <Card>
-      <Card.Header>
-        <Card.Title>Token mix</Card.Title>
-        <Card.Description>
-          All {formatTokens(total)} tokens by category
-        </Card.Description>
-      </Card.Header>
-      <Card.Content>
-        <div className="flex flex-col gap-4">
-          <TokenMixChartClient segments={segments} total={total} />
-          <ul className="flex flex-wrap gap-x-6 gap-y-2">
-            {ordered.map((segment) => (
-              <li className="flex items-center gap-2" key={segment.key}>
-                <span
-                  className={`size-3 shrink-0 rounded-full ${segment.colorClass}`}
-                />
-                <Typography type="body-sm">{segment.label}</Typography>
-                <Typography color="muted" type="body-sm">
-                  {formatTokens(segment.value)} ({Math.round(segment.pct)}%)
-                </Typography>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </Card.Content>
-    </Card>
+    <div className="flex flex-col gap-4">
+      <TokenMixChartClient segments={segments} total={total} />
+      <ul className="flex flex-wrap gap-x-6 gap-y-2">
+        {ordered.map((segment) => (
+          <li className="flex items-center gap-2" key={segment.key}>
+            <span
+              className={`size-3 shrink-0 rounded-full ${segment.colorClass}`}
+            />
+            <Typography type="body-sm">{segment.label}</Typography>
+            <Typography color="muted" type="body-sm">
+              {formatTokens(segment.value)} ({Math.round(segment.pct)}%)
+            </Typography>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

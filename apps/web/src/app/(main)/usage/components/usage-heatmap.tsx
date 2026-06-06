@@ -1,4 +1,3 @@
-import { Card } from "@heroui/react";
 import { buildHeatmapLayout } from "@workspace/usage/heatmap-layout";
 import type { DayContribution } from "@workspace/usage/types";
 import { eachDayOfInterval, format } from "date-fns";
@@ -67,19 +66,9 @@ export function UsageHeatmap({ contributions }: UsageHeatmapProps) {
     }))
     .sort((a, b) => b.year.localeCompare(a.year));
 
-  return (
-    <Card>
-      <Card.Header>
-        <Card.Title>Activity</Card.Title>
-        <Card.Description>Daily token usage across all agents</Card.Description>
-      </Card.Header>
-      <Card.Content>
-        {years.length === 0 ? (
-          <p className="text-muted text-sm">No activity yet.</p>
-        ) : (
-          <UsageHeatmapClient years={years} />
-        )}
-      </Card.Content>
-    </Card>
-  );
+  if (years.length === 0) {
+    return <p className="text-muted text-sm">No activity yet.</p>;
+  }
+
+  return <UsageHeatmapClient years={years} />;
 }

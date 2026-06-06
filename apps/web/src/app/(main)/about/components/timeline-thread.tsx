@@ -102,7 +102,7 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                   >
                     <Card
                       className={cn(
-                        "py-4 transition-all duration-200 hover:-translate-y-0.5",
+                        "border border-border/70 bg-surface/80 py-4 shadow-surface transition-all duration-200 hover:-translate-y-0.5",
                         isCurrentRole
                           ? "ring-1 ring-accent/20 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25_/_0.25)]"
                           : "hover:shadow-[0_8px_30px_-10px_oklch(0_0_0_/_0.08)]",
@@ -119,9 +119,9 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                             )}
                           </div>
                           <Chip
-                            color={isCurrentRole ? "accent" : "default"}
-                            variant={isCurrentRole ? "primary" : "secondary"}
                             className="shrink-0"
+                            color={isCurrentRole ? "accent" : "default"}
+                            variant="soft"
                           >
                             {isCurrentRole ? "Present" : dateEnd}
                           </Chip>
@@ -161,7 +161,7 @@ export const TimelineThread = ({ companies }: TimelineThreadProps) => {
                                       {role.title}
                                     </span>
                                     {role.team && (
-                                      <Chip size="sm" variant="secondary">
+                                      <Chip size="sm" variant="soft">
                                         {role.team}
                                       </Chip>
                                     )}

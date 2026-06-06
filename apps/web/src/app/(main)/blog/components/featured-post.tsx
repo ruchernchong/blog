@@ -1,4 +1,5 @@
 import { Chip } from "@heroui/react";
+import { Widget } from "@heroui-pro/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
@@ -41,48 +42,50 @@ export async function FeaturedPost() {
   return (
     <Link
       href={post.metadata.canonical as Route}
-      className="group relative block overflow-hidden rounded-2xl border border-border bg-surface p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/20 hover:shadow-lg md:p-8"
+      className="group block transition-all duration-200 hover:-translate-y-0.5"
     >
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <Chip color="accent" variant="primary">
-            Featured
-          </Chip>
-          <time
-            dateTime={formatISO(post.publishedAt)}
-            title={formattedDate}
-            className="text-muted text-sm"
-          >
-            {formattedDate}
-          </time>
-          {/* TODO: Re-enable view count display after caching Redis reads for /blog. */}
-          {/* <div className="flex items-center gap-2 text-muted">
+      <Widget>
+        <Widget.Content className="flex flex-col gap-5 p-6 md:p-8">
+          <div className="flex flex-wrap items-center gap-2">
+            <Chip color="accent" variant="soft">
+              Featured
+            </Chip>
+            <time
+              dateTime={formatISO(post.publishedAt)}
+              title={formattedDate}
+              className="text-muted text-sm"
+            >
+              {formattedDate}
+            </time>
+            {/* TODO: Re-enable view count display after caching Redis reads for /blog. */}
+            {/* <div className="flex items-center gap-2 text-muted">
             <span>·</span>
             <HugeiconsIcon icon={ViewIcon} size={16} strokeWidth={2} />
             <span className="text-sm">{formatViews(views)}</span>
           </div> */}
-        </div>
-
-        <Typography variant="h2" className="line-clamp-2 capitalize">
-          {post.title}
-        </Typography>
-
-        {post.summary && (
-          <Typography variant="body" className="line-clamp-3 text-muted">
-            {post.summary}
-          </Typography>
-        )}
-
-        {post.tags && post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {post.tags.slice(0, 3).map((tag) => (
-              <Chip key={tag} size="sm" variant="secondary">
-                {tag}
-              </Chip>
-            ))}
           </div>
-        )}
-      </div>
+
+          <Typography variant="h2" className="line-clamp-2 capitalize">
+            {post.title}
+          </Typography>
+
+          {post.summary && (
+            <Typography variant="body" className="line-clamp-3 text-muted">
+              {post.summary}
+            </Typography>
+          )}
+
+          {post.tags && post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {post.tags.slice(0, 3).map((tag) => (
+                <Chip key={tag} size="sm" variant="soft">
+                  {tag}
+                </Chip>
+              ))}
+            </div>
+          )}
+        </Widget.Content>
+      </Widget>
     </Link>
   );
 }

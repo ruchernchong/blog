@@ -1,7 +1,6 @@
 "use client";
 
-import { Card } from "@heroui/react";
-import { Segment } from "@heroui-pro/react";
+import { Segment, Widget } from "@heroui-pro/react";
 import type { UsageBreakdownRow } from "@workspace/usage/types";
 import { useState } from "react";
 import { BreakdownChartClient } from "./breakdown-chart.client";
@@ -27,28 +26,28 @@ export function UsageBreakdown({ title, views }: UsageBreakdownProps) {
   const active = views.find((view) => view.id === selectedKey) ?? views[0];
 
   return (
-    <Card>
-      <Card.Header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex flex-col gap-1">
-          <Card.Title>{title}</Card.Title>
-          <Card.Description>{active.description}</Card.Description>
+    <Widget>
+      <Widget.Header>
+        <Widget.Title>{title}</Widget.Title>
+        <Widget.Description>{active.description}</Widget.Description>
+      </Widget.Header>
+      <Widget.Content>
+        <div className="flex flex-col gap-4">
+          <Segment
+            selectedKey={selectedKey}
+            onSelectionChange={(key) => setSelectedKey(String(key))}
+            size="sm"
+          >
+            {views.map((view) => (
+              <Segment.Item key={view.id} id={view.id}>
+                <Segment.Separator />
+                {view.label}
+              </Segment.Item>
+            ))}
+          </Segment>
+          <BreakdownChartClient rows={active.rows} />
         </div>
-        <Segment
-          selectedKey={selectedKey}
-          onSelectionChange={(key) => setSelectedKey(String(key))}
-          size="sm"
-        >
-          {views.map((view) => (
-            <Segment.Item key={view.id} id={view.id}>
-              <Segment.Separator />
-              {view.label}
-            </Segment.Item>
-          ))}
-        </Segment>
-      </Card.Header>
-      <Card.Content>
-        <BreakdownChartClient rows={active.rows} />
-      </Card.Content>
-    </Card>
+      </Widget.Content>
+    </Widget>
   );
 }

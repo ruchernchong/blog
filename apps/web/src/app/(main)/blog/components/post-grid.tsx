@@ -1,4 +1,5 @@
-import { Card, Chip } from "@heroui/react";
+import { Chip } from "@heroui/react";
+import { ItemCard } from "@heroui-pro/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
@@ -39,17 +40,16 @@ export async function PostGrid() {
         const formattedDate = format(post.publishedAt, "dd MMM yyyy");
 
         return (
-          <Card key={post.id} className="flex flex-col">
+          <ItemCard className="h-full" key={post.id}>
             <Link
               href={`/blog/${post.slug}` as Route}
               className="flex h-full flex-col"
             >
-              <Card.Header>
-                <div className="flex items-center justify-between gap-2">
+              <ItemCard.Content className="flex flex-1 flex-col gap-4">
+                <div className="flex items-center justify-between gap-2 text-muted text-sm">
                   <time
                     dateTime={formatISO(post.publishedAt)}
                     title={formattedDate}
-                    className="text-muted text-sm"
                   >
                     {formattedDate}
                   </time>
@@ -60,13 +60,14 @@ export async function PostGrid() {
                       {formatViews(viewCounts.get(post.slug) ?? 0)}
                     </span>
                   </div> */}
+                  <span>{post.metadata.readingTime}</span>
                 </div>
-                <Card.Title className="line-clamp-2 capitalize">
+                <ItemCard.Title className="line-clamp-2 capitalize">
                   {post.title}
-                </Card.Title>
-              </Card.Header>
-              <Card.Content className="flex flex-1 flex-col gap-4">
-                <p className="line-clamp-2 flex-1 text-muted">{post.summary}</p>
+                </ItemCard.Title>
+                <ItemCard.Description className="line-clamp-3 flex-1">
+                  {post.summary}
+                </ItemCard.Description>
                 {post.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {post.tags.slice(0, 2).map((postTag) => {
@@ -74,7 +75,7 @@ export async function PostGrid() {
                         <Chip
                           key={postTag}
                           size="sm"
-                          variant="secondary"
+                          variant="soft"
                           className="text-xs"
                         >
                           {postTag}
@@ -83,9 +84,9 @@ export async function PostGrid() {
                     })}
                   </div>
                 )}
-              </Card.Content>
+              </ItemCard.Content>
             </Link>
-          </Card>
+          </ItemCard>
         );
       })}
     </>

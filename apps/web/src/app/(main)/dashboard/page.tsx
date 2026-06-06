@@ -1,4 +1,5 @@
 import { Link, Typography } from "@heroui/react";
+import { Widget } from "@heroui-pro/react";
 import { DashboardBrowsingIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
@@ -55,15 +56,31 @@ export default function DashboardPage() {
         <LastUpdated />
       </div>
 
-      <Suspense>
-        <StatsGrid />
-      </Suspense>
+      <Widget>
+        <Widget.Header>
+          <Widget.Title>Overview</Widget.Title>
+          <Widget.Description>Site & GitHub metrics</Widget.Description>
+        </Widget.Header>
+        <Widget.Content>
+          <Suspense>
+            <StatsGrid />
+          </Suspense>
+        </Widget.Content>
+      </Widget>
       <Suspense>
         <ViewsByPage />
       </Suspense>
-      <Suspense>
-        <VisitsChart />
-      </Suspense>
+      <Widget>
+        <Widget.Header>
+          <Widget.Title>Visits Over Time</Widget.Title>
+          <Widget.Description>Daily traffic</Widget.Description>
+        </Widget.Header>
+        <Widget.Content>
+          <Suspense>
+            <VisitsChart />
+          </Suspense>
+        </Widget.Content>
+      </Widget>
 
       <div className="flex items-center justify-end">
         <Link
