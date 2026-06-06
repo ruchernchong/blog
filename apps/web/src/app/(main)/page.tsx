@@ -2,12 +2,12 @@ import type { WebSite, WithContext } from "schema-dts";
 import { FeaturedWork } from "@/app/components/home/featured-work";
 import { HeroSection } from "@/app/components/home/hero-section";
 import { LatestPosts } from "@/app/components/home/latest-posts";
-// import { Suspense } from "react";
-// import { QuickStats } from "@/app/components/home/quick-stats";
-// import { SiteVisits } from "@/app/components/home/site-visits";
 import { StructuredData } from "@/app/components/structured-data";
 import { BASE_URL } from "@/config";
 import projects from "@/data/projects";
+import { getGitHubStars } from "@/lib/github";
+import { getTotalVisits } from "@/lib/queries/posthog";
+import { getPublishedPostsCount } from "@/lib/queries/posts";
 
 const structuredData: WithContext<WebSite> = {
   "@context": "https://schema.org",
@@ -31,16 +31,22 @@ const structuredData: WithContext<WebSite> = {
   ],
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [postCount, githubStars, totalVisits] = await Promise.all([
+    getPublishedPostsCount(),
+    getGitHubStars(),
+    getTotalVisits(),
+  ]);
+
   return (
     <>
       <StructuredData data={structuredData} />
       <div className="flex flex-col gap-12">
-        <HeroSection />
-        {/* TODO: Re-enable homepage visits after caching Umami reads to avoid request-time function invocations. */}
-        {/* <Suspense fallback={<QuickStats />}>
-          <SiteVisits />
-        </Suspense> */}
+        <HeroSection
+          postCount={postCount}
+          githubStars={githubStars}
+          totalVisits={totalVisits}
+        />
         <FeaturedWork projects={projects} />
         <LatestPosts />
       </div>

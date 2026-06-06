@@ -2,8 +2,8 @@ import { buttonVariants } from "@heroui/styles";
 import { KPI, KPIGroup, TrendChip, Widget } from "@heroui-pro/react";
 import {
   AnalyticsUpIcon,
-  CodeIcon,
   Notebook02Icon,
+  StarIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import * as motion from "motion/react-client";
@@ -28,29 +28,17 @@ const item = {
   },
 };
 
-const sparklineUp = [
-  { value: 18 },
-  { value: 26 },
-  { value: 21 },
-  { value: 35 },
-  { value: 32 },
-  { value: 48 },
-  { value: 52 },
-  { value: 61 },
-];
+interface HeroSectionProps {
+  postCount: number;
+  githubStars: number;
+  totalVisits: number;
+}
 
-const sparklineFlat = [
-  { value: 32 },
-  { value: 34 },
-  { value: 31 },
-  { value: 35 },
-  { value: 33 },
-  { value: 36 },
-  { value: 34 },
-  { value: 37 },
-];
-
-export function HeroSection() {
+export function HeroSection({
+  postCount,
+  githubStars,
+  totalVisits,
+}: HeroSectionProps) {
   return (
     <motion.section
       variants={container}
@@ -89,39 +77,29 @@ export function HeroSection() {
                     </KPI.Icon>
                     <KPI.Title>Writing</KPI.Title>
                   </KPI.Header>
-                  <KPI.Content className="grid-cols-[1fr_1fr] items-end">
+                  <KPI.Content>
                     <div className="flex flex-col gap-2">
-                      <KPI.Value className="text-4xl" value={24} />
+                      <KPI.Value className="text-4xl" value={postCount} />
                       <TrendChip trend="up" variant="tertiary">
-                        active
+                        published
                       </TrendChip>
                     </div>
-                    <KPI.Chart
-                      color="var(--color-accent)"
-                      data={sparklineUp}
-                      height={64}
-                    />
                   </KPI.Content>
                 </KPI>
                 <KPI>
                   <KPI.Header>
                     <KPI.Icon status="warning">
-                      <HugeiconsIcon icon={CodeIcon} size={18} />
+                      <HugeiconsIcon icon={StarIcon} size={18} />
                     </KPI.Icon>
-                    <KPI.Title>Projects</KPI.Title>
+                    <KPI.Title>GitHub Stars</KPI.Title>
                   </KPI.Header>
-                  <KPI.Content className="grid-cols-[1fr_1fr] items-end">
+                  <KPI.Content>
                     <div className="flex flex-col gap-2">
-                      <KPI.Value className="text-4xl" value={12} />
-                      <TrendChip trend="neutral" variant="tertiary">
-                        curated
+                      <KPI.Value className="text-4xl" value={githubStars} />
+                      <TrendChip trend="up" variant="tertiary">
+                        across repos
                       </TrendChip>
                     </div>
-                    <KPI.Chart
-                      color="var(--chart-4)"
-                      data={sparklineFlat}
-                      height={64}
-                    />
                   </KPI.Content>
                 </KPI>
                 <KPI>
@@ -129,24 +107,19 @@ export function HeroSection() {
                     <KPI.Icon status="success">
                       <HugeiconsIcon icon={AnalyticsUpIcon} size={18} />
                     </KPI.Icon>
-                    <KPI.Title>Analytics</KPI.Title>
+                    <KPI.Title>Page Views</KPI.Title>
                   </KPI.Header>
-                  <KPI.Content className="grid-cols-[1fr_1fr] items-end">
+                  <KPI.Content>
                     <div className="flex flex-col gap-2">
                       <KPI.Value
                         className="text-4xl"
                         notation="compact"
-                        value={125_400}
+                        value={totalVisits}
                       />
                       <TrendChip trend="up" variant="tertiary">
                         tracked
                       </TrendChip>
                     </div>
-                    <KPI.Chart
-                      color="var(--color-success)"
-                      data={sparklineUp}
-                      height={64}
-                    />
                   </KPI.Content>
                 </KPI>
               </KPIGroup>
