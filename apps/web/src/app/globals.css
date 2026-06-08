@@ -261,6 +261,9 @@
     --field-shadow:
       0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 0 1px 0 rgba(0, 0, 0, 0.04);
 
+    --accent: var(--eclipse);
+    --accent-foreground: var(--snow);
+
     --chart-1: oklch(from var(--accent) calc(l - 0.24) c h);
     --chart-2: oklch(from var(--accent) calc(l - 0.12) c h);
     --chart-3: var(--accent);
