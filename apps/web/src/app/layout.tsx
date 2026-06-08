@@ -2,13 +2,14 @@ import { PostHogPageView, PostHogProvider } from "@posthog/next";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
-import { Figtree, Geist_Mono } from "next/font/google";
+import { Figtree, Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { ReactNode } from "react";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import "@/app/globals.css";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
+const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
 const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-geist-mono",
@@ -65,7 +66,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en" className={`scroll-smooth ${figtree.variable}`}>
+    <html
+      lang="en"
+      className={`scroll-smooth ${figtree.variable} ${geistSans.variable}`}
+    >
       <body
         className={`bg-background text-foreground antialiased ${geistMono.variable}`}
       >

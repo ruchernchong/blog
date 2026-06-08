@@ -164,4 +164,90 @@
     --chart-4: oklch(from var(--accent) calc(l + 0.12) c h);
     --chart-5: oklch(from var(--accent) calc(l + 0.24) c h);
   }
+
+  /* == Apple Preview Theme == */
+  [data-apple] {
+    color-scheme: light;
+
+    --eclipse: oklch(0.145 0.003 248);
+    --snow: oklch(0.971 0 0);
+
+    --background: oklch(0.971 0 0);
+    --foreground: var(--eclipse);
+
+    --surface: oklch(1 0 0);
+    --surface-foreground: var(--foreground);
+
+    --overlay: oklch(1 0 0);
+    --overlay-foreground: var(--foreground);
+
+    --muted: oklch(0.49 0.005 250);
+    --scrollbar: oklch(0.82 0 0);
+
+    --default: oklch(0.95 0 0);
+    --default-foreground: var(--eclipse);
+
+    --accent: oklch(0.5 0.2 255);
+    --accent-foreground: oklch(1 0 0);
+
+    --field-background: oklch(1 0 0);
+    --field-foreground: var(--eclipse);
+    --field-placeholder: var(--muted);
+    --field-border: transparent;
+
+    --border: oklch(0.91 0.002 250);
+    --separator: oklch(0.91 0.002 250);
+    --focus: var(--accent);
+    --link: var(--foreground);
+
+    --segment: oklch(1 0 0);
+    --segment-foreground: var(--eclipse);
+
+    --surface-shadow:
+      0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 0 1px 0 rgba(0, 0, 0, 0.04);
+    --overlay-shadow:
+      0 4px 16px 0 rgba(0, 0, 0, 0.1), 0 8px 24px 0 rgba(0, 0, 0, 0.08);
+    --field-shadow:
+      0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 0 1px 0 rgba(0, 0, 0, 0.04);
+
+    --font-sans: var(--font-geist-sans);
+
+    --chart-1: oklch(from var(--accent) calc(l - 0.24) c h);
+    --chart-2: oklch(from var(--accent) calc(l - 0.12) c h);
+    --chart-3: var(--accent);
+    --chart-4: oklch(from var(--accent) calc(l + 0.12) c h);
+    --chart-5: oklch(from var(--accent) calc(l + 0.24) c h);
+  }
+
+  [data-apple].dark,
+  [data-apple] .dark,
+  [data-apple][data-theme="dark"] {
+    color-scheme: dark;
+
+    --background: oklch(0 0 0);
+    --foreground: var(--snow);
+
+    --surface: oklch(0.13 0.003 248);
+    --surface-foreground: var(--foreground);
+
+    --overlay: oklch(0.18 0.003 248);
+    --overlay-foreground: var(--foreground);
+
+    --muted: oklch(0.6 0.004 250);
+    --default: oklch(0.2 0.003 248);
+    --default-foreground: var(--snow);
+    --segment: oklch(0.28 0.003 248);
+    --segment-foreground: var(--foreground);
+
+    --border: oklch(0.26 0.003 250);
+    --separator: oklch(0.26 0.003 250);
+    --scrollbar: oklch(0.26 0.003 250);
+
+    --field-background: var(--default);
+    --field-foreground: var(--foreground);
+
+    --surface-shadow: 0 0 0 0 transparent;
+    --overlay-shadow: 0 0 0 0 transparent;
+    --field-shadow: 0 0 0 0 transparent;
+  }
 }
