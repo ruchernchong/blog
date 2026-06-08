@@ -1,4 +1,5 @@
 import { Separator } from "@heroui/react";
+import type { Route } from "next";
 import Link from "next/link";
 import ExternalLink from "@/components/external-link";
 import * as Icons from "@/components/icons";
@@ -29,7 +30,7 @@ export function AppleFooter() {
               {navLinks.map(({ href, title }) => (
                 <Link
                   key={title}
-                  href={href}
+                  href={`/preview${href}` as Route}
                   className="font-medium text-muted text-sm transition-colors hover:text-accent"
                 >
                   {title}

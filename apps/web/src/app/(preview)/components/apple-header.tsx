@@ -8,6 +8,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { navLinks } from "@/config";
 
+const previewHref = (href: string) => `/preview${href}`;
+
 export function AppleHeader() {
   const pathname = usePathname();
   const router = useRouter();
@@ -39,9 +41,10 @@ export function AppleHeader() {
 
           <Navbar.Content className="hidden md:flex">
             {navLinks.map(({ title, href }) => {
+              const full = previewHref(href);
               const isActive =
-                pathname === href ||
-                (pathname.startsWith(href) && href !== "/");
+                pathname === full ||
+                (pathname.startsWith(full) && href !== "/");
 
               return (
                 <Navbar.Item
@@ -49,7 +52,7 @@ export function AppleHeader() {
                     "px-2.5 font-medium text-sm",
                     isActive && "text-foreground",
                   )}
-                  href={href}
+                  href={full}
                   isCurrent={isActive}
                   key={title}
                 >
@@ -69,11 +72,12 @@ export function AppleHeader() {
             Home
           </Navbar.MenuItem>
           {navLinks.map(({ title, href }) => {
+            const full = previewHref(href);
             const isActive =
-              pathname === href || (pathname.startsWith(href) && href !== "/");
+              pathname === full || (pathname.startsWith(full) && href !== "/");
 
             return (
-              <Navbar.MenuItem href={href} isCurrent={isActive} key={title}>
+              <Navbar.MenuItem href={full} isCurrent={isActive} key={title}>
                 {title}
               </Navbar.MenuItem>
             );

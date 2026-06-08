@@ -219,6 +219,55 @@
     --chart-5: oklch(from var(--accent) calc(l + 0.24) c h);
   }
 
+  /* == Minimal Preview Theme == */
+  [data-minimal] {
+    color-scheme: light;
+
+    --eclipse: oklch(0.145 0.003 248);
+    --snow: oklch(1 0 0);
+
+    --background: oklch(1 0 0);
+    --foreground: var(--eclipse);
+
+    --surface: oklch(0.985 0 0);
+    --surface-foreground: var(--foreground);
+
+    --overlay: oklch(1 0 0);
+    --overlay-foreground: var(--foreground);
+
+    --muted: oklch(0.52 0.005 250);
+    --scrollbar: oklch(0.85 0 0);
+
+    --default: oklch(0.96 0 0);
+    --default-foreground: var(--eclipse);
+
+    --field-background: oklch(1 0 0);
+    --field-foreground: var(--eclipse);
+    --field-placeholder: var(--muted);
+    --field-border: transparent;
+
+    --border: oklch(0.91 0.002 250);
+    --separator: oklch(0.91 0.002 250);
+    --focus: var(--accent);
+    --link: var(--foreground);
+
+    --segment: oklch(1 0 0);
+    --segment-foreground: var(--eclipse);
+
+    --surface-shadow:
+      0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 0 1px 0 rgba(0, 0, 0, 0.04);
+    --overlay-shadow:
+      0 4px 16px 0 rgba(0, 0, 0, 0.12), 0 8px 24px 0 rgba(0, 0, 0, 0.08);
+    --field-shadow:
+      0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 0 1px 0 rgba(0, 0, 0, 0.04);
+
+    --chart-1: oklch(from var(--accent) calc(l - 0.24) c h);
+    --chart-2: oklch(from var(--accent) calc(l - 0.12) c h);
+    --chart-3: var(--accent);
+    --chart-4: oklch(from var(--accent) calc(l + 0.12) c h);
+    --chart-5: oklch(from var(--accent) calc(l + 0.24) c h);
+  }
+
   [data-apple].dark,
   [data-apple] .dark,
   [data-apple][data-theme="dark"] {

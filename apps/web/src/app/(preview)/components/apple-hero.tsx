@@ -1,15 +1,9 @@
 import { buttonVariants } from "@heroui/styles";
-import { KPI, KPIGroup, TrendChip } from "@heroui-pro/react";
-import {
-  AnalyticsUpIcon,
-  Notebook02Icon,
-  StarIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import * as motion from "motion/react-client";
 import ExternalLink from "@/components/external-link";
 import * as Icons from "@/components/icons";
 import socials from "@/data/socials";
+import { AppleStat } from "./apple-stat";
 
 const container = {
   hidden: { opacity: 0 },
@@ -32,6 +26,10 @@ interface AppleHeroSectionProps {
   postCount: number;
   githubStars: number;
   totalVisits: number;
+}
+
+function formatCompact(n: number) {
+  return new Intl.NumberFormat("en", { notation: "compact" }).format(n);
 }
 
 export function AppleHeroSection({
@@ -58,67 +56,22 @@ export function AppleHeroSection({
                 Software Engineer
               </p>
               <p className="max-w-2xl text-lg text-muted leading-relaxed">
-                Shipping code by day. Chasing ideas by night. 🚀💡
+                Shipping code by day. Chasing ideas by night.
               </p>
             </div>
           </div>
 
-          <KPIGroup>
-            <KPI>
-              <KPI.Header>
-                <KPI.Icon status="success">
-                  <HugeiconsIcon icon={Notebook02Icon} size={18} />
-                </KPI.Icon>
-                <KPI.Title>Writing</KPI.Title>
-              </KPI.Header>
-              <KPI.Content>
-                <div className="flex flex-col gap-2">
-                  <KPI.Value className="text-4xl" value={postCount} />
-                  <TrendChip trend="up" variant="tertiary">
-                    published
-                  </TrendChip>
-                </div>
-              </KPI.Content>
-            </KPI>
-            <KPIGroup.Separator />
-            <KPI>
-              <KPI.Header>
-                <KPI.Icon status="warning">
-                  <HugeiconsIcon icon={StarIcon} size={18} />
-                </KPI.Icon>
-                <KPI.Title>GitHub Stars</KPI.Title>
-              </KPI.Header>
-              <KPI.Content>
-                <div className="flex flex-col gap-2">
-                  <KPI.Value className="text-4xl" value={githubStars} />
-                  <TrendChip trend="up" variant="tertiary">
-                    across repos
-                  </TrendChip>
-                </div>
-              </KPI.Content>
-            </KPI>
-            <KPIGroup.Separator />
-            <KPI>
-              <KPI.Header>
-                <KPI.Icon status="success">
-                  <HugeiconsIcon icon={AnalyticsUpIcon} size={18} />
-                </KPI.Icon>
-                <KPI.Title>Page Views</KPI.Title>
-              </KPI.Header>
-              <KPI.Content>
-                <div className="flex flex-col gap-2">
-                  <KPI.Value
-                    className="text-4xl"
-                    notation="compact"
-                    value={totalVisits}
-                  />
-                  <TrendChip trend="up" variant="tertiary">
-                    tracked
-                  </TrendChip>
-                </div>
-              </KPI.Content>
-            </KPI>
-          </KPIGroup>
+          <div className="flex items-end gap-8 md:gap-12">
+            <AppleStat value={postCount} label="Articles" />
+            <span className="select-none pb-5 text-2xl text-border" aria-hidden>
+              ·
+            </span>
+            <AppleStat value={githubStars} label="GitHub Stars" />
+            <span className="select-none pb-5 text-2xl text-border" aria-hidden>
+              ·
+            </span>
+            <AppleStat value={formatCompact(totalVisits)} label="Page Views" />
+          </div>
 
           <div className="flex flex-wrap gap-3">
             {socials.map(({ name, link }) => (
