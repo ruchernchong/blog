@@ -2,16 +2,25 @@
 
 import { Card } from "@heroui/react";
 import { ChartTooltip, LineChart } from "@heroui-pro/react";
+import { APP_LOCALE, APP_TIME_ZONE } from "@/constants/date-time";
 import type { Visit } from "@/lib/queries/posthog";
 
 interface VisitsChartClientProps {
   data: Visit[];
 }
 
+type TooltipPayloadEntry = {
+  color?: string;
+  dataKey: unknown;
+  stroke?: string;
+  value: unknown;
+};
+
 const formatDate = (date: string) =>
-  new Date(date).toLocaleDateString("en-SG", {
+  new Date(date).toLocaleDateString(APP_LOCALE, {
     day: "numeric",
     month: "short",
+    timeZone: APP_TIME_ZONE,
   });
 
 export function VisitsChartClient({ data }: VisitsChartClientProps) {
@@ -48,7 +57,7 @@ export function VisitsChartClient({ data }: VisitsChartClientProps) {
                   <ChartTooltip.Header>
                     {formatDate(String(label))}
                   </ChartTooltip.Header>
-                  {payload.map((entry: any) => (
+                  {(payload as TooltipPayloadEntry[]).map((entry) => (
                     <ChartTooltip.Item key={String(entry.dataKey)}>
                       <ChartTooltip.Indicator
                         color={entry.color ?? entry.stroke}
