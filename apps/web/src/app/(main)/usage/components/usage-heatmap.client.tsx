@@ -3,7 +3,8 @@
 import { Button, cn } from "@heroui/react";
 import { INTENSITY_CLASSES } from "@workspace/usage";
 import type { HeatmapLayout } from "@workspace/usage/heatmap-layout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { APP_LOCALE, APP_TIME_ZONE } from "@/constants/date-time";
 import { HeatmapGridClient } from "./heatmap-grid.client";
 
 export interface HeatmapYear {
@@ -17,6 +18,22 @@ interface UsageHeatmapClientProps {
   years: HeatmapYear[];
 }
 
+const dateKeyFormatter = new Intl.DateTimeFormat(APP_LOCALE, {
+  day: "2-digit",
+  month: "2-digit",
+  timeZone: APP_TIME_ZONE,
+  year: "numeric",
+});
+
+function getTodayDateKey(date: Date) {
+  const parts = dateKeyFormatter.formatToParts(date);
+  const values = Object.fromEntries(
+    parts.map((part) => [part.type, part.value]),
+  );
+
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
 /**
  * Filters the contribution heatmap to a single calendar year. Layouts arrive
  * ready-built and serializable, so switching years is a cheap re-render of an
@@ -25,7 +42,12 @@ interface UsageHeatmapClientProps {
  */
 export function UsageHeatmapClient({ years }: UsageHeatmapClientProps) {
   const [selectedYear, setSelectedYear] = useState(years[0].year);
+  const [today, setToday] = useState<string | null>(null);
   const active = years.find((y) => y.year === selectedYear) ?? years[0];
+
+  useEffect(() => {
+    setToday(getTodayDateKey(new Date()));
+  }, []);
 
   return (
     <div className="flex flex-col gap-4">
@@ -44,7 +66,7 @@ export function UsageHeatmapClient({ years }: UsageHeatmapClientProps) {
         </div>
       )}
 
-      <HeatmapGridClient layout={active.layout} />
+      <HeatmapGridClient layout={active.layout} today={today} />
 
       <div className="flex items-center gap-2 text-muted text-xs">
         <span>Less</span>
