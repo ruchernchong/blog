@@ -132,25 +132,10 @@ export async function getUsageProfile(): Promise<UsageProfile> {
     day.costValues.push(row.costUsd);
     addTokens(day.breakdown, row);
 
-    const dayAgent = getOrCreateRollup(day.agents, row.agent);
-    dayAgent.tokens += row.totalTokens;
-    dayAgent.messages += row.messages;
-    dayAgent.costValues.push(row.costUsd);
-
-    const agent = getOrCreateRollup(agentTotals, row.agent);
-    agent.tokens += row.totalTokens;
-    agent.messages += row.messages;
-    agent.costValues.push(row.costUsd);
-
-    const provider = getOrCreateRollup(providerTotals, row.provider);
-    provider.tokens += row.totalTokens;
-    provider.messages += row.messages;
-    provider.costValues.push(row.costUsd);
-
-    const model = getOrCreateRollup(modelTotals, row.model);
-    model.tokens += row.totalTokens;
-    model.messages += row.messages;
-    model.costValues.push(row.costUsd);
+    addToRollup(getOrCreateRollup(day.agents, row.agent), row);
+    addToRollup(getOrCreateRollup(agentTotals, row.agent), row);
+    addToRollup(getOrCreateRollup(providerTotals, row.provider), row);
+    addToRollup(getOrCreateRollup(modelTotals, row.model), row);
   }
 
   // --- Dense day array (fill gaps) + intensity scale ------------------------
@@ -170,9 +155,10 @@ export async function getUsageProfile(): Promise<UsageProfile> {
   );
 
   // --- Breakdowns, years, summary ------------------------------------------
-  const byAgent = rollupRows(agentTotals);
-  const byProvider = rollupRows(providerTotals);
-  const byModel = rollupRows(modelTotals);
+  const trendDates = sparklineDates(firstDate, lastDate);
+  const byAgent = rollupRows(agentTotals, trendDates);
+  const byProvider = rollupRows(providerTotals, trendDates);
+  const byModel = rollupRows(modelTotals, trendDates);
   const years = buildYears(contributions);
   const summary = buildSummary(contributions, byAgent, byProvider, byModel);
 
@@ -194,6 +180,7 @@ interface RollupAggregate {
   tokens: number;
   messages: number;
   costValues: (string | null)[];
+  dailyTokens: Map<string, number>;
 }
 
 interface DayAggregate {
@@ -234,10 +221,23 @@ function getOrCreateRollup(
 ): RollupAggregate {
   let rollup = map.get(key);
   if (!rollup) {
-    rollup = { tokens: 0, messages: 0, costValues: [] };
+    rollup = { tokens: 0, messages: 0, costValues: [], dailyTokens: new Map() };
     map.set(key, rollup);
   }
   return rollup;
+}
+
+function addToRollup(
+  rollup: RollupAggregate,
+  row: typeof tokenUsage.$inferSelect,
+): void {
+  rollup.tokens += row.totalTokens;
+  rollup.messages += row.messages;
+  rollup.costValues.push(row.costUsd);
+  rollup.dailyTokens.set(
+    row.date,
+    (rollup.dailyTokens.get(row.date) ?? 0) + row.totalTokens,
+  );
 }
 
 function addTokens(
@@ -345,14 +345,40 @@ function buildDenseContributions(
 
 // --- Breakdown rows, years, summary -----------------------------------------
 
-function rollupRows(map: Map<string, RollupAggregate>): UsageBreakdownRow[] {
+/** Trailing window of the per-row trend sparkline, in days. */
+const SPARKLINE_DAYS = 90;
+
+/** Dense daily dates for the sparkline window, clamped to the data range. */
+function sparklineDates(firstDate: string, lastDate: string): string[] {
+  const end = parseISO(lastDate);
+  const span = Math.min(
+    SPARKLINE_DAYS,
+    differenceInCalendarDays(end, parseISO(firstDate)) + 1,
+  );
+  return Array.from({ length: span }, (_, offset) =>
+    format(addDays(end, offset - (span - 1)), "yyyy-MM-dd"),
+  );
+}
+
+function rollupRows(
+  map: Map<string, RollupAggregate>,
+  dates: string[],
+): UsageBreakdownRow[] {
   return [...map.entries()]
-    .map(([key, rollup]) => ({
-      key,
-      tokens: rollup.tokens,
-      cost: sumCost(rollup.costValues),
-      messages: rollup.messages,
-    }))
+    .map(([key, rollup]) => {
+      const cost = sumCost(rollup.costValues);
+      return {
+        key,
+        tokens: rollup.tokens,
+        cost,
+        costPerMillionTokens:
+          cost !== null && rollup.tokens > 0
+            ? (cost / rollup.tokens) * 1_000_000
+            : null,
+        messages: rollup.messages,
+        sparkline: dates.map((date) => rollup.dailyTokens.get(date) ?? 0),
+      };
+    })
     .sort((a, b) => b.tokens - a.tokens);
 }
 

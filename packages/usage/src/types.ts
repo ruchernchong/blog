@@ -106,7 +106,11 @@ export interface UsageBreakdownRow {
   key: string;
   tokens: number;
   cost: Cost;
+  /** Blended rate derived from `cost / tokens`; null when the cost is N.A. */
+  costPerMillionTokens: Cost;
   messages: number;
+  /** Daily token totals over the trailing sparkline window, oldest first. */
+  sparkline: number[];
 }
 
 export interface UsageProfile {
