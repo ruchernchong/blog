@@ -1,17 +1,18 @@
 import { KPI, KPIGroup } from "@heroui-pro/react";
 import {
-  Calendar03Icon,
+  AnalyticsUpIcon,
   DatabaseIcon,
   DollarCircleIcon,
-  Fire02Icon,
 } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { UsageSummary } from "@workspace/usage/types";
+import { formatCurrencyCompact } from "@workspace/usage/format";
+import type { DayContribution, UsageSummary } from "@workspace/usage/types";
 import { type ComponentProps, Fragment } from "react";
 
 interface UsageStatsProps {
   summary: UsageSummary;
+  contributions: DayContribution[];
 }
 
 interface UsageStatCardProps {
@@ -19,7 +20,28 @@ interface UsageStatCardProps {
   icon: IconSvgElement;
   status: "success" | "warning" | "danger";
   value: number;
+  footer: string;
+  chartData: { value: number }[];
+  chartColor: string;
   valueProps?: Omit<ComponentProps<typeof KPI.Value>, "value" | "locale">;
+}
+
+const SPARKLINE_DAYS = 30;
+
+function trailingActiveDayAverage(
+  days: DayContribution[],
+): { value: number }[] {
+  let total = 0;
+  let activeDays = 0;
+
+  return days.map((day) => {
+    if (day.totals.tokens > 0) {
+      total += day.totals.cost ?? 0;
+      activeDays += 1;
+    }
+
+    return { value: activeDays > 0 ? total / activeDays : 0 };
+  });
 }
 
 function UsageStatCard({
@@ -27,6 +49,9 @@ function UsageStatCard({
   icon,
   status,
   value,
+  footer,
+  chartData,
+  chartColor,
   valueProps,
 }: UsageStatCardProps) {
   return (
@@ -40,41 +65,74 @@ function UsageStatCard({
       <KPI.Content>
         <KPI.Value locale="en-SG" value={value} {...valueProps} />
       </KPI.Content>
+      <KPI.Chart
+        color={chartColor}
+        data={chartData}
+        height={48}
+        strokeWidth={1.5}
+      />
+      <KPI.Footer>
+        <p className="text-muted text-sm">{footer}</p>
+      </KPI.Footer>
     </KPI>
   );
 }
 
-export function UsageStats({ summary }: UsageStatsProps) {
+export function UsageStats({ summary, contributions }: UsageStatsProps) {
+  const trailingDays = contributions.slice(-SPARKLINE_DAYS);
+  const costSparkline = trailingDays.map((day) => ({
+    value: day.totals.cost ?? 0,
+  }));
+  const tokenSparkline = trailingDays.map((day) => ({
+    value: day.totals.tokens,
+  }));
+  const activeDayAverageSparkline = trailingActiveDayAverage(trailingDays);
+
   const cards: (UsageStatCardProps & { key: string })[] = [
-    {
-      key: "tokens",
-      title: "Total Tokens",
-      icon: DatabaseIcon,
-      status: "success",
-      value: summary.totalTokens,
-      valueProps: { notation: "compact", maximumFractionDigits: 2 },
-    },
     {
       key: "cost",
       title: "Total Cost",
       icon: DollarCircleIcon,
       status: "warning",
       value: summary.totalCost,
-      valueProps: { style: "currency", currency: "USD" },
+      footer: summary.bestDay
+        ? `Best day ${formatCurrencyCompact(summary.bestDay.cost)}`
+        : "No priced usage yet",
+      chartData: costSparkline,
+      chartColor: "var(--chart-3)",
+      valueProps: {
+        style: "currency",
+        currency: "USD",
+        notation: "compact",
+        maximumFractionDigits: 2,
+      },
     },
     {
-      key: "active-days",
-      title: "Active Days",
-      icon: Calendar03Icon,
+      key: "tokens",
+      title: "Total Tokens",
+      icon: DatabaseIcon,
       status: "success",
-      value: summary.activeDays,
+      value: summary.totalTokens,
+      footer: `${summary.activeDays.toLocaleString("en-SG")} active days`,
+      chartData: tokenSparkline,
+      chartColor: "var(--color-success)",
+      valueProps: { notation: "compact", maximumFractionDigits: 2 },
     },
     {
-      key: "streak",
-      title: "Longest Streak",
-      icon: Fire02Icon,
-      status: "danger",
-      value: summary.longestStreak,
+      key: "average-active-day",
+      title: "Avg / Active Day",
+      icon: AnalyticsUpIcon,
+      status: "success",
+      value: summary.averagePerDay,
+      footer: `Current streak ${summary.currentStreak.toLocaleString("en-SG")} days`,
+      chartData: activeDayAverageSparkline,
+      chartColor: "var(--chart-2)",
+      valueProps: {
+        style: "currency",
+        currency: "USD",
+        notation: "compact",
+        maximumFractionDigits: 2,
+      },
     },
   ];
 
