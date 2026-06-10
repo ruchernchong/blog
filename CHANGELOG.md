@@ -1,3 +1,9 @@
+## [1.19.0](https://github.com/ruchernchong/blog/compare/v1.18.0...v1.19.0) (2026-06-10)
+
+### Features
+
+* show usage last updated ([7a698a4](https://github.com/ruchernchong/blog/commit/7a698a48016ab5125567f98783ca231c8041fa0d))
+
 ## [1.18.0](https://github.com/ruchernchong/blog/compare/v1.17.0...v1.18.0) (2026-06-10)
 
 ### Features
