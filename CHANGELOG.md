@@ -1,3 +1,14 @@
+## [1.18.0](https://github.com/ruchernchong/blog/compare/v1.17.0...v1.18.0) (2026-06-10)
+
+### Features
+
+* improve usage KPI cards ([9246a11](https://github.com/ruchernchong/blog/commit/9246a11d6bbf683594d14bd6549ef3488597a516))
+* show usage heatmap hover stats ([e0b8a87](https://github.com/ruchernchong/blog/commit/e0b8a876684bd338cc37401507df60a88e63cc82))
+
+### Bug Fixes
+
+* format usage KPI currency ([916f85d](https://github.com/ruchernchong/blog/commit/916f85deb8bbcc59e43aaca1987c6a28cfbacdbd))
+
 ## [1.17.0](https://github.com/ruchernchong/blog/compare/v1.16.1...v1.17.0) (2026-06-10)
 
 ### Features
