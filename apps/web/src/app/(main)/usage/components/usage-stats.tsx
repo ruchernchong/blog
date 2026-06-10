@@ -1,4 +1,4 @@
-import { KPI, KPIGroup } from "@heroui-pro/react";
+import { KPI, KPIGroup, NumberValue } from "@heroui-pro/react";
 import {
   AnalyticsUpIcon,
   DatabaseIcon,
@@ -6,9 +6,8 @@ import {
 } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { formatCurrencyCompact } from "@workspace/usage/format";
 import type { DayContribution, UsageSummary } from "@workspace/usage/types";
-import { type ComponentProps, Fragment } from "react";
+import { type ComponentProps, Fragment, type ReactNode } from "react";
 
 interface UsageStatsProps {
   summary: UsageSummary;
@@ -20,13 +19,21 @@ interface UsageStatCardProps {
   icon: IconSvgElement;
   status: "success" | "warning" | "danger";
   value: number;
-  footer: string;
+  footer: ReactNode;
   chartData: { value: number }[];
   chartColor: string;
   valueProps?: Omit<ComponentProps<typeof KPI.Value>, "value" | "locale">;
 }
 
 const SPARKLINE_DAYS = 30;
+
+const USD_COMPACT_FORMAT_OPTIONS = {
+  currency: "USD",
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 2,
+  notation: "compact",
+  style: "currency",
+} satisfies Intl.NumberFormatOptions;
 
 function trailingActiveDayAverage(
   days: DayContribution[],
@@ -95,16 +102,22 @@ export function UsageStats({ summary, contributions }: UsageStatsProps) {
       icon: DollarCircleIcon,
       status: "warning",
       value: summary.totalCost,
-      footer: summary.bestDay
-        ? `Best day ${formatCurrencyCompact(summary.bestDay.cost)}`
-        : "No priced usage yet",
+      footer: summary.bestDay ? (
+        <>
+          Best day{" "}
+          <NumberValue
+            formatOptions={USD_COMPACT_FORMAT_OPTIONS}
+            locale="en-SG"
+            value={summary.bestDay.cost}
+          />
+        </>
+      ) : (
+        "No priced usage yet"
+      ),
       chartData: costSparkline,
       chartColor: "var(--chart-3)",
       valueProps: {
-        style: "currency",
-        currency: "USD",
-        notation: "compact",
-        maximumFractionDigits: 2,
+        formatOptions: USD_COMPACT_FORMAT_OPTIONS,
       },
     },
     {
@@ -128,10 +141,7 @@ export function UsageStats({ summary, contributions }: UsageStatsProps) {
       chartData: activeDayAverageSparkline,
       chartColor: "var(--chart-2)",
       valueProps: {
-        style: "currency",
-        currency: "USD",
-        notation: "compact",
-        maximumFractionDigits: 2,
+        formatOptions: USD_COMPACT_FORMAT_OPTIONS,
       },
     },
   ];
