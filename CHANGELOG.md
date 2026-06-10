@@ -1,3 +1,9 @@
+## [1.17.0](https://github.com/ruchernchong/blog/compare/v1.16.1...v1.17.0) (2026-06-10)
+
+### Features
+
+* replace usage breakdown chart with sortable metrics table ([4c501bb](https://github.com/ruchernchong/blog/commit/4c501bb4b93dbe7fd54dec165a563b894d2fd406))
+
 ## [1.16.1](https://github.com/ruchernchong/blog/compare/v1.16.0...v1.16.1) (2026-06-02)
 
 ### Bug Fixes
