@@ -55,7 +55,7 @@
     "@vercel/speed-insights": "^1.2.0",
     "@workspace/mcp": "workspace:*",
     "@workspace/usage": "workspace:*",
-    "better-auth": "^1.6.5",
+    "better-auth": "^1.6.11",
     "cobe": "^0.6.4",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
