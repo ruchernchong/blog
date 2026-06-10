@@ -71,32 +71,25 @@ export function HeatmapGridClient({ layout }: HeatmapGridClientProps) {
 function Cell({ cell }: { cell: HeatmapCell }) {
   const day = cell.contribution;
 
-  // Padding slot (outside the data range) or zero-activity day: render a plain
-  // square with no tooltip to keep the mounted Tooltip count low.
-  if (!day || day.intensity === 0) {
-    return (
-      <div
-        className={cn(
-          "aspect-square w-full rounded-sm",
-          day ? INTENSITY_CLASSES[0] : "bg-transparent",
-        )}
-      />
-    );
+  // Padding slot outside the calendar year: render a plain square so only real
+  // days expose activity stats on hover/focus.
+  if (!day) {
+    return <div className="aspect-square w-full rounded-sm bg-transparent" />;
   }
 
   const label = format(parseISO(day.date), "d MMM yyyy");
 
   return (
     <Tooltip delay={0}>
-      <button
+      <Tooltip.Trigger
         aria-label={`${label}: ${formatTokens(day.totals.tokens)} tokens, ${formatCost(day.totals.cost)}, ${formatNumber(day.totals.messages)} messages`}
         className={cn(
-          "aspect-square w-full rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+          "aspect-square w-full rounded-sm transition duration-150 ease-out hover:scale-125 hover:ring-2 hover:ring-accent/60 hover:ring-offset-1 hover:ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
           INTENSITY_CLASSES[day.intensity],
         )}
-        type="button"
       />
-      <Tooltip.Content>
+      <Tooltip.Content offset={8} showArrow>
+        <Tooltip.Arrow />
         <div className="flex flex-col gap-1">
           <p className="font-semibold">{label}</p>
           <p className="text-muted text-xs">
