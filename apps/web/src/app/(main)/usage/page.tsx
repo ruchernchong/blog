@@ -53,7 +53,10 @@ export default async function UsagePage() {
         }
       />
 
-      <UsageStats summary={profile.summary} />
+      <UsageStats
+        summary={profile.summary}
+        contributions={profile.contributions}
+      />
 
       <UsageHeatmap contributions={profile.contributions} />
 
