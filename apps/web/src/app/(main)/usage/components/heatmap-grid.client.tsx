@@ -79,6 +79,16 @@ function Cell({ cell, today }: { cell: HeatmapCell; today: string | null }) {
     return <div className="aspect-square w-full rounded-sm bg-transparent" />;
   }
 
+  // Future days carry no data yet; keep the base swatch so the year grid stays
+  // visually complete, but skip the tooltip and hover affordances.
+  if (today && day.date > today) {
+    return (
+      <div
+        className={cn("aspect-square w-full rounded-sm", INTENSITY_CLASSES[0])}
+      />
+    );
+  }
+
   const label = format(parseISO(day.date), "d MMM yyyy");
   const isToday = day.date === today;
 
