@@ -104,6 +104,10 @@ export interface UsageSummary {
 /** Per-agent, per-provider, and per-model rollups for the breakdown charts. */
 export interface UsageBreakdownRow {
   key: string;
+  /** Provider for model-level rows, or null when the row spans providers. */
+  provider: string | null;
+  /** All providers included in this rollup, sorted for stable display. */
+  providers: string[];
   tokens: number;
   cost: Cost;
   /** Blended rate derived from `cost / tokens`; null when the cost is N.A. */
