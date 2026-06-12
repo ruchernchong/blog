@@ -25,6 +25,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "models.dev",
+        pathname: "/logos/**",
+      },
+      {
+        protocol: "https",
         hostname: "*.r2.dev",
         pathname: "/**",
       },
