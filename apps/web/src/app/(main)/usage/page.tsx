@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import globalMetadata from "@/app/metadata";
 import { PageTitle } from "@/components/page-title";
 import { APP_LOCALE, APP_TIME_ZONE } from "@/constants/date-time";
+import { getProviderDisplayNames } from "@/lib/queries/models";
 import { getUsageProfile } from "@/lib/queries/usage";
 import { UsageBreakdown } from "./components/usage-breakdown";
 import { UsageHeatmap } from "./components/usage-heatmap";
@@ -46,6 +47,9 @@ export const metadata: Metadata = {
 
 export default async function UsagePage() {
   const profile = await getUsageProfile();
+  const providerDisplayNames = await getProviderDisplayNames(
+    getUsageProviderIds(profile),
+  );
   const lastUpdated = profile.lastUpdated
     ? lastUpdatedFormatter.format(new Date(profile.lastUpdated))
     : null;
@@ -83,6 +87,7 @@ export default async function UsagePage() {
       <UsageTokenMix tokenMix={profile.tokenMix} />
 
       <UsageBreakdown
+        providerDisplayNames={providerDisplayNames}
         title="Breakdown"
         views={[
           {
@@ -107,4 +112,19 @@ export default async function UsagePage() {
       />
     </div>
   );
+}
+
+function getUsageProviderIds(
+  profile: Awaited<ReturnType<typeof getUsageProfile>>,
+) {
+  return [
+    ...new Set([
+      ...profile.summary.providers,
+      ...profile.byProvider.map((row) => row.key),
+      ...profile.byModel.flatMap((row) => [
+        ...(row.provider ? [row.provider] : []),
+        ...row.providers,
+      ]),
+    ]),
+  ].sort();
 }
