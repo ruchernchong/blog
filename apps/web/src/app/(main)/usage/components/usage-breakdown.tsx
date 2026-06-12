@@ -1,17 +1,35 @@
 "use client";
 
-import { Card } from "@heroui/react";
+import {
+  Button,
+  Card,
+  Chip,
+  Dropdown,
+  Label,
+  ListBox,
+  Pagination,
+  SearchField,
+} from "@heroui/react";
 import {
   AreaChart,
   DataGrid,
   type DataGridColumn,
+  type DataGridSelection,
+  type DataGridSortDescriptor,
+  InlineSelect,
   NumberValue,
   Segment,
 } from "@heroui-pro/react";
+import {
+  Cancel01Icon,
+  FilterHorizontalIcon,
+  LayoutTable02Icon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { providerLogoUrl } from "@workspace/usage/providers";
 import type { Cost, UsageBreakdownRow } from "@workspace/usage/types";
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface BreakdownView {
   id: string;
@@ -27,6 +45,22 @@ interface UsageBreakdownProps {
   views: BreakdownView[];
 }
 
+const HIDEABLE_COLUMNS = [
+  { id: "provider", label: "Provider" },
+  { id: "trend", label: "Trend" },
+  { id: "tokens", label: "Tokens" },
+  { id: "cost", label: "Cost" },
+  { id: "costPerMillionTokens", label: "$ / 1M Tokens" },
+  { id: "messages", label: "Messages" },
+];
+
+const ROWS_PER_PAGE_OPTIONS = [10, 25, 50];
+
+const DEFAULT_SORT_DESCRIPTOR: DataGridSortDescriptor = {
+  column: "tokens",
+  direction: "descending",
+};
+
 /** Sort N.A. costs below every priced value (when sorted descending). */
 const sortableCost = (cost: Cost): number => cost ?? Number.NEGATIVE_INFINITY;
 
@@ -39,6 +73,56 @@ const CURRENCY_FORMAT_OPTIONS = {
   currency: "USD",
   style: "currency",
 } satisfies Intl.NumberFormatOptions;
+
+function rowProviders(row: UsageBreakdownRow): string[] {
+  return row.providers ?? (row.provider ? [row.provider] : []);
+}
+
+function rowDisplayName(
+  row: UsageBreakdownRow,
+  viewId: string,
+  providerDisplayNames: Record<string, string>,
+): string {
+  return viewId === "provider"
+    ? (providerDisplayNames[row.key] ?? row.key)
+    : row.key;
+}
+
+function compareRows(
+  a: UsageBreakdownRow,
+  b: UsageBreakdownRow,
+  descriptor: DataGridSortDescriptor,
+  viewId: string,
+  providerDisplayNames: Record<string, string>,
+): number {
+  const result = (() => {
+    switch (descriptor.column) {
+      case "key":
+        return rowDisplayName(a, viewId, providerDisplayNames).localeCompare(
+          rowDisplayName(b, viewId, providerDisplayNames),
+        );
+      case "provider":
+        return (a.provider ?? a.providers?.join(", ") ?? "").localeCompare(
+          b.provider ?? b.providers?.join(", ") ?? "",
+        );
+      case "tokens":
+        return a.tokens - b.tokens;
+      case "messages":
+        return a.messages - b.messages;
+      case "cost":
+        return sortableCost(a.cost) - sortableCost(b.cost);
+      case "costPerMillionTokens":
+        return (
+          sortableCost(a.costPerMillionTokens) -
+          sortableCost(b.costPerMillionTokens)
+        );
+      default:
+        return 0;
+    }
+  })();
+
+  return descriptor.direction === "descending" ? -result : result;
+}
 
 function CostValue({ cost }: { cost: Cost }) {
   if (cost === null) {
@@ -154,10 +238,6 @@ function getColumns({
             ),
             cellClassName: "text-muted",
             minWidth: 160,
-            sortFn: (a, b) =>
-              (a.provider ?? a.providers?.join(", ") ?? "").localeCompare(
-                b.provider ?? b.providers?.join(", ") ?? "",
-              ),
           } satisfies DataGridColumn<UsageBreakdownRow>,
         ]),
     {
@@ -200,7 +280,6 @@ function getColumns({
       ),
       cellClassName: "tabular-nums",
       minWidth: 115,
-      sortFn: (a, b) => a.tokens - b.tokens,
     },
     {
       id: "cost",
@@ -210,7 +289,7 @@ function getColumns({
       cell: (row) => <CostValue cost={row.cost} />,
       cellClassName: "tabular-nums",
       minWidth: 125,
-      sortFn: (a, b) => sortableCost(a.cost) - sortableCost(b.cost),
+      pinned: "end",
     },
     {
       id: "costPerMillionTokens",
@@ -220,9 +299,6 @@ function getColumns({
       cell: (row) => <CostValue cost={row.costPerMillionTokens} />,
       cellClassName: "text-muted tabular-nums",
       minWidth: 135,
-      sortFn: (a, b) =>
-        sortableCost(a.costPerMillionTokens) -
-        sortableCost(b.costPerMillionTokens),
     },
     {
       id: "messages",
@@ -232,16 +308,234 @@ function getColumns({
       cell: (row) => <NumberValue locale="en-SG" value={row.messages} />,
       cellClassName: "tabular-nums",
       minWidth: 105,
-      sortFn: (a, b) => a.messages - b.messages,
     },
   ];
 
   return columns;
 }
 
+function FilterChip({
+  clearLabel,
+  label,
+  onClear,
+}: {
+  clearLabel: string;
+  label: string;
+  onClear: () => void;
+}) {
+  return (
+    <Chip className="gap-1 pe-1" size="sm" variant="soft">
+      <Chip.Label>{label}</Chip.Label>
+      <Button
+        aria-label={clearLabel}
+        className="size-4 min-w-0 p-0"
+        isIconOnly
+        onPress={onClear}
+        size="sm"
+        variant="ghost"
+      >
+        <HugeiconsIcon icon={Cancel01Icon} size={12} strokeWidth={2} />
+      </Button>
+    </Chip>
+  );
+}
+
+interface ProviderOption {
+  key: string;
+  label: string;
+}
+
+function BreakdownToolbar({
+  columnOptions,
+  onProviderFilterChange,
+  onSearchChange,
+  onVisibleColumnsChange,
+  providerFilter,
+  providerOptions,
+  search,
+  visibleColumns,
+}: {
+  columnOptions: { id: string; label: string }[];
+  onProviderFilterChange: (value: string) => void;
+  onSearchChange: (value: string) => void;
+  onVisibleColumnsChange: (keys: DataGridSelection) => void;
+  providerFilter: string;
+  providerOptions: ProviderOption[];
+  search: string;
+  visibleColumns: DataGridSelection;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <SearchField
+        aria-label="Search breakdown rows"
+        className="w-full sm:max-w-60"
+        onChange={onSearchChange}
+        value={search}
+      >
+        <SearchField.Group>
+          <SearchField.SearchIcon />
+          <SearchField.Input placeholder="Search..." />
+          <SearchField.ClearButton />
+        </SearchField.Group>
+      </SearchField>
+      {providerOptions.length > 0 && (
+        <Dropdown>
+          <Button size="sm" variant="outline">
+            <HugeiconsIcon
+              icon={FilterHorizontalIcon}
+              size={16}
+              strokeWidth={1.5}
+            />
+            Provider
+          </Button>
+          <Dropdown.Popover>
+            <Dropdown.Menu
+              disallowEmptySelection
+              onSelectionChange={(keys) =>
+                onProviderFilterChange(
+                  String(keys === "all" ? "all" : ([...keys][0] ?? "all")),
+                )
+              }
+              selectedKeys={new Set([providerFilter])}
+              selectionMode="single"
+            >
+              <Dropdown.Item id="all" textValue="All providers">
+                <Label>All providers</Label>
+                <Dropdown.ItemIndicator />
+              </Dropdown.Item>
+              {providerOptions.map((option) => (
+                <Dropdown.Item
+                  id={option.key}
+                  key={option.key}
+                  textValue={option.label}
+                >
+                  <Label>{option.label}</Label>
+                  <Dropdown.ItemIndicator />
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown.Popover>
+        </Dropdown>
+      )}
+      <div className="ms-auto">
+        <Dropdown>
+          <Button size="sm" variant="outline">
+            <HugeiconsIcon
+              icon={LayoutTable02Icon}
+              size={16}
+              strokeWidth={1.5}
+            />
+            Columns
+          </Button>
+          <Dropdown.Popover>
+            <Dropdown.Menu
+              disallowEmptySelection
+              onSelectionChange={onVisibleColumnsChange}
+              selectedKeys={visibleColumns}
+              selectionMode="multiple"
+            >
+              {columnOptions.map((column) => (
+                <Dropdown.Item
+                  id={column.id}
+                  key={column.id}
+                  textValue={column.label}
+                >
+                  <Label>{column.label}</Label>
+                  <Dropdown.ItemIndicator />
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown.Popover>
+        </Dropdown>
+      </div>
+    </div>
+  );
+}
+
+function BreakdownPagination({
+  currentPage,
+  onPageChange,
+  onRowsPerPageChange,
+  pageCount,
+  rowsPerPage,
+}: {
+  currentPage: number;
+  onPageChange: (page: number) => void;
+  onRowsPerPageChange: (rows: number) => void;
+  pageCount: number;
+  rowsPerPage: number;
+}) {
+  const pages = Array.from({ length: pageCount }, (_, index) => index + 1);
+
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-4">
+      <InlineSelect
+        aria-label="Rows per page"
+        onChange={(value) => {
+          if (value) {
+            onRowsPerPageChange(Number(value));
+          }
+        }}
+        value={String(rowsPerPage)}
+      >
+        <InlineSelect.Trigger>
+          <span className="text-muted">Rows per page</span>
+          <InlineSelect.Value />
+          <InlineSelect.Indicator />
+        </InlineSelect.Trigger>
+        <InlineSelect.Popover className="w-20">
+          <ListBox>
+            {ROWS_PER_PAGE_OPTIONS.map((option) => (
+              <ListBox.Item
+                id={String(option)}
+                key={option}
+                textValue={String(option)}
+              >
+                {option}
+                <ListBox.ItemIndicator />
+              </ListBox.Item>
+            ))}
+          </ListBox>
+        </InlineSelect.Popover>
+      </InlineSelect>
+      <Pagination>
+        <Pagination.Content>
+          <Pagination.Item>
+            <Pagination.Previous
+              isDisabled={currentPage === 1}
+              onPress={() => onPageChange(currentPage - 1)}
+            >
+              <Pagination.PreviousIcon />
+            </Pagination.Previous>
+          </Pagination.Item>
+          {pages.map((pageNumber) => (
+            <Pagination.Item key={pageNumber}>
+              <Pagination.Link
+                isActive={pageNumber === currentPage}
+                onPress={() => onPageChange(pageNumber)}
+              >
+                {pageNumber}
+              </Pagination.Link>
+            </Pagination.Item>
+          ))}
+          <Pagination.Item>
+            <Pagination.Next
+              isDisabled={currentPage === pageCount}
+              onPress={() => onPageChange(currentPage + 1)}
+            >
+              <Pagination.NextIcon />
+            </Pagination.Next>
+          </Pagination.Item>
+        </Pagination.Content>
+      </Pagination>
+    </div>
+  );
+}
+
 /**
  * A single breakdown card whose dataset is toggled with a segmented control.
- * Rows render in a sortable grid; this component owns the active-view state.
+ * Rows can be searched, filtered by provider, sorted, and paginated; column
+ * visibility is user-toggleable. This component owns all of that state.
  */
 export function UsageBreakdown({
   className,
@@ -250,18 +544,152 @@ export function UsageBreakdown({
   views,
 }: UsageBreakdownProps) {
   const [selectedKey, setSelectedKey] = useState<string>(views[0]?.id);
+  const [search, setSearch] = useState("");
+  const [providerFilter, setProviderFilter] = useState("all");
+  const [visibleColumns, setVisibleColumns] = useState<DataGridSelection>(
+    new Set(HIDEABLE_COLUMNS.map((column) => column.id)),
+  );
+  const [sortDescriptor, setSortDescriptor] = useState<DataGridSortDescriptor>(
+    DEFAULT_SORT_DESCRIPTOR,
+  );
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(ROWS_PER_PAGE_OPTIONS[0]);
+
   const active = views.find((view) => view.id === selectedKey) ?? views[0];
+
+  const handleViewChange = (key: string) => {
+    setSelectedKey(key);
+    setSearch("");
+    setProviderFilter("all");
+    setSortDescriptor(DEFAULT_SORT_DESCRIPTOR);
+    setPage(1);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
+
+  const handleProviderFilterChange = (value: string) => {
+    setProviderFilter(value);
+    setPage(1);
+  };
+
+  const handleSortChange = (descriptor: DataGridSortDescriptor) => {
+    setSortDescriptor(descriptor);
+    setPage(1);
+  };
+
+  const handleRowsPerPageChange = (value: number) => {
+    setRowsPerPage(value);
+    setPage(1);
+  };
+
+  const handleClearFilters = () => {
+    setSearch("");
+    setProviderFilter("all");
+    setPage(1);
+  };
+
+  const providerOptions = useMemo<ProviderOption[]>(() => {
+    if (active.id === "provider") {
+      return [];
+    }
+
+    const keys = new Set<string>();
+    for (const row of active.rows) {
+      for (const provider of rowProviders(row)) {
+        keys.add(provider);
+      }
+    }
+
+    return [...keys]
+      .map((key) => ({ key, label: providerDisplayNames[key] ?? key }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [active, providerDisplayNames]);
+
+  const filteredRows = useMemo(() => {
+    let rows = active.rows;
+
+    if (search) {
+      const query = search.toLowerCase();
+      rows = rows.filter((row) => {
+        if (
+          rowDisplayName(row, active.id, providerDisplayNames)
+            .toLowerCase()
+            .includes(query)
+        ) {
+          return true;
+        }
+
+        return rowProviders(row).some((provider) =>
+          (providerDisplayNames[provider] ?? provider)
+            .toLowerCase()
+            .includes(query),
+        );
+      });
+    }
+
+    if (providerFilter !== "all") {
+      rows = rows.filter((row) => rowProviders(row).includes(providerFilter));
+    }
+
+    return rows;
+  }, [active, providerDisplayNames, providerFilter, search]);
+
+  const sortedRows = useMemo(
+    () =>
+      [...filteredRows].sort((a, b) =>
+        compareRows(a, b, sortDescriptor, active.id, providerDisplayNames),
+      ),
+    [active.id, filteredRows, providerDisplayNames, sortDescriptor],
+  );
+
+  const pageCount = Math.max(1, Math.ceil(sortedRows.length / rowsPerPage));
+  const currentPage = Math.min(page, pageCount);
+
+  const pagedRows = useMemo(
+    () =>
+      sortedRows.slice(
+        (currentPage - 1) * rowsPerPage,
+        currentPage * rowsPerPage,
+      ),
+    [currentPage, rowsPerPage, sortedRows],
+  );
+
+  const columns = useMemo(
+    () =>
+      getColumns({ providerDisplayNames, viewId: active.id }).filter(
+        (column) =>
+          column.id === "key" ||
+          visibleColumns === "all" ||
+          visibleColumns.has(column.id),
+      ),
+    [active.id, providerDisplayNames, visibleColumns],
+  );
+
+  const columnOptions =
+    active.id === "provider"
+      ? HIDEABLE_COLUMNS.filter((column) => column.id !== "provider")
+      : HIDEABLE_COLUMNS;
+
+  const hasActiveFilters = search !== "" || providerFilter !== "all";
 
   return (
     <Card className={className}>
       <Card.Header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-1">
-          <Card.Title>{title}</Card.Title>
+          <div className="flex items-center gap-2">
+            <Card.Title>{title}</Card.Title>
+            <Chip color="accent" size="sm" variant="soft">
+              {sortedRows.length}
+            </Chip>
+          </div>
           <Card.Description>{active.description}</Card.Description>
         </div>
         <Segment
           selectedKey={selectedKey}
-          onSelectionChange={(key) => setSelectedKey(String(key))}
+          onSelectionChange={(key) => handleViewChange(String(key))}
           size="sm"
         >
           {views.map((view) => (
@@ -272,20 +700,64 @@ export function UsageBreakdown({
           ))}
         </Segment>
       </Card.Header>
-      <Card.Content>
+      <Card.Content className="flex flex-col gap-4">
+        <BreakdownToolbar
+          columnOptions={columnOptions}
+          onProviderFilterChange={handleProviderFilterChange}
+          onSearchChange={handleSearchChange}
+          onVisibleColumnsChange={setVisibleColumns}
+          providerFilter={providerFilter}
+          providerOptions={providerOptions}
+          search={search}
+          visibleColumns={visibleColumns}
+        />
+        {hasActiveFilters && (
+          <div className="flex flex-wrap items-center gap-2">
+            {search !== "" && (
+              <FilterChip
+                clearLabel="Clear search"
+                label={`Search: ${search}`}
+                onClear={() => handleSearchChange("")}
+              />
+            )}
+            {providerFilter !== "all" && (
+              <FilterChip
+                clearLabel="Clear provider filter"
+                label={`Provider: ${providerDisplayNames[providerFilter] ?? providerFilter}`}
+                onClear={() => handleProviderFilterChange("all")}
+              />
+            )}
+            <Button onPress={handleClearFilters} size="sm" variant="ghost">
+              Clear all
+            </Button>
+          </div>
+        )}
         <DataGrid
+          allowsColumnResize
           aria-label="Usage breakdown"
           className="[&_.table__cell]:py-1.5 [&_.table__cell]:text-xs [&_.table__column]:py-1.5 [&_.table__column]:text-[11px]"
-          columns={getColumns({
-            providerDisplayNames,
-            viewId: active.id,
-          })}
+          columns={columns}
           contentClassName="min-w-[760px] md:min-w-[1000px]"
-          data={active.rows}
-          defaultSortDescriptor={{ column: "tokens", direction: "descending" }}
+          data={pagedRows}
           getRowId={(row) => row.key}
+          onSortChange={handleSortChange}
+          renderEmptyState={() => (
+            <div className="py-8 text-center text-muted text-sm">
+              No results match your filters.
+            </div>
+          )}
+          sortDescriptor={sortDescriptor}
           variant="primary"
         />
+        {sortedRows.length > ROWS_PER_PAGE_OPTIONS[0] && (
+          <BreakdownPagination
+            currentPage={currentPage}
+            onPageChange={setPage}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            pageCount={pageCount}
+            rowsPerPage={rowsPerPage}
+          />
+        )}
       </Card.Content>
     </Card>
   );
