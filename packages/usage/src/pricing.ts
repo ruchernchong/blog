@@ -2,7 +2,7 @@ import { AGENT_PROVIDERS } from "./providers";
 import type { TokenBreakdown } from "./types";
 
 /**
- * Model pricing, fetched live from the models.dev API at ingest time.
+ * Model pricing, built from the models.dev API payload at ingest time.
  *
  * models.dev exposes one endpoint keyed by provider → models → `cost`
  * (USD per 1M tokens). We resolve each model under its provider first — given
@@ -10,8 +10,6 @@ import type { TokenBreakdown } from "./types";
  * (Claude → anthropic, Codex → openai) — then fall back to a global lookup.
  * Pricing runs only in the local ingest script, never in the browser.
  */
-
-const MODELS_DEV_API = "https://models.dev/api.json";
 
 /**
  * Resolve a known Codex internal model slug that no pricing DB lists (verified
@@ -169,14 +167,4 @@ export function buildPricing(api: ModelsDevApi): Pricing {
   }
 
   return { priceFor, costOf };
-}
-
-/** Fetch live pricing from models.dev and build a {@link Pricing}. */
-export async function loadPricing(): Promise<Pricing> {
-  const response = await fetch(MODELS_DEV_API);
-  if (!response.ok) {
-    throw new Error(`models.dev returned ${response.status}`);
-  }
-  const api = (await response.json()) as ModelsDevApi;
-  return buildPricing(api);
 }
