@@ -1,9 +1,9 @@
 import "dotenv/config";
 import { parseAllAgents } from "@workspace/usage/parsers";
-import { loadPricing } from "@workspace/usage/pricing";
 import { resolveProvider } from "@workspace/usage/providers";
 import type { TokenBreakdown } from "@workspace/usage/types";
 import { format } from "date-fns";
+import { loadPricing } from "@/lib/queries/models";
 import { upsertTokenUsage } from "@/lib/queries/usage";
 import type { InsertTokenUsage } from "@/schema";
 

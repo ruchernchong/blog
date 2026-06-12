@@ -17,6 +17,16 @@ export const AGENT_PROVIDERS: Record<string, Provider> = {
   codex: "openai",
 };
 
+const MODELS_DEV_LOGO_PROVIDER_IDS: Record<string, string> = {
+  ollama: "ollama-cloud",
+};
+
+export function providerLogoUrl(provider: string): string {
+  const providerId = MODELS_DEV_LOGO_PROVIDER_IDS[provider] ?? provider;
+
+  return `https://models.dev/logos/${encodeURIComponent(providerId)}.svg`;
+}
+
 /**
  * Resolve the provider for an agent. Falls back to the agent key itself for an
  * unmapped agent so the (notNull) column is never empty — callers can still see
