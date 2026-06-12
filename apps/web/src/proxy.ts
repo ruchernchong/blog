@@ -1,9 +1,17 @@
 import { betterFetch } from "@better-fetch/fetch";
 import { postHogMiddleware } from "@posthog/next";
+import { AgentAnalytics } from "@upstash/agent-analytics";
 import type { Session } from "better-auth/types";
-import { type NextRequest, NextResponse } from "next/server";
+import {
+  type NextFetchEvent,
+  type NextRequest,
+  NextResponse,
+} from "next/server";
+import redis from "@/config/redis";
 import { ERROR_IDS } from "@/constants/error-ids";
 import { logError } from "@/lib/logger";
+
+const agentAnalytics = new AgentAnalytics({ redis });
 
 /**
  * Next.js middleware for protecting the Content Studio routes.
@@ -16,9 +24,11 @@ import { logError } from "@/lib/logger";
  *
  * @see {@link https://better-auth.com/docs/concepts/session Better Auth Sessions}
  */
-export const proxy = async (request: NextRequest) => {
+export const proxy = async (request: NextRequest, event: NextFetchEvent) => {
   // Public routes skip the auth check and only seed the PostHog identity cookie.
   if (!request.nextUrl.pathname.startsWith("/studio")) {
+    event.waitUntil(agentAnalytics.track(request));
+
     return postHogMiddleware({
       apiKey: process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN,
       proxy: { host: process.env.NEXT_PUBLIC_POSTHOG_HOST },
