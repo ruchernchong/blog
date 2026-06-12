@@ -9,6 +9,23 @@ export const alt = "Usage - Ru Chern";
 export const size = OG_SIZE;
 export const contentType = "image/png";
 
+const compactNumberFormatter = new Intl.NumberFormat("en-SG", {
+  maximumFractionDigits: 1,
+  notation: "compact",
+});
+
+const integerFormatter = new Intl.NumberFormat("en-SG", {
+  maximumFractionDigits: 0,
+});
+
+const usdFormatter = new Intl.NumberFormat("en-SG", {
+  currency: "USD",
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 2,
+  notation: "compact",
+  style: "currency",
+});
+
 export default async function Image() {
   const [fonts, profile] = await Promise.all([getOGFonts(), getUsageProfile()]);
 
@@ -33,6 +50,20 @@ export default async function Image() {
       layout={layout}
       title="Usage"
       description="Tokens and cost across my AI coding agents over time."
+      stats={[
+        {
+          label: "Total cost",
+          value: usdFormatter.format(profile.summary.totalCost),
+        },
+        {
+          label: "Tokens",
+          value: compactNumberFormatter.format(profile.summary.totalTokens),
+        },
+        {
+          label: "Active days",
+          value: integerFormatter.format(profile.summary.activeDays),
+        },
+      ]}
     />,
     { ...size, fonts, headers: OG_HEADERS },
   );
