@@ -452,6 +452,32 @@ function BreakdownToolbar({
   );
 }
 
+/** Collapse long page lists to "1 … n-1 n n+1 … last", as in the DataGrid docs. */
+function paginationPages(
+  pageCount: number,
+  currentPage: number,
+): (number | "ellipsis-start" | "ellipsis-end")[] {
+  if (pageCount <= 7) {
+    return Array.from({ length: pageCount }, (_, index) => index + 1);
+  }
+
+  const pages: (number | "ellipsis-start" | "ellipsis-end")[] = [1];
+  if (currentPage > 3) {
+    pages.push("ellipsis-start");
+  }
+  const start = Math.max(2, currentPage - 1);
+  const end = Math.min(pageCount - 1, currentPage + 1);
+  for (let pageNumber = start; pageNumber <= end; pageNumber++) {
+    pages.push(pageNumber);
+  }
+  if (currentPage < pageCount - 2) {
+    pages.push("ellipsis-end");
+  }
+  pages.push(pageCount);
+
+  return pages;
+}
+
 function BreakdownPagination({
   currentPage,
   onPageChange,
@@ -465,10 +491,44 @@ function BreakdownPagination({
   pageCount: number;
   rowsPerPage: number;
 }) {
-  const pages = Array.from({ length: pageCount }, (_, index) => index + 1);
-
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="flex items-center justify-between gap-4 whitespace-nowrap text-xs">
+      <Pagination size="sm">
+        <Pagination.Content>
+          <Pagination.Item>
+            <Pagination.Previous
+              isDisabled={currentPage === 1}
+              onPress={() => onPageChange(currentPage - 1)}
+            >
+              <Pagination.PreviousIcon />
+            </Pagination.Previous>
+          </Pagination.Item>
+          {paginationPages(pageCount, currentPage).map((pageNumber) =>
+            typeof pageNumber === "string" ? (
+              <Pagination.Item key={pageNumber}>
+                <Pagination.Ellipsis />
+              </Pagination.Item>
+            ) : (
+              <Pagination.Item key={pageNumber}>
+                <Pagination.Link
+                  isActive={pageNumber === currentPage}
+                  onPress={() => onPageChange(pageNumber)}
+                >
+                  {pageNumber}
+                </Pagination.Link>
+              </Pagination.Item>
+            ),
+          )}
+          <Pagination.Item>
+            <Pagination.Next
+              isDisabled={currentPage === pageCount}
+              onPress={() => onPageChange(currentPage + 1)}
+            >
+              <Pagination.NextIcon />
+            </Pagination.Next>
+          </Pagination.Item>
+        </Pagination.Content>
+      </Pagination>
       <InlineSelect
         aria-label="Rows per page"
         onChange={(value) => {
@@ -498,36 +558,6 @@ function BreakdownPagination({
           </ListBox>
         </InlineSelect.Popover>
       </InlineSelect>
-      <Pagination>
-        <Pagination.Content>
-          <Pagination.Item>
-            <Pagination.Previous
-              isDisabled={currentPage === 1}
-              onPress={() => onPageChange(currentPage - 1)}
-            >
-              <Pagination.PreviousIcon />
-            </Pagination.Previous>
-          </Pagination.Item>
-          {pages.map((pageNumber) => (
-            <Pagination.Item key={pageNumber}>
-              <Pagination.Link
-                isActive={pageNumber === currentPage}
-                onPress={() => onPageChange(pageNumber)}
-              >
-                {pageNumber}
-              </Pagination.Link>
-            </Pagination.Item>
-          ))}
-          <Pagination.Item>
-            <Pagination.Next
-              isDisabled={currentPage === pageCount}
-              onPress={() => onPageChange(currentPage + 1)}
-            >
-              <Pagination.NextIcon />
-            </Pagination.Next>
-          </Pagination.Item>
-        </Pagination.Content>
-      </Pagination>
     </div>
   );
 }
