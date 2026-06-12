@@ -5,6 +5,7 @@ import { eachDayOfInterval, format } from "date-fns";
 import { type HeatmapYear, UsageHeatmapClient } from "./usage-heatmap.client";
 
 interface UsageHeatmapProps {
+  className?: string;
   contributions: DayContribution[];
 }
 
@@ -48,7 +49,7 @@ function fullYear(year: string, days: DayContribution[]): DayContribution[] {
  * and each year gets its own pure, serializable `buildHeatmapLayout` result, so
  * the client only switches between ready-made grids. Years are newest-first.
  */
-export function UsageHeatmap({ contributions }: UsageHeatmapProps) {
+export function UsageHeatmap({ className, contributions }: UsageHeatmapProps) {
   const byYear = new Map<string, DayContribution[]>();
   for (const day of contributions) {
     const year = day.date.slice(0, 4);
@@ -68,7 +69,7 @@ export function UsageHeatmap({ contributions }: UsageHeatmapProps) {
     .sort((a, b) => b.year.localeCompare(a.year));
 
   return (
-    <Card>
+    <Card className={className}>
       <Card.Header>
         <Card.Title>Activity</Card.Title>
         <Card.Description>Daily token usage across all agents</Card.Description>

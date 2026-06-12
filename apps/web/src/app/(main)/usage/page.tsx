@@ -55,8 +55,8 @@ export default async function UsagePage() {
     : null;
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-2">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
+      <div className="flex flex-col gap-2 lg:col-span-5">
         <PageTitle
           title="Usage"
           description="Tokens and cost across my AI coding agents over time."
@@ -75,18 +75,27 @@ export default async function UsagePage() {
         )}
       </div>
 
-      <UsageStats
-        summary={profile.summary}
+      <section className="lg:col-span-7">
+        <UsageStats
+          summary={profile.summary}
+          contributions={profile.contributions}
+        />
+      </section>
+
+      <UsageHeatmap
+        className="lg:col-span-8 lg:row-span-2"
         contributions={profile.contributions}
       />
 
-      <UsageHeatmap contributions={profile.contributions} />
+      <UsageTokenMix className="lg:col-span-4" tokenMix={profile.tokenMix} />
 
-      <UsageTrend contributions={profile.contributions} />
-
-      <UsageTokenMix tokenMix={profile.tokenMix} />
+      <UsageTrend
+        className="lg:col-span-4"
+        contributions={profile.contributions}
+      />
 
       <UsageBreakdown
+        className="lg:col-span-12"
         providerDisplayNames={providerDisplayNames}
         title="Breakdown"
         views={[

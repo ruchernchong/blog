@@ -4,6 +4,7 @@ import type { TokenBreakdown } from "@workspace/usage/types";
 import { type MixSegment, TokenMixChartClient } from "./token-mix-chart.client";
 
 interface UsageTokenMixProps {
+  className?: string;
   tokenMix: TokenBreakdown;
 }
 
@@ -55,7 +56,7 @@ const CATEGORIES: {
  * Server component: shapes the all-time token mix into coloured segments and
  * renders the card shell + legend. Only the stacked bar is a client leaf.
  */
-export function UsageTokenMix({ tokenMix }: UsageTokenMixProps) {
+export function UsageTokenMix({ className, tokenMix }: UsageTokenMixProps) {
   const total = CATEGORIES.reduce((sum, c) => sum + tokenMix[c.key], 0);
   const ordered = CATEGORIES.map((category) => ({
     ...category,
@@ -70,7 +71,7 @@ export function UsageTokenMix({ tokenMix }: UsageTokenMixProps) {
   );
 
   return (
-    <Card>
+    <Card className={className}>
       <Card.Header>
         <Card.Title>Token mix</Card.Title>
         <Card.Description>
