@@ -6,6 +6,12 @@ interface UsageHeatmapProps {
   layout: HeatmapLayout;
   title: string;
   description: string;
+  stats?: UsageHeatmapStat[];
+}
+
+interface UsageHeatmapStat {
+  label: string;
+  value: string;
 }
 
 /**
@@ -20,6 +26,7 @@ export function UsageHeatmap({
   layout,
   title,
   description,
+  stats,
 }: UsageHeatmapProps) {
   const CELL = 16;
   const GAP = 3;
@@ -111,6 +118,71 @@ export function UsageHeatmap({
           );
         })}
       </div>
+
+      {stats && stats.length > 0 && (
+        <>
+          <div style={{ height: 30 }} />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              borderTop: `1px solid ${OG_COLOURS.chartRamp[0]}`,
+              paddingTop: 22,
+            }}
+          >
+            {stats.map((stat, index) => {
+              const align =
+                index === 0
+                  ? "flex-start"
+                  : index === stats.length - 1
+                    ? "flex-end"
+                    : "center";
+              const textAlign =
+                index === 0
+                  ? "left"
+                  : index === stats.length - 1
+                    ? "right"
+                    : "center";
+
+              return (
+                <div
+                  key={stat.label}
+                  style={{
+                    display: "flex",
+                    flex: 1,
+                    flexDirection: "column",
+                    alignItems: align,
+                    gap: 6,
+                    textAlign,
+                  }}
+                >
+                  <div
+                    style={{
+                      color: OG_COLOURS.mutedForeground,
+                      fontSize: 17,
+                      fontWeight: 600,
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {stat.label}
+                  </div>
+                  <div
+                    style={{
+                      color: OG_COLOURS.foreground,
+                      fontSize: 31,
+                      fontWeight: 700,
+                      lineHeight: 1,
+                    }}
+                  >
+                    {stat.value}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </Layout>
   );
 }
