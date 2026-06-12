@@ -57,11 +57,11 @@ function ProviderLogo({ provider }: { provider: string }) {
     <Image
       alt=""
       aria-hidden
-      className="size-4 shrink-0 opacity-80 dark:invert"
-      height={16}
+      className="size-6 shrink-0 opacity-80 dark:invert"
+      height={24}
       src={providerLogoUrl(provider)}
       unoptimized
-      width={16}
+      width={24}
     />
   );
 }
