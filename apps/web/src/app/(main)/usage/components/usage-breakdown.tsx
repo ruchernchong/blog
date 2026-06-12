@@ -21,6 +21,7 @@ interface BreakdownView {
 }
 
 interface UsageBreakdownProps {
+  className?: string;
   providerDisplayNames: Record<string, string>;
   title: string;
   views: BreakdownView[];
@@ -243,6 +244,7 @@ function getColumns({
  * Rows render in a sortable grid; this component owns the active-view state.
  */
 export function UsageBreakdown({
+  className,
   providerDisplayNames,
   title,
   views,
@@ -251,7 +253,7 @@ export function UsageBreakdown({
   const active = views.find((view) => view.id === selectedKey) ?? views[0];
 
   return (
-    <Card>
+    <Card className={className}>
       <Card.Header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-1">
           <Card.Title>{title}</Card.Title>
