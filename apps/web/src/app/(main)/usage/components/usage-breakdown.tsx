@@ -29,7 +29,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { providerLogoUrl } from "@workspace/usage/providers";
 import type { Cost, UsageBreakdownRow } from "@workspace/usage/types";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 
 interface BreakdownView {
   id: string;
@@ -554,6 +554,8 @@ export function UsageBreakdown({
   );
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(ROWS_PER_PAGE_OPTIONS[0]);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [gridMinHeight, setGridMinHeight] = useState<number>();
 
   const active = views.find((view) => view.id === selectedKey) ?? views[0];
 
@@ -563,6 +565,12 @@ export function UsageBreakdown({
     setProviderFilter("all");
     setSortDescriptor(DEFAULT_SORT_DESCRIPTOR);
     setPage(1);
+    setGridMinHeight(undefined);
+  };
+
+  const handleVisibleColumnsChange = (keys: DataGridSelection) => {
+    setVisibleColumns(keys);
+    setGridMinHeight(undefined);
   };
 
   const handleSearchChange = (value: string) => {
@@ -583,6 +591,7 @@ export function UsageBreakdown({
   const handleRowsPerPageChange = (value: number) => {
     setRowsPerPage(value);
     setPage(1);
+    setGridMinHeight(undefined);
   };
 
   const handleClearFilters = () => {
@@ -657,6 +666,13 @@ export function UsageBreakdown({
     [currentPage, rowsPerPage, sortedRows],
   );
 
+  // Lock the height of a full page so shorter last pages don't shift layout.
+  useLayoutEffect(() => {
+    if (pagedRows.length === rowsPerPage && gridRef.current) {
+      setGridMinHeight(gridRef.current.offsetHeight);
+    }
+  }, [pagedRows.length, rowsPerPage]);
+
   const columns = useMemo(
     () =>
       getColumns({ providerDisplayNames, viewId: active.id }).filter(
@@ -705,7 +721,7 @@ export function UsageBreakdown({
           columnOptions={columnOptions}
           onProviderFilterChange={handleProviderFilterChange}
           onSearchChange={handleSearchChange}
-          onVisibleColumnsChange={setVisibleColumns}
+          onVisibleColumnsChange={handleVisibleColumnsChange}
           providerFilter={providerFilter}
           providerOptions={providerOptions}
           search={search}
@@ -732,23 +748,25 @@ export function UsageBreakdown({
             </Button>
           </div>
         )}
-        <DataGrid
-          allowsColumnResize
-          aria-label="Usage breakdown"
-          className="[&_.table__cell]:py-1.5 [&_.table__cell]:text-xs [&_.table__column]:py-1.5 [&_.table__column]:text-[11px]"
-          columns={columns}
-          contentClassName="min-w-[760px] md:min-w-[1000px]"
-          data={pagedRows}
-          getRowId={(row) => row.key}
-          onSortChange={handleSortChange}
-          renderEmptyState={() => (
-            <div className="py-8 text-center text-muted text-sm">
-              No results match your filters.
-            </div>
-          )}
-          sortDescriptor={sortDescriptor}
-          variant="primary"
-        />
+        <div ref={gridRef} style={{ minHeight: gridMinHeight }}>
+          <DataGrid
+            allowsColumnResize
+            aria-label="Usage breakdown"
+            className="[&_.table__cell]:py-1.5 [&_.table__cell]:text-xs [&_.table__column]:py-1.5 [&_.table__column]:text-[11px]"
+            columns={columns}
+            contentClassName="min-w-[760px] md:min-w-[1000px]"
+            data={pagedRows}
+            getRowId={(row) => row.key}
+            onSortChange={handleSortChange}
+            renderEmptyState={() => (
+              <div className="py-8 text-center text-muted text-sm">
+                No results match your filters.
+              </div>
+            )}
+            sortDescriptor={sortDescriptor}
+            variant="primary"
+          />
+        </div>
         {sortedRows.length > ROWS_PER_PAGE_OPTIONS[0] && (
           <BreakdownPagination
             currentPage={currentPage}
