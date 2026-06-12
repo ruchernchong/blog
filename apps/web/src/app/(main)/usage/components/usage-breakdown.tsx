@@ -21,6 +21,7 @@ interface BreakdownView {
 }
 
 interface UsageBreakdownProps {
+  providerDisplayNames: Record<string, string>;
   title: string;
   views: BreakdownView[];
 }
@@ -66,7 +67,13 @@ function ProviderLogo({ provider }: { provider: string }) {
   );
 }
 
-function ProviderValue({ row }: { row: UsageBreakdownRow }) {
+function ProviderValue({
+  providerDisplayNames,
+  row,
+}: {
+  providerDisplayNames: Record<string, string>;
+  row: UsageBreakdownRow;
+}) {
   const providers = row.provider ? [row.provider] : row.providers;
 
   if (!providers?.length) {
@@ -80,7 +87,11 @@ function ProviderValue({ row }: { row: UsageBreakdownRow }) {
           <ProviderLogo key={provider} provider={provider} />
         ))}
       </span>
-      <span className="truncate">{providers.join(", ")}</span>
+      <span className="truncate">
+        {providers
+          .map((provider) => providerDisplayNames[provider] ?? provider)
+          .join(", ")}
+      </span>
     </span>
   );
 }
@@ -99,7 +110,13 @@ function RowVisual({
   return null;
 }
 
-function getColumns(viewId: string): DataGridColumn<UsageBreakdownRow>[] {
+function getColumns({
+  providerDisplayNames,
+  viewId,
+}: {
+  providerDisplayNames: Record<string, string>;
+  viewId: string;
+}): DataGridColumn<UsageBreakdownRow>[] {
   const columns: DataGridColumn<UsageBreakdownRow>[] = [
     {
       id: "key",
@@ -110,7 +127,11 @@ function getColumns(viewId: string): DataGridColumn<UsageBreakdownRow>[] {
       cell: (row) => (
         <span className="inline-flex min-w-0 items-center gap-2">
           <RowVisual row={row} viewId={viewId} />
-          <span className="truncate font-medium text-xs">{row.key}</span>
+          <span className="truncate font-medium text-xs">
+            {viewId === "provider"
+              ? (providerDisplayNames[row.key] ?? row.key)
+              : row.key}
+          </span>
         </span>
       ),
       minWidth: 240,
@@ -124,7 +145,12 @@ function getColumns(viewId: string): DataGridColumn<UsageBreakdownRow>[] {
             header: "Provider",
             accessorKey: "provider",
             allowsSorting: true,
-            cell: (row) => <ProviderValue row={row} />,
+            cell: (row) => (
+              <ProviderValue
+                providerDisplayNames={providerDisplayNames}
+                row={row}
+              />
+            ),
             cellClassName: "text-muted",
             minWidth: 160,
             sortFn: (a, b) =>
@@ -216,7 +242,11 @@ function getColumns(viewId: string): DataGridColumn<UsageBreakdownRow>[] {
  * A single breakdown card whose dataset is toggled with a segmented control.
  * Rows render in a sortable grid; this component owns the active-view state.
  */
-export function UsageBreakdown({ title, views }: UsageBreakdownProps) {
+export function UsageBreakdown({
+  providerDisplayNames,
+  title,
+  views,
+}: UsageBreakdownProps) {
   const [selectedKey, setSelectedKey] = useState<string>(views[0]?.id);
   const active = views.find((view) => view.id === selectedKey) ?? views[0];
 
@@ -244,7 +274,10 @@ export function UsageBreakdown({ title, views }: UsageBreakdownProps) {
         <DataGrid
           aria-label="Usage breakdown"
           className="[&_.table__cell]:py-1.5 [&_.table__cell]:text-xs [&_.table__column]:py-1.5 [&_.table__column]:text-[11px]"
-          columns={getColumns(active.id)}
+          columns={getColumns({
+            providerDisplayNames,
+            viewId: active.id,
+          })}
           contentClassName="min-w-[760px] md:min-w-[1000px]"
           data={active.rows}
           defaultSortDescriptor={{ column: "tokens", direction: "descending" }}
