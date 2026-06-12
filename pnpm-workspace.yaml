@@ -3,12 +3,12 @@ packages:
   - packages/*
 
 catalog:
-  '@biomejs/biome': 2.4.16
-  '@tailwindcss/postcss': ^4.3.0
-  '@types/mdx': ^2.0.13
-  '@types/node': ^22.10.2
-  '@types/react': 19.2.10
-  '@types/react-dom': 19.2.3
+  "@biomejs/biome": 2.4.16
+  "@tailwindcss/postcss": ^4.3.0
+  "@types/mdx": ^2.0.13
+  "@types/node": ^22.10.2
+  "@types/react": 19.2.10
+  "@types/react-dom": 19.2.3
   next: ^16.2.6
   postcss: ^8.5.15
   react: 19.2.4
@@ -18,8 +18,8 @@ catalog:
   typescript: ^5.2.2
 
 allowBuilds:
-  '@heroui-pro/react': true
-  '@zowe/secrets-for-zowe-sdk': false
+  "@heroui-pro/react": true
+  "@zowe/secrets-for-zowe-sdk": false
   core-js: false
   es5-ext: false
   esbuild: false
@@ -28,4 +28,5 @@ allowBuilds:
   msw: false
   protobufjs: false
   sharp: false
+
 savePrefix: ""
