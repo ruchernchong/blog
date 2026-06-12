@@ -181,6 +181,7 @@ interface RollupAggregate {
   messages: number;
   costValues: (string | null)[];
   dailyTokens: Map<string, number>;
+  providers: Set<string>;
 }
 
 interface DayAggregate {
@@ -221,7 +222,13 @@ function getOrCreateRollup(
 ): RollupAggregate {
   let rollup = map.get(key);
   if (!rollup) {
-    rollup = { tokens: 0, messages: 0, costValues: [], dailyTokens: new Map() };
+    rollup = {
+      tokens: 0,
+      messages: 0,
+      costValues: [],
+      dailyTokens: new Map(),
+      providers: new Set(),
+    };
     map.set(key, rollup);
   }
   return rollup;
@@ -234,6 +241,7 @@ function addToRollup(
   rollup.tokens += row.totalTokens;
   rollup.messages += row.messages;
   rollup.costValues.push(row.costUsd);
+  rollup.providers.add(row.provider);
   rollup.dailyTokens.set(
     row.date,
     (rollup.dailyTokens.get(row.date) ?? 0) + row.totalTokens,
@@ -367,8 +375,11 @@ function rollupRows(
   return [...map.entries()]
     .map(([key, rollup]) => {
       const cost = sumCost(rollup.costValues);
+      const providers = [...rollup.providers].sort();
       return {
         key,
+        provider: providers.length === 1 ? providers[0] : null,
+        providers,
         tokens: rollup.tokens,
         cost,
         costPerMillionTokens:
