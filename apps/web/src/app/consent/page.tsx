@@ -39,6 +39,9 @@ async function ConsentContent({ searchParams }: PageProps) {
   }
 
   const { client_id: clientId } = await searchParams;
+  if (!clientId) {
+    redirect("/studio/posts");
+  }
 
   let clientName: string | undefined;
   if (clientId) {
