@@ -89,7 +89,7 @@ export function ConsentForm() {
           <div className="flex gap-4">
             <Button
               variant="outline"
-              className="w-full"
+              fullWidth
               onPress={() => submit(false)}
               isPending={pendingAction === "deny"}
               isDisabled={isPending}
@@ -105,7 +105,7 @@ export function ConsentForm() {
             </Button>
             <Button
               variant="primary"
-              className="w-full"
+              fullWidth
               onPress={() => submit(true)}
               isPending={pendingAction === "accept"}
               isDisabled={isPending}
