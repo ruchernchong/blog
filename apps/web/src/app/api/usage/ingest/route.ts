@@ -22,10 +22,10 @@ import { upsertTokenUsage } from "@/lib/queries/usage";
  */
 export async function POST(request: Request) {
   const auth = await validateMcpAuth(request);
-  const allowed =
-    auth?.type === "token" ||
-    ((auth?.type === "session" || auth?.type === "oauth") &&
-      auth.user?.role === "admin");
+  // Static service token has full trust; any user-bearing auth (session or
+  // OAuth) must resolve to an admin. Gating on the resolved user instead of the
+  // auth type means new user-auth sources need no change here.
+  const allowed = auth?.type === "token" || auth?.user?.role === "admin";
 
   if (!allowed) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });

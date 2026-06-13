@@ -2,10 +2,8 @@
 
 import { Alert, Button, Card, Chip, Typography } from "@heroui/react";
 import { useSearchParams } from "next/navigation";
-import { useQueryStates } from "nuqs";
 import { useState, useTransition } from "react";
 import { submitConsent } from "@/app/consent/actions";
-import { consentSearchParams } from "@/app/consent/search-params";
 import { ERROR_IDS } from "@/constants/error-ids";
 import { logError } from "@/lib/logger";
 
@@ -17,9 +15,10 @@ const SCOPE_DESCRIPTIONS: Record<string, string> = {
 };
 
 export const ConsentForm = () => {
-  const [{ client_id: clientId, scope }] = useQueryStates(consentSearchParams);
-  const scopes = scope?.split(" ").filter(Boolean) ?? [];
-  const oauthQuery = useSearchParams().toString();
+  const params = useSearchParams();
+  const clientId = params.get("client_id");
+  const scopes = params.get("scope")?.split(" ").filter(Boolean) ?? [];
+  const oauthQuery = params.toString();
 
   const [error, setError] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<"accept" | "deny" | null>(

@@ -4,15 +4,41 @@ import { auth } from "@/lib/auth";
 import { serverClient } from "@/lib/server-client";
 import { db, user } from "@/schema";
 
+type McpUser = {
+  id: string;
+  email: string;
+  name: string;
+  role: string | null | undefined;
+};
+
 export interface McpAuthResult {
   type: "session" | "token" | "oauth";
-  user?: {
-    id: string;
-    email: string;
-    name: string;
-    role: string | null | undefined;
-  };
+  user?: McpUser;
   authInfo?: AuthInfo;
+}
+
+/**
+ * Builds a user-scoped auth result, deriving both the returned `user` and the
+ * MCP `authInfo.extra` payload from a single source so the two never diverge.
+ */
+function userAuthResult(
+  type: "session" | "oauth",
+  user: McpUser,
+  authInfo: Pick<AuthInfo, "token" | "clientId" | "scopes">,
+): McpAuthResult {
+  return {
+    type,
+    user,
+    authInfo: {
+      ...authInfo,
+      extra: {
+        userId: user.id,
+        userEmail: user.email,
+        userName: user.name,
+        userRole: user.role,
+      },
+    },
+  };
 }
 
 /**
@@ -36,28 +62,20 @@ export async function validateMcpAuth(
   });
 
   if (session?.user) {
-    const authInfo: AuthInfo = {
-      token: session.session.token,
-      clientId: session.user.id,
-      scopes: ["mcp:read", "mcp:write"],
-      extra: {
-        userId: session.user.id,
-        userEmail: session.user.email,
-        userName: session.user.name,
-        userRole: session.user.role,
-      },
-    };
-
-    return {
-      type: "session",
-      user: {
+    return userAuthResult(
+      "session",
+      {
         id: session.user.id,
         email: session.user.email,
         name: session.user.name,
         role: session.user.role,
       },
-      authInfo,
-    };
+      {
+        token: session.session.token,
+        clientId: session.user.id,
+        scopes: ["mcp:read", "mcp:write"],
+      },
+    );
   }
 
   const authHeader = request.headers.get("authorization");
@@ -73,47 +91,28 @@ export async function validateMcpAuth(
         },
       });
 
-      const [record] = payload.sub
-        ? await db
-            .select({
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              role: user.role,
-            })
-            .from(user)
-            .where(eq(user.id, payload.sub))
-            .limit(1)
-        : [];
+      if (payload.sub) {
+        const [record] = await db
+          .select({
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          })
+          .from(user)
+          .where(eq(user.id, payload.sub))
+          .limit(1);
 
-      if (record) {
-        const scopes =
-          typeof payload.scope === "string"
-            ? payload.scope.split(" ").filter(Boolean)
-            : [];
-
-        const authInfo: AuthInfo = {
-          token,
-          clientId: typeof payload.azp === "string" ? payload.azp : "",
-          scopes,
-          extra: {
-            userId: record.id,
-            userEmail: record.email,
-            userName: record.name,
-            userRole: record.role,
-          },
-        };
-
-        return {
-          type: "oauth",
-          user: {
-            id: record.id,
-            email: record.email,
-            name: record.name,
-            role: record.role,
-          },
-          authInfo,
-        };
+        if (record) {
+          return userAuthResult("oauth", record, {
+            token,
+            clientId: typeof payload.azp === "string" ? payload.azp : "",
+            scopes:
+              typeof payload.scope === "string"
+                ? payload.scope.split(" ").filter(Boolean)
+                : [],
+          });
+        }
       }
     } catch {
       // Invalid or non-JWT access token; fall through to the static token.

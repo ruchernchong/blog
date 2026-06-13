@@ -119,7 +119,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 - **Content**: Database-backed MDX with next-mdx-remote
 - **Database**: Neon PostgreSQL with Drizzle ORM
 - **Storage**: Cloudflare R2 for media assets
-- **Authentication**: Better Auth with OAuth (GitHub, Google); also acts as an OAuth 2.1 / OIDC provider (`oidcProvider`)
+- **Authentication**: Better Auth with OAuth (GitHub, Google); also acts as an OAuth 2.1 / OIDC provider (`@better-auth/oauth-provider`'s `oauthProvider` + `jwt()`)
 - **Cache**: Upstash Redis for related posts, analytics, and post statistics
 - **Styling**: Tailwind CSS v4
 - **Testing**: Vitest with React Testing Library
@@ -137,7 +137,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
   period
 - **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers
 - **RSS Feed**: Dynamic `/feed.xml` endpoint
-- **OAuth Provider**: The app is its own OAuth 2.1 / OIDC provider via Better Auth's `oidcProvider`. Clients authenticate users with the Authorization Code flow (PKCE required) and use the issued access token as a bearer; public clients self-register via dynamic client registration. Discovery at `/api/auth/.well-known/openid-configuration`. Protected routes resolve OAuth bearers in `validateMcpAuth` (`lib/api/mcp-auth.ts`)
+- **OAuth Provider**: The app is its own OAuth 2.1 / OIDC provider via `@better-auth/oauth-provider`'s `oauthProvider` plugin (paired with `jwt()`). Clients authenticate users with the Authorization Code flow (PKCE required) and use the issued access token as a bearer; public clients self-register via dynamic client registration. Discovery at `/api/auth/.well-known/openid-configuration`. Protected routes resolve OAuth bearers in `validateMcpAuth` (`lib/api/mcp-auth.ts`)
 
 ### Temporary Changes
 
