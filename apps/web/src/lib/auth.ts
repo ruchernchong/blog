@@ -71,4 +71,7 @@ export const auth = betterAuth({
     }),
     nextCookies(), // Must be the last plugin
   ],
+  session: {
+    storeSessionInDatabase: true,
+  },
 });
