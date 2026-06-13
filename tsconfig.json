@@ -1,8 +1,10 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./apps/web" },
-    { "path": "./packages/mcp" },
-    { "path": "./packages/usage" }
-  ]
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "strict": true,
+    "verbatimModuleSyntax": true
+  }
 }

@@ -1,19 +1,14 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "strict": true,
     "noEmit": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
     "resolveJsonModule": true,
-    "verbatimModuleSyntax": true,
     "incremental": true,
-    "baseUrl": ".",
+    "allowJs": true,
     "paths": {
       "@/*": ["./src/*"]
     },
@@ -22,8 +17,7 @@
         "name": "next"
       }
     ],
-    "types": ["vitest/globals"],
-    "allowJs": true
+    "types": ["vitest/globals"]
   },
   "include": [
     "next-env.d.ts",
