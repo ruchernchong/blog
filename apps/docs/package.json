@@ -23,7 +23,6 @@
     "tailwind-merge": "catalog:"
   },
   "devDependencies": {
-    "@biomejs/biome": "catalog:",
     "@tailwindcss/postcss": "catalog:",
     "@types/mdx": "catalog:",
     "@types/node": "catalog:",

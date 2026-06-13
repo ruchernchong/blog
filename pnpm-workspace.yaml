@@ -2,8 +2,19 @@ packages:
   - apps/*
   - packages/*
 
+allowBuilds:
+  "@heroui-pro/react": true
+  "@zowe/secrets-for-zowe-sdk": false
+  core-js: false
+  es5-ext: false
+  esbuild: false
+  heroui-native-pro: true
+  heroui-pro: true
+  msw: false
+  protobufjs: false
+  sharp: false
+
 catalog:
-  "@biomejs/biome": 2.4.16
   "@tailwindcss/postcss": ^4.3.0
   "@types/mdx": ^2.0.13
   "@types/node": ^22.10.2
@@ -16,17 +27,5 @@ catalog:
   tailwind-merge: ^3.6.0
   tailwindcss: ^4.3.0
   typescript: ^5.2.2
-
-allowBuilds:
-  "@heroui-pro/react": true
-  "@zowe/secrets-for-zowe-sdk": false
-  core-js: false
-  es5-ext: false
-  esbuild: false
-  heroui-native-pro: true
-  heroui-pro: true
-  msw: false
-  protobufjs: false
-  sharp: false
 
 savePrefix: ""
