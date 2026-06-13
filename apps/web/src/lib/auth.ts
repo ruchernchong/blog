@@ -25,6 +25,7 @@ export const auth = betterAuth({
     allowedHosts: [
       "ruchern.dev",
       "*.ruchern.dev",
+      "blog-web-*.vercel.app",
       "blog.localhost",
       "*.blog.localhost",
     ],
