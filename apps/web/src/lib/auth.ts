@@ -1,7 +1,8 @@
+import { oauthProvider } from "@better-auth/oauth-provider";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { betterAuth } from "better-auth/minimal";
 import { nextCookies } from "better-auth/next-js";
-import { admin, lastLoginMethod, oAuthProxy } from "better-auth/plugins";
+import { admin, jwt, lastLoginMethod, oAuthProxy } from "better-auth/plugins";
 import { bearer } from "better-auth/plugins/bearer";
 import { db } from "@/schema";
 
@@ -20,7 +21,17 @@ import { db } from "@/schema";
  * - DATABASE_URL: PostgreSQL connection string (via db import)
  */
 export const auth = betterAuth({
+  baseURL: {
+    allowedHosts: [
+      "ruchern.dev",
+      "*.ruchern.dev",
+      "blog-web-*.vercel.app",
+      "blog.localhost",
+      "*.blog.localhost",
+    ],
+  },
   trustedOrigins: ["https://*.vercel.app"],
+  disabledPaths: ["/token"],
   database: drizzleAdapter(db, { provider: "pg" }),
   account: {
     accountLinking: {
@@ -44,6 +55,16 @@ export const auth = betterAuth({
       productionURL: `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
     }),
     bearer(),
+    jwt(),
+    oauthProvider({
+      loginPage: "/login",
+      consentPage: "/consent",
+      allowDynamicClientRegistration: true,
+      allowUnauthenticatedClientRegistration: true,
+      // "openid" keeps this an OIDC server; "mcp" gates access to the MCP API
+      // (see validateMcpAuth) so an identity-only token cannot write content.
+      scopes: ["openid", "profile", "email", "offline_access", "mcp"],
+    }),
     nextCookies(), // Must be the last plugin
   ],
 });

@@ -8,7 +8,7 @@ import {
   NextResponse,
 } from "next/server";
 import redis from "@/config/redis";
-import { ERROR_IDS } from "@/constants/error-ids";
+import { AUTH_ERROR } from "@/constants/auth-error-ids";
 import { logError } from "@/lib/logger";
 
 const agentAnalytics = new AgentAnalytics({ redis });
@@ -48,7 +48,7 @@ export const proxy = async (request: NextRequest, event: NextFetchEvent) => {
 
     // Explicit error from betterFetch (network, server error, etc.)
     if (error) {
-      logError(ERROR_IDS.AUTH_SESSION_FAILED, error, {
+      logError(AUTH_ERROR.AUTH_SESSION_FAILED, error, {
         path: request.nextUrl.pathname,
         origin: request.nextUrl.origin,
       });
@@ -69,7 +69,7 @@ export const proxy = async (request: NextRequest, event: NextFetchEvent) => {
     })(request);
   } catch (error) {
     // Unexpected error (network failure, timeout, etc.)
-    logError(ERROR_IDS.AUTH_MIDDLEWARE_ERROR, error, {
+    logError(AUTH_ERROR.AUTH_MIDDLEWARE_ERROR, error, {
       path: request.nextUrl.pathname,
     });
     // Fail closed: redirect to login on any unexpected error

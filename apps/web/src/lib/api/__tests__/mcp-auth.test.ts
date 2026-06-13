@@ -12,16 +12,67 @@ vi.mock("@/lib/auth", () => {
   };
 });
 
+// Mock the resource client so OAuth token verification is exercised without a
+// real JWKS roundtrip. verifyAccessToken resolves a JWT payload or throws.
+vi.mock("@/lib/server-client", () => ({
+  serverClient: {
+    verifyAccessToken: vi.fn(),
+  },
+}));
+
+// Mock the database layer so the user lookup is exercised without a real
+// connection. db.select() returns a stable chainable whose terminal .limit()
+// resolves to the rows a test supplies.
+vi.mock("@/schema", () => {
+  const limit = vi.fn().mockResolvedValue([]);
+  const chain = {
+    from: vi.fn(() => chain),
+    where: vi.fn(() => chain),
+    limit,
+  };
+  return {
+    db: { select: vi.fn(() => chain) },
+    user: { id: {}, email: {}, name: {}, role: {} },
+    oauthClient: { clientId: {}, disabled: {} },
+  };
+});
+
+// eq() builds a SQL expression from real columns; with mocked plain-object
+// columns we stub it to a harmless no-op.
+vi.mock("drizzle-orm", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("drizzle-orm")>();
+  return { ...actual, eq: vi.fn(() => ({})) };
+});
+
 import { auth } from "@/lib/auth";
+import { serverClient } from "@/lib/server-client";
+import { db } from "@/schema";
 import { validateMcpAuth } from "../mcp-auth";
 
 const mockGetSession = auth.api.getSession as unknown as ReturnType<
   typeof vi.fn
 >;
 
+const mockVerifyAccessToken =
+  serverClient.verifyAccessToken as unknown as ReturnType<typeof vi.fn>;
+
+const mockUserLimit = (
+  db.select as unknown as () => { limit: ReturnType<typeof vi.fn> }
+)().limit;
+
+function makeRequest(token: string | null, path = "/api/mcp") {
+  const url = `http://localhost${path}`;
+  if (token === null) return new Request(url);
+  return new Request(url, { headers: { Authorization: `Bearer ${token}` } });
+}
+
 describe("validateMcpAuth", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGetSession.mockResolvedValue(null);
+    mockUserLimit.mockResolvedValue([]);
+    // Default: an unrecognised bearer fails verification and falls through.
+    mockVerifyAccessToken.mockRejectedValue(new Error("invalid token"));
     delete process.env.BLOG_MCP_AUTH_TOKEN;
   });
 
@@ -40,13 +91,7 @@ describe("validateMcpAuth", () => {
       };
       mockGetSession.mockResolvedValue(mockSession);
 
-      const request = new Request("http://localhost/api/mcp", {
-        headers: {
-          Authorization: "Bearer session-token-abc",
-        },
-      });
-
-      const result = await validateMcpAuth(request);
+      const result = await validateMcpAuth(makeRequest("session-token-abc"));
 
       expect(result).not.toBeNull();
       expect(result?.type).toBe("session");
@@ -68,49 +113,23 @@ describe("validateMcpAuth", () => {
     });
 
     it("should return null when session is not found", async () => {
-      mockGetSession.mockResolvedValue(null);
       process.env.BLOG_MCP_AUTH_TOKEN = "static-token";
-
-      const request = new Request("http://localhost/api/mcp", {
-        headers: {
-          Authorization: "Bearer invalid-token",
-        },
-      });
-
-      const result = await validateMcpAuth(request);
-
+      const result = await validateMcpAuth(makeRequest("invalid-token"));
       expect(result).toBeNull();
     });
 
     it("should return null when session user is missing", async () => {
       mockGetSession.mockResolvedValue({ session: { token: "abc" } });
       process.env.BLOG_MCP_AUTH_TOKEN = "static-token";
-
-      const request = new Request("http://localhost/api/mcp", {
-        headers: {
-          Authorization: "Bearer some-token",
-        },
-      });
-
-      const result = await validateMcpAuth(request);
-
+      const result = await validateMcpAuth(makeRequest("some-token"));
       expect(result).toBeNull();
     });
   });
 
   describe("static token fallback", () => {
     it("should return token auth when static MCP token matches", async () => {
-      mockGetSession.mockResolvedValue(null);
       process.env.BLOG_MCP_AUTH_TOKEN = "mcp-static-token";
-
-      const request = new Request("http://localhost/api/mcp", {
-        headers: {
-          Authorization: "Bearer mcp-static-token",
-        },
-      });
-
-      const result = await validateMcpAuth(request);
-
+      const result = await validateMcpAuth(makeRequest("mcp-static-token"));
       expect(result).not.toBeNull();
       expect(result?.type).toBe("token");
       expect(result?.user).toBeUndefined();
@@ -118,59 +137,174 @@ describe("validateMcpAuth", () => {
     });
 
     it("should return null when static token does not match", async () => {
-      mockGetSession.mockResolvedValue(null);
       process.env.BLOG_MCP_AUTH_TOKEN = "correct-token";
-
-      const request = new Request("http://localhost/api/mcp", {
-        headers: {
-          Authorization: "Bearer wrong-token",
-        },
-      });
-
-      const result = await validateMcpAuth(request);
-
+      const result = await validateMcpAuth(makeRequest("wrong-token"));
       expect(result).toBeNull();
     });
 
     it("should return null when static token is not configured", async () => {
-      mockGetSession.mockResolvedValue(null);
+      const result = await validateMcpAuth(makeRequest("some-token"));
+      expect(result).toBeNull();
+    });
+  });
 
-      const request = new Request("http://localhost/api/mcp", {
-        headers: {
-          Authorization: "Bearer some-token",
+  describe("oauth access token", () => {
+    it("should return oauth auth for a valid JWT access token", async () => {
+      mockVerifyAccessToken.mockResolvedValue({
+        sub: "user-1",
+        scope: "openid email",
+        azp: "test-client",
+      });
+      mockUserLimit.mockResolvedValue([
+        {
+          id: "user-1",
+          email: "owner@example.com",
+          name: "Owner",
+          role: "admin",
         },
+      ]);
+
+      const result = await validateMcpAuth(
+        makeRequest("oauth-access-token", "/api/usage/ingest"),
+      );
+
+      expect(result?.type).toBe("oauth");
+      expect(result?.user).toEqual({
+        id: "user-1",
+        email: "owner@example.com",
+        name: "Owner",
+        role: "admin",
+      });
+      expect(result?.authInfo?.token).toBe("oauth-access-token");
+      expect(result?.authInfo?.clientId).toBe("test-client");
+      expect(result?.authInfo?.scopes).toEqual(["openid", "email"]);
+    });
+
+    it("should return null when verification fails", async () => {
+      mockVerifyAccessToken.mockRejectedValue(new Error("token expired"));
+      const result = await validateMcpAuth(
+        makeRequest("expired-token", "/api/usage/ingest"),
+      );
+      expect(result).toBeNull();
+    });
+
+    it("should return null when the token subject has no matching user", async () => {
+      mockVerifyAccessToken.mockResolvedValue({
+        sub: "ghost",
+        scope: "openid",
+      });
+      const result = await validateMcpAuth(
+        makeRequest("orphan-token", "/api/usage/ingest"),
+      );
+      expect(result).toBeNull();
+    });
+
+    it("should surface the user's role so the route can enforce admin", async () => {
+      mockVerifyAccessToken.mockResolvedValue({
+        sub: "user-2",
+        scope: "openid email",
+        azp: "test-client",
+      });
+      mockUserLimit.mockResolvedValue([
+        {
+          id: "user-2",
+          email: "reader@example.com",
+          name: "Reader",
+          role: "user",
+        },
+      ]);
+
+      const result = await validateMcpAuth(
+        makeRequest("non-admin-token", "/api/usage/ingest"),
+      );
+
+      expect(result?.type).toBe("oauth");
+      expect(result?.user?.role).toBe("user");
+    });
+
+    it("should reject a token whose issuing client is disabled", async () => {
+      mockVerifyAccessToken.mockResolvedValue({
+        sub: "user-1",
+        scope: "openid email mcp",
+        azp: "disabled-client",
+      });
+      // First lookup (the client) reports disabled; the user lookup is never reached.
+      mockUserLimit.mockResolvedValueOnce([{ disabled: true }]);
+
+      expect(
+        await validateMcpAuth(makeRequest("disabled-client-token")),
+      ).toBeNull();
+    });
+
+    it("should reject a token whose issuing client no longer exists", async () => {
+      mockVerifyAccessToken.mockResolvedValue({
+        sub: "user-1",
+        scope: "openid email mcp",
+        azp: "ghost-client",
+      });
+      mockUserLimit.mockResolvedValueOnce([]); // client lookup returns nothing
+
+      expect(
+        await validateMcpAuth(makeRequest("ghost-client-token")),
+      ).toBeNull();
+    });
+
+    it("should surface scopes (including mcp) for an enabled client", async () => {
+      mockVerifyAccessToken.mockResolvedValue({
+        sub: "user-1",
+        scope: "openid email mcp",
+        azp: "ok-client",
+      });
+      mockUserLimit
+        .mockResolvedValueOnce([{ disabled: false }]) // client lookup
+        .mockResolvedValueOnce([
+          {
+            id: "user-1",
+            email: "owner@example.com",
+            name: "Owner",
+            role: "admin",
+          },
+        ]); // user lookup
+
+      const result = await validateMcpAuth(makeRequest("ok-token"));
+
+      expect(result?.type).toBe("oauth");
+      expect(result?.authInfo?.scopes).toEqual(["openid", "email", "mcp"]);
+    });
+
+    it("should prefer session auth over an OAuth access token", async () => {
+      mockGetSession.mockResolvedValue({
+        user: {
+          id: "user-123",
+          email: "test@example.com",
+          name: "Test User",
+          role: "admin",
+        },
+        session: { token: "session-token" },
       });
 
-      const result = await validateMcpAuth(request);
+      const result = await validateMcpAuth(
+        makeRequest("oauth-access-token", "/api/usage/ingest"),
+      );
 
-      expect(result).toBeNull();
+      expect(result?.type).toBe("session");
+      expect(mockVerifyAccessToken).not.toHaveBeenCalled();
     });
   });
 
   describe("missing auth", () => {
     it("should return null when no authorization header is present", async () => {
-      mockGetSession.mockResolvedValue(null);
       process.env.BLOG_MCP_AUTH_TOKEN = "static-token";
-
-      const request = new Request("http://localhost/api/mcp");
-
-      const result = await validateMcpAuth(request);
-
+      const result = await validateMcpAuth(makeRequest(null));
       expect(result).toBeNull();
     });
 
     it("should return null when authorization header is malformed", async () => {
-      mockGetSession.mockResolvedValue(null);
       process.env.BLOG_MCP_AUTH_TOKEN = "static-token";
-
       const request = new Request("http://localhost/api/mcp", {
-        headers: {
-          Authorization: "Basic dXNlcjpwYXNz",
-        },
+        headers: { Authorization: "Basic dXNlcjpwYXNz" },
       });
-
       const result = await validateMcpAuth(request);
-
       expect(result).toBeNull();
     });
   });
@@ -184,25 +318,16 @@ describe("validateMcpAuth", () => {
           name: "Test User",
           role: "admin",
         },
-        session: {
-          token: "session-token",
-        },
+        session: { token: "session-token" },
       };
       mockGetSession.mockResolvedValue(mockSession);
       process.env.BLOG_MCP_AUTH_TOKEN = "session-token";
 
-      const request = new Request("http://localhost/api/mcp", {
-        headers: {
-          Authorization: "Bearer session-token",
-        },
-      });
-
+      const request = makeRequest("session-token");
       const result = await validateMcpAuth(request);
 
       expect(result?.type).toBe("session");
-      expect(mockGetSession).toHaveBeenCalledWith({
-        headers: request.headers,
-      });
+      expect(mockGetSession).toHaveBeenCalledWith({ headers: request.headers });
     });
   });
 });

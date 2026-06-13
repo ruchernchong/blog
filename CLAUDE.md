@@ -24,6 +24,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm db:drop` - Drop database tables
 - `pnpm db:studio` - Open Drizzle Studio
 - `pnpm db:seed` - Seed database with test data
+- `pnpm auth:generate` - Regenerate the Better Auth Drizzle schema (core + `jwt`/OAuth provider tables) into `apps/web/src/schema/auth.ts`
 
 ### Testing
 
@@ -118,6 +119,30 @@ Claude mobile app.
 }
 ```
 
+## OAuth Provider
+
+The app is its own OAuth 2.1 / OIDC provider via the `@better-auth/oauth-provider`
+plugin (`oauthProvider`) paired with the `jwt()` plugin (`apps/web/src/lib/auth.ts`).
+Clients authenticate users with the Authorization Code flow (PKCE required) and use
+the issued access token as a bearer against protected routes (e.g.
+`POST /api/usage/ingest`). Public clients (no secret) are supported and clients
+self-register via dynamic client registration. The required consent screen lives at
+`/consent` (`apps/web/src/app/consent/`).
+
+- **Discovery:** `/api/auth/.well-known/openid-configuration`; MCP clients also read RFC 9728 protected-resource metadata at `/.well-known/oauth-protected-resource` (`apps/web/src/app/.well-known/oauth-protected-resource/route.ts`)
+- **Endpoints:** `/api/auth/oauth2/authorize`, `/api/auth/oauth2/token`, `/api/auth/oauth2/userinfo`, `/api/auth/oauth2/register`, `/api/auth/oauth2/introspect`, plus JWKS at `/api/auth/jwks`
+- **Scopes:** `openid`, `profile`, `email`, `offline_access`, and `mcp` (configured in `oauthProvider`). The `mcp` scope gates the MCP API — a token without it gets `403 insufficient_scope`
+- **Schema:** `oauthClient`, `oauthAccessToken`, `oauthRefreshToken`, `oauthConsent`, and `jwks` — generated via `pnpm auth:generate` into `apps/web/src/schema/auth.ts` (no separate `oauth.ts`)
+- **Token validation:** `validateMcpAuth` (`lib/api/mcp-auth.ts`) verifies an OAuth bearer with `serverClient.verifyAccessToken` (`lib/server-client.ts`) — local JWKS verification — rejects tokens from a disabled `oauthClient`, then loads the owning user/role by the token subject. The `/api/mcp` route additionally requires the `mcp` scope. Access/refresh tokens are stored hashed.
+
+### Client flow
+
+1. Register a client at `POST /api/auth/oauth2/register` (e.g. a public client with `token_endpoint_auth_method: "none"` and a custom redirect URI), or configure a trusted client in the plugin options.
+2. Generate a PKCE `code_verifier` → `code_challenge` (S256).
+3. Authorize: `GET /api/auth/oauth2/authorize?response_type=code&client_id=…&redirect_uri=…&code_challenge=…&code_challenge_method=S256&scope=openid%20email%20mcp&resource=<api base url>&state=…`. Include the `mcp` scope for MCP API access. Pass `resource` (RFC 8707) so the access token is issued as a JWT verifiable via JWKS; the user approves at `/consent`.
+4. Exchange the code at `POST /api/auth/oauth2/token` for an access (and refresh) token.
+5. Send `Authorization: Bearer <access_token>` to protected routes.
+
 ## Architecture Overview
 
 A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP server, and usage tooling.
@@ -129,7 +154,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 - **Content**: Database-backed MDX with next-mdx-remote
 - **Database**: Neon PostgreSQL with Drizzle ORM
 - **Storage**: Cloudflare R2 for media assets
-- **Authentication**: Better Auth with OAuth (GitHub, Google)
+- **Authentication**: Better Auth with OAuth (GitHub, Google); also acts as an OAuth 2.1 / OIDC provider (`@better-auth/oauth-provider` + `jwt()`)
 - **Cache**: Upstash Redis for related posts, analytics, and post statistics
 - **UI**: HeroUI v3 — Pro (`@heroui-pro/react`) + OSS (`@heroui/react`)
 - **Styling**: Tailwind CSS v4
@@ -147,6 +172,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 - **Analytics**: PostHog-backed dashboard (Query API) with Vercel Analytics
 - **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers
 - **RSS Feed**: Dynamic `/feed.xml` endpoint
+- **OAuth Provider**: The app is its own OAuth 2.1 / OIDC provider via `@better-auth/oauth-provider` (`oauthProvider`) with the `jwt()` plugin. Clients authenticate users with the Authorization Code flow (PKCE required) and use the issued JWT access token as a bearer; public clients self-register via dynamic client registration and approve access at `/consent`. Discovery at `/api/auth/.well-known/openid-configuration`. Protected routes verify OAuth bearers in `validateMcpAuth` (`lib/api/mcp-auth.ts`) via `serverClient.verifyAccessToken` (local JWKS)
 
 ### Temporary Changes
 
@@ -201,7 +227,7 @@ See `apps/web/.env.example` for all required variables:
 - `POSTHOG_API_KEY` - PostHog Personal API Key with `query:read` scope
 - `CLOUDFLARE_ACCOUNT_ID` - R2 storage
 - `R2_ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET_NAME/PUBLIC_URL` - R2 config
-- `BLOG_MCP_AUTH_TOKEN` - Bearer token for remote MCP access
+- `BLOG_MCP_AUTH_TOKEN` - Static bearer for headless MCP/CLI clients (remote MCP server, `usage:ingest:prod`). Retained alongside OAuth; slated for removal once those clients migrate. The OAuth provider itself needs no extra env vars
 
 ## Code Conventions
 

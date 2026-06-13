@@ -2,7 +2,12 @@
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
   "envMode": "strict",
-  "globalPassThroughEnv": ["DATABASE_URL", "DATABASE_URL_UNPOOLED", "VERCEL_*"],
+  "globalPassThroughEnv": [
+    "BETTER_AUTH_*",
+    "DATABASE_URL",
+    "DATABASE_URL_UNPOOLED",
+    "VERCEL_*"
+  ],
   "tasks": {
     "transit": {
       "dependsOn": ["^transit"]
