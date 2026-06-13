@@ -5,9 +5,12 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   plugins: [react()],
   test: {
+    globals: true,
+    coverage: {
+      enabled: true,
+    },
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],
-    globals: true,
   },
   resolve: {
     alias: {

@@ -4,10 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "tsc --noEmit",
     "lint": "biome check .",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "exports": {

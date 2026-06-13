@@ -17,7 +17,7 @@ jobs:
       contents: read
     strategy:
       matrix:
-        task: [Lint, Test, Build]
+        task: [ Lint, Test, Build ]
     env:
       BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -45,7 +45,7 @@ jobs:
 
       - name: Run Test
         if: matrix.task == 'Test'
-        run: pnpm test:coverage
+        run: pnpm test
 
       - name: Cache Next.js build
         if: matrix.task == 'Build'
