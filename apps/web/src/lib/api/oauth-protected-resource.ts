@@ -11,7 +11,7 @@
  * @see https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization
  */
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL as string;
+const BASE_URL = process.env.BETTER_AUTH_URL as string;
 
 /** Scope a token must carry to reach the MCP API. */
 export const MCP_SCOPE = "mcp";
