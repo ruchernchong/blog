@@ -118,10 +118,13 @@ curl -X POST "https://ruchern.dev/api/auth/oauth2/token" \
   -d "code=<code>" \
   -d "redirect_uri=<redirect_uri>" \
   -d "client_id=<client_id>" \
-  -d "code_verifier=<code_verifier>"
+  -d "code_verifier=<code_verifier>" \
+  -d "resource=https://ruchern.dev"
 ```
 
-The response contains an `access_token` (JWT when `resource` was passed), and a `refresh_token` if `offline_access` was requested.
+Pass `resource` in the token request body so Better Auth mints a JWT access token verifiable against the JWKS. Without it an opaque token is returned, which cannot be verified locally.
+
+The response contains an `access_token` (JWT), and a `refresh_token` if `offline_access` was requested.
 
 ### 5. Call protected routes
 
