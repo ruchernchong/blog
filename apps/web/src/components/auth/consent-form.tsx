@@ -1,10 +1,10 @@
 "use client";
 
-import { Alert, Button, Card, Chip, Typography } from "@heroui/react";
+import { Alert, Button, Card, Chip, Spinner, Typography } from "@heroui/react";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { submitConsent } from "@/app/consent/actions";
-import { ERROR_IDS } from "@/constants/error-ids";
+import { AUTH_ERROR } from "@/constants/auth-error-ids";
 import { logError } from "@/lib/logger";
 
 const SCOPE_DESCRIPTIONS: Record<string, string> = {
@@ -12,9 +12,10 @@ const SCOPE_DESCRIPTIONS: Record<string, string> = {
   profile: "Read your basic profile information",
   email: "Read your email address",
   offline_access: "Stay signed in when you are away",
+  mcp: "Manage your blog posts and media",
 };
 
-export const ConsentForm = () => {
+export function ConsentForm() {
   const params = useSearchParams();
   const clientId = params.get("client_id");
   const scopes = params.get("scope")?.split(" ").filter(Boolean) ?? [];
@@ -34,7 +35,7 @@ export const ConsentForm = () => {
       try {
         await submitConsent(oauthQuery, accept);
       } catch (err) {
-        logError(ERROR_IDS.OAUTH_CONSENT_FAILED, err);
+        logError(AUTH_ERROR.OAUTH_CONSENT_FAILED, err);
         setError(
           err instanceof Error
             ? err.message
@@ -90,21 +91,37 @@ export const ConsentForm = () => {
               variant="outline"
               className="w-full"
               onPress={() => submit(false)}
+              isPending={pendingAction === "deny"}
               isDisabled={isPending}
             >
-              {pendingAction === "deny" ? "Denying..." : "Deny"}
+              {({ isPending: isButtonPending }) => (
+                <>
+                  {isButtonPending && (
+                    <Spinner color="current" size="sm" className="mr-2" />
+                  )}
+                  {isButtonPending ? "Denying..." : "Deny"}
+                </>
+              )}
             </Button>
             <Button
               variant="primary"
               className="w-full"
               onPress={() => submit(true)}
+              isPending={pendingAction === "accept"}
               isDisabled={isPending}
             >
-              {pendingAction === "accept" ? "Authorising..." : "Allow"}
+              {({ isPending: isButtonPending }) => (
+                <>
+                  {isButtonPending && (
+                    <Spinner color="current" size="sm" className="mr-2" />
+                  )}
+                  {isButtonPending ? "Authorising..." : "Allow"}
+                </>
+              )}
             </Button>
           </div>
         </Card.Content>
       </Card>
     </div>
   );
-};
+}

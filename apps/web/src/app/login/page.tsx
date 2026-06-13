@@ -2,6 +2,7 @@ import { ComputerTerminal01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { LoginForm } from "@/components/auth/login-form";
 
@@ -27,7 +28,9 @@ export default function LoginPage() {
           </div>
           Portfolio
         </Link>
-        <LoginForm />
+        <Suspense>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );

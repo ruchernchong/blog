@@ -61,6 +61,9 @@ export const auth = betterAuth({
       consentPage: "/consent",
       allowDynamicClientRegistration: true,
       allowUnauthenticatedClientRegistration: true,
+      // "openid" keeps this an OIDC server; "mcp" gates access to the MCP API
+      // (see validateMcpAuth) so an identity-only token cannot write content.
+      scopes: ["openid", "profile", "email", "offline_access", "mcp"],
     }),
     nextCookies(), // Must be the last plugin
   ],

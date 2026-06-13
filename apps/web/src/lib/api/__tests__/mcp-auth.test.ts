@@ -33,6 +33,7 @@ vi.mock("@/schema", () => {
   return {
     db: { select: vi.fn(() => chain) },
     user: { id: {}, email: {}, name: {}, role: {} },
+    oauthClient: { clientId: {}, disabled: {} },
   };
 });
 
@@ -279,6 +280,68 @@ describe("validateMcpAuth", () => {
 
       expect(result?.type).toBe("oauth");
       expect(result?.user?.role).toBe("user");
+    });
+
+    it("should reject a token whose issuing client is disabled", async () => {
+      mockGetSession.mockResolvedValue(null);
+      mockVerifyAccessToken.mockResolvedValue({
+        sub: "user-1",
+        scope: "openid email mcp",
+        azp: "disabled-client",
+      });
+      // First lookup (the client) reports disabled; the user lookup is never
+      // reached.
+      mockUserLimit.mockResolvedValueOnce([{ disabled: true }]);
+
+      const request = new Request("http://localhost/api/mcp", {
+        headers: { Authorization: "Bearer disabled-client-token" },
+      });
+
+      expect(await validateMcpAuth(request)).toBeNull();
+    });
+
+    it("should reject a token whose issuing client no longer exists", async () => {
+      mockGetSession.mockResolvedValue(null);
+      mockVerifyAccessToken.mockResolvedValue({
+        sub: "user-1",
+        scope: "openid email mcp",
+        azp: "ghost-client",
+      });
+      mockUserLimit.mockResolvedValueOnce([]); // client lookup returns nothing
+
+      const request = new Request("http://localhost/api/mcp", {
+        headers: { Authorization: "Bearer ghost-client-token" },
+      });
+
+      expect(await validateMcpAuth(request)).toBeNull();
+    });
+
+    it("should surface scopes (including mcp) for an enabled client", async () => {
+      mockGetSession.mockResolvedValue(null);
+      mockVerifyAccessToken.mockResolvedValue({
+        sub: "user-1",
+        scope: "openid email mcp",
+        azp: "ok-client",
+      });
+      mockUserLimit
+        .mockResolvedValueOnce([{ disabled: false }]) // client lookup
+        .mockResolvedValueOnce([
+          {
+            id: "user-1",
+            email: "owner@example.com",
+            name: "Owner",
+            role: "admin",
+          },
+        ]); // user lookup
+
+      const request = new Request("http://localhost/api/mcp", {
+        headers: { Authorization: "Bearer ok-token" },
+      });
+
+      const result = await validateMcpAuth(request);
+
+      expect(result?.type).toBe("oauth");
+      expect(result?.authInfo?.scopes).toEqual(["openid", "email", "mcp"]);
     });
 
     it("should prefer session auth over an OAuth access token", async () => {
