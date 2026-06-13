@@ -15,9 +15,8 @@ const SCOPE_DESCRIPTIONS: Record<string, string> = {
   mcp: "Manage your blog posts and media",
 };
 
-export function ConsentForm() {
+export function ConsentForm({ clientName }: { clientName?: string }) {
   const params = useSearchParams();
-  const clientId = params.get("client_id");
   const scopes = params.get("scope")?.split(" ").filter(Boolean) ?? [];
   const oauthQuery = params.toString();
 
@@ -52,8 +51,8 @@ export function ConsentForm() {
         <Card.Header className="text-center">
           <Card.Title>Authorise access</Card.Title>
           <Card.Description>
-            {clientId
-              ? `${clientId} wants to access your account`
+            {clientName
+              ? `${clientName} wants to access your account`
               : "An application wants to access your account"}
           </Card.Description>
         </Card.Header>
