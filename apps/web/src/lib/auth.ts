@@ -4,6 +4,7 @@ import { betterAuth } from "better-auth/minimal";
 import { nextCookies } from "better-auth/next-js";
 import { admin, jwt, lastLoginMethod, oAuthProxy } from "better-auth/plugins";
 import { bearer } from "better-auth/plugins/bearer";
+import { redisSecondaryStorage } from "@/lib/redis-secondary-storage";
 import { db } from "@/schema";
 
 /**
@@ -21,6 +22,7 @@ import { db } from "@/schema";
  * - DATABASE_URL: PostgreSQL connection string (via db import)
  */
 export const auth = betterAuth({
+  secondaryStorage: redisSecondaryStorage,
   baseURL: {
     allowedHosts: [
       "ruchern.dev",
