@@ -29,7 +29,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `pnpm test` - Run all tests
 - `pnpm test:watch` - Run tests in watch mode
-- `pnpm test:coverage` - Generate coverage report
 - `pnpm --filter @workspace/web test <path>` - Run a specific web test file
 
 ### Release
@@ -151,7 +150,9 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 
 ### Temporary Changes
 
-- **Likes Feature Disabled**: The likes functionality is currently commented out to enable static generation of blog post pages. The code is preserved in comments for potential future re-enablement. Views are now tracked client-side using React 19's `useEffectEvent`.
+- **Likes Feature Disabled**: The likes functionality is currently commented out to enable static generation of blog
+  post pages. The code is preserved in comments for potential future re-enablement. Views are now tracked client-side
+  using React 19's `useEffectEvent`.
 
 ### Project Structure
 
@@ -258,7 +259,8 @@ Project-specific skills are available in `.claude/skills/`:
 
 - **component-naming** - React component naming conventions (PascalCase, Domain+Role pattern, compound components)
 - **design-language-system** - Visual design tokens (coral OKLCH colours, typography, spacing, animations)
-- **blog-voice** - Personal writing voice for blog posts on ruchern.dev (Singapore English, structural patterns, anti-patterns)
+- **blog-voice** - Personal writing voice for blog posts on ruchern.dev (Singapore English, structural patterns,
+  anti-patterns)
 
 Invoke skills with `/component-naming`, `/design-language-system`, or `/blog-voice` when relevant.
 
@@ -267,8 +269,8 @@ Invoke skills with `/component-naming`, `/design-language-system`, or `/blog-voi
 - Update CLAUDE.md when changing commands or architecture
 - Update README.md when modifying tech stack
 
-
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->
+
 ## Beads Issue Tracker
 
 This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.
@@ -309,8 +311,10 @@ bd close <id>         # Complete work
 7. **Hand off** - Provide context for next session
 
 **CRITICAL RULES:**
+
 - Work is NOT complete until `git push` succeeds
 - NEVER stop before pushing - that leaves work stranded locally
 - NEVER say "ready to push when you are" - YOU must push
 - If push fails, resolve and retry until it succeeds
+
 <!-- END BEADS INTEGRATION -->

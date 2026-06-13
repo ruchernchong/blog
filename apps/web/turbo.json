@@ -3,7 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["transit"],
       "env": [
         "BETTER_AUTH_*",
         "BLOG_MCP_AUTH_TOKEN",

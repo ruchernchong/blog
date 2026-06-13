@@ -4,8 +4,11 @@
   "envMode": "strict",
   "globalPassThroughEnv": ["DATABASE_URL", "DATABASE_URL_UNPOOLED", "VERCEL_*"],
   "tasks": {
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["transit"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "dev": {
@@ -17,9 +20,6 @@
     },
     "format": {},
     "test": {
-      "outputs": []
-    },
-    "test:coverage": {
       "outputs": ["coverage/**"]
     },
     "typecheck": {
