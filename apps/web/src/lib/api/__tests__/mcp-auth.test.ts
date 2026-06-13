@@ -12,26 +12,26 @@ vi.mock("@/lib/auth", () => {
   };
 });
 
-// Mock the database layer so the OAuth access-token lookup is exercised without
-// a real connection. db.select() returns a stable chainable whose terminal
-// .limit() resolves to the rows a test supplies.
+// Mock the resource client so OAuth token verification is exercised without a
+// real JWKS roundtrip. verifyAccessToken resolves a JWT payload or throws.
+vi.mock("@/lib/server-client", () => ({
+  serverClient: {
+    verifyAccessToken: vi.fn(),
+  },
+}));
+
+// Mock the database layer so the user lookup is exercised without a real
+// connection. db.select() returns a stable chainable whose terminal .limit()
+// resolves to the rows a test supplies.
 vi.mock("@/schema", () => {
   const limit = vi.fn().mockResolvedValue([]);
   const chain = {
     from: vi.fn(() => chain),
-    innerJoin: vi.fn(() => chain),
     where: vi.fn(() => chain),
     limit,
   };
   return {
     db: { select: vi.fn(() => chain) },
-    oauthAccessToken: {
-      accessToken: {},
-      accessTokenExpiresAt: {},
-      clientId: {},
-      scopes: {},
-      userId: {},
-    },
     user: { id: {}, email: {}, name: {}, role: {} },
   };
 });
@@ -44,6 +44,7 @@ vi.mock("drizzle-orm", async (importOriginal) => {
 });
 
 import { auth } from "@/lib/auth";
+import { serverClient } from "@/lib/server-client";
 import { db } from "@/schema";
 import { validateMcpAuth } from "../mcp-auth";
 
@@ -51,14 +52,19 @@ const mockGetSession = auth.api.getSession as unknown as ReturnType<
   typeof vi.fn
 >;
 
-const mockTokenLimit = (
+const mockVerifyAccessToken =
+  serverClient.verifyAccessToken as unknown as ReturnType<typeof vi.fn>;
+
+const mockUserLimit = (
   db.select as unknown as () => { limit: ReturnType<typeof vi.fn> }
 )().limit;
 
 describe("validateMcpAuth", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockTokenLimit.mockResolvedValue([]);
+    mockUserLimit.mockResolvedValue([]);
+    // Default: an unrecognised bearer fails verification and falls through.
+    mockVerifyAccessToken.mockRejectedValue(new Error("invalid token"));
     delete process.env.BLOG_MCP_AUTH_TOKEN;
   });
 
@@ -185,20 +191,19 @@ describe("validateMcpAuth", () => {
   });
 
   describe("oauth access token", () => {
-    const futureDate = () => new Date(Date.now() + 60 * 60 * 1000);
-    const pastDate = () => new Date(Date.now() - 60 * 60 * 1000);
-
-    it("should return oauth auth for a valid, non-expired access token", async () => {
+    it("should return oauth auth for a valid JWT access token", async () => {
       mockGetSession.mockResolvedValue(null);
-      mockTokenLimit.mockResolvedValue([
+      mockVerifyAccessToken.mockResolvedValue({
+        sub: "user-1",
+        scope: "openid email",
+        azp: "test-client",
+      });
+      mockUserLimit.mockResolvedValue([
         {
-          accessTokenExpiresAt: futureDate(),
-          clientId: "test-client",
-          scopes: "openid email",
-          userId: "user-1",
-          userEmail: "owner@example.com",
-          userName: "Owner",
-          userRole: "admin",
+          id: "user-1",
+          email: "owner@example.com",
+          name: "Owner",
+          role: "admin",
         },
       ]);
 
@@ -220,19 +225,9 @@ describe("validateMcpAuth", () => {
       expect(result?.authInfo?.scopes).toEqual(["openid", "email"]);
     });
 
-    it("should reject an expired access token", async () => {
+    it("should return null when verification fails", async () => {
       mockGetSession.mockResolvedValue(null);
-      mockTokenLimit.mockResolvedValue([
-        {
-          accessTokenExpiresAt: pastDate(),
-          clientId: "test-client",
-          scopes: "openid email",
-          userId: "user-1",
-          userEmail: "owner@example.com",
-          userName: "Owner",
-          userRole: "admin",
-        },
-      ]);
+      mockVerifyAccessToken.mockRejectedValue(new Error("token expired"));
 
       const request = new Request("http://localhost/api/usage/ingest", {
         headers: { Authorization: "Bearer expired-token" },
@@ -243,17 +238,36 @@ describe("validateMcpAuth", () => {
       expect(result).toBeNull();
     });
 
+    it("should return null when the token subject has no matching user", async () => {
+      mockGetSession.mockResolvedValue(null);
+      mockVerifyAccessToken.mockResolvedValue({
+        sub: "ghost",
+        scope: "openid",
+      });
+      mockUserLimit.mockResolvedValue([]);
+
+      const request = new Request("http://localhost/api/usage/ingest", {
+        headers: { Authorization: "Bearer orphan-token" },
+      });
+
+      const result = await validateMcpAuth(request);
+
+      expect(result).toBeNull();
+    });
+
     it("should surface the user's role so the route can enforce admin", async () => {
       mockGetSession.mockResolvedValue(null);
-      mockTokenLimit.mockResolvedValue([
+      mockVerifyAccessToken.mockResolvedValue({
+        sub: "user-2",
+        scope: "openid email",
+        azp: "test-client",
+      });
+      mockUserLimit.mockResolvedValue([
         {
-          accessTokenExpiresAt: futureDate(),
-          clientId: "test-client",
-          scopes: "openid email",
-          userId: "user-2",
-          userEmail: "reader@example.com",
-          userName: "Reader",
-          userRole: "user",
+          id: "user-2",
+          email: "reader@example.com",
+          name: "Reader",
+          role: "user",
         },
       ]);
 
@@ -285,7 +299,7 @@ describe("validateMcpAuth", () => {
       const result = await validateMcpAuth(request);
 
       expect(result?.type).toBe("session");
-      expect(mockTokenLimit).not.toHaveBeenCalled();
+      expect(mockVerifyAccessToken).not.toHaveBeenCalled();
     });
   });
 

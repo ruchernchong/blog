@@ -1,12 +1,8 @@
+import { oauthProvider } from "@better-auth/oauth-provider";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { betterAuth } from "better-auth/minimal";
 import { nextCookies } from "better-auth/next-js";
-import {
-  admin,
-  lastLoginMethod,
-  oAuthProxy,
-  oidcProvider,
-} from "better-auth/plugins";
+import { admin, jwt, lastLoginMethod, oAuthProxy } from "better-auth/plugins";
 import { bearer } from "better-auth/plugins/bearer";
 import { db } from "@/schema";
 
@@ -25,7 +21,16 @@ import { db } from "@/schema";
  * - DATABASE_URL: PostgreSQL connection string (via db import)
  */
 export const auth = betterAuth({
+  baseURL: {
+    allowedHosts: [
+      "ruchern.dev",
+      "*.ruchern.dev",
+      "blog.localhost",
+      "*.blog.localhost",
+    ],
+  },
   trustedOrigins: ["https://*.vercel.app"],
+  disabledPaths: ["/token"],
   database: drizzleAdapter(db, { provider: "pg" }),
   account: {
     accountLinking: {
@@ -49,14 +54,12 @@ export const auth = betterAuth({
       productionURL: `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
     }),
     bearer(),
-    // Turns this app into an OAuth 2.1 / OIDC provider so clients can
-    // authenticate users via the Authorization Code flow. Public clients
-    // (no secret) are supported and PKCE is required. Clients register
-    // themselves through the dynamic client registration endpoint.
-    oidcProvider({
+    jwt(),
+    oauthProvider({
       loginPage: "/login",
-      requirePKCE: true,
+      consentPage: "/consent",
       allowDynamicClientRegistration: true,
+      allowUnauthenticatedClientRegistration: true,
     }),
     nextCookies(), // Must be the last plugin
   ],
