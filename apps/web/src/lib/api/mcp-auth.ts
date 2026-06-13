@@ -90,7 +90,7 @@ export async function validateMcpAuth(
     try {
       const payload = await serverClient.verifyAccessToken(token, {
         verifyOptions: {
-          audience: process.env.NEXT_PUBLIC_BASE_URL as string,
+          audience: process.env.BETTER_AUTH_URL as string,
         },
       });
 
