@@ -28,4 +28,6 @@ catalog:
   tailwindcss: ^4.3.0
   typescript: ^5.2.2
 
+minimumReleaseAgeStrict: true
+
 savePrefix: ""
