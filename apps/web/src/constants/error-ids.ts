@@ -1,6 +1,12 @@
+import type { AuthErrorId } from "@/constants/auth-error-ids";
+
 /**
  * Centralized error IDs for tracking and logging errors across the application.
  * Used with the logger utility to ensure consistent error tracking in Sentry.
+ *
+ * Authentication and OAuth error IDs live alongside the auth feature in
+ * {@link ./auth-error-ids}; {@link ErrorId} unions both so the logger accepts
+ * either set.
  */
 export const ERROR_IDS = {
   // Post Management Errors
@@ -27,14 +33,6 @@ export const ERROR_IDS = {
 
   // Usage Ingestion Errors
   USAGE_INGEST_FAILED: "USAGE_INGEST_FAILED",
-
-  // Authentication Errors
-  AUTH_SESSION_FAILED: "AUTH_SESSION_FAILED",
-  AUTH_MIDDLEWARE_ERROR: "AUTH_MIDDLEWARE_ERROR",
-  AUTH_POST_FAILED: "AUTH_POST_FAILED",
-  AUTH_GET_FAILED: "AUTH_GET_FAILED",
-  OAUTH_GOOGLE_FAILED: "OAUTH_GOOGLE_FAILED",
-  OAUTH_CONSENT_FAILED: "OAUTH_CONSENT_FAILED",
 
   // Database Errors
   DB_CONNECTION_FAILED: "DB_CONNECTION_FAILED",
@@ -81,4 +79,4 @@ export const ERROR_IDS = {
   MEDIA_PROMOTE_FAILED: "MEDIA_PROMOTE_FAILED",
 } as const;
 
-export type ErrorId = (typeof ERROR_IDS)[keyof typeof ERROR_IDS];
+export type ErrorId = (typeof ERROR_IDS)[keyof typeof ERROR_IDS] | AuthErrorId;

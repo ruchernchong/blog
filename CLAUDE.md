@@ -129,16 +129,17 @@ the issued access token as a bearer against protected routes (e.g.
 self-register via dynamic client registration. The required consent screen lives at
 `/consent` (`apps/web/src/app/consent/`).
 
-- **Discovery:** `/api/auth/.well-known/openid-configuration`
+- **Discovery:** `/api/auth/.well-known/openid-configuration`; MCP clients also read RFC 9728 protected-resource metadata at `/.well-known/oauth-protected-resource` (`apps/web/src/app/.well-known/oauth-protected-resource/route.ts`)
 - **Endpoints:** `/api/auth/oauth2/authorize`, `/api/auth/oauth2/token`, `/api/auth/oauth2/userinfo`, `/api/auth/oauth2/register`, `/api/auth/oauth2/introspect`, plus JWKS at `/api/auth/jwks`
+- **Scopes:** `openid`, `profile`, `email`, `offline_access`, and `mcp` (configured in `oauthProvider`). The `mcp` scope gates the MCP API — a token without it gets `403 insufficient_scope`
 - **Schema:** `oauthClient`, `oauthAccessToken`, `oauthRefreshToken`, `oauthConsent`, and `jwks` — generated via `pnpm auth:generate` into `apps/web/src/schema/auth.ts` (no separate `oauth.ts`)
-- **Token validation:** `validateMcpAuth` (`lib/api/mcp-auth.ts`) verifies an OAuth bearer with `serverClient.verifyAccessToken` (`lib/server-client.ts`) — local JWKS verification — then loads the owning user/role by the token subject. Access/refresh tokens are stored hashed.
+- **Token validation:** `validateMcpAuth` (`lib/api/mcp-auth.ts`) verifies an OAuth bearer with `serverClient.verifyAccessToken` (`lib/server-client.ts`) — local JWKS verification — rejects tokens from a disabled `oauthClient`, then loads the owning user/role by the token subject. The `/api/mcp` route additionally requires the `mcp` scope. Access/refresh tokens are stored hashed.
 
 ### Client flow
 
 1. Register a client at `POST /api/auth/oauth2/register` (e.g. a public client with `token_endpoint_auth_method: "none"` and a custom redirect URI), or configure a trusted client in the plugin options.
 2. Generate a PKCE `code_verifier` → `code_challenge` (S256).
-3. Authorize: `GET /api/auth/oauth2/authorize?response_type=code&client_id=…&redirect_uri=…&code_challenge=…&code_challenge_method=S256&scope=openid%20email&resource=<api base url>&state=…`. Pass `resource` (RFC 8707) so the access token is issued as a JWT verifiable via JWKS; the user approves at `/consent`.
+3. Authorize: `GET /api/auth/oauth2/authorize?response_type=code&client_id=…&redirect_uri=…&code_challenge=…&code_challenge_method=S256&scope=openid%20email%20mcp&resource=<api base url>&state=…`. Include the `mcp` scope for MCP API access. Pass `resource` (RFC 8707) so the access token is issued as a JWT verifiable via JWKS; the user approves at `/consent`.
 4. Exchange the code at `POST /api/auth/oauth2/token` for an access (and refresh) token.
 5. Send `Authorization: Bearer <access_token>` to protected routes.
 

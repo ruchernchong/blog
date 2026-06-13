@@ -25,6 +25,12 @@ The JSON Web Key Set used to verify JWT access tokens is published at:
 GET /api/auth/jwks
 ```
 
+MCP clients can discover the authorization server from the MCP API's RFC 9728 protected-resource metadata, which is also advertised in the `WWW-Authenticate` header on a `401`/`403` from `/api/mcp`:
+
+```txt
+GET /.well-known/oauth-protected-resource
+```
+
 ## Endpoints
 
 | Purpose | Endpoint |
@@ -52,6 +58,7 @@ GET /api/auth/jwks
 | `profile` | Read basic profile information. |
 | `email` | Read the user's email address. |
 | `offline_access` | Issue a refresh token so the client can stay signed in. |
+| `mcp` | Access the MCP API (`/api/mcp`). Required for any token used against MCP tools; an identity-only token is rejected with `403 insufficient_scope`. |
 
 ## Client Integration
 
@@ -93,10 +100,12 @@ GET /api/auth/oauth2/authorize
   &redirect_uri=<redirect_uri>
   &code_challenge=<code_challenge>
   &code_challenge_method=S256
-  &scope=openid%20email
+  &scope=openid%20email%20mcp
   &resource=https://ruchern.dev
   &state=<state>
 ```
+
+Include the `mcp` scope when the token will be used against the MCP API (`/api/mcp`); without it the MCP route rejects the token with `403 insufficient_scope`.
 
 After approval the provider redirects to the client's `redirect_uri` with `code` and `state`.
 
@@ -142,10 +151,12 @@ curl -X POST "https://ruchern.dev/api/auth/oauth2/token" \
 Protected routes call `validateMcpAuth` (`apps/web/src/lib/api/mcp-auth.ts`), which tries three strategies in order:
 
 1. **Better Auth session** — cookie or session bearer for browser/admin callers.
-2. **OAuth access token** — the JWT is verified locally against the provider's JWKS via `serverClient.verifyAccessToken` (`apps/web/src/lib/server-client.ts`), with `audience` set to `NEXT_PUBLIC_BASE_URL`. The owning user and role are then loaded by the token `sub`.
-3. **Static MCP token** — the legacy `BLOG_MCP_AUTH_TOKEN` bearer, retained for headless clients until they migrate to OAuth.
+2. **OAuth access token** — the JWT is verified locally against the provider's JWKS via `serverClient.verifyAccessToken` (`apps/web/src/lib/server-client.ts`), with `audience` set to `NEXT_PUBLIC_BASE_URL`. The token's issuing client (`azp`) is checked against the `oauthClient` table and rejected if it has been disabled, then the owning user and role are loaded by the token `sub`.
+3. **Static MCP token** — the legacy `BLOG_MCP_AUTH_TOKEN` bearer, deprecated and marked for deletion; retained only until headless clients migrate to OAuth.
 
 Because the JWT carries the `resource`/audience as its `aud`, a client **must** pass `resource` at the authorize step for its token to validate against an API protected this way. The `azp` claim carries the client id and `scope` carries the granted scopes.
+
+The MCP API additionally requires the `mcp` scope: `/api/mcp` returns `403 insufficient_scope` for an authenticated OAuth token that does not carry it, and `401` (both with a `WWW-Authenticate` challenge advertising the required scope and the protected-resource metadata URL) when no valid token is supplied.
 
 Access and refresh tokens are stored hashed in the provider's database.
 

@@ -38,7 +38,7 @@ describe("MCP API Route", () => {
   });
 
   describe("POST", () => {
-    it("should return 401 when auth fails", async () => {
+    it("should return 401 with a WWW-Authenticate challenge when auth fails", async () => {
       mockValidateMcpAuth.mockResolvedValue(null);
 
       const request = new Request("http://localhost/api/mcp", {
@@ -52,6 +52,75 @@ describe("MCP API Route", () => {
       expect(response.status).toBe(401);
       const body = await response.json();
       expect(body.error).toBe("Unauthorized");
+      const challenge = response.headers.get("WWW-Authenticate");
+      expect(challenge).toContain('scope="mcp"');
+      expect(challenge).toContain("resource_metadata=");
+    });
+
+    it("should return 403 insufficient_scope when an OAuth token lacks the mcp scope", async () => {
+      mockValidateMcpAuth.mockResolvedValue({
+        type: "oauth",
+        user: {
+          id: "user-1",
+          email: "owner@example.com",
+          name: "Owner",
+          role: "admin",
+        },
+        authInfo: {
+          token: "oauth-token",
+          clientId: "client-1",
+          scopes: ["openid", "email"],
+        },
+      });
+
+      const request = new Request("http://localhost/api/mcp", {
+        method: "POST",
+        headers: { Authorization: "Bearer oauth-token" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
+      });
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(403);
+      const body = await response.json();
+      expect(body.error).toBe("insufficient_scope");
+      expect(response.headers.get("WWW-Authenticate")).toContain(
+        'error="insufficient_scope"',
+      );
+    });
+
+    it("should forward an OAuth token that carries the mcp scope", async () => {
+      mockValidateMcpAuth.mockResolvedValue({
+        type: "oauth",
+        user: {
+          id: "user-1",
+          email: "owner@example.com",
+          name: "Owner",
+          role: "admin",
+        },
+        authInfo: {
+          token: "oauth-token",
+          clientId: "client-1",
+          scopes: ["openid", "email", "mcp"],
+        },
+      });
+
+      const request = new Request("http://localhost/api/mcp", {
+        method: "POST",
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
+      });
+
+      await POST(request);
+
+      const transportInstance = vi.mocked(
+        WebStandardStreamableHTTPServerTransport,
+      ).mock.results[0].value;
+      expect(transportInstance.handleRequest).toHaveBeenCalledWith(
+        request,
+        expect.objectContaining({
+          authInfo: expect.objectContaining({ token: "oauth-token" }),
+        }),
+      );
     });
 
     it("should call transport with authInfo when session auth succeeds", async () => {
