@@ -20,7 +20,19 @@ interface PageProps {
   searchParams: Promise<Record<string, string>>;
 }
 
-export default async function ConsentPage({ searchParams }: PageProps) {
+export default function ConsentPage({ searchParams }: PageProps) {
+  return (
+    <main className="grid min-h-svh place-items-center p-6">
+      <div className="w-full max-w-sm">
+        <Suspense>
+          <ConsentContent searchParams={searchParams} />
+        </Suspense>
+      </div>
+    </main>
+  );
+}
+
+async function ConsentContent({ searchParams }: PageProps) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) {
     redirect("/login");
@@ -38,13 +50,5 @@ export default async function ConsentPage({ searchParams }: PageProps) {
     clientName = client?.name ?? undefined;
   }
 
-  return (
-    <main className="grid min-h-svh place-items-center p-6">
-      <div className="w-full max-w-sm">
-        <Suspense>
-          <ConsentForm clientName={clientName} />
-        </Suspense>
-      </div>
-    </main>
-  );
+  return <ConsentForm clientName={clientName} />;
 }
