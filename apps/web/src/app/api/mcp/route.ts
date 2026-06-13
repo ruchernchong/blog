@@ -41,6 +41,12 @@ async function requireMcpAuth(
     };
   }
 
+  if (authResult.type === "oauth" && authResult.user?.role !== "admin") {
+    return {
+      error: Response.json({ error: "Forbidden" }, { status: 403 }),
+    };
+  }
+
   return { authResult };
 }
 

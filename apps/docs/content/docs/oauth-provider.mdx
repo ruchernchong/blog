@@ -146,8 +146,11 @@ curl -X POST "https://ruchern.dev/api/auth/oauth2/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=refresh_token" \
   -d "refresh_token=<refresh_token>" \
-  -d "client_id=<client_id>"
+  -d "client_id=<client_id>" \
+  -d "resource=https://ruchern.dev"
 ```
+
+Pass `resource` on every refresh request. Better Auth only mints a JWT access token when `resource` is present; omitting it returns an opaque token that cannot be verified locally.
 
 ## How the Server Validates a Token
 
@@ -167,7 +170,7 @@ Access and refresh tokens are stored hashed in the provider's database.
 
 - Register a public client and store the returned `client_id`.
 - Generate a fresh PKCE `code_verifier`/`code_challenge` per authorization.
-- Pass `resource=https://ruchern.dev` (or the target API base URL) at authorize so the access token is a verifiable JWT.
+- Pass `resource=https://ruchern.dev` (or the target API base URL) at authorize **and** on every token refresh so the issued access token is a verifiable JWT.
 - Request `offline_access` if the client needs to refresh without re-prompting.
 - Persist tokens securely; treat the JWT as opaque other than honouring its expiry.
 
