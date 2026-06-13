@@ -5,6 +5,7 @@ import {
   File01Icon,
   Image01Icon,
   Layers01Icon,
+  SquareLock01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Route } from "next";
@@ -27,6 +28,11 @@ const navItems = [
     title: "Series",
     url: "/studio/series" as Route,
     icon: Layers01Icon,
+  },
+  {
+    title: "OAuth Clients",
+    url: "/studio/oauth-clients" as Route,
+    icon: SquareLock01Icon,
   },
 ];
 

@@ -54,7 +54,9 @@ export const auth = betterAuth({
       storeInDatabase: true,
     }),
     oAuthProxy({
-      productionURL: `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
+      productionURL: process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : "https://ruchern.dev",
     }),
     bearer(),
     jwt(),
