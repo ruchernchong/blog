@@ -24,7 +24,8 @@ export async function POST(request: Request) {
   const auth = await validateMcpAuth(request);
   const allowed =
     auth?.type === "token" ||
-    (auth?.type === "session" && auth.user?.role === "admin");
+    ((auth?.type === "session" || auth?.type === "oauth") &&
+      auth.user?.role === "admin");
 
   if (!allowed) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });

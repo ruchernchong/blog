@@ -118,6 +118,28 @@ Claude mobile app.
 }
 ```
 
+## OAuth Provider
+
+The app is its own OAuth 2.1 / OIDC provider via Better Auth's `oidcProvider`
+plugin (`apps/web/src/lib/auth.ts`). Clients authenticate users with the
+Authorization Code flow (PKCE required) and use the issued access token as a
+bearer against protected routes (e.g. `POST /api/usage/ingest`). Public clients
+(no secret) are supported and clients self-register via dynamic client
+registration.
+
+- **Discovery:** `/api/auth/.well-known/openid-configuration`
+- **Endpoints:** `/api/auth/oauth2/authorize`, `/api/auth/oauth2/token`, `/api/auth/oauth2/userinfo`, `/api/auth/oauth2/register`
+- **Schema:** `oauthApplication`, `oauthAccessToken`, `oauthConsent` (`apps/web/src/schema/oauth.ts`)
+- **Token validation:** `validateMcpAuth` (`lib/api/mcp-auth.ts`) resolves an OAuth bearer by looking the access token up in `oauthAccessToken`, checking expiry, and loading the owning user/role.
+
+### Client flow
+
+1. Register a client at `POST /api/auth/oauth2/register` (e.g. a public client with `token_endpoint_auth_method: "none"` and a custom redirect URI), or configure a trusted client in the plugin options.
+2. Generate a PKCE `code_verifier` → `code_challenge` (S256).
+3. Authorize: `GET /api/auth/oauth2/authorize?response_type=code&client_id=…&redirect_uri=…&code_challenge=…&code_challenge_method=S256&scope=openid%20email&state=…`.
+4. Exchange the code at `POST /api/auth/oauth2/token` for an access (and refresh) token.
+5. Send `Authorization: Bearer <access_token>` to protected routes.
+
 ## Architecture Overview
 
 A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP server, and usage tooling.
@@ -129,7 +151,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 - **Content**: Database-backed MDX with next-mdx-remote
 - **Database**: Neon PostgreSQL with Drizzle ORM
 - **Storage**: Cloudflare R2 for media assets
-- **Authentication**: Better Auth with OAuth (GitHub, Google)
+- **Authentication**: Better Auth with OAuth (GitHub, Google); also acts as an OAuth 2.1 / OIDC provider (`oidcProvider`)
 - **Cache**: Upstash Redis for related posts, analytics, and post statistics
 - **UI**: HeroUI v3 — Pro (`@heroui-pro/react`) + OSS (`@heroui/react`)
 - **Styling**: Tailwind CSS v4
@@ -147,6 +169,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 - **Analytics**: PostHog-backed dashboard (Query API) with Vercel Analytics
 - **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers
 - **RSS Feed**: Dynamic `/feed.xml` endpoint
+- **OAuth Provider**: The app is its own OAuth 2.1 / OIDC provider via Better Auth's `oidcProvider`. Clients authenticate users with the Authorization Code flow (PKCE required) and use the issued access token as a bearer; public clients self-register via dynamic client registration. Discovery at `/api/auth/.well-known/openid-configuration`. Protected routes resolve OAuth bearers in `validateMcpAuth` (`lib/api/mcp-auth.ts`)
 
 ### Temporary Changes
 
@@ -201,7 +224,7 @@ See `apps/web/.env.example` for all required variables:
 - `POSTHOG_API_KEY` - PostHog Personal API Key with `query:read` scope
 - `CLOUDFLARE_ACCOUNT_ID` - R2 storage
 - `R2_ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET_NAME/PUBLIC_URL` - R2 config
-- `BLOG_MCP_AUTH_TOKEN` - Bearer token for remote MCP access
+- `BLOG_MCP_AUTH_TOKEN` - Static bearer for headless MCP/CLI clients (remote MCP server, `usage:ingest:prod`). Retained alongside OAuth; slated for removal once those clients migrate. The OAuth provider itself needs no extra env vars
 
 ## Code Conventions
 

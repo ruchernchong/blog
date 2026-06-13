@@ -1,7 +1,12 @@
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { betterAuth } from "better-auth/minimal";
 import { nextCookies } from "better-auth/next-js";
-import { admin, lastLoginMethod, oAuthProxy } from "better-auth/plugins";
+import {
+  admin,
+  lastLoginMethod,
+  oAuthProxy,
+  oidcProvider,
+} from "better-auth/plugins";
 import { bearer } from "better-auth/plugins/bearer";
 import { db } from "@/schema";
 
@@ -44,6 +49,15 @@ export const auth = betterAuth({
       productionURL: `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
     }),
     bearer(),
+    // Turns this app into an OAuth 2.1 / OIDC provider so clients can
+    // authenticate users via the Authorization Code flow. Public clients
+    // (no secret) are supported and PKCE is required. Clients register
+    // themselves through the dynamic client registration endpoint.
+    oidcProvider({
+      loginPage: "/login",
+      requirePKCE: true,
+      allowDynamicClientRegistration: true,
+    }),
     nextCookies(), // Must be the last plugin
   ],
 });
