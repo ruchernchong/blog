@@ -43,7 +43,8 @@
       "cache": false
     },
     "db:drop": {
-      "cache": false
+      "cache": false,
+      "interactive": true
     },
     "db:generate": {
       "cache": false
@@ -52,7 +53,8 @@
       "cache": false
     },
     "db:push": {
-      "cache": false
+      "cache": false,
+      "interactive": true
     },
     "db:pull": {
       "cache": false
