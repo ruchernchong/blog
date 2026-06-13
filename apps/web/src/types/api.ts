@@ -207,3 +207,20 @@ export const reorderPostsSchema = z.object({
 export type CreateSeriesInput = z.infer<typeof createSeriesSchema>;
 export type UpdateSeriesInput = z.infer<typeof updateSeriesSchema>;
 export type ReorderPostsInput = z.infer<typeof reorderPostsSchema>;
+
+/**
+ * Validation schema for an OAuth client's public `clientId` route parameter.
+ */
+export const oauthClientIdSchema = z
+  .string()
+  .min(1, "Client ID is required")
+  .max(255, "Client ID too long");
+
+/**
+ * Validation schema for toggling an OAuth client's disabled state.
+ */
+export const toggleOAuthClientSchema = z.object({
+  disabled: z.boolean(),
+});
+
+export type ToggleOAuthClientInput = z.infer<typeof toggleOAuthClientSchema>;
