@@ -1,6 +1,6 @@
 {
   "tags": ["github-actions", "node"],
   "sentinels": ["package.json"],
-  "detectedAt": "2026-06-13T18:08:33.836Z",
+  "detectedAt": "2026-06-14T15:23:59.661Z",
   "rootPath": "/Users/ruchernchong/Projects/blog"
 }
