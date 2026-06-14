@@ -31,7 +31,15 @@ export async function submitConsent(
       redirectUrl = result.url;
     }
   } catch (error) {
-    logError(AUTH_ERROR.OAUTH_CONSENT_FAILED, error);
+    // Better Auth's APIError carries its detail on `body`/`status`, not on
+    // `message`, so log those explicitly — otherwise the entry is empty.
+    logError(
+      AUTH_ERROR.OAUTH_CONSENT_FAILED,
+      error,
+      error instanceof APIError
+        ? { status: error.status, body: error.body }
+        : undefined,
+    );
 
     // A stale, expired, or already-consumed authorisation request surfaces as
     // a Better Auth APIError (e.g. "request not found"). Return it to the
