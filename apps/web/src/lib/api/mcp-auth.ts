@@ -1,6 +1,7 @@
 import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
 import { eq } from "drizzle-orm";
 import { AUTH_ERROR } from "@/constants/auth-error-ids";
+import { OAUTH_RESOURCE } from "@/lib/api/oauth-protected-resource";
 import { auth } from "@/lib/auth";
 import { logWarning } from "@/lib/logger";
 import { serverClient } from "@/lib/server-client";
@@ -90,7 +91,10 @@ export async function validateMcpAuth(
     try {
       const payload = await serverClient.verifyAccessToken(token, {
         verifyOptions: {
-          audience: process.env.BETTER_AUTH_URL as string,
+          // The provider stamps the OIDC issuer (BASE_URL + /api/auth) into the
+          // token's `aud`/`iss`, so verify against that — not the bare origin.
+          audience: OAUTH_RESOURCE,
+          issuer: OAUTH_RESOURCE,
         },
       });
 
@@ -137,8 +141,17 @@ export async function validateMcpAuth(
           });
         }
       }
-    } catch {
-      // Invalid or non-JWT access token; fall through to the static token.
+    } catch (error) {
+      // A JWT-shaped token that fails here is a real problem (audience/issuer
+      // mismatch, bad signature, expiry); a non-JWT is just the static token
+      // legitimately taking the next branch, so only log the former.
+      if (token.split(".").length === 3) {
+        logWarning("OAuth access token verification failed", {
+          errorId: AUTH_ERROR.OAUTH_TOKEN_VALIDATION_FAILED,
+          message: error instanceof Error ? error.message : String(error),
+        });
+      }
+      // Fall through to the static token.
     }
   }
 
