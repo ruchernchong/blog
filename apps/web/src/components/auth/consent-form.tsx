@@ -3,8 +3,8 @@
 import { Alert, Button, Card, Chip, Spinner, Typography } from "@heroui/react";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
-import { submitConsent } from "@/app/consent/actions";
 import { AUTH_ERROR } from "@/constants/auth-error-ids";
+import { authClient } from "@/lib/auth-client";
 import { logError } from "@/lib/logger";
 
 const SCOPE_DESCRIPTIONS: Record<string, string> = {
@@ -31,23 +31,32 @@ export function ConsentForm({ clientName }: { clientName?: string }) {
     setPendingAction(accept ? "accept" : "deny");
 
     startTransition(async () => {
-      try {
-        const result = await submitConsent(oauthQuery, accept);
-        if (result?.error) {
-          setError(result.error);
-          setPendingAction(null);
-        }
-      } catch (err) {
-        // A successful consent throws NEXT_REDIRECT, which React re-throws here;
-        // only genuine failures (not redirects) should surface an alert.
-        logError(AUTH_ERROR.OAUTH_CONSENT_FAILED, err);
+      const { data, error: consentError } = await authClient.oauth2.consent({
+        accept,
+        // Forward the signed query from the consent URL so the provider can
+        // rebuild the pending authorization request. Calling the endpoint over
+        // HTTP (rather than a server action) gives it the request context it
+        // needs to issue the authorization code on the first attempt.
+        oauth_query: oauthQuery,
+      });
+
+      if (consentError) {
+        logError(AUTH_ERROR.OAUTH_CONSENT_FAILED, consentError);
         setError(
-          err instanceof Error
-            ? err.message
-            : "Unable to complete authorisation",
+          consentError.message ??
+            "This authorisation request has expired. Please start again.",
         );
         setPendingAction(null);
+        return;
       }
+
+      if (data?.redirect && data.url) {
+        window.location.href = data.url;
+        return;
+      }
+
+      setError("Unable to complete authorisation. Please try again.");
+      setPendingAction(null);
     });
   };
 
