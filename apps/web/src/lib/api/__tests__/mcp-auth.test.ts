@@ -44,6 +44,13 @@ vi.mock("drizzle-orm", async (importOriginal) => {
   return { ...actual, eq: vi.fn(() => ({})) };
 });
 
+// Pin OAUTH_RESOURCE so the audience/issuer assertion is independent of the
+// test environment's BETTER_AUTH_URL.
+vi.mock("@/lib/api/oauth-protected-resource", () => ({
+  OAUTH_RESOURCE: "https://auth.test/api/auth",
+}));
+
+import { OAUTH_RESOURCE } from "@/lib/api/oauth-protected-resource";
 import { auth } from "@/lib/auth";
 import { serverClient } from "@/lib/server-client";
 import { db } from "@/schema";
@@ -178,6 +185,24 @@ describe("validateMcpAuth", () => {
       expect(result?.authInfo?.token).toBe("oauth-access-token");
       expect(result?.authInfo?.clientId).toBe("test-client");
       expect(result?.authInfo?.scopes).toEqual(["openid", "email"]);
+    });
+
+    it("should verify the token against the OAuth issuer as audience and issuer", async () => {
+      mockVerifyAccessToken.mockResolvedValue({
+        sub: "user-1",
+        scope: "openid",
+      });
+
+      await validateMcpAuth(
+        makeRequest("oauth-access-token", "/api/usage/ingest"),
+      );
+
+      expect(mockVerifyAccessToken).toHaveBeenCalledWith("oauth-access-token", {
+        verifyOptions: {
+          audience: OAUTH_RESOURCE,
+          issuer: OAUTH_RESOURCE,
+        },
+      });
     });
 
     it("should return null when verification fails", async () => {

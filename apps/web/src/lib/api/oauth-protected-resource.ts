@@ -13,6 +13,16 @@
 
 const BASE_URL = process.env.BETTER_AUTH_URL as string;
 
+/**
+ * The OAuth issuer. Better Auth mounts the provider at `/api/auth`, so the
+ * issuer (and therefore the access-token `aud` claim and the only `resource`
+ * the provider's `checkResource` accepts) is `BASE_URL` + `/api/auth` — NOT the
+ * bare origin. This is the single value the verified token audience, the
+ * published `resource`, and the `resource` clients pass to `/oauth2/authorize`
+ * must all share for an issued JWT to validate.
+ */
+export const OAUTH_RESOURCE = `${BASE_URL}/api/auth`;
+
 /** Scope a token must carry to reach the MCP API. */
 export const MCP_SCOPE = "mcp";
 
@@ -23,9 +33,9 @@ export const PROTECTED_RESOURCE_METADATA_PATH =
 export const protectedResourceMetadataUrl = `${BASE_URL}${PROTECTED_RESOURCE_METADATA_PATH}`;
 
 export const protectedResourceMetadata = {
-  resource: BASE_URL,
-  authorization_servers: [`${BASE_URL}/api/auth`],
-  jwks_uri: `${BASE_URL}/api/auth/jwks`,
+  resource: OAUTH_RESOURCE,
+  authorization_servers: [OAUTH_RESOURCE],
+  jwks_uri: `${OAUTH_RESOURCE}/jwks`,
   scopes_supported: ["openid", "profile", "email", "offline_access", MCP_SCOPE],
   bearer_methods_supported: ["header"],
 };
