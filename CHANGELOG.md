@@ -1,3 +1,41 @@
+## [1.20.0](https://github.com/ruchernchong/blog/compare/v1.19.0...v1.20.0) (2026-06-14)
+
+### Features
+
+* add OAuth provider ([b02b331](https://github.com/ruchernchong/blog/commit/b02b33165662f4aeb572ea6870ee11df46ab830d))
+* add OAuth provider admin dashboard at /studio/oauth-clients ([80299c7](https://github.com/ruchernchong/blog/commit/80299c7db0a5676ad1de515b82501e4084e85bc3))
+* add provider logo URLs ([75e9fe8](https://github.com/ruchernchong/blog/commit/75e9fe8279246b36ff790660d4d663c530b95b8d))
+* add Redis secondary storage for Better Auth ([88ad8cd](https://github.com/ruchernchong/blog/commit/88ad8cdbcdc58d73aec2c3612e34341fd81bf1a1))
+* add search, filters, and pagination to usage breakdown ([d9eea70](https://github.com/ruchernchong/blog/commit/d9eea7085d762c4dc709a37a8a305b457e7624a5))
+* add stats footer to usage og image ([402ac27](https://github.com/ruchernchong/blog/commit/402ac2762b865c9daa3ea4bdf92fdc11e45a1677))
+* add Upstash agent analytics ([c29e50f](https://github.com/ruchernchong/blog/commit/c29e50f49154237a1a859b5766662c080ba075b2))
+* add usage provider metadata ([031504f](https://github.com/ruchernchong/blog/commit/031504f9001e1fe119b8a1a7bdbe77e09904eb80))
+* align usage breakdown pagination with DataGrid footer pattern ([5c45378](https://github.com/ruchernchong/blog/commit/5c453781f1408f744e648e71503b28f411b957b6))
+* arrange usage page as bento grid ([d2b889f](https://github.com/ruchernchong/blog/commit/d2b889f13f32d79ab87280edfb7108ed73309923))
+* cache usage pricing ([99db398](https://github.com/ruchernchong/blog/commit/99db398849782de4b53758a3bf2c70f1b9bf9eb0))
+* cache usage provider names ([30c1895](https://github.com/ruchernchong/blog/commit/30c189557fdc00925f2f35b91ce5cb4e5071d5ad))
+* improve usage breakdown table ([43dc9ef](https://github.com/ruchernchong/blog/commit/43dc9ef948969e68dd262ccb42c69f931b6af96c))
+* migrate to @better-auth/oauth-provider ([d54f6f4](https://github.com/ruchernchong/blog/commit/d54f6f4dad3dff841b73ec73338a35e96fc6195d))
+* store sessions in database ([33aa4cb](https://github.com/ruchernchong/blog/commit/33aa4cbc61e408df90b5fd1c112339ec0265d692))
+
+### Bug Fixes
+
+* allow Vercel preview deployment URLs in allowedHosts ([99d67d2](https://github.com/ruchernchong/blog/commit/99d67d2d631b5a62d0521f28f716b741fdf53401))
+* complete OAuth consent client-side so first attempt connects ([a08efc9](https://github.com/ruchernchong/blog/commit/a08efc9d0f533aa1351ba4e6e8246ad454680d67))
+* harden OAuth provider and address PR review feedback ([6a59cba](https://github.com/ruchernchong/blog/commit/6a59cba5f999644035492a971c4368bd0ce9eac7))
+* log consent APIError body and status, not empty message ([6ca77f8](https://github.com/ruchernchong/blog/commit/6ca77f8275d957413627343f8fc9f01ee53a8265))
+* make future heatmap days non-interactive ([ee83760](https://github.com/ruchernchong/blog/commit/ee83760b0d05801c4f5b37828b695d880f6fa9cb))
+* prevent layout shift when paging usage breakdown ([037317b](https://github.com/ruchernchong/blog/commit/037317b3afe645419a916770b5352040f4448434))
+* redirect authenticated users with no OAuth context on consent page ([cca205e](https://github.com/ruchernchong/blog/commit/cca205e88d1a08448be5359e756a598a3a762ca9))
+* redirect unauthenticated users on consent page and show client name ([02f6534](https://github.com/ruchernchong/blog/commit/02f6534faaf8c2df9264a01072dfb3396c9395ad)), closes [#325](https://github.com/ruchernchong/blog/issues/325)
+* reject non-admin OAuth tokens on MCP route and fix refresh docs ([5ace6a1](https://github.com/ruchernchong/blog/commit/5ace6a1a34fe7216b6f92f1af452058c3b58836e))
+* return consent APIError instead of throwing masked 500 ([169b046](https://github.com/ruchernchong/blog/commit/169b046875f5eb76a541e1d734986c93fa96d52b))
+* use BETTER_AUTH_URL for JWT audience verification ([34273c5](https://github.com/ruchernchong/blog/commit/34273c5fe751b301e061cc8b4ea139d45d07ac60))
+* use BETTER_AUTH_URL for protected resource metadata base URL ([78716f4](https://github.com/ruchernchong/blog/commit/78716f4df936314e6d12835fa9a414f13a2d6ad5))
+* use session cookie check in Studio middleware ([1817f2d](https://github.com/ruchernchong/blog/commit/1817f2db33230914d81936bebaddd057c8186ab5))
+* verify OAuth token audience against issuer, not bare origin ([c55a4a3](https://github.com/ruchernchong/blog/commit/c55a4a39a5ff776a4146c2015cead84aa08212f7))
+* verify OAuth tokens via better-auth/oauth2 with explicit jwksUrl ([46aca73](https://github.com/ruchernchong/blog/commit/46aca7354b6ba1515d238aadb3b40642980782be))
+
 ## [1.19.0](https://github.com/ruchernchong/blog/compare/v1.18.0...v1.19.0) (2026-06-10)
 
 ### Features
