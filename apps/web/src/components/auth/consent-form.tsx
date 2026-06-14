@@ -32,8 +32,14 @@ export function ConsentForm({ clientName }: { clientName?: string }) {
 
     startTransition(async () => {
       try {
-        await submitConsent(oauthQuery, accept);
+        const result = await submitConsent(oauthQuery, accept);
+        if (result?.error) {
+          setError(result.error);
+          setPendingAction(null);
+        }
       } catch (err) {
+        // A successful consent throws NEXT_REDIRECT, which React re-throws here;
+        // only genuine failures (not redirects) should surface an alert.
         logError(AUTH_ERROR.OAUTH_CONSENT_FAILED, err);
         setError(
           err instanceof Error
