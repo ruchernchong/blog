@@ -12,12 +12,10 @@ vi.mock("@/lib/auth", () => {
   };
 });
 
-// Mock the resource client so OAuth token verification is exercised without a
+// Mock the core verifier so OAuth token verification is exercised without a
 // real JWKS roundtrip. verifyAccessToken resolves a JWT payload or throws.
-vi.mock("@/lib/server-client", () => ({
-  serverClient: {
-    verifyAccessToken: vi.fn(),
-  },
+vi.mock("better-auth/oauth2", () => ({
+  verifyAccessToken: vi.fn(),
 }));
 
 // Mock the database layer so the user lookup is exercised without a real
@@ -50,9 +48,9 @@ vi.mock("@/lib/api/oauth-protected-resource", () => ({
   OAUTH_RESOURCE: "https://auth.test/api/auth",
 }));
 
+import { verifyAccessToken } from "better-auth/oauth2";
 import { OAUTH_RESOURCE } from "@/lib/api/oauth-protected-resource";
 import { auth } from "@/lib/auth";
-import { serverClient } from "@/lib/server-client";
 import { db } from "@/schema";
 import { validateMcpAuth } from "../mcp-auth";
 
@@ -60,8 +58,9 @@ const mockGetSession = auth.api.getSession as unknown as ReturnType<
   typeof vi.fn
 >;
 
-const mockVerifyAccessToken =
-  serverClient.verifyAccessToken as unknown as ReturnType<typeof vi.fn>;
+const mockVerifyAccessToken = verifyAccessToken as unknown as ReturnType<
+  typeof vi.fn
+>;
 
 const mockUserLimit = (
   db.select as unknown as () => { limit: ReturnType<typeof vi.fn> }
@@ -198,6 +197,7 @@ describe("validateMcpAuth", () => {
       );
 
       expect(mockVerifyAccessToken).toHaveBeenCalledWith("oauth-access-token", {
+        jwksUrl: `${OAUTH_RESOURCE}/jwks`,
         verifyOptions: {
           audience: OAUTH_RESOURCE,
           issuer: OAUTH_RESOURCE,

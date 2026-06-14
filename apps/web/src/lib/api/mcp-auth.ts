@@ -1,11 +1,14 @@
 import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
+import { verifyAccessToken } from "better-auth/oauth2";
 import { eq } from "drizzle-orm";
 import { AUTH_ERROR } from "@/constants/auth-error-ids";
 import { OAUTH_RESOURCE } from "@/lib/api/oauth-protected-resource";
 import { auth } from "@/lib/auth";
 import { logWarning } from "@/lib/logger";
-import { serverClient } from "@/lib/server-client";
 import { db, oauthClient, user } from "@/schema";
+
+/** Provider JWKS endpoint used to verify access-token signatures locally. */
+const OAUTH_JWKS_URL = `${OAUTH_RESOURCE}/jwks`;
 
 type McpUser = {
   id: string;
@@ -89,7 +92,12 @@ export async function validateMcpAuth(
   // provider's JWKS, then the owning user (and role) is loaded by subject.
   if (token) {
     try {
-      const payload = await serverClient.verifyAccessToken(token, {
+      // Verify locally against the provider's published JWKS. We pass the
+      // `jwksUrl` explicitly (rather than relying on the resource-client wrapper
+      // to resolve it) so verification is self-contained in the serverless
+      // runtime — otherwise a valid token fails with "no token payload".
+      const payload = await verifyAccessToken(token, {
+        jwksUrl: OAUTH_JWKS_URL,
         verifyOptions: {
           // The provider stamps the OIDC issuer (BASE_URL + /api/auth) into the
           // token's `aud`/`iss`, so verify against that — not the bare origin.
