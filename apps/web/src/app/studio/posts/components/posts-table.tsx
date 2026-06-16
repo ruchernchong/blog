@@ -397,9 +397,11 @@ export const PostsTable = () => {
                             onChange={() => toggleAllPosts()}
                             aria-label="Select all posts"
                           >
-                            <Checkbox.Control>
-                              <Checkbox.Indicator />
-                            </Checkbox.Control>
+                            <Checkbox.Content>
+                              <Checkbox.Control>
+                                <Checkbox.Indicator />
+                              </Checkbox.Control>
+                            </Checkbox.Content>
                           </Checkbox>
                         </th>
                         <th className="px-6 py-3 text-left font-medium text-sm">
@@ -436,9 +438,11 @@ export const PostsTable = () => {
                               onChange={() => togglePostSelection(post.id)}
                               aria-label={`Select ${post.title}`}
                             >
-                              <Checkbox.Control>
-                                <Checkbox.Indicator />
-                              </Checkbox.Control>
+                              <Checkbox.Content>
+                                <Checkbox.Control>
+                                  <Checkbox.Indicator />
+                                </Checkbox.Control>
+                              </Checkbox.Content>
                             </Checkbox>
                           </td>
                           <td className="px-6 py-4">
