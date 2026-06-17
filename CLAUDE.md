@@ -6,12 +6,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Development
 
-- `pnpm dev` - Start the web development server via Turborepo
+- `pnpm dev` - Start the web development server via Turborepo (served on a `portless` `.localhost` URL, not raw `localhost:3000`)
 - `pnpm build` - Build all workspace packages
 - `pnpm start` - Start the web production server
 - `pnpm lint` - Run linting across workspaces with Biome
 - `pnpm format` - Format code with Biome
 - `pnpm typecheck` - TypeScript type checking across workspaces
+
+### Documentation Site
+
+- `pnpm docs:dev` - Start the `@workspace/docs` Fumadocs site (Next.js + `fumadocs-ui`/`fumadocs-mdx`)
+- `pnpm docs:build` - Build the docs site
+- `pnpm docs:typecheck` - Type check the docs site
 
 ### Database
 
@@ -184,13 +190,14 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 
 ```
 apps/
-└── web/              # @workspace/web Next.js app for ruchern.dev
-    ├── src/app/      # App Router routes, Studio, API routes, and auth pages
-    ├── src/components/
-    ├── src/lib/      # Web-owned queries, services, API utilities, and OG helpers
-    ├── src/schema/   # Drizzle ORM database schemas
-    ├── public/
-    └── migrations/
+├── web/              # @workspace/web Next.js app for ruchern.dev
+│   ├── src/app/      # App Router routes, Studio, API routes, and auth pages
+│   ├── src/components/
+│   ├── src/lib/      # Web-owned queries, services, API utilities, and OG helpers
+│   ├── src/schema/   # Drizzle ORM database schemas
+│   ├── public/
+│   └── migrations/
+└── docs/             # @workspace/docs Fumadocs documentation site
 packages/
 ├── mcp/              # @workspace/mcp private MCP server package
 └── usage/            # @workspace/usage usage parsers, pricing, and heatmap helpers
