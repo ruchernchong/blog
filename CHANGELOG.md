@@ -1,3 +1,9 @@
+## [1.21.0](https://github.com/ruchernchong/blog/compare/v1.20.0...v1.21.0) (2026-06-21)
+
+### Features
+
+* add top model to usage ([cc33fea](https://github.com/ruchernchong/blog/commit/cc33feafcf52acf475b778ae828f007654b2de08))
+
 ## [1.20.0](https://github.com/ruchernchong/blog/compare/v1.19.0...v1.20.0) (2026-06-14)
 
 ### Features
