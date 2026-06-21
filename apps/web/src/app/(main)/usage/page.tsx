@@ -56,7 +56,7 @@ export default async function UsagePage() {
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
-      <div className="flex flex-col gap-2 lg:col-span-5">
+      <div className="flex flex-col gap-2 lg:col-span-4">
         <PageTitle
           title="Usage"
           description="Tokens and cost across my AI coding agents over time."
@@ -75,10 +75,11 @@ export default async function UsagePage() {
         )}
       </div>
 
-      <section className="lg:col-span-7">
+      <section className="lg:col-span-8">
         <UsageStats
           summary={profile.summary}
           contributions={profile.contributions}
+          byModel={profile.byModel}
         />
       </section>
 

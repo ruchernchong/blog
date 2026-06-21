@@ -1,24 +1,31 @@
 import { KPI, KPIGroup, NumberValue } from "@heroui-pro/react";
 import {
+  AiBrain02Icon,
   AnalyticsUpIcon,
   DatabaseIcon,
   DollarCircleIcon,
 } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { DayContribution, UsageSummary } from "@workspace/usage/types";
+import type {
+  DayContribution,
+  UsageBreakdownRow,
+  UsageSummary,
+} from "@workspace/usage/types";
 import { type ComponentProps, Fragment, type ReactNode } from "react";
 
 interface UsageStatsProps {
   summary: UsageSummary;
   contributions: DayContribution[];
+  byModel: UsageBreakdownRow[];
 }
 
 interface UsageStatCardProps {
   title: string;
   icon: IconSvgElement;
   status: "success" | "warning" | "danger";
-  value: number;
+  value?: number;
+  valueContent?: ReactNode;
   footer: ReactNode;
   chartData: { value: number }[];
   chartColor: string;
@@ -56,6 +63,7 @@ function UsageStatCard({
   icon,
   status,
   value,
+  valueContent,
   footer,
   chartData,
   chartColor,
@@ -70,7 +78,9 @@ function UsageStatCard({
         <KPI.Title>{title}</KPI.Title>
       </KPI.Header>
       <KPI.Content>
-        <KPI.Value locale="en-SG" value={value} {...valueProps} />
+        {valueContent ?? (
+          <KPI.Value locale="en-SG" value={value ?? 0} {...valueProps} />
+        )}
       </KPI.Content>
       <KPI.Chart
         color={chartColor}
@@ -85,7 +95,11 @@ function UsageStatCard({
   );
 }
 
-export function UsageStats({ summary, contributions }: UsageStatsProps) {
+export function UsageStats({
+  summary,
+  contributions,
+  byModel,
+}: UsageStatsProps) {
   const trailingDays = contributions.slice(-SPARKLINE_DAYS);
   const costSparkline = trailingDays.map((day) => ({
     value: day.totals.cost ?? 0,
@@ -94,6 +108,11 @@ export function UsageStats({ summary, contributions }: UsageStatsProps) {
     value: day.totals.tokens,
   }));
   const activeDayAverageSparkline = trailingActiveDayAverage(trailingDays);
+  const topModel = byModel[0];
+  const topModelShare =
+    topModel && summary.totalTokens > 0
+      ? topModel.tokens / summary.totalTokens
+      : 0;
 
   const cards: (UsageStatCardProps & { key: string })[] = [
     {
@@ -143,6 +162,36 @@ export function UsageStats({ summary, contributions }: UsageStatsProps) {
       valueProps: {
         formatOptions: USD_COMPACT_FORMAT_OPTIONS,
       },
+    },
+    {
+      key: "top-model",
+      title: "Top Model",
+      icon: AiBrain02Icon,
+      status: "success",
+      valueContent: (
+        <dd
+          className="truncate font-semibold text-2xl text-foreground tracking-tight"
+          title={summary.favouriteModel ?? undefined}
+        >
+          {summary.favouriteModel ?? "No usage yet"}
+        </dd>
+      ),
+      footer: topModel ? (
+        <>
+          <NumberValue
+            formatOptions={{ maximumFractionDigits: 1, style: "percent" }}
+            locale="en-SG"
+            value={topModelShare}
+          />{" "}
+          of all tokens
+        </>
+      ) : (
+        "No model usage yet"
+      ),
+      chartData: topModel
+        ? topModel.sparkline.map((value) => ({ value }))
+        : tokenSparkline,
+      chartColor: "var(--chart-1)",
     },
   ];
 
