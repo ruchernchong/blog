@@ -1,6 +1,6 @@
 ---
 name: design-language-system
-description: Maintains visual consistency across portfolio UI. Use when creating or modifying components, styling pages, or ensuring design consistency. The system is "Engineering Notebook" — HeroUI default theme tokens (neutral paper/ink + blue signal accent), three type roles, and a monospace annotation signature.
+description: Maintains visual consistency across portfolio UI. Use when creating or modifying components, styling pages, or ensuring design consistency. The system is "Engineering Notebook" — a monochrome paper/ink base with a single coral accent, three type roles, and a monospace annotation signature.
 ---
 
 # Design Language System — Engineering Notebook
@@ -8,15 +8,16 @@ description: Maintains visual consistency across portfolio UI. Use when creating
 The full source of truth lives in **`DESIGN.md`** at the repo root. Read it before
 styling. Summary:
 
-## Colour — HeroUI default theme tokens (no bespoke palette)
+## Colour — monochrome base + a single coral accent
 
-`globals.css` defines the standard HeroUI default token set; all UI inherits it.
-Neutral paper background, near-black ink foreground, graphite muted, hairline
-borders, and a single **blue signal accent** (`--accent`,
-`oklch(0.6204 0.195 253.83)`) for links, focus, active nav, CTAs, and chart
-traces. `--success`/`--warning`/`--danger` stay semantic. Dark mode is HeroUI's
-default `.dark`, toggled via `next-themes`. Do not add a second accent or
-hand-rolled palette tokens.
+`globals.css` uses HeroUI's neutral default tokens for the base (paper background,
+near-black ink foreground, graphite muted, hairline borders) and overrides
+`--accent` to a single **coral signal** (`oklch(0.6 0.18 25)`) for links, focus,
+active nav, CTAs, and chart traces. `--success`/`--warning`/`--danger` stay
+semantic. The same coral accent is shared across light and dark. Dark mode is
+HeroUI's default `.dark`; the site defaults to **light** and is toggled via a
+Light/Dark segmented control (`next-themes`, no system option). Do not add a
+second accent or hand-rolled palette tokens.
 
 ## Typography — three roles (self-hosted via `next/font`)
 

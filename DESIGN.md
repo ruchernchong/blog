@@ -12,19 +12,21 @@ identity**.
 
 ## Foundations
 
-### Colour — use the HeroUI default theme tokens
+### Colour — monochrome base, one coral accent
 
-Do **not** hand-roll a bespoke palette. `globals.css` defines the standard HeroUI
-default token set; the rest of the UI (including HeroUI Pro components) inherits
-it. Secondary/hover/soft tokens derive automatically via `color-mix`.
+Do **not** hand-roll a bespoke palette beyond the accent. `globals.css` uses
+HeroUI's neutral default tokens for the base; the rest of the UI (including HeroUI
+Pro components) inherits it. Secondary/hover/soft tokens derive automatically via
+`color-mix`.
 
 - `--background` neutral paper · `--foreground`/`--eclipse` near-black ink
 - `--muted` graphite · `--border`/`--separator` hairline rule
-- `--accent` the single **blue signal** (`oklch(0.6204 0.195 253.83)`) — links,
-  focus, active nav, chart traces, CTAs
+- `--accent` the single **coral signal** (`oklch(0.6 0.18 25)`) — links, focus,
+  active nav, chart traces, CTAs
 - `--success`/`--warning`/`--danger` stay semantic
-- Dark mode is HeroUI's default `.dark`; the accent lightens for contrast.
-  Toggled via `next-themes` (`attribute="class"`, system default).
+- The same coral accent is shared across light and dark. Dark mode is HeroUI's
+  default `.dark`; the site defaults to **light** and is toggled via a Light/Dark
+  segmented control (`next-themes`, `attribute="class"`, no system option).
 
 The accent is the only colour. Everything else is paper/ink/graphite.
 
