@@ -37,8 +37,12 @@ The accent is the only colour. Everything else is paper/ink/graphite.
 
 ### Layout
 
-- Reading surfaces constrain to `max-w-2xl`/`max-w-3xl`; data surfaces
-  (dashboard/usage) go wider. Generous whitespace (`gap-6/8/12/16`).
+- One shared frame holds the whole site: the header, footer, `(main)` content
+  area, and the wide data surfaces (dashboard, usage) all cap at `max-w-7xl` and
+  centre, so their left/right edges always line up.
+- Reading surfaces (home, about, projects, blog index + article) centre a single
+  `max-w-3xl` reading column inside that frame — one width for every text page.
+  Data surfaces fill the full frame. Generous whitespace (`gap-6/8/12/16`).
 - Hairline rules only where they carry structural meaning (header divider, list
   separators) — never as decorative newspaper columns.
 
@@ -74,4 +78,5 @@ on a Next `Link`. Icons from `@hugeicons/*`.
 - **Don't** use emoji in headings, labels, or titles.
 - **Don't** add decorative borders/dividers, gradient orbs, or drop shadows the
   HeroUI tokens don't already provide.
-- **Don't** centre long-form content or hero text; the notebook is left-aligned.
+- **Do** centre the `max-w-3xl` reading column within the shared `max-w-7xl`
+  frame; keep one reading width across every text page.

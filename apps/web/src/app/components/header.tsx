@@ -20,7 +20,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-border border-b bg-background/85 backdrop-blur">
-      <div className="container mx-auto flex h-14 items-center justify-between gap-4 px-4">
+      <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-4 px-4">
         <Link
           href="/"
           aria-label={`${SITE_NAME}, home`}
@@ -76,7 +76,7 @@ export function Header() {
           aria-label="Mobile navigation"
           className="border-border border-t bg-background md:hidden"
         >
-          <div className="container mx-auto flex flex-col px-4 py-2">
+          <div className="mx-auto flex w-full max-w-7xl flex-col px-4 py-2">
             {navLinks.map(({ title, href }) => (
               <Link
                 key={title}

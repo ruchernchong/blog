@@ -9,7 +9,7 @@ import { CurrentYear } from "./current-year";
 export function Footer() {
   return (
     <footer className="border-border border-t">
-      <div className="container mx-auto flex flex-col items-start justify-between gap-4 px-4 py-8 sm:flex-row sm:items-center">
+      <div className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-4 px-4 py-8 sm:flex-row sm:items-center">
         <AnnotationRail>
           <span>
             ©{" "}

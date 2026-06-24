@@ -83,7 +83,7 @@ async function PostContent({ slug }: { slug: string }) {
       <ScrollProgress />
       <StructuredData data={post.metadata.structuredData} />
       <StatsBar slug={post.slug} />
-      <article className="mx-auto flex max-w-2xl flex-col gap-8">
+      <article className="mx-auto flex max-w-3xl flex-col gap-8">
         <header className="flex flex-col gap-4">
           <h1 className="font-display font-semibold text-4xl text-foreground tracking-tight md:text-5xl">
             {post.title}

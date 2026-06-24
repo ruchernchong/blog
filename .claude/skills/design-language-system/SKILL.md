@@ -36,8 +36,11 @@ hand-rolled palette tokens.
 
 - Lead pages with `PageHeader`; tag content with `AnnotationRail`; keep the accent
   to links/focus/CTAs/active states.
+- Layout: header, footer, `(main)`, and data surfaces share one centred
+  `max-w-7xl` frame; text pages centre a single `max-w-3xl` reading column inside
+  it; data surfaces (dashboard/usage) fill the frame.
 - Spacing: `flex gap-*`, even values (`gap-2/4/6/8/12`), prefer `margin-bottom`.
 - `motion/react-client` for RSC reveals; respect `prefers-reduced-motion`.
 - HeroUI Pro first, then OSS; look components up via the `heroui-pro` MCP.
 - No emoji in headings/labels/titles; no decorative borders, gradient orbs, or
-  extra drop shadows; left-align long-form and hero content.
+  extra drop shadows.
