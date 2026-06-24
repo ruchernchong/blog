@@ -7,10 +7,11 @@
 /*
  * Engineering Notebook identity.
  *
- * Colour uses the HeroUI DEFAULT theme tokens (neutral paper/ink with the
- * default blue signal accent) — we keep HeroUI's defaults rather than a bespoke
- * palette. The identity is carried by typography (display / body / mono roles),
- * the monospace annotation-rail signature, and layout. Dark mode is HeroUI's
+ * A monochrome ink-on-paper base (HeroUI's neutral default tokens) with a single
+ * restrained coral as the only chromatic signal — carried on links, the focus
+ * ring, the `::` eyebrow prefix, and the chart ramp. The identity itself is
+ * typographic (display / body / mono roles) and the monospace annotation-rail
+ * signature; colour is just the accent layer on top. Dark mode is HeroUI's
  * default `.dark` theme, toggled via next-themes (attribute="class").
  */
 @theme inline {
@@ -72,8 +73,8 @@
     --default: oklch(94% 0.001 286.375);
     --default-foreground: var(--eclipse);
 
-    /* Brand / primary action = HeroUI default accent (blue signal) */
-    --accent: oklch(0.6204 0.195 253.83);
+    /* Brand / primary action = coral signal */
+    --accent: oklch(0.6 0.18 25);
     --accent-foreground: var(--snow);
 
     /* Form Field Defaults - Colors */
@@ -100,7 +101,7 @@
     --border: oklch(90% 0.004 286.32);
     --separator: oklch(92% 0.004 286.32);
     --focus: var(--accent);
-    --link: var(--foreground);
+    --link: var(--accent);
 
     /* Backdrop */
     --backdrop: rgba(0, 0, 0, 0.5);
@@ -170,7 +171,7 @@
     --border: oklch(28% 0.006 286.033);
     --separator: oklch(25% 0.006 286.033);
     --focus: var(--accent);
-    --link: var(--foreground);
+    --link: var(--accent);
 
     /* Backdrop */
     --backdrop: rgba(0, 0, 0, 0.6);
