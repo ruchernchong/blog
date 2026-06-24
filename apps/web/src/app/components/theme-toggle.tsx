@@ -21,8 +21,14 @@ export function ThemeToggle() {
     setMounted(true);
   }, []);
 
+  // Until mounted, render a fixed state so server and first client render match
+  // (next-themes reads localStorage on the client, which would otherwise differ).
   const current = (theme ?? "system") as (typeof ORDER)[number];
   const next = ORDER[(ORDER.indexOf(current) + 1) % ORDER.length];
+  const icon = mounted ? ICONS[current] : ICONS.system;
+  const label = mounted
+    ? `Switch theme — currently ${current}`
+    : "Toggle theme";
 
   return (
     <Tooltip delay={0}>
@@ -30,12 +36,12 @@ export function ThemeToggle() {
         isIconOnly
         size="sm"
         variant="ghost"
-        aria-label={`Theme: ${current}. Switch to ${next} theme.`}
+        aria-label={label}
         onPress={() => setTheme(next)}
       >
-        <HugeiconsIcon icon={ICONS[mounted ? current : "system"]} size={18} />
+        <HugeiconsIcon icon={icon} size={18} />
       </Button>
-      <Tooltip.Content>Theme: {current}</Tooltip.Content>
+      <Tooltip.Content>{label}</Tooltip.Content>
     </Tooltip>
   );
 }

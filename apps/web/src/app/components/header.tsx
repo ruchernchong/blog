@@ -27,7 +27,7 @@ export function Header() {
           className="flex items-center gap-2"
         >
           <Logo priority />
-          <span className="font-mono text-foreground text-sm">ru-chern</span>
+          <span className="font-mono text-foreground text-sm">home</span>
         </Link>
 
         {/* Desktop nav */}
