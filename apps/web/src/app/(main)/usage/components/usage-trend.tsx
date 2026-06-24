@@ -18,7 +18,7 @@ export function UsageTrend({ className, contributions }: UsageTrendProps) {
   }));
 
   return (
-    <Card className={className}>
+    <Card variant="transparent" className={className}>
       <Card.Header>
         <Card.Title>Tokens per day</Card.Title>
         <Card.Description>Daily token usage across all agents</Card.Description>

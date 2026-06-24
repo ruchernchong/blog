@@ -1,9 +1,8 @@
 import { Card } from "@heroui/react";
-import { Tag01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import Link from "next/link";
-import { Typography } from "@/components/typography";
+import { AnnotationRail } from "@/components/annotation-rail";
+import { Eyebrow } from "@/components/eyebrow";
 import { getRelatedPosts } from "@/lib/services/related-posts";
 
 interface RelatedPostsProps {
@@ -16,49 +15,40 @@ export const RelatedPosts = async ({ slug }: RelatedPostsProps) => {
   if (!relatedPosts.length) return null;
 
   return (
-    <div className="not-prose flex flex-col gap-8">
-      <Typography variant="h2">Related Articles</Typography>
+    <section className="not-prose flex flex-col gap-6">
+      <Eyebrow>Related</Eyebrow>
       <div className="grid gap-4 md:grid-cols-2">
         {relatedPosts.map((post) => {
           if (!post.publishedAt) return null;
 
-          const formattedDate = format(post.publishedAt, "dd MMM yyyy");
-
           return (
-            <Card key={post.slug}>
+            <Card key={post.slug} variant="transparent">
               <Link
                 href={`/blog/${post.slug}`}
-                className="flex h-full flex-col"
+                className="group flex flex-col gap-2"
               >
-                <Card.Header>
-                  <div className="flex items-center justify-between gap-4">
-                    <time
-                      dateTime={formatISO(post.publishedAt)}
-                      title={formattedDate}
-                      className="text-muted text-sm"
-                    >
-                      {formattedDate}
-                    </time>
-                    <div className="flex items-center gap-2 text-muted text-sm">
-                      <HugeiconsIcon
-                        icon={Tag01Icon}
-                        size={16}
-                        strokeWidth={2}
-                      />
-                      <span>
-                        {post.commonTagCount}{" "}
-                        {post.commonTagCount === 1 ? "tag" : "tags"}
-                      </span>
-                    </div>
-                  </div>
-                  <Card.Title className="capitalize">{post.title}</Card.Title>
-                </Card.Header>
-                <Card.Content>{post.summary}</Card.Content>
+                <h3 className="font-display font-medium text-foreground text-lg group-hover:text-accent">
+                  {post.title}
+                </h3>
+                {post.summary && (
+                  <p className="line-clamp-2 text-muted text-sm leading-relaxed">
+                    {post.summary}
+                  </p>
+                )}
+                <AnnotationRail>
+                  <time dateTime={formatISO(post.publishedAt)}>
+                    {format(post.publishedAt, "dd MMM yyyy")}
+                  </time>
+                  <span>
+                    {post.commonTagCount}{" "}
+                    {post.commonTagCount === 1 ? "tag" : "tags"}
+                  </span>
+                </AnnotationRail>
               </Link>
             </Card>
           );
         })}
       </div>
-    </div>
+    </section>
   );
 };

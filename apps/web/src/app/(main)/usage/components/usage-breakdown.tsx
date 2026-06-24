@@ -722,7 +722,7 @@ export function UsageBreakdown({
   const hasActiveFilters = search !== "" || providerFilter !== "all";
 
   return (
-    <Card className={className}>
+    <Card variant="transparent" className={className}>
       <Card.Header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">

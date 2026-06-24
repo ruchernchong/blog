@@ -1,5 +1,4 @@
-import { cn } from "@heroui/react";
-import { cardVariants } from "@heroui/styles";
+import { Card } from "@heroui/react";
 import { format, formatISO } from "date-fns";
 import type { Metadata, Route } from "next";
 import Link from "next/link";
@@ -60,25 +59,24 @@ export default async function BlogPage() {
       {featured && (
         <section className="flex flex-col gap-4">
           <Eyebrow>Featured</Eyebrow>
-          <Link
-            href={featured.metadata.canonical as Route}
-            className={cn(
-              cardVariants({ variant: "transparent" }).base(),
-              "group flex flex-col gap-3 hover:border-accent/40",
-            )}
-          >
-            <h2 className="font-display font-semibold text-2xl text-foreground group-hover:text-accent">
-              {featured.title}
-            </h2>
-            {featured.summary && (
-              <p className="text-muted leading-relaxed">{featured.summary}</p>
-            )}
-            <PostMeta
-              publishedAt={featured.publishedAt}
-              readingTime={featured.metadata.readingTime}
-              tags={featured.tags}
-            />
-          </Link>
+          <Card variant="transparent">
+            <Link
+              href={featured.metadata.canonical as Route}
+              className="group flex flex-col gap-3"
+            >
+              <h2 className="font-display font-semibold text-2xl text-foreground group-hover:text-accent">
+                {featured.title}
+              </h2>
+              {featured.summary && (
+                <p className="text-muted leading-relaxed">{featured.summary}</p>
+              )}
+              <PostMeta
+                publishedAt={featured.publishedAt}
+                readingTime={featured.metadata.readingTime}
+                tags={featured.tags}
+              />
+            </Link>
+          </Card>
         </section>
       )}
 

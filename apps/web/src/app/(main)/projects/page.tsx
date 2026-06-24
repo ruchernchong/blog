@@ -1,5 +1,4 @@
-import { cn } from "@heroui/react";
-import { cardVariants } from "@heroui/styles";
+import { Card } from "@heroui/react";
 import type { Metadata, Route } from "next";
 import globalMetadata from "@/app/metadata";
 import { AnnotationRail } from "@/components/annotation-rail";
@@ -74,15 +73,9 @@ export default function ProjectsPage() {
       {featured.length > 0 && (
         <section className="flex flex-col gap-6">
           <Eyebrow>Featured</Eyebrow>
-          <ul className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
             {featured.map((project) => (
-              <li
-                key={project.slug}
-                className={cn(
-                  cardVariants({ variant: "transparent" }).base(),
-                  "flex flex-col gap-3",
-                )}
-              >
+              <Card key={project.slug} variant="transparent" className="gap-3">
                 <div className="flex items-baseline justify-between gap-4">
                   <h2 className="font-display font-medium text-2xl text-foreground">
                     {project.name}
@@ -99,9 +92,9 @@ export default function ProjectsPage() {
                     <span key={skill}>{skill}</span>
                   ))}
                 </AnnotationRail>
-              </li>
+              </Card>
             ))}
-          </ul>
+          </div>
         </section>
       )}
 

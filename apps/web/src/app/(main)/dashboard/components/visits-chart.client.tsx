@@ -25,10 +25,7 @@ const formatDate = (date: string) =>
 
 export function VisitsChartClient({ data }: VisitsChartClientProps) {
   return (
-    <Card>
-      <Card.Header>
-        <Card.Title>Recent Site Visits, 90 days</Card.Title>
-      </Card.Header>
+    <Card variant="transparent">
       <Card.Content>
         <LineChart data={data} height={300}>
           <LineChart.Grid vertical={false} />

@@ -1,5 +1,5 @@
-import { cn } from "@heroui/react";
-import { buttonVariants, cardVariants } from "@heroui/styles";
+import { Card } from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
 import { format, formatISO } from "date-fns";
 import * as motion from "motion/react-client";
 import type { Route } from "next";
@@ -147,17 +147,15 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <ul className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
             {featured.map((project) => {
               const live = liveUrl(project.links);
               const repo = repoUrl(project.links);
               return (
-                <li
+                <Card
                   key={project.slug}
-                  className={cn(
-                    cardVariants({ variant: "transparent" }).base(),
-                    "flex flex-col gap-3",
-                  )}
+                  variant="transparent"
+                  className="gap-3"
                 >
                   <div className="flex items-baseline justify-between gap-4">
                     <h3 className="font-display font-medium text-foreground text-xl">
@@ -192,10 +190,10 @@ export default async function HomePage() {
                       <span key={skill}>{skill}</span>
                     ))}
                   </AnnotationRail>
-                </li>
+                </Card>
               );
             })}
-          </ul>
+          </div>
         </section>
 
         {/* Latest writing */}

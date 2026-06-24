@@ -71,7 +71,7 @@ export function UsageTokenMix({ className, tokenMix }: UsageTokenMixProps) {
   );
 
   return (
-    <Card className={className}>
+    <Card variant="transparent" className={className}>
       <Card.Header>
         <Card.Title>Token mix</Card.Title>
         <Card.Description>
