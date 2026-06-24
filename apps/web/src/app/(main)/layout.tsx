@@ -8,7 +8,7 @@ export default function MainLayout({
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <Header />
-      <main className="mx-auto w-full max-w-7xl grow px-4 py-12 md:py-16">
+      <main className="container mx-auto grow px-4 py-12 md:py-16">
         {children}
       </main>
       <Footer />

@@ -62,7 +62,7 @@ export default function ProjectsPage() {
   const archive = projects.filter((project) => !project.featured);
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-16">
+    <div className="flex flex-col gap-16">
       <PageHeader
         eyebrow="Build log"
         title="Projects"

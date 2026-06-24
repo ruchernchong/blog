@@ -51,7 +51,7 @@ export default function AboutPage() {
   return (
     <>
       <StructuredData data={structuredData} />
-      <div className="mx-auto flex max-w-3xl flex-col gap-16">
+      <div className="flex flex-col gap-16">
         <PageHeader eyebrow="About" title="Ru Chern" />
 
         <section className="flex flex-col gap-6">

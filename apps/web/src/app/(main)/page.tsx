@@ -68,7 +68,7 @@ export default async function HomePage() {
   return (
     <>
       <StructuredData data={structuredData} />
-      <div className="mx-auto flex max-w-3xl flex-col gap-20">
+      <div className="flex flex-col gap-20">
         {/* Hero */}
         <motion.section
           variants={stagger}

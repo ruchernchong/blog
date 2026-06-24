@@ -52,7 +52,7 @@ export default async function BlogPage() {
   const seriesWithPosts = series.filter((s) => s.posts.length > 0);
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-16">
+    <div className="flex flex-col gap-16">
       <PageHeader eyebrow="Writing" title="Writing" description={description} />
 
       {featured && (
