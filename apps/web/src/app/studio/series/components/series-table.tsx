@@ -1,14 +1,17 @@
 "use client";
 
+import type { Selection } from "@heroui/react";
 import {
   AlertDialog,
   Button,
   Card,
   Checkbox,
   Chip,
+  cn,
   Input,
   ListBox,
   Select,
+  Table,
   TextField,
 } from "@heroui/react";
 import { buttonVariants } from "@heroui/styles";
@@ -95,23 +98,11 @@ export function SeriesTable() {
     });
   };
 
-  const toggleSeriesSelection = (seriesId: string) => {
-    setSelectedSeries((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(seriesId)) {
-        newSet.delete(seriesId);
-      } else {
-        newSet.add(seriesId);
-      }
-      return newSet;
-    });
-  };
-
-  const toggleAllSeries = () => {
-    if (selectedSeries.size === filteredSeries.length) {
-      setSelectedSeries(new Set());
+  const handleSelectionChange = (keys: Selection) => {
+    if (keys === "all") {
+      setSelectedSeries(new Set(filteredSeries.map((series) => series.id)));
     } else {
-      setSelectedSeries(new Set(filteredSeries.map((s) => s.id)));
+      setSelectedSeries(new Set(Array.from(keys, (key) => String(key))));
     }
   };
 
@@ -312,175 +303,176 @@ export function SeriesTable() {
             </Card.Title>
           </Card.Header>
           <Card.Content className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="w-12 px-6 py-3">
-                      <Checkbox
-                        isSelected={
-                          filteredSeries.length > 0 &&
-                          selectedSeries.size === filteredSeries.length
-                        }
-                        onChange={() => toggleAllSeries()}
-                        aria-label="Select all series"
-                      >
+            <Table>
+              <Table.ScrollContainer>
+                <Table.Content
+                  aria-label="All series"
+                  className="w-full"
+                  selectionMode="multiple"
+                  selectedKeys={selectedSeries}
+                  onSelectionChange={handleSelectionChange}
+                >
+                  <Table.Header>
+                    <Table.Column className="w-12 pr-0">
+                      <Checkbox aria-label="Select all series" slot="selection">
                         <Checkbox.Content>
                           <Checkbox.Control>
                             <Checkbox.Indicator />
                           </Checkbox.Control>
                         </Checkbox.Content>
                       </Checkbox>
-                    </th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">
+                    </Table.Column>
+                    <Table.Column isRowHeader className="font-medium text-sm">
                       Title
-                    </th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">
+                    </Table.Column>
+                    <Table.Column className="font-medium text-sm">
                       Status
-                    </th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">
+                    </Table.Column>
+                    <Table.Column className="font-medium text-sm">
                       Updated
-                    </th>
-                    <th className="px-6 py-3 text-right font-medium text-sm">
+                    </Table.Column>
+                    <Table.Column className="text-right font-medium text-sm">
                       Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredSeries.map((series) => (
-                    <tr
-                      key={series.id}
-                      className={`border-b last:border-0 hover:bg-default/50 ${
-                        series.deletedAt ? "opacity-60" : ""
-                      }`}
-                    >
-                      <td className="px-6 py-4">
-                        <Checkbox
-                          isSelected={selectedSeries.has(series.id)}
-                          onChange={() => toggleSeriesSelection(series.id)}
-                          aria-label={`Select ${series.title}`}
-                        >
-                          <Checkbox.Content>
-                            <Checkbox.Control>
-                              <Checkbox.Indicator />
-                            </Checkbox.Control>
-                          </Checkbox.Content>
-                        </Checkbox>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col">
-                          <span className="font-medium">{series.title}</span>
-                          <span className="text-muted text-xs">
-                            {series.slug}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-wrap gap-2">
-                          {series.deletedAt ? (
-                            <Chip size="sm" variant="soft" color="danger">
-                              deleted
-                            </Chip>
-                          ) : (
-                            <Chip
-                              size="sm"
-                              variant="soft"
-                              color={
-                                series.status === "published"
-                                  ? "success"
-                                  : "warning"
-                              }
-                            >
-                              {series.status}
-                            </Chip>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-muted text-sm">
-                        {new Date(series.updatedAt).toLocaleDateString(
-                          "en-SG",
-                          {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          },
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-4">
-                          {series.deletedAt ? (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onPress={() => handleRestore(series.id)}
-                              isDisabled={isPending}
-                            >
-                              {isPending ? "Restoring..." : "Restore"}
-                            </Button>
-                          ) : (
-                            <>
-                              <Link
-                                className={buttonVariants({
-                                  variant: "ghost",
-                                  size: "sm",
-                                })}
-                                href={
-                                  `/studio/series/${series.id}/edit` as Route
+                    </Table.Column>
+                  </Table.Header>
+                  <Table.Body>
+                    {filteredSeries.map((series) => (
+                      <Table.Row
+                        key={series.id}
+                        id={series.id}
+                        className={cn(series.deletedAt && "opacity-60")}
+                      >
+                        <Table.Cell className="pr-0">
+                          <Checkbox
+                            aria-label={`Select ${series.title}`}
+                            slot="selection"
+                          >
+                            <Checkbox.Content>
+                              <Checkbox.Control>
+                                <Checkbox.Indicator />
+                              </Checkbox.Control>
+                            </Checkbox.Content>
+                          </Checkbox>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{series.title}</span>
+                            <span className="text-muted text-xs">
+                              {series.slug}
+                            </span>
+                          </div>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <div className="flex flex-wrap gap-2">
+                            {series.deletedAt ? (
+                              <Chip size="sm" variant="soft" color="danger">
+                                deleted
+                              </Chip>
+                            ) : (
+                              <Chip
+                                size="sm"
+                                variant="soft"
+                                color={
+                                  series.status === "published"
+                                    ? "success"
+                                    : "warning"
                                 }
                               >
-                                Edit
-                              </Link>
-                              <AlertDialog>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  isDisabled={isPending}
-                                >
-                                  Delete
-                                </Button>
-                                <AlertDialog.Backdrop>
-                                  <AlertDialog.Container>
-                                    <AlertDialog.Dialog>
-                                      <AlertDialog.Header>
-                                        <AlertDialog.Icon status="danger" />
-                                        <AlertDialog.Heading>
-                                          Are you sure?
-                                        </AlertDialog.Heading>
-                                      </AlertDialog.Header>
-                                      <AlertDialog.Body>
-                                        <p>
-                                          This will delete the series &ldquo;
-                                          {series.title}&rdquo;. You can restore
-                                          it later from the Deleted filter.
-                                        </p>
-                                      </AlertDialog.Body>
-                                      <AlertDialog.Footer>
-                                        <Button slot="close" variant="tertiary">
-                                          Cancel
-                                        </Button>
-                                        <Button
-                                          slot="close"
-                                          variant="danger"
-                                          onPress={() =>
-                                            handleDelete(series.id)
-                                          }
-                                        >
-                                          Delete
-                                        </Button>
-                                      </AlertDialog.Footer>
-                                    </AlertDialog.Dialog>
-                                  </AlertDialog.Container>
-                                </AlertDialog.Backdrop>
-                              </AlertDialog>
-                            </>
+                                {series.status}
+                              </Chip>
+                            )}
+                          </div>
+                        </Table.Cell>
+                        <Table.Cell className="text-muted text-sm">
+                          {new Date(series.updatedAt).toLocaleDateString(
+                            "en-SG",
+                            {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            },
                           )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        </Table.Cell>
+                        <Table.Cell className="text-right">
+                          <div className="flex items-center justify-end gap-4">
+                            {series.deletedAt ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onPress={() => handleRestore(series.id)}
+                                isDisabled={isPending}
+                              >
+                                {isPending ? "Restoring..." : "Restore"}
+                              </Button>
+                            ) : (
+                              <>
+                                <Link
+                                  className={buttonVariants({
+                                    variant: "ghost",
+                                    size: "sm",
+                                  })}
+                                  href={
+                                    `/studio/series/${series.id}/edit` as Route
+                                  }
+                                >
+                                  Edit
+                                </Link>
+                                <AlertDialog>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    isDisabled={isPending}
+                                  >
+                                    Delete
+                                  </Button>
+                                  <AlertDialog.Backdrop>
+                                    <AlertDialog.Container>
+                                      <AlertDialog.Dialog>
+                                        <AlertDialog.Header>
+                                          <AlertDialog.Icon status="danger" />
+                                          <AlertDialog.Heading>
+                                            Are you sure?
+                                          </AlertDialog.Heading>
+                                        </AlertDialog.Header>
+                                        <AlertDialog.Body>
+                                          <p>
+                                            This will delete the series &ldquo;
+                                            {series.title}&rdquo;. You can
+                                            restore it later from the Deleted
+                                            filter.
+                                          </p>
+                                        </AlertDialog.Body>
+                                        <AlertDialog.Footer>
+                                          <Button
+                                            slot="close"
+                                            variant="tertiary"
+                                          >
+                                            Cancel
+                                          </Button>
+                                          <Button
+                                            slot="close"
+                                            variant="danger"
+                                            onPress={() =>
+                                              handleDelete(series.id)
+                                            }
+                                          >
+                                            Delete
+                                          </Button>
+                                        </AlertDialog.Footer>
+                                      </AlertDialog.Dialog>
+                                    </AlertDialog.Container>
+                                  </AlertDialog.Backdrop>
+                                </AlertDialog>
+                              </>
+                            )}
+                          </div>
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table.Content>
+              </Table.ScrollContainer>
+            </Table>
           </Card.Content>
         </Card>
       )}

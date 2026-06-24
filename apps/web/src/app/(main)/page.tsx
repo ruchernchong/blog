@@ -1,4 +1,5 @@
-import { buttonVariants } from "@heroui/styles";
+import { cn } from "@heroui/react";
+import { buttonVariants, cardVariants } from "@heroui/styles";
 import { format, formatISO } from "date-fns";
 import * as motion from "motion/react-client";
 import type { Route } from "next";
@@ -121,7 +122,11 @@ export default async function HomePage() {
                   key={name}
                   href={link}
                   aria-label={name}
-                  className="flex size-9 items-center justify-center rounded-md text-muted hover:bg-default hover:text-foreground"
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                    isIconOnly: true,
+                  })}
                 >
                   <Icons.Social name={name} className="size-4" />
                 </ExternalLink>
@@ -149,7 +154,10 @@ export default async function HomePage() {
               return (
                 <li
                   key={project.slug}
-                  className="flex flex-col gap-3 rounded-lg border border-border p-5"
+                  className={cn(
+                    cardVariants({ variant: "transparent" }).base(),
+                    "flex flex-col gap-3",
+                  )}
                 >
                   <div className="flex items-baseline justify-between gap-4">
                     <h3 className="font-display font-medium text-foreground text-xl">

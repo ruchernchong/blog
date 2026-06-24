@@ -1,3 +1,5 @@
+import { cn } from "@heroui/react";
+import { cardVariants } from "@heroui/styles";
 import { format, formatISO } from "date-fns";
 import type { Metadata, Route } from "next";
 import Link from "next/link";
@@ -60,7 +62,10 @@ export default async function BlogPage() {
           <Eyebrow>Featured</Eyebrow>
           <Link
             href={featured.metadata.canonical as Route}
-            className="group flex flex-col gap-3 rounded-lg border border-border p-6 hover:border-accent/40"
+            className={cn(
+              cardVariants({ variant: "transparent" }).base(),
+              "group flex flex-col gap-3 hover:border-accent/40",
+            )}
           >
             <h2 className="font-display font-semibold text-2xl text-foreground group-hover:text-accent">
               {featured.title}

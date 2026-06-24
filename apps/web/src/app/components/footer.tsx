@@ -1,3 +1,4 @@
+import { buttonVariants } from "@heroui/styles";
 import { Suspense } from "react";
 import { AnnotationRail } from "@/components/annotation-rail";
 import ExternalLink from "@/components/external-link";
@@ -27,7 +28,11 @@ export function Footer() {
               key={name}
               href={link}
               aria-label={name}
-              className="flex size-9 items-center justify-center rounded-md text-muted hover:bg-default hover:text-foreground"
+              className={buttonVariants({
+                variant: "ghost",
+                size: "sm",
+                isIconOnly: true,
+              })}
             >
               <Icons.Social name={name} className="size-4" />
             </ExternalLink>

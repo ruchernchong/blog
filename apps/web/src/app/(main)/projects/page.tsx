@@ -1,3 +1,5 @@
+import { cn } from "@heroui/react";
+import { cardVariants } from "@heroui/styles";
 import type { Metadata, Route } from "next";
 import globalMetadata from "@/app/metadata";
 import { AnnotationRail } from "@/components/annotation-rail";
@@ -76,7 +78,10 @@ export default function ProjectsPage() {
             {featured.map((project) => (
               <li
                 key={project.slug}
-                className="flex flex-col gap-3 rounded-lg border border-border p-6"
+                className={cn(
+                  cardVariants({ variant: "transparent" }).base(),
+                  "flex flex-col gap-3",
+                )}
               >
                 <div className="flex items-baseline justify-between gap-4">
                   <h2 className="font-display font-medium text-2xl text-foreground">

@@ -1,7 +1,9 @@
 "use client";
 
-import { cn } from "@heroui/react";
+import { type Selection, Tag, TagGroup } from "@heroui/react";
 import { parseAsString, useQueryState } from "nuqs";
+
+const ALL_KEY = "__all__";
 
 interface TagSelectorProps {
   tags: string[];
@@ -14,50 +16,28 @@ export function TagSelector({ tags, className }: TagSelectorProps) {
     parseAsString.withOptions({ shallow: false }),
   );
 
-  const handleTagClick = (tag: string | null) => {
-    if (tag === activeTag) {
-      setActiveTag(null);
-    } else {
-      setActiveTag(tag);
-    }
+  const handleSelectionChange = (keys: Selection) => {
+    if (keys === "all") return;
+    const [first] = keys;
+    setActiveTag(!first || first === ALL_KEY ? null : String(first));
   };
 
   return (
-    <div
-      className={cn(
-        "scrollbar-hide flex gap-2 overflow-x-auto pb-2",
-        className,
-      )}
+    <TagGroup
+      aria-label="Filter posts by tag"
+      selectionMode="single"
+      selectedKeys={new Set([activeTag ?? ALL_KEY])}
+      onSelectionChange={handleSelectionChange}
+      className={className}
     >
-      <button
-        type="button"
-        onClick={() => handleTagClick(null)}
-        className={cn(
-          "shrink-0 rounded-full px-4 py-2 font-medium text-sm transition-all duration-200 hover:-translate-y-0.5",
-          activeTag === null
-            ? "bg-accent text-accent-foreground"
-            : "bg-default text-muted hover:bg-default/80",
-        )}
-      >
-        All
-      </button>
-      {tags.map((tag) => {
-        return (
-          <button
-            key={tag}
-            type="button"
-            onClick={() => handleTagClick(tag)}
-            className={cn(
-              "shrink-0 rounded-full px-4 py-2 font-medium text-sm transition-all duration-200 hover:-translate-y-0.5",
-              activeTag === tag
-                ? "bg-accent text-accent-foreground"
-                : "bg-default text-muted hover:bg-default/80",
-            )}
-          >
+      <TagGroup.List className="scrollbar-hide flex-nowrap overflow-x-auto">
+        <Tag id={ALL_KEY}>All</Tag>
+        {tags.map((tag) => (
+          <Tag key={tag} id={tag}>
             {tag}
-          </button>
-        );
-      })}
-    </div>
+          </Tag>
+        ))}
+      </TagGroup.List>
+    </TagGroup>
   );
 }

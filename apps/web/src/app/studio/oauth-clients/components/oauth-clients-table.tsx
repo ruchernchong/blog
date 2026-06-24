@@ -5,10 +5,12 @@ import {
   Button,
   Card,
   Chip,
+  cn,
   Input,
   ListBox,
   Modal,
   Select,
+  Table,
   TextField,
 } from "@heroui/react";
 import { EmptyState } from "@heroui-pro/react";
@@ -221,144 +223,131 @@ export function OAuthClientsTable() {
             </Card.Title>
           </Card.Header>
           <Card.Content className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="px-6 py-3 text-left font-medium text-sm">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-right font-medium text-sm">
-                      Tokens
-                    </th>
-                    <th className="px-6 py-3 text-right font-medium text-sm">
-                      Consents
-                    </th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">
-                      Created
-                    </th>
-                    <th className="px-6 py-3 text-right font-medium text-sm">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredClients.map((client) => (
-                    <tr
-                      key={client.id}
-                      className={`border-b last:border-0 hover:bg-default/50 ${
-                        client.disabled ? "opacity-60" : ""
-                      }`}
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col gap-1">
-                          <span className="font-medium">
-                            {client.name || "Unnamed client"}
-                          </span>
-                          <span className="font-mono text-muted text-xs">
-                            {client.clientId}
-                          </span>
-                          <Chip size="sm" variant="soft" color="default">
-                            {client.public ? "public" : "confidential"}
+            <Table>
+              <Table.ScrollContainer>
+                <Table.Content aria-label="OAuth clients">
+                  <Table.Header>
+                    <Table.Column isRowHeader>Name</Table.Column>
+                    <Table.Column>Status</Table.Column>
+                    <Table.Column className="text-right">Tokens</Table.Column>
+                    <Table.Column className="text-right">Consents</Table.Column>
+                    <Table.Column>Created</Table.Column>
+                    <Table.Column className="text-right">Actions</Table.Column>
+                  </Table.Header>
+                  <Table.Body>
+                    {filteredClients.map((client) => (
+                      <Table.Row
+                        key={client.id}
+                        id={client.id}
+                        className={cn(client.disabled && "opacity-60")}
+                      >
+                        <Table.Cell>
+                          <div className="flex flex-col gap-1">
+                            <span className="font-medium">
+                              {client.name || "Unnamed client"}
+                            </span>
+                            <span className="font-mono text-muted text-xs">
+                              {client.clientId}
+                            </span>
+                            <Chip size="sm" variant="soft" color="default">
+                              {client.public ? "public" : "confidential"}
+                            </Chip>
+                          </div>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Chip
+                            size="sm"
+                            variant="soft"
+                            color={client.disabled ? "danger" : "success"}
+                          >
+                            {client.disabled ? "disabled" : "enabled"}
                           </Chip>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <Chip
-                          size="sm"
-                          variant="soft"
-                          color={client.disabled ? "danger" : "success"}
-                        >
-                          {client.disabled ? "disabled" : "enabled"}
-                        </Chip>
-                      </td>
-                      <td className="px-6 py-4 text-right tabular-nums">
-                        {client.activeTokenCount}
-                      </td>
-                      <td className="px-6 py-4 text-right tabular-nums">
-                        {client.consentCount}
-                      </td>
-                      <td className="px-6 py-4 text-muted text-sm">
-                        {client.createdAt
-                          ? dateFormatter.format(new Date(client.createdAt))
-                          : "—"}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onPress={() => setDetailClientId(client.clientId)}
-                          >
-                            View
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            isDisabled={isPending}
-                            onPress={() =>
-                              handleToggleDisabled(
-                                client.clientId,
-                                !client.disabled,
-                              )
-                            }
-                          >
-                            {client.disabled ? "Enable" : "Disable"}
-                          </Button>
-                          <AlertDialog>
+                        </Table.Cell>
+                        <Table.Cell className="text-right tabular-nums">
+                          {client.activeTokenCount}
+                        </Table.Cell>
+                        <Table.Cell className="text-right tabular-nums">
+                          {client.consentCount}
+                        </Table.Cell>
+                        <Table.Cell className="text-muted text-sm">
+                          {client.createdAt
+                            ? dateFormatter.format(new Date(client.createdAt))
+                            : "—"}
+                        </Table.Cell>
+                        <Table.Cell>
+                          <div className="flex items-center justify-end gap-2">
                             <Button
                               variant="ghost"
                               size="sm"
-                              isDisabled={isPending}
+                              onPress={() => setDetailClientId(client.clientId)}
                             >
-                              Delete
+                              View
                             </Button>
-                            <AlertDialog.Backdrop>
-                              <AlertDialog.Container>
-                                <AlertDialog.Dialog>
-                                  <AlertDialog.Header>
-                                    <AlertDialog.Icon status="danger" />
-                                    <AlertDialog.Heading>
-                                      Delete OAuth client?
-                                    </AlertDialog.Heading>
-                                  </AlertDialog.Header>
-                                  <AlertDialog.Body>
-                                    <p>
-                                      This permanently deletes &ldquo;
-                                      {client.name || client.clientId}&rdquo;
-                                      along with all its access tokens, refresh
-                                      tokens, and consents. This cannot be
-                                      undone.
-                                    </p>
-                                  </AlertDialog.Body>
-                                  <AlertDialog.Footer>
-                                    <Button slot="close" variant="tertiary">
-                                      Cancel
-                                    </Button>
-                                    <Button
-                                      slot="close"
-                                      variant="danger"
-                                      onPress={() =>
-                                        handleDelete(client.clientId)
-                                      }
-                                    >
-                                      Delete
-                                    </Button>
-                                  </AlertDialog.Footer>
-                                </AlertDialog.Dialog>
-                              </AlertDialog.Container>
-                            </AlertDialog.Backdrop>
-                          </AlertDialog>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              isDisabled={isPending}
+                              onPress={() =>
+                                handleToggleDisabled(
+                                  client.clientId,
+                                  !client.disabled,
+                                )
+                              }
+                            >
+                              {client.disabled ? "Enable" : "Disable"}
+                            </Button>
+                            <AlertDialog>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                isDisabled={isPending}
+                              >
+                                Delete
+                              </Button>
+                              <AlertDialog.Backdrop>
+                                <AlertDialog.Container>
+                                  <AlertDialog.Dialog>
+                                    <AlertDialog.Header>
+                                      <AlertDialog.Icon status="danger" />
+                                      <AlertDialog.Heading>
+                                        Delete OAuth client?
+                                      </AlertDialog.Heading>
+                                    </AlertDialog.Header>
+                                    <AlertDialog.Body>
+                                      <p>
+                                        This permanently deletes &ldquo;
+                                        {client.name || client.clientId}&rdquo;
+                                        along with all its access tokens,
+                                        refresh tokens, and consents. This
+                                        cannot be undone.
+                                      </p>
+                                    </AlertDialog.Body>
+                                    <AlertDialog.Footer>
+                                      <Button slot="close" variant="tertiary">
+                                        Cancel
+                                      </Button>
+                                      <Button
+                                        slot="close"
+                                        variant="danger"
+                                        onPress={() =>
+                                          handleDelete(client.clientId)
+                                        }
+                                      >
+                                        Delete
+                                      </Button>
+                                    </AlertDialog.Footer>
+                                  </AlertDialog.Dialog>
+                                </AlertDialog.Container>
+                              </AlertDialog.Backdrop>
+                            </AlertDialog>
+                          </div>
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table.Content>
+              </Table.ScrollContainer>
+            </Table>
           </Card.Content>
         </Card>
       )}

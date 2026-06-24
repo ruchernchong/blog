@@ -1,14 +1,17 @@
 "use client";
 
+import type { Selection } from "@heroui/react";
 import {
   AlertDialog,
   Button,
   Card,
   Checkbox,
   Chip,
+  cn,
   Input,
   ListBox,
   Select,
+  Table,
   TextField,
 } from "@heroui/react";
 import { buttonVariants } from "@heroui/styles";
@@ -102,23 +105,11 @@ export const PostsTable = () => {
     });
   };
 
-  const togglePostSelection = (postId: string) => {
-    setSelectedPosts((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(postId)) {
-        newSet.delete(postId);
-      } else {
-        newSet.add(postId);
-      }
-      return newSet;
-    });
-  };
-
-  const toggleAllPosts = () => {
-    if (selectedPosts.size === filteredPosts.length) {
-      setSelectedPosts(new Set());
-    } else {
+  const handleSelectionChange = (keys: Selection) => {
+    if (keys === "all") {
       setSelectedPosts(new Set(filteredPosts.map((post) => post.id)));
+    } else {
+      setSelectedPosts(new Set(Array.from(keys, (key) => String(key))));
     }
   };
 
@@ -384,18 +375,20 @@ export const PostsTable = () => {
                 </Card.Title>
               </Card.Header>
               <Card.Content className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="w-12 px-6 py-3">
+                <Table>
+                  <Table.ScrollContainer>
+                    <Table.Content
+                      aria-label="All posts"
+                      className="w-full min-w-[720px]"
+                      selectionMode="multiple"
+                      selectedKeys={selectedPosts}
+                      onSelectionChange={handleSelectionChange}
+                    >
+                      <Table.Header>
+                        <Table.Column className="w-12 pr-0">
                           <Checkbox
-                            isSelected={
-                              filteredPosts.length > 0 &&
-                              selectedPosts.size === filteredPosts.length
-                            }
-                            onChange={() => toggleAllPosts()}
                             aria-label="Select all posts"
+                            slot="selection"
                           >
                             <Checkbox.Content>
                               <Checkbox.Control>
@@ -403,191 +396,199 @@ export const PostsTable = () => {
                               </Checkbox.Control>
                             </Checkbox.Content>
                           </Checkbox>
-                        </th>
-                        <th className="px-6 py-3 text-left font-medium text-sm">
-                          Title
-                        </th>
-                        <th className="px-6 py-3 text-left font-medium text-sm">
-                          Author
-                        </th>
-                        <th className="px-6 py-3 text-left font-medium text-sm">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 text-left font-medium text-sm">
-                          Tags
-                        </th>
-                        <th className="px-6 py-3 text-left font-medium text-sm">
-                          Updated
-                        </th>
-                        <th className="px-6 py-3 text-right font-medium text-sm">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredPosts.map((post) => (
-                        <tr
-                          key={post.id}
-                          className={`border-b last:border-0 hover:bg-default/50 ${
-                            post.deletedAt ? "opacity-60" : ""
-                          }`}
+                        </Table.Column>
+                        <Table.Column
+                          isRowHeader
+                          className="font-medium text-sm"
                         >
-                          <td className="px-6 py-4">
-                            <Checkbox
-                              isSelected={selectedPosts.has(post.id)}
-                              onChange={() => togglePostSelection(post.id)}
-                              aria-label={`Select ${post.title}`}
-                            >
-                              <Checkbox.Content>
-                                <Checkbox.Control>
-                                  <Checkbox.Indicator />
-                                </Checkbox.Control>
-                              </Checkbox.Content>
-                            </Checkbox>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-col">
-                              <span className="font-medium">{post.title}</span>
-                              <span className="text-muted text-xs">
-                                {post.slug}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="text-sm">
-                              {post.author?.name ?? "Unknown"}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-wrap gap-2">
-                              {post.deletedAt ? (
-                                <Chip size="sm" variant="soft" color="danger">
-                                  deleted
-                                </Chip>
-                              ) : (
-                                <Chip
-                                  size="sm"
-                                  variant="soft"
-                                  color={
-                                    post.status === "published"
-                                      ? "success"
-                                      : "warning"
-                                  }
-                                >
-                                  {post.status}
-                                </Chip>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-wrap gap-1">
-                              {Array.isArray(post.tags) &&
-                              post.tags.length > 0 ? (
-                                post.tags.slice(0, 3).map((tag) => (
-                                  <Chip key={tag} size="sm" variant="secondary">
-                                    {tag}
-                                  </Chip>
-                                ))
-                              ) : (
-                                <span className="text-muted text-xs">
-                                  No tags
+                          Title
+                        </Table.Column>
+                        <Table.Column className="font-medium text-sm">
+                          Author
+                        </Table.Column>
+                        <Table.Column className="font-medium text-sm">
+                          Status
+                        </Table.Column>
+                        <Table.Column className="font-medium text-sm">
+                          Tags
+                        </Table.Column>
+                        <Table.Column className="font-medium text-sm">
+                          Updated
+                        </Table.Column>
+                        <Table.Column className="text-right font-medium text-sm">
+                          Actions
+                        </Table.Column>
+                      </Table.Header>
+                      <Table.Body>
+                        {filteredPosts.map((post) => (
+                          <Table.Row
+                            key={post.id}
+                            id={post.id}
+                            className={cn(post.deletedAt && "opacity-60")}
+                          >
+                            <Table.Cell className="pr-0">
+                              <Checkbox
+                                aria-label={`Select ${post.title}`}
+                                slot="selection"
+                              >
+                                <Checkbox.Content>
+                                  <Checkbox.Control>
+                                    <Checkbox.Indicator />
+                                  </Checkbox.Control>
+                                </Checkbox.Content>
+                              </Checkbox>
+                            </Table.Cell>
+                            <Table.Cell>
+                              <div className="flex flex-col">
+                                <span className="font-medium">
+                                  {post.title}
                                 </span>
-                              )}
-                              {Array.isArray(post.tags) &&
-                                post.tags.length > 3 && (
+                                <span className="text-muted text-xs">
+                                  {post.slug}
+                                </span>
+                              </div>
+                            </Table.Cell>
+                            <Table.Cell>
+                              <span className="text-sm">
+                                {post.author?.name ?? "Unknown"}
+                              </span>
+                            </Table.Cell>
+                            <Table.Cell>
+                              <div className="flex flex-wrap gap-2">
+                                {post.deletedAt ? (
+                                  <Chip size="sm" variant="soft" color="danger">
+                                    deleted
+                                  </Chip>
+                                ) : (
+                                  <Chip
+                                    size="sm"
+                                    variant="soft"
+                                    color={
+                                      post.status === "published"
+                                        ? "success"
+                                        : "warning"
+                                    }
+                                  >
+                                    {post.status}
+                                  </Chip>
+                                )}
+                              </div>
+                            </Table.Cell>
+                            <Table.Cell>
+                              <div className="flex flex-wrap gap-1">
+                                {Array.isArray(post.tags) &&
+                                post.tags.length > 0 ? (
+                                  post.tags.slice(0, 3).map((tag) => (
+                                    <Chip
+                                      key={tag}
+                                      size="sm"
+                                      variant="secondary"
+                                    >
+                                      {tag}
+                                    </Chip>
+                                  ))
+                                ) : (
                                   <span className="text-muted text-xs">
-                                    +{post.tags.length - 3}
+                                    No tags
                                   </span>
                                 )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-muted text-sm">
-                            {new Date(post.updatedAt).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              },
-                            )}
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-4">
-                              {post.deletedAt ? (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onPress={() => handleRestore(post.id)}
-                                  isDisabled={isPending}
-                                >
-                                  {isPending ? "Restoring..." : "Restore"}
-                                </Button>
-                              ) : (
-                                <>
-                                  <Link
-                                    className={buttonVariants({
-                                      variant: "ghost",
-                                      size: "sm",
-                                    })}
-                                    href={`/studio/posts/${post.id}/edit`}
-                                  >
-                                    Edit
-                                  </Link>
-                                  <AlertDialog>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      isDisabled={isPending}
-                                    >
-                                      Delete
-                                    </Button>
-                                    <AlertDialog.Backdrop>
-                                      <AlertDialog.Container>
-                                        <AlertDialog.Dialog>
-                                          <AlertDialog.Header>
-                                            <AlertDialog.Icon status="danger" />
-                                            <AlertDialog.Heading>
-                                              Are you sure?
-                                            </AlertDialog.Heading>
-                                          </AlertDialog.Header>
-                                          <AlertDialog.Body>
-                                            <p>
-                                              This will delete the post &ldquo;
-                                              {post.title}&rdquo;. You can
-                                              restore it later from the Deleted
-                                              filter.
-                                            </p>
-                                          </AlertDialog.Body>
-                                          <AlertDialog.Footer>
-                                            <Button
-                                              slot="close"
-                                              variant="tertiary"
-                                            >
-                                              Cancel
-                                            </Button>
-                                            <Button
-                                              slot="close"
-                                              variant="danger"
-                                              onPress={() =>
-                                                handleDelete(post.id)
-                                              }
-                                            >
-                                              Delete
-                                            </Button>
-                                          </AlertDialog.Footer>
-                                        </AlertDialog.Dialog>
-                                      </AlertDialog.Container>
-                                    </AlertDialog.Backdrop>
-                                  </AlertDialog>
-                                </>
+                                {Array.isArray(post.tags) &&
+                                  post.tags.length > 3 && (
+                                    <span className="text-muted text-xs">
+                                      +{post.tags.length - 3}
+                                    </span>
+                                  )}
+                              </div>
+                            </Table.Cell>
+                            <Table.Cell className="text-muted text-sm">
+                              {new Date(post.updatedAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                },
                               )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                            </Table.Cell>
+                            <Table.Cell className="text-right">
+                              <div className="flex items-center justify-end gap-4">
+                                {post.deletedAt ? (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onPress={() => handleRestore(post.id)}
+                                    isDisabled={isPending}
+                                  >
+                                    {isPending ? "Restoring..." : "Restore"}
+                                  </Button>
+                                ) : (
+                                  <>
+                                    <Link
+                                      className={buttonVariants({
+                                        variant: "ghost",
+                                        size: "sm",
+                                      })}
+                                      href={`/studio/posts/${post.id}/edit`}
+                                    >
+                                      Edit
+                                    </Link>
+                                    <AlertDialog>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        isDisabled={isPending}
+                                      >
+                                        Delete
+                                      </Button>
+                                      <AlertDialog.Backdrop>
+                                        <AlertDialog.Container>
+                                          <AlertDialog.Dialog>
+                                            <AlertDialog.Header>
+                                              <AlertDialog.Icon status="danger" />
+                                              <AlertDialog.Heading>
+                                                Are you sure?
+                                              </AlertDialog.Heading>
+                                            </AlertDialog.Header>
+                                            <AlertDialog.Body>
+                                              <p>
+                                                This will delete the post
+                                                &ldquo;
+                                                {post.title}&rdquo;. You can
+                                                restore it later from the
+                                                Deleted filter.
+                                              </p>
+                                            </AlertDialog.Body>
+                                            <AlertDialog.Footer>
+                                              <Button
+                                                slot="close"
+                                                variant="tertiary"
+                                              >
+                                                Cancel
+                                              </Button>
+                                              <Button
+                                                slot="close"
+                                                variant="danger"
+                                                onPress={() =>
+                                                  handleDelete(post.id)
+                                                }
+                                              >
+                                                Delete
+                                              </Button>
+                                            </AlertDialog.Footer>
+                                          </AlertDialog.Dialog>
+                                        </AlertDialog.Container>
+                                      </AlertDialog.Backdrop>
+                                    </AlertDialog>
+                                  </>
+                                )}
+                              </div>
+                            </Table.Cell>
+                          </Table.Row>
+                        ))}
+                      </Table.Body>
+                    </Table.Content>
+                  </Table.ScrollContainer>
+                </Table>
               </Card.Content>
             </Card>
           )}

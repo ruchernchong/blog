@@ -1,6 +1,13 @@
 "use client";
 
-import { Button, Input, Modal, TextField } from "@heroui/react";
+import {
+  Button,
+  cn,
+  Input,
+  Modal,
+  TextField,
+  ToggleButton,
+} from "@heroui/react";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
 import type { ReactElement } from "react";
@@ -86,15 +93,17 @@ export function ImagePickerDialog({
               ) : (
                 <div className="grid max-h-96 grid-cols-4 gap-2 overflow-y-auto">
                   {media.map((item) => (
-                    <button
+                    <ToggleButton
                       key={item.id}
-                      type="button"
-                      onClick={() => setSelected(item)}
-                      className={`relative aspect-square overflow-hidden rounded-md border-2 transition-colors ${
+                      aria-label={item.alt || item.filename}
+                      isSelected={selected?.id === item.id}
+                      onChange={() => setSelected(item)}
+                      className={cn(
+                        "relative aspect-square h-auto overflow-hidden rounded-md border-2 p-0 transition-colors",
                         selected?.id === item.id
                           ? "border-accent"
-                          : "border-transparent hover:border-muted-foreground/50"
-                      }`}
+                          : "border-transparent hover:border-muted-foreground/50",
+                      )}
                     >
                       <Image
                         src={item.url}
@@ -103,7 +112,7 @@ export function ImagePickerDialog({
                         className="object-cover"
                         sizes="150px"
                       />
-                    </button>
+                    </ToggleButton>
                   ))}
                 </div>
               )}
