@@ -4,6 +4,22 @@
 
 @plugin "@tailwindcss/typography";
 
+/*
+ * Engineering Notebook identity.
+ *
+ * Colour uses the HeroUI DEFAULT theme tokens (neutral paper/ink with the
+ * default blue signal accent) — we keep HeroUI's defaults rather than a bespoke
+ * palette. The identity is carried by typography (display / body / mono roles),
+ * the monospace annotation-rail signature, and layout. Dark mode is HeroUI's
+ * default `.dark` theme, toggled via next-themes (attribute="class").
+ */
+@theme inline {
+  --font-display:
+    var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
 @layer base {
   :root {
     color-scheme: light;
@@ -32,7 +48,7 @@
     --radius: 0.5rem;
     --field-radius: calc(var(--radius) * 1.5);
 
-    /* == Light Theme Variables == */
+    /* == Light Theme Variables (HeroUI default) == */
 
     /* Base Colors */
     --background: oklch(0.9702 0 0);
@@ -41,6 +57,10 @@
     /* Surface: Used for non-overlay components (cards, accordions, disclosure groups) */
     --surface: var(--white);
     --surface-foreground: var(--foreground);
+    --surface-secondary: oklch(0.9524 0.0013 286.37);
+    --surface-secondary-foreground: var(--foreground);
+    --surface-tertiary: oklch(0.9373 0.0013 286.37);
+    --surface-tertiary-foreground: var(--foreground);
 
     /* Overlay: Used for floating/overlay components (tooltips, popovers, modals, menus) */
     --overlay: var(--white);
@@ -52,8 +72,8 @@
     --default: oklch(94% 0.001 286.375);
     --default-foreground: var(--eclipse);
 
-    /* Brand / primary action = coral */
-    --accent: oklch(0.6 0.18 25);
+    /* Brand / primary action = HeroUI default accent (blue signal) */
+    --accent: oklch(0.6204 0.195 253.83);
     --accent-foreground: var(--snow);
 
     /* Form Field Defaults - Colors */
@@ -77,21 +97,21 @@
     --segment-foreground: var(--eclipse);
 
     /* Misc Colors */
-    --border: oklch(92% 0.004 286.32);
+    --border: oklch(90% 0.004 286.32);
     --separator: oklch(92% 0.004 286.32);
     --focus: var(--accent);
     --link: var(--foreground);
 
     /* Backdrop */
     --backdrop: rgba(0, 0, 0, 0.5);
+    --background-inverse: var(--foreground);
 
     /* Shadows */
     --surface-shadow:
-      0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
-      0 0 1px 0 rgba(0, 0, 0, 0.06);
-    /* Overlay shadow */
+      0 0px 0px 0 rgba(24, 24, 27, 0.03), 0 2px 10px 0 rgba(24, 24, 27, 0.08);
     --overlay-shadow:
-      0 4px 16px 0 rgba(24, 24, 27, 0.08), 0 8px 24px 0 rgba(24, 24, 27, 0.09);
+      0 2px 8px 0 rgba(0, 0, 0, 0.06), 0 -6px 12px 0 rgba(0, 0, 0, 0.03),
+      0 14px 28px 0 rgba(0, 0, 0, 0.08);
     --field-shadow:
       0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
       0 0 1px 0 rgba(0, 0, 0, 0.06);
@@ -109,6 +129,8 @@
   [data-theme="dark"] {
     color-scheme: dark;
 
+    /* == Dark Theme Variables (HeroUI default) == */
+
     /* Base Colors */
     --background: oklch(12% 0.005 285.823);
     --foreground: var(--snow);
@@ -116,11 +138,11 @@
     /* Surface: Used for non-overlay components (cards, accordions, disclosure groups) */
     --surface: oklch(0.2103 0.0059 285.89);
     --surface-foreground: var(--foreground);
+    --surface-secondary: oklch(0.257 0.0037 286.14);
+    --surface-tertiary: oklch(0.2721 0.0024 247.91);
 
-    /* Overlay: Used for floating/overlay components (tooltips, popovers, modals, menus) - lighter for contrast */
-    --overlay: oklch(
-      0.22 0.0059 285.89
-    ); /* A bit lighter than surface for visibility in dark mode */
+    /* Overlay: Used for floating/overlay components (tooltips, popovers, modals, menus) */
+    --overlay: oklch(0.2103 0.0059 285.89);
     --overlay-foreground: var(--foreground);
 
     --muted: oklch(70.5% 0.015 286.067);
@@ -130,7 +152,7 @@
     --default-foreground: var(--snow);
 
     /* Form Field Defaults - Colors (only the ones that are different from light theme) */
-    --field-background: var(--default);
+    --field-background: oklch(0.2103 0.0059 285.89);
     --field-foreground: var(--foreground);
 
     /* Status Colors */
@@ -145,8 +167,8 @@
     --segment-foreground: var(--foreground);
 
     /* Misc Colors */
-    --border: oklch(22% 0.006 286.033);
-    --separator: oklch(22% 0.006 286.033);
+    --border: oklch(28% 0.006 286.033);
+    --separator: oklch(25% 0.006 286.033);
     --focus: var(--accent);
     --link: var(--foreground);
 
@@ -155,8 +177,8 @@
 
     /* Shadows */
     --surface-shadow: 0 0 0 0 transparent inset; /* No shadow on dark mode */
-    --overlay-shadow: 0 0 0 0 transparent inset; /* No shadow on dark mode */
-    --field-shadow: 0 0 0 0 transparent inset; /* Transparent shadow to allow ring utilities to work */
+    --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.3) inset;
+    --field-shadow: 0 0 0 0 transparent inset;
 
     --chart-1: oklch(from var(--accent) calc(l - 0.24) c h);
     --chart-2: oklch(from var(--accent) calc(l - 0.12) c h);

@@ -1,60 +1,39 @@
-import Link from "next/link";
+import { Suspense } from "react";
+import { AnnotationRail } from "@/components/annotation-rail";
 import ExternalLink from "@/components/external-link";
 import * as Icons from "@/components/icons";
-import { Logo } from "@/components/logo";
-import { navLinks, VERSION } from "@/config";
+import { VERSION } from "@/config";
 import socials from "@/data/socials";
+import { CurrentYear } from "./current-year";
 
 export function Footer() {
   return (
-    <div className="container mx-auto flex justify-center px-4 pb-6">
-      <footer className="w-full rounded-2xl border border-border bg-surface p-6 shadow-sm">
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-            <Logo />
-            <div className="flex gap-6 md:gap-8">
-              <div className="flex flex-col gap-4">
-                <Link
-                  href="/"
-                  className="font-medium text-muted text-sm transition-all duration-200 hover:text-accent"
-                >
-                  Home
-                </Link>
-                {navLinks.map(({ href, title }) => {
-                  return (
-                    <Link
-                      key={title}
-                      href={href}
-                      className="font-medium text-muted text-sm transition-all duration-200 hover:text-accent"
-                    >
-                      {title}
-                    </Link>
-                  );
-                })}
-              </div>
-              <div className="flex flex-col gap-4">
-                {socials.map(({ name, link }) => (
-                  <div key={name}>
-                    <ExternalLink
-                      href={link}
-                      className="font-medium text-muted text-sm transition-all duration-200 hover:text-accent"
-                    >
-                      <div className="inline-flex items-center gap-2">
-                        <Icons.Social name={name} className="h-4 w-4" />
-                        {name}
-                      </div>
-                    </ExternalLink>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="border-border border-t" />
-          <div className="text-center text-muted text-sm md:text-right">
-            <span>v{VERSION}</span>
-          </div>
+    <footer className="border-border border-t">
+      <div className="container mx-auto flex flex-col items-start justify-between gap-4 px-4 py-8 sm:flex-row sm:items-center">
+        <AnnotationRail>
+          <span>
+            ©{" "}
+            <Suspense fallback={null}>
+              <CurrentYear />
+            </Suspense>{" "}
+            Ru Chern
+          </span>
+          <span>v{VERSION}</span>
+        </AnnotationRail>
+
+        <div className="flex items-center gap-1">
+          {socials.map(({ name, link }) => (
+            <ExternalLink
+              key={name}
+              href={link}
+              aria-label={name}
+              className="flex size-9 items-center justify-center rounded-md text-muted hover:bg-default hover:text-foreground"
+            >
+              <Icons.Social name={name} className="size-4" />
+            </ExternalLink>
+          ))}
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
   );
 }
