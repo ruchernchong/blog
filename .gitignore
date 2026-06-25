@@ -74,6 +74,14 @@ apps/docs/.source/
 # Claude
 .claude/settings.local.json
 
+# design-sync (claude.ai/design) — transient build/scratch; durable inputs
+# under .design-sync/ (config.json, NOTES.md, conventions.md) stay committed
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules
+
 
 # Beads / Dolt files (added by bd init)
 .dolt/

@@ -1,0 +1,42 @@
+<!-- @dsCard group="Foundations" name="Colours" subtitle="Semantic palette — light & dark" -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="../../../styles.css" />
+  <style>
+    body { margin: 0; padding: 24px; background: var(--background); color: var(--foreground); font-family: var(--font-sans); }
+    h3 { margin: 0 0 16px; font-size: 20px; font-weight: 600; letter-spacing: -0.03em; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+    .swatch { border-radius: var(--radius); overflow: hidden; box-shadow: var(--surface-shadow); background: var(--surface); }
+    .chip { height: 64px; }
+    .meta { padding: 8px 12px; }
+    .name { font-size: 14px; font-weight: 500; }
+    .val { font-size: 12px; color: var(--muted); font-family: var(--font-geist-mono); margin-top: 2px; overflow-wrap: anywhere; }
+    .ring { box-shadow: inset 0 0 0 1px var(--border); }
+  </style>
+</head>
+<body>
+  <h3>Colours</h3>
+  <div class="grid">
+    <div class="swatch"><div class="chip" style="background: var(--accent)"></div><div class="meta"><div class="name">accent</div><div class="val">oklch(0.6 0.18 25)</div></div></div>
+    <div class="swatch"><div class="chip ring" style="background: var(--background)"></div><div class="meta"><div class="name">background</div><div class="val">--background</div></div></div>
+    <div class="swatch"><div class="chip" style="background: var(--foreground)"></div><div class="meta"><div class="name">foreground</div><div class="val">--foreground</div></div></div>
+    <div class="swatch"><div class="chip ring" style="background: var(--surface)"></div><div class="meta"><div class="name">surface</div><div class="val">--surface</div></div></div>
+    <div class="swatch"><div class="chip" style="background: var(--muted)"></div><div class="meta"><div class="name">muted</div><div class="val">--muted</div></div></div>
+    <div class="swatch"><div class="chip ring" style="background: var(--default)"></div><div class="meta"><div class="name">default</div><div class="val">--default</div></div></div>
+    <div class="swatch"><div class="chip" style="background: var(--success)"></div><div class="meta"><div class="name">success</div><div class="val">--success</div></div></div>
+    <div class="swatch"><div class="chip" style="background: var(--warning)"></div><div class="meta"><div class="name">warning</div><div class="val">--warning</div></div></div>
+    <div class="swatch"><div class="chip" style="background: var(--danger)"></div><div class="meta"><div class="name">danger</div><div class="val">--danger</div></div></div>
+    <div class="swatch"><div class="chip ring" style="background: var(--border)"></div><div class="meta"><div class="name">border</div><div class="val">--border</div></div></div>
+  </div>
+  <h3 style="margin-top: 32px">Chart palette</h3>
+  <div class="grid">
+    <div class="swatch"><div class="chip" style="background: var(--chart-1)"></div><div class="meta"><div class="name">chart-1</div></div></div>
+    <div class="swatch"><div class="chip" style="background: var(--chart-2)"></div><div class="meta"><div class="name">chart-2</div></div></div>
+    <div class="swatch"><div class="chip" style="background: var(--chart-3)"></div><div class="meta"><div class="name">chart-3</div></div></div>
+    <div class="swatch"><div class="chip" style="background: var(--chart-4)"></div><div class="meta"><div class="name">chart-4</div></div></div>
+    <div class="swatch"><div class="chip" style="background: var(--chart-5)"></div><div class="meta"><div class="name">chart-5</div></div></div>
+  </div>
+</body>
+</html>

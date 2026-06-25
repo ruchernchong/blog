@@ -1,0 +1,26 @@
+<!-- @dsCard group="Foundations" name="Elevation" subtitle="Soft shadow stacks (removed in dark)" -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="../../../styles.css" />
+  <style>
+    body { margin: 0; padding: 40px 24px; background: var(--background); color: var(--foreground); font-family: var(--font-sans); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 32px; }
+    .item { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .card { width: 100%; height: 96px; background: var(--surface); border-radius: var(--radius); }
+    .name { font-size: 14px; font-weight: 500; }
+    .val { font-size: 12px; color: var(--muted); font-family: var(--font-geist-mono); }
+  </style>
+</head>
+<body>
+  <div class="grid">
+    <div class="item"><div class="card" style="box-shadow: var(--surface-shadow)"></div><div class="name">surface</div><div class="val">--surface-shadow</div></div>
+    <div class="item"><div class="card" style="box-shadow: var(--overlay-shadow)"></div><div class="name">overlay</div><div class="val">--overlay-shadow</div></div>
+    <div class="item"><div class="card" style="box-shadow: var(--field-shadow)"></div><div class="name">field</div><div class="val">--field-shadow</div></div>
+  </div>
+  <p style="margin-top: 32px; font-size: 14px; color: var(--muted); line-height: 1.6;">
+    Depth is quiet: three soft, low-alpha layers. In dark mode every shadow is removed — depth comes from lighter surface fills instead.
+  </p>
+</body>
+</html>
