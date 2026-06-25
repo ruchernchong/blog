@@ -1,0 +1,7 @@
+{
+  "shape": "package",
+  "projectId": "260a2111-3b40-470c-b543-4e26f1135bcb",
+  "globalName": "RuchernDev",
+  "readmeHeader": ".design-sync/conventions.md",
+  "note": "Tokens-only / design-language sync. This repo is a Next.js app (HeroUI), not a component library, so no components ship — only tokens, fonts, and DESIGN.md guidelines. Built off-script (hand-authored ds-bundle/, validated with package-validate.mjs --no-render-check). See NOTES.md."
+}
