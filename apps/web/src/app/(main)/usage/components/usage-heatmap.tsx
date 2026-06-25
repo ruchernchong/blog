@@ -69,18 +69,22 @@ export function UsageHeatmap({ className, contributions }: UsageHeatmapProps) {
     .sort((a, b) => b.year.localeCompare(a.year));
 
   return (
-    <Card variant="transparent" className={className}>
-      <Card.Header>
-        <Card.Title>Activity</Card.Title>
-        <Card.Description>Daily token usage across all agents</Card.Description>
-      </Card.Header>
-      <Card.Content>
-        {years.length === 0 ? (
-          <p className="text-muted text-sm">No activity yet.</p>
-        ) : (
-          <UsageHeatmapClient years={years} />
-        )}
-      </Card.Content>
-    </Card>
+    <div className={className}>
+      <Card variant="transparent">
+        <Card.Header>
+          <Card.Title>Activity</Card.Title>
+          <Card.Description>
+            Daily token usage across all agents
+          </Card.Description>
+        </Card.Header>
+        <Card.Content>
+          {years.length === 0 ? (
+            <p className="text-muted text-sm">No activity yet.</p>
+          ) : (
+            <UsageHeatmapClient years={years} />
+          )}
+        </Card.Content>
+      </Card>
+    </div>
   );
 }

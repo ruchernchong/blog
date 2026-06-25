@@ -75,7 +75,7 @@ export default function ProjectsPage() {
           <Eyebrow>Featured</Eyebrow>
           <div className="flex flex-col gap-4">
             {featured.map((project) => (
-              <Card key={project.slug} variant="transparent" className="gap-3">
+              <Card key={project.slug} variant="transparent">
                 <div className="flex items-baseline justify-between gap-4">
                   <h2 className="font-display font-medium text-2xl text-foreground">
                     {project.name}

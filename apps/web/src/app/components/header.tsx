@@ -1,6 +1,6 @@
 "use client";
 
-import { cn, Navbar } from "@heroui-pro/react";
+import { Navbar } from "@heroui-pro/react";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -14,9 +14,6 @@ export function Header() {
 
   const isActive = (href: string) =>
     pathname === href || (href !== "/" && pathname.startsWith(href));
-
-  const itemClassName = (href: string) =>
-    cn("font-mono lowercase", isActive(href) && "text-accent");
 
   return (
     <Navbar navigate={(href) => router.push(href as Route)} maxWidth="2xl">
@@ -37,12 +34,7 @@ export function Header() {
 
         <Navbar.Content className="hidden md:flex">
           {navLinks.map(({ title, href }) => (
-            <Navbar.Item
-              key={title}
-              href={href}
-              isCurrent={isActive(href)}
-              className={itemClassName(href)}
-            >
+            <Navbar.Item key={title} href={href} isCurrent={isActive(href)}>
               {title}
             </Navbar.Item>
           ))}
@@ -57,12 +49,7 @@ export function Header() {
 
       <Navbar.Menu>
         {navLinks.map(({ title, href }) => (
-          <Navbar.MenuItem
-            key={title}
-            href={href}
-            isCurrent={isActive(href)}
-            className={itemClassName(href)}
-          >
+          <Navbar.MenuItem key={title} href={href} isCurrent={isActive(href)}>
             {title}
           </Navbar.MenuItem>
         ))}

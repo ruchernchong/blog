@@ -277,60 +277,65 @@ export function OAuthClientsTable() {
             value={searchQuery}
             onChange={setSearchQuery}
           >
-            <Input
-              className="max-w-md"
-              placeholder="Search by name or client ID..."
-            />
+            <div className="max-w-md">
+              <Input placeholder="Search by name or client ID..." />
+            </div>
           </TextField>
         </div>
-        <Select
-          aria-label="Filter by status"
-          className="w-45"
-          value={statusFilter}
-          onChange={(value) => {
-            if (value) setStatusFilter(value as StatusFilter);
-          }}
-        >
-          <Select.Trigger>
-            <Select.Value />
-            <Select.Indicator />
-          </Select.Trigger>
-          <Select.Popover>
-            <ListBox>
-              <ListBox.Item id="all" textValue="All Clients">
-                All Clients
-                <ListBox.ItemIndicator />
-              </ListBox.Item>
-              <ListBox.Item id="enabled" textValue="Enabled">
-                Enabled
-                <ListBox.ItemIndicator />
-              </ListBox.Item>
-              <ListBox.Item id="disabled" textValue="Disabled">
-                Disabled
-                <ListBox.ItemIndicator />
-              </ListBox.Item>
-            </ListBox>
-          </Select.Popover>
-        </Select>
+        <div className="w-45">
+          <Select
+            aria-label="Filter by status"
+            value={statusFilter}
+            onChange={(value) => {
+              if (value) setStatusFilter(value as StatusFilter);
+            }}
+          >
+            <Select.Trigger>
+              <Select.Value />
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover>
+              <ListBox>
+                <ListBox.Item id="all" textValue="All Clients">
+                  All Clients
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+                <ListBox.Item id="enabled" textValue="Enabled">
+                  Enabled
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+                <ListBox.Item id="disabled" textValue="Disabled">
+                  Disabled
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+              </ListBox>
+            </Select.Popover>
+          </Select>
+        </div>
       </div>
 
       {isLoading ? (
         <Card>
-          <Card.Content className="py-12">
-            <p className="text-center text-muted">Loading OAuth clients...</p>
+          <Card.Content>
+            <div className="py-12">
+              <p className="text-center text-muted">Loading OAuth clients...</p>
+            </div>
           </Card.Content>
         </Card>
       ) : clients.length === 0 ? (
         <Card>
-          <Card.Content className="py-12">
-            <EmptyState>
-              <EmptyState.Header>
-                <EmptyState.Title>No OAuth clients yet</EmptyState.Title>
-                <EmptyState.Description>
-                  No applications have registered with your OAuth provider yet.
-                </EmptyState.Description>
-              </EmptyState.Header>
-            </EmptyState>
+          <Card.Content>
+            <div className="py-12">
+              <EmptyState>
+                <EmptyState.Header>
+                  <EmptyState.Title>No OAuth clients yet</EmptyState.Title>
+                  <EmptyState.Description>
+                    No applications have registered with your OAuth provider
+                    yet.
+                  </EmptyState.Description>
+                </EmptyState.Header>
+              </EmptyState>
+            </div>
           </Card.Content>
         </Card>
       ) : (
@@ -343,7 +348,7 @@ export function OAuthClientsTable() {
               )
             </Card.Title>
           </Card.Header>
-          <Card.Content className="p-0">
+          <Card.Content>
             <DataGrid
               aria-label="OAuth clients"
               columns={columns}

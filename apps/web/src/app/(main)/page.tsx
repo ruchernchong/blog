@@ -152,11 +152,7 @@ export default async function HomePage() {
               const live = liveUrl(project.links);
               const repo = repoUrl(project.links);
               return (
-                <Card
-                  key={project.slug}
-                  variant="transparent"
-                  className="gap-3"
-                >
+                <Card key={project.slug} variant="transparent">
                   <div className="flex items-baseline justify-between gap-4">
                     <h3 className="font-display font-medium text-foreground text-xl">
                       {project.name}

@@ -403,8 +403,10 @@ export const PostsTable = () => {
           </Link>
         </div>
         <Card>
-          <Card.Content className="py-12">
-            <p className="text-center text-muted">Loading posts...</p>
+          <Card.Content>
+            <div className="py-12">
+              <p className="text-center text-muted">Loading posts...</p>
+            </div>
           </Card.Content>
         </Card>
       </div>
@@ -425,20 +427,22 @@ export const PostsTable = () => {
 
       {allPosts.length === 0 ? (
         <Card>
-          <Card.Content className="py-12">
-            <EmptyState>
-              <EmptyState.Header>
-                <EmptyState.Title>No posts yet</EmptyState.Title>
-                <EmptyState.Description>
-                  Get started by creating your first blog post
-                </EmptyState.Description>
-              </EmptyState.Header>
-              <EmptyState.Content>
-                <Link className={buttonVariants()} href="/studio/posts/new">
-                  Create Post
-                </Link>
-              </EmptyState.Content>
-            </EmptyState>
+          <Card.Content>
+            <div className="py-12">
+              <EmptyState>
+                <EmptyState.Header>
+                  <EmptyState.Title>No posts yet</EmptyState.Title>
+                  <EmptyState.Description>
+                    Get started by creating your first blog post
+                  </EmptyState.Description>
+                </EmptyState.Header>
+                <EmptyState.Content>
+                  <Link className={buttonVariants()} href="/studio/posts/new">
+                    Create Post
+                  </Link>
+                </EmptyState.Content>
+              </EmptyState>
+            </div>
           </Card.Content>
         </Card>
       ) : (
@@ -451,43 +455,43 @@ export const PostsTable = () => {
                 value={searchQuery}
                 onChange={handleSearchChange}
               >
-                <Input
-                  className="max-w-md"
-                  placeholder="Search posts by title or slug..."
-                />
+                <div className="max-w-md">
+                  <Input placeholder="Search posts by title or slug..." />
+                </div>
               </TextField>
             </div>
-            <Select
-              aria-label="Filter by status"
-              className="w-45"
-              value={statusFilter}
-              onChange={handleStatusChange}
-            >
-              <Select.Trigger>
-                <Select.Value />
-                <Select.Indicator />
-              </Select.Trigger>
-              <Select.Popover>
-                <ListBox>
-                  <ListBox.Item id="all" textValue="All Posts">
-                    All Posts
-                    <ListBox.ItemIndicator />
-                  </ListBox.Item>
-                  <ListBox.Item id="draft" textValue="Draft">
-                    Draft
-                    <ListBox.ItemIndicator />
-                  </ListBox.Item>
-                  <ListBox.Item id="published" textValue="Published">
-                    Published
-                    <ListBox.ItemIndicator />
-                  </ListBox.Item>
-                  <ListBox.Item id="deleted" textValue="Deleted">
-                    Deleted
-                    <ListBox.ItemIndicator />
-                  </ListBox.Item>
-                </ListBox>
-              </Select.Popover>
-            </Select>
+            <div className="w-45">
+              <Select
+                aria-label="Filter by status"
+                value={statusFilter}
+                onChange={handleStatusChange}
+              >
+                <Select.Trigger>
+                  <Select.Value />
+                  <Select.Indicator />
+                </Select.Trigger>
+                <Select.Popover>
+                  <ListBox>
+                    <ListBox.Item id="all" textValue="All Posts">
+                      All Posts
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                    <ListBox.Item id="draft" textValue="Draft">
+                      Draft
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                    <ListBox.Item id="published" textValue="Published">
+                      Published
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                    <ListBox.Item id="deleted" textValue="Deleted">
+                      Deleted
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                  </ListBox>
+                </Select.Popover>
+              </Select>
+            </div>
           </div>
 
           <Card>
@@ -499,7 +503,7 @@ export const PostsTable = () => {
                 )
               </Card.Title>
             </Card.Header>
-            <Card.Content className="p-0">
+            <Card.Content>
               <DataGrid
                 aria-label="All posts"
                 columns={columns}
