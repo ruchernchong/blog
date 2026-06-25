@@ -1,13 +1,12 @@
-import { Card, Chip, cn } from "@heroui/react";
-import { CodeIcon, LinkSquare01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { SiGithub } from "@icons-pack/react-simple-icons";
-import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
+import { Card } from "@heroui/react";
+import type { Metadata, Route } from "next";
 import globalMetadata from "@/app/metadata";
-import { PageTitle } from "@/components/page-title";
+import { AnnotationRail } from "@/components/annotation-rail";
+import ExternalLink from "@/components/external-link";
+import { Eyebrow } from "@/components/eyebrow";
+import { PageHeader } from "@/components/page-header";
 import projects from "@/data/projects";
+import { liveUrl, repoUrl } from "@/lib/links";
 import type { Project } from "@/types";
 
 const title = "Projects";
@@ -34,151 +33,95 @@ export const metadata: Metadata = {
   },
 };
 
-function isGitHubLink(url: string): boolean {
-  try {
-    const parsed = new URL(url);
-    return (
-      parsed.hostname === "github.com" ||
-      parsed.hostname.endsWith(".github.com")
-    );
-  } catch {
-    return false;
-  }
-}
-
-function ProjectCard({
-  project,
-  featured = false,
-}: {
-  project: Project;
-  featured?: boolean;
-}) {
-  const displayedSkills = project.skills.slice(0, 4);
-  const remainingCount = project.skills.length - 4;
-
+function ProjectLinks({ project }: { project: Project }) {
+  const live = liveUrl(project.links);
+  const repo = repoUrl(project.links);
   return (
-    <Card
-      className={cn(
-        "overflow-hidden transition-all duration-200 hover:-translate-y-0.5",
-        featured
-          ? "ring-1 ring-accent/20 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25/0.25)]"
-          : "hover:shadow-[0_8px_30px_-10px_oklch(0_0_0/0.08)]",
+    <div className="flex shrink-0 items-center gap-3 font-mono text-xs">
+      {live && (
+        <ExternalLink
+          href={live as Route}
+          className="text-accent hover:underline"
+        >
+          live ↗
+        </ExternalLink>
       )}
-    >
-      <div className="relative h-56 w-full overflow-hidden">
-        <Image
-          fill
-          src={
-            project.coverImage ??
-            "https://images.unsplash.com/photo-1505238680356-667803448bb6?w=800&h=450&fit=crop"
-          }
-          alt={project.name}
-          className="object-cover"
-        />
-      </div>
-      <Card.Content>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-foreground text-lg">
-                {project.name}
-              </h3>
-              {featured && (
-                <Chip color="accent" variant="primary">
-                  Featured
-                </Chip>
-              )}
-            </div>
-            {project.description && (
-              <p className="line-clamp-2 text-muted text-sm">
-                {project.description}
-              </p>
-            )}
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {displayedSkills.map((skill) => (
-              <Chip key={skill} color="accent" variant="primary">
-                {skill}
-              </Chip>
-            ))}
-            {remainingCount > 0 && (
-              <Chip color="accent" variant="primary">
-                +{remainingCount}
-              </Chip>
-            )}
-          </div>
-        </div>
-      </Card.Content>
-      <Card.Footer>
-        <div className="flex gap-2">
-          {project.links.map((link) => {
-            return (
-              <Link
-                key={link}
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <div className="flex items-center gap-2 text-sm">
-                  {isGitHubLink(link) ? (
-                    <SiGithub className="size-4" />
-                  ) : (
-                    <HugeiconsIcon
-                      icon={LinkSquare01Icon}
-                      size={16}
-                      strokeWidth={2}
-                    />
-                  )}
-                  {isGitHubLink(link) ? "Source" : "Live"}
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </Card.Footer>
-    </Card>
+      {repo && (
+        <ExternalLink
+          href={repo as Route}
+          className="text-muted hover:text-foreground"
+        >
+          source ↗
+        </ExternalLink>
+      )}
+    </div>
   );
 }
 
 export default function ProjectsPage() {
-  const featuredProjects = projects.filter((project) => project.featured);
-  const otherProjects = projects.filter((project) => !project.featured);
+  const featured = projects.filter((project) => project.featured);
+  const archive = projects.filter((project) => !project.featured);
 
   return (
-    <div className="flex flex-col gap-8">
-      <PageTitle
+    <div className="flex flex-col gap-16">
+      <PageHeader
+        eyebrow="Build log"
         title="Projects"
-        description="A showcase of completed projects and experiments with new technologies."
-        icon={
-          <div className="flex size-10 items-center justify-center rounded-xl bg-accent/10">
-            <HugeiconsIcon icon={CodeIcon} size={20} className="text-accent" />
-          </div>
-        }
+        description={description}
       />
 
-      {/* Featured Section */}
-      {featuredProjects.length > 0 && (
-        <section className="mb-12">
-          <h2 className="mb-6 font-semibold text-lg text-muted">Featured</h2>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {featuredProjects.map((project) => (
-              <ProjectCard key={project.slug} project={project} featured />
+      {featured.length > 0 && (
+        <section className="flex flex-col gap-6">
+          <Eyebrow>Featured</Eyebrow>
+          <div className="flex flex-col gap-4">
+            {featured.map((project) => (
+              <Card key={project.slug} variant="transparent">
+                <div className="flex items-baseline justify-between gap-4">
+                  <h2 className="font-display font-medium text-2xl text-foreground">
+                    {project.name}
+                  </h2>
+                  <ProjectLinks project={project} />
+                </div>
+                {project.description && (
+                  <p className="text-muted leading-relaxed">
+                    {project.description}
+                  </p>
+                )}
+                <AnnotationRail>
+                  {project.skills.map((skill) => (
+                    <span key={skill}>{skill}</span>
+                  ))}
+                </AnnotationRail>
+              </Card>
             ))}
           </div>
         </section>
       )}
 
-      {/* Other Projects */}
-      {otherProjects.length > 0 && (
-        <section>
-          <h2 className="mb-6 font-semibold text-lg text-muted">
-            More Projects
-          </h2>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {otherProjects.map((project) => {
-              return <ProjectCard key={project.slug} project={project} />;
-            })}
+      {archive.length > 0 && (
+        <section className="flex flex-col gap-6">
+          <Eyebrow>Archive</Eyebrow>
+          <div className="flex flex-col gap-4">
+            {archive.map((project) => (
+              <Card key={project.slug} variant="transparent">
+                <div className="flex items-baseline justify-between gap-4">
+                  <h2 className="font-display font-medium text-foreground text-lg">
+                    {project.name}
+                  </h2>
+                  <ProjectLinks project={project} />
+                </div>
+                {project.description && (
+                  <p className="text-muted text-sm leading-relaxed">
+                    {project.description}
+                  </p>
+                )}
+                <AnnotationRail>
+                  {project.skills.slice(0, 6).map((skill) => (
+                    <span key={skill}>{skill}</span>
+                  ))}
+                </AnnotationRail>
+              </Card>
+            ))}
           </div>
         </section>
       )}

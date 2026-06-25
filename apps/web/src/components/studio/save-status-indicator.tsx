@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { formatRelativeTime, type SaveStatus } from "@/hooks/use-auto-save";
 
@@ -37,13 +38,14 @@ export function SaveStatusIndicator({
         <>
           Failed to save
           {onRetry && (
-            <button
-              type="button"
-              onClick={onRetry}
-              className="ml-1 text-accent underline hover:no-underline"
+            <Button
+              variant="ghost"
+              size="sm"
+              onPress={onRetry}
+              className="ml-1 h-auto px-1 py-0 text-accent underline hover:no-underline"
             >
               Retry
-            </button>
+            </Button>
           )}
         </>
       )}

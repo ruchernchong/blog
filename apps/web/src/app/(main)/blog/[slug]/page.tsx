@@ -1,11 +1,5 @@
-import {
-  Book01Icon,
-  Calendar01Icon,
-  InformationCircleIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -14,7 +8,7 @@ import { RelatedPosts } from "@/app/(main)/blog/components/related-posts";
 import { ScrollProgress } from "@/app/(main)/blog/components/scroll-progress";
 import { StatsBar } from "@/app/(main)/blog/components/stats-bar";
 import { StructuredData } from "@/app/components/structured-data";
-import { Typography } from "@/components/typography";
+import { AnnotationRail } from "@/components/annotation-rail";
 import {
   getPublishedPostBySlug,
   getPublishedPostSlugs,
@@ -84,55 +78,45 @@ async function PostContent({ slug }: { slug: string }) {
     return notFound();
   }
 
-  const formattedDate = post.publishedAt
-    ? format(post.publishedAt, "dd MMM yyyy")
-    : "";
-
   return (
     <>
       <ScrollProgress />
       <StructuredData data={post.metadata.structuredData} />
-      <article className="prose mx-auto mb-16 flex max-w-4xl flex-col gap-12 prose-img:rounded-2xl prose-a:text-foreground prose-a:underline">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <StatsBar slug={post.slug} />
-          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-muted">
-            <div className="flex items-center gap-2">
-              <HugeiconsIcon icon={Calendar01Icon} size={20} strokeWidth={2} />
-              {post.publishedAt && (
-                <time
-                  className="whitespace-nowrap"
-                  dateTime={formatISO(post.publishedAt)}
-                  title={formattedDate}
-                >
-                  {formattedDate}
-                </time>
-              )}
-            </div>
-            <span>&middot;</span>
-            <div className="flex items-center gap-2">
-              <HugeiconsIcon icon={Book01Icon} size={20} strokeWidth={2} />
-              <span className="whitespace-nowrap">
-                {post.metadata.readingTime}
-              </span>
-            </div>
-          </div>
-          <Typography variant="h1">{post.title}</Typography>
+      <StatsBar slug={post.slug} />
+      <article className="flex flex-col gap-8">
+        <header className="flex flex-col gap-4">
+          <h1 className="font-display font-semibold text-4xl text-foreground tracking-tight md:text-5xl">
+            {post.title}
+          </h1>
+          <AnnotationRail>
+            {post.publishedAt && (
+              <time dateTime={formatISO(post.publishedAt)}>
+                {format(post.publishedAt, "dd MMM yyyy")}
+              </time>
+            )}
+            {post.metadata.readingTime && (
+              <span>{post.metadata.readingTime}</span>
+            )}
+            {post.tags.map((tag) => (
+              <span key={tag}>#{tag}</span>
+            ))}
+          </AnnotationRail>
+        </header>
+
+        {post.summary && (
+          <p className="border-accent border-l-2 pl-4 text-lg text-muted italic leading-relaxed">
+            {post.summary}
+          </p>
+        )}
+
+        <div className="prose prose-neutral dark:prose-invert max-w-none prose-img:rounded-lg prose-pre:font-mono prose-a:text-accent">
+          <Suspense
+            fallback={<div className="animate-pulse text-muted">Loading…</div>}
+          >
+            <CachedMdx content={post.content} slug={slug} />
+          </Suspense>
         </div>
-        <aside className="relative rounded-md border-l-4 border-l-border bg-default p-6">
-          <div className="absolute top-0 left-0 -translate-x-[50%] -translate-y-[50%] rounded-full bg-background p-2 text-foreground">
-            <HugeiconsIcon
-              icon={InformationCircleIcon}
-              size={32}
-              strokeWidth={2}
-            />
-          </div>
-          {post.summary}
-        </aside>
-        <Suspense
-          fallback={<div className="animate-pulse">Loading content...</div>}
-        >
-          <CachedMdx content={post.content} slug={slug} />
-        </Suspense>
+
         <RelatedPosts slug={post.slug} />
       </article>
     </>

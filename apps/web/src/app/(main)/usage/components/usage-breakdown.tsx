@@ -722,91 +722,96 @@ export function UsageBreakdown({
   const hasActiveFilters = search !== "" || providerFilter !== "all";
 
   return (
-    <Card className={className}>
-      <Card.Header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <Card.Title>{title}</Card.Title>
-            <Chip color="accent" size="sm" variant="soft">
-              {sortedRows.length}
-            </Chip>
+    <div className={className}>
+      <Card variant="transparent">
+        <Card.Header>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <Card.Title>{title}</Card.Title>
+                <Chip color="accent" size="sm" variant="soft">
+                  {sortedRows.length}
+                </Chip>
+              </div>
+              <Card.Description>{active.description}</Card.Description>
+            </div>
+            <Segment
+              selectedKey={selectedKey}
+              onSelectionChange={(key) => handleViewChange(String(key))}
+              size="sm"
+            >
+              {views.map((view) => (
+                <Segment.Item key={view.id} id={view.id}>
+                  <Segment.Separator />
+                  {view.label}
+                </Segment.Item>
+              ))}
+            </Segment>
           </div>
-          <Card.Description>{active.description}</Card.Description>
-        </div>
-        <Segment
-          selectedKey={selectedKey}
-          onSelectionChange={(key) => handleViewChange(String(key))}
-          size="sm"
-        >
-          {views.map((view) => (
-            <Segment.Item key={view.id} id={view.id}>
-              <Segment.Separator />
-              {view.label}
-            </Segment.Item>
-          ))}
-        </Segment>
-      </Card.Header>
-      <Card.Content className="flex flex-col gap-4">
-        <BreakdownToolbar
-          columnOptions={columnOptions}
-          onProviderFilterChange={handleProviderFilterChange}
-          onSearchChange={handleSearchChange}
-          onVisibleColumnsChange={handleVisibleColumnsChange}
-          providerFilter={providerFilter}
-          providerOptions={providerOptions}
-          search={search}
-          visibleColumns={visibleColumns}
-        />
-        {hasActiveFilters && (
-          <div className="flex flex-wrap items-center gap-2">
-            {search !== "" && (
-              <FilterChip
-                clearLabel="Clear search"
-                label={`Search: ${search}`}
-                onClear={() => handleSearchChange("")}
-              />
-            )}
-            {providerFilter !== "all" && (
-              <FilterChip
-                clearLabel="Clear provider filter"
-                label={`Provider: ${providerDisplayNames[providerFilter] ?? providerFilter}`}
-                onClear={() => handleProviderFilterChange("all")}
-              />
-            )}
-            <Button onPress={handleClearFilters} size="sm" variant="ghost">
-              Clear all
-            </Button>
-          </div>
-        )}
-        <div ref={gridRef} style={{ minHeight: gridMinHeight }}>
-          <DataGrid
-            allowsColumnResize
-            aria-label="Usage breakdown"
-            className="[&_.table__cell]:py-1.5 [&_.table__cell]:text-xs [&_.table__column]:py-1.5 [&_.table__column]:text-[11px]"
-            columns={columns}
-            contentClassName="min-w-[760px] md:min-w-[1000px]"
-            data={pagedRows}
-            getRowId={(row) => row.key}
-            onSortChange={handleSortChange}
-            renderEmptyState={() => (
-              <div className="py-8 text-center text-muted text-sm">
-                No results match your filters.
+        </Card.Header>
+        <Card.Content>
+          <div className="flex flex-col gap-4">
+            <BreakdownToolbar
+              columnOptions={columnOptions}
+              onProviderFilterChange={handleProviderFilterChange}
+              onSearchChange={handleSearchChange}
+              onVisibleColumnsChange={handleVisibleColumnsChange}
+              providerFilter={providerFilter}
+              providerOptions={providerOptions}
+              search={search}
+              visibleColumns={visibleColumns}
+            />
+            {hasActiveFilters && (
+              <div className="flex flex-wrap items-center gap-2">
+                {search !== "" && (
+                  <FilterChip
+                    clearLabel="Clear search"
+                    label={`Search: ${search}`}
+                    onClear={() => handleSearchChange("")}
+                  />
+                )}
+                {providerFilter !== "all" && (
+                  <FilterChip
+                    clearLabel="Clear provider filter"
+                    label={`Provider: ${providerDisplayNames[providerFilter] ?? providerFilter}`}
+                    onClear={() => handleProviderFilterChange("all")}
+                  />
+                )}
+                <Button onPress={handleClearFilters} size="sm" variant="ghost">
+                  Clear all
+                </Button>
               </div>
             )}
-            sortDescriptor={sortDescriptor}
-            variant="primary"
-          />
-        </div>
-        {sortedRows.length > ROWS_PER_PAGE_OPTIONS[0] && (
-          <BreakdownPagination
-            currentPage={currentPage}
-            onPageChange={setPage}
-            onRowsPerPageChange={handleRowsPerPageChange}
-            pageCount={pageCount}
-            rowsPerPage={rowsPerPage}
-          />
-        )}
-      </Card.Content>
-    </Card>
+            <div ref={gridRef} style={{ minHeight: gridMinHeight }}>
+              <DataGrid
+                allowsColumnResize
+                aria-label="Usage breakdown"
+                columns={columns}
+                contentClassName="min-w-[760px] md:min-w-[1000px]"
+                data={pagedRows}
+                getRowId={(row) => row.key}
+                onSortChange={handleSortChange}
+                renderEmptyState={() => (
+                  <div className="py-8 text-center text-muted text-sm">
+                    No results match your filters.
+                  </div>
+                )}
+                sortDescriptor={sortDescriptor}
+                variant="primary"
+              />
+            </div>
+            {sortedRows.length > ROWS_PER_PAGE_OPTIONS[0] && (
+              <BreakdownPagination
+                currentPage={currentPage}
+                onPageChange={setPage}
+                onRowsPerPageChange={handleRowsPerPageChange}
+                pageCount={pageCount}
+                rowsPerPage={rowsPerPage}
+              />
+            )}
+          </div>
+        </Card.Content>
+      </Card>
+    </div>
   );
 }

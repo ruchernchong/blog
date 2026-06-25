@@ -1,8 +1,7 @@
-import { AnalyticsUpIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
 import globalMetadata from "@/app/metadata";
-import { PageTitle } from "@/components/page-title";
+import { AnnotationRail } from "@/components/annotation-rail";
+import { PageHeader } from "@/components/page-header";
 import { APP_LOCALE, APP_TIME_ZONE } from "@/constants/date-time";
 import { getProviderDisplayNames } from "@/lib/queries/models";
 import { getUsageProfile } from "@/lib/queries/usage";
@@ -56,22 +55,16 @@ export default async function UsagePage() {
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
-      <div className="flex flex-col gap-2 lg:col-span-4">
-        <PageTitle
+      <div className="flex flex-col gap-3 lg:col-span-4">
+        <PageHeader
+          eyebrow="Instrument"
           title="Usage"
           description="Tokens and cost across my AI coding agents over time."
-          icon={
-            <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
-              <HugeiconsIcon
-                icon={AnalyticsUpIcon}
-                size={20}
-                className="text-primary"
-              />
-            </div>
-          }
         />
         {lastUpdated && (
-          <p className="text-muted text-sm">Last updated {lastUpdated}</p>
+          <AnnotationRail>
+            <span>updated {lastUpdated}</span>
+          </AnnotationRail>
         )}
       </div>
 

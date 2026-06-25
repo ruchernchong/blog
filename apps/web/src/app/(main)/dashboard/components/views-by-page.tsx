@@ -74,10 +74,7 @@ export async function ViewsByPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
-      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-10px_oklch(0.60_0.18_25/0.4)]">
-        <Card.Header>
-          <Card.Title>Views by Page</Card.Title>
-        </Card.Header>
+      <Card variant="transparent">
         <Card.Content>
           {topPages.map((page) => (
             <ViewsByPageRow key={page.path} page={page} maxCount={maxCount} />

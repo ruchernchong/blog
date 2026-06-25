@@ -88,13 +88,11 @@ export function ImagePickerDialog({
                   {media.map((item) => (
                     <button
                       key={item.id}
+                      aria-label={item.alt || item.filename}
+                      aria-pressed={selected?.id === item.id}
                       type="button"
                       onClick={() => setSelected(item)}
-                      className={`relative aspect-square overflow-hidden rounded-md border-2 transition-colors ${
-                        selected?.id === item.id
-                          ? "border-accent"
-                          : "border-transparent hover:border-muted-foreground/50"
-                      }`}
+                      className="relative aspect-square overflow-hidden rounded-md border-2 border-transparent transition-colors hover:border-muted-foreground/50 aria-pressed:border-accent"
                     >
                       <Image
                         src={item.url}

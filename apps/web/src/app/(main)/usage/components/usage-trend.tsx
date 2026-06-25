@@ -18,14 +18,18 @@ export function UsageTrend({ className, contributions }: UsageTrendProps) {
   }));
 
   return (
-    <Card className={className}>
-      <Card.Header>
-        <Card.Title>Tokens per day</Card.Title>
-        <Card.Description>Daily token usage across all agents</Card.Description>
-      </Card.Header>
-      <Card.Content>
-        <TrendChartClient data={data} />
-      </Card.Content>
-    </Card>
+    <div className={className}>
+      <Card variant="transparent">
+        <Card.Header>
+          <Card.Title>Tokens per day</Card.Title>
+          <Card.Description>
+            Daily token usage across all agents
+          </Card.Description>
+        </Card.Header>
+        <Card.Content>
+          <TrendChartClient data={data} />
+        </Card.Content>
+      </Card>
+    </div>
   );
 }

@@ -274,11 +274,15 @@ See `apps/web/.env.example` for all required variables:
 ### Tailwind CSS v4
 
 - CSS-based configuration in `apps/web/src/app/globals.css`
-- OKLCH colour space for semantic tokens
+- **Engineering Notebook** identity (see `DESIGN.md`): the HeroUI **default theme
+  tokens** (neutral paper/ink + blue signal accent) — no bespoke palette. Type:
+  Space Grotesk (`font-display`), Hanken Grotesk (`font-sans`), Geist Mono
+  (`font-mono`). Light + dark via `next-themes`.
+- Signature primitives: `AnnotationRail`, `StatReadout`, `Eyebrow`, `PageHeader`
 - Use `flex gap-*` instead of `space-y-*` or `space-x-*`
 - Use even spacing values: `gap-2, gap-4, gap-6, gap-8, gap-12`
 - Prefer `margin-bottom` over `margin-top`
-- Semantic colours: `foreground`, `muted`, `accent`, `border`, `background`, `primary`
+- Semantic colours: `foreground`, `muted`, `accent`, `border`, `background`
 
 ### Error Handling
 
@@ -291,7 +295,7 @@ See `apps/web/.env.example` for all required variables:
 Project-specific skills are available in `.claude/skills/`:
 
 - **component-naming** - React component naming conventions (PascalCase, Domain+Role pattern, compound components)
-- **design-language-system** - Visual design tokens (coral OKLCH colours, typography, spacing, animations)
+- **design-language-system** - Visual design tokens (Engineering Notebook: HeroUI default theme, type roles, spacing, animations; see `DESIGN.md`)
 - **blog-voice** - Personal writing voice for blog posts on ruchern.dev (Singapore English, structural patterns,
   anti-patterns)
 

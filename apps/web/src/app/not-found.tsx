@@ -1,71 +1,35 @@
 import { buttonVariants } from "@heroui/styles";
 import * as motion from "motion/react-client";
 import Link from "next/link";
-import { BackgroundEffects } from "@/components/background-effects";
 
 export default function NotFound() {
   return (
-    <>
-      <BackgroundEffects />
-      <main className="flex min-h-screen flex-col items-center justify-center gap-8 px-4">
-        {/* Large 404 */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="select-none font-bold text-[clamp(8rem,25vw,14rem)] text-accent leading-none tracking-tighter"
-        >
-          404
-        </motion.h1>
-
-        {/* Message */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
-          className="flex flex-col items-center gap-4 text-center"
-        >
-          <p className="font-medium text-foreground text-xl tracking-tight">
-            This page has wandered off
-          </p>
-          <p className="max-w-md text-muted">
-            The page you&apos;re looking for doesn&apos;t exist, or perhaps it
-            never did. Either way, let&apos;s get you back on track.
-          </p>
-        </motion.div>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
-          className="flex gap-4"
-        >
-          <Link
-            href="/"
-            className={`${buttonVariants()} transition-all duration-200 hover:scale-[1.02]`}
-            style={{
-              boxShadow: "0 8px 30px -10px oklch(0.60 0.18 25 / 0.4)",
-            }}
-          >
-            Return Home
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-4 text-center">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex flex-col items-center gap-6"
+      >
+        <span className="font-mono text-accent text-sm uppercase tracking-wide">
+          :: HTTP 404
+        </span>
+        <h1 className="font-display font-semibold text-5xl text-foreground tracking-tight sm:text-6xl">
+          Page not found
+        </h1>
+        <p className="max-w-md text-muted leading-relaxed">
+          This route does not resolve. The page may have moved, or it never
+          existed. Let&apos;s get you back on track.
+        </p>
+        <div className="mt-2 flex items-center gap-3">
+          <Link className={buttonVariants()} href="/">
+            Return home
           </Link>
-          <Link
-            href="/blog"
-            className={`${buttonVariants({ variant: "outline" })} transition-all duration-200 hover:scale-[1.02]`}
-          >
-            Read the Blog
+          <Link className={buttonVariants({ variant: "outline" })} href="/blog">
+            Read the blog
           </Link>
-        </motion.div>
-
-        {/* Decorative line */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
-          className="h-px w-32 bg-gradient-to-r from-transparent via-primary/40 to-transparent"
-        />
-      </main>
-    </>
+        </div>
+      </motion.div>
+    </main>
   );
 }

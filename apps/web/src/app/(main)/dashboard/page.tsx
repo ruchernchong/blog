@@ -1,15 +1,14 @@
-import { Link, Typography } from "@heroui/react";
-import { DashboardBrowsingIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { Suspense } from "react";
 import { LastUpdated } from "@/app/(main)/dashboard/components/last-updated";
 import { StatsGrid } from "@/app/(main)/dashboard/components/stats-grid";
 import { ViewsByPage } from "@/app/(main)/dashboard/components/views-by-page";
 import { VisitsChart } from "@/app/(main)/dashboard/components/visits-chart";
 import globalMetadata from "@/app/metadata";
-import { PageTitle } from "@/components/page-title";
+import { Eyebrow } from "@/components/eyebrow";
+import { PageHeader } from "@/components/page-header";
 
 const title = "Dashboard";
 const description =
@@ -37,53 +36,52 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-1">
-        <PageTitle
+    <div className="flex flex-col gap-12">
+      <div className="flex flex-col gap-3">
+        <PageHeader
+          eyebrow="Telemetry"
           title="Dashboard"
-          description="Site visitor analytics and GitHub metrics."
-          icon={
-            <div className="flex size-10 items-center justify-center rounded-xl bg-accent/10">
-              <HugeiconsIcon
-                icon={DashboardBrowsingIcon}
-                size={20}
-                className="text-accent"
-              />
-            </div>
-          }
+          description={description}
         />
         <LastUpdated />
       </div>
 
-      <Suspense>
-        <StatsGrid />
-      </Suspense>
-      <Suspense>
-        <ViewsByPage />
-      </Suspense>
-      <Suspense>
-        <VisitsChart />
-      </Suspense>
+      <section className="flex flex-col gap-4">
+        <Eyebrow>Overview</Eyebrow>
+        <Suspense>
+          <StatsGrid />
+        </Suspense>
+      </section>
 
-      <div className="flex items-center justify-end">
-        <Link
-          href="https://posthog.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2"
-        >
-          <Typography type="body-xs" color="muted">
-            Powered by
-          </Typography>
-          <Image
-            src="/images/posthog-logo.svg"
-            alt="PostHog"
-            width={800}
-            height={140}
-            className="h-4 w-auto dark:invert"
-          />
-        </Link>
-      </div>
+      <section className="flex flex-col gap-4">
+        <Eyebrow>Views by page</Eyebrow>
+        <Suspense>
+          <ViewsByPage />
+        </Suspense>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <Eyebrow>Visits over time</Eyebrow>
+        <Suspense>
+          <VisitsChart />
+        </Suspense>
+      </section>
+
+      <Link
+        href="https://posthog.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-end gap-2 font-mono text-muted text-xs hover:text-foreground"
+      >
+        powered by
+        <Image
+          src="/images/posthog-logo.svg"
+          alt="PostHog"
+          width={800}
+          height={140}
+          className="h-3.5 w-auto dark:invert"
+        />
+      </Link>
     </div>
   );
 }

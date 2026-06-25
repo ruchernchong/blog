@@ -1,51 +1,25 @@
 "use client";
 
 import { Button, Modal } from "@heroui/react";
-import type { ChangeEvent, DragEvent } from "react";
-import { useRef, useState, useTransition } from "react";
+import { DropZone } from "@heroui-pro/react";
+import { useState, useTransition } from "react";
 import { R2Config } from "@/lib/config/r2.config";
 
 interface MediaUploadProps {
   onUploadComplete: () => void;
 }
 
+interface DropEvent {
+  items: Array<{ kind: string; getFile?: () => Promise<File> }>;
+}
+
 export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  function handleDrag(e: DragEvent<HTMLElement>) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  }
-
-  function handleDrop(e: DragEvent<HTMLElement>) {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-
-    if (e.dataTransfer.files?.[0]) {
-      handleFiles(e.dataTransfer.files);
-    }
-  }
-
-  function handleChange(e: ChangeEvent<HTMLInputElement>) {
-    e.preventDefault();
-    if (e.target.files?.[0]) {
-      handleFiles(e.target.files);
-    }
-  }
-
-  function handleFiles(files: FileList) {
+  function validateAndUpload(file: File) {
     setError(null);
-    const file = files[0];
 
     if (
       !R2Config.ALLOWED_MIME_TYPES.includes(
@@ -66,6 +40,19 @@ export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
     }
 
     uploadFile(file);
+  }
+
+  function handleSelect(files: FileList) {
+    if (files[0]) {
+      validateAndUpload(files[0]);
+    }
+  }
+
+  async function handleDrop(e: DropEvent) {
+    const item = e.items.find((i) => i.kind === "file" && i.getFile);
+    if (item?.getFile) {
+      validateAndUpload(await item.getFile());
+    }
   }
 
   function uploadFile(file: File) {
@@ -163,49 +150,24 @@ export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
               <Modal.Heading>Upload Media</Modal.Heading>
             </Modal.Header>
             <Modal.Body className="flex flex-col gap-4">
-              <p className="text-muted text-sm">
-                Drag and drop an image or click to browse
-              </p>
-
-              <button
-                type="button"
-                className={`relative w-full cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
-                  dragActive
-                    ? "border-accent bg-accent/5"
-                    : "border-muted-foreground/25"
-                }`}
-                onClick={() => inputRef.current?.click()}
-                onDragEnter={handleDrag}
-                onDragLeave={handleDrag}
-                onDragOver={handleDrag}
-                onDrop={handleDrop}
-              >
-                <input
-                  ref={inputRef}
-                  type="file"
-                  accept={R2Config.ALLOWED_MIME_TYPES.join(",")}
-                  onChange={handleChange}
-                  className="hidden"
-                />
-
-                <div className="flex flex-col items-center gap-2">
-                  <p className="text-muted text-sm">
+              <DropZone>
+                <DropZone.Area isDisabled={isPending} onDrop={handleDrop}>
+                  <DropZone.Icon />
+                  <DropZone.Label>
                     {isPending ? "Uploading..." : "Drop your image here, or"}
-                  </p>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onPress={() => inputRef.current?.click()}
-                    isDisabled={isPending}
-                  >
-                    Browse Files
-                  </Button>
-                  <p className="text-muted text-xs">
+                  </DropZone.Label>
+                  <DropZone.Description>
                     Max file size: {R2Config.MAX_FILE_SIZE / 1024 / 1024}MB
-                  </p>
-                </div>
-              </button>
+                  </DropZone.Description>
+                  <DropZone.Trigger isDisabled={isPending}>
+                    Browse Files
+                  </DropZone.Trigger>
+                </DropZone.Area>
+                <DropZone.Input
+                  accept={R2Config.ALLOWED_MIME_TYPES.join(",")}
+                  onSelect={handleSelect}
+                />
+              </DropZone>
 
               {error && <p className="text-danger text-sm">{error}</p>}
             </Modal.Body>

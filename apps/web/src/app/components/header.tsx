@@ -1,66 +1,59 @@
 "use client";
 
-import { cn } from "@heroui/react";
+import { Navbar } from "@heroui-pro/react";
 import type { Route } from "next";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import type { PropsWithChildren } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/logo";
-import { navLinks } from "@/config";
-
-interface NavItemProps extends PropsWithChildren {
-  href: Route;
-  className?: string;
-  title?: string;
-}
+import { navLinks, SITE_NAME } from "@/config";
+import { ThemeToggle } from "./theme-toggle";
 
 export function Header() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const isActive = (href: string) =>
+    pathname === href || (href !== "/" && pathname.startsWith(href));
 
   return (
-    <header className="fixed top-4 right-4 left-4 z-50">
-      <div className="container mx-auto rounded-full border border-border/50 bg-background/50 px-6 py-2 shadow-sm backdrop-blur-lg transition-all duration-300">
-        <div className="flex items-center justify-between">
-          <NavItem
+    <Navbar navigate={(href) => router.push(href as Route)} maxWidth="2xl">
+      <Navbar.Header>
+        <Navbar.MenuToggle className="md:hidden" />
+        <Navbar.Brand>
+          <Link
             href="/"
-            className="font-bold text-foreground text-lg transition-all duration-200 hover:text-accent"
-            title="Ru Chern"
+            aria-label={`${SITE_NAME}, home`}
+            className="flex items-center gap-2"
           >
-            <Logo />
-          </NavItem>
-          <nav className="flex items-center gap-6">
-            {navLinks.map(({ title, href }) => {
-              const isActive =
-                pathname === href ||
-                (pathname.startsWith(href) && href !== "/");
+            <Logo priority />
+            <span className="font-mono text-foreground text-sm">home</span>
+          </Link>
+        </Navbar.Brand>
 
-              return (
-                <NavItem
-                  key={title}
-                  href={href}
-                  className={cn(
-                    "font-medium text-sm transition-all duration-200",
-                    isActive
-                      ? "text-accent underline decoration-2 decoration-primary underline-offset-4"
-                      : "text-muted hover:text-foreground",
-                  )}
-                  title={title}
-                >
-                  {title}
-                </NavItem>
-              );
-            })}
-          </nav>
+        <Navbar.Spacer />
+
+        <Navbar.Content className="hidden md:flex">
+          {navLinks.map(({ title, href }) => (
+            <Navbar.Item key={title} href={href} isCurrent={isActive(href)}>
+              {title}
+            </Navbar.Item>
+          ))}
+          <Navbar.Separator />
+          <ThemeToggle />
+        </Navbar.Content>
+
+        <div className="md:hidden">
+          <ThemeToggle />
         </div>
-      </div>
-    </header>
-  );
-}
+      </Navbar.Header>
 
-function NavItem({ href, className, children }: NavItemProps) {
-  return (
-    <Link href={href} className={className}>
-      {children}
-    </Link>
+      <Navbar.Menu>
+        {navLinks.map(({ title, href }) => (
+          <Navbar.MenuItem key={title} href={href} isCurrent={isActive(href)}>
+            {title}
+          </Navbar.MenuItem>
+        ))}
+      </Navbar.Menu>
+    </Navbar>
   );
 }

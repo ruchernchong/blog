@@ -11,7 +11,7 @@ import {
   Select,
   TextField,
 } from "@heroui/react";
-import { EmptyState } from "@heroui-pro/react";
+import { DataGrid, type DataGridColumn, EmptyState } from "@heroui-pro/react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import type {
   OAuthClientDetail,
@@ -25,6 +25,9 @@ const dateFormatter = new Intl.DateTimeFormat("en-SG", {
   month: "short",
   day: "numeric",
 });
+
+const createdTime = (client: OAuthClientListItem) =>
+  client.createdAt ? new Date(client.createdAt).getTime() : 0;
 
 const dateTimeFormatter = new Intl.DateTimeFormat("en-SG", {
   dateStyle: "medium",
@@ -122,6 +125,141 @@ export function OAuthClientsTable() {
     return matchesSearch && matchesStatus;
   });
 
+  const columns: DataGridColumn<OAuthClientListItem>[] = [
+    {
+      id: "name",
+      header: "Name",
+      isRowHeader: true,
+      allowsSorting: true,
+      minWidth: 220,
+      sortFn: (a, b) =>
+        (a.name ?? a.clientId).localeCompare(b.name ?? b.clientId),
+      cell: (client) => (
+        <div className="flex flex-col gap-1">
+          <span className="font-medium">{client.name || "Unnamed client"}</span>
+          <span className="font-mono text-muted text-xs">
+            {client.clientId}
+          </span>
+          <Chip size="sm" variant="soft" color="default">
+            {client.public ? "public" : "confidential"}
+          </Chip>
+        </div>
+      ),
+    },
+    {
+      id: "status",
+      header: "Status",
+      allowsSorting: true,
+      sortFn: (a, b) =>
+        Number(a.disabled ?? false) - Number(b.disabled ?? false),
+      cell: (client) => (
+        <Chip
+          size="sm"
+          variant="soft"
+          color={client.disabled ? "danger" : "success"}
+        >
+          {client.disabled ? "disabled" : "enabled"}
+        </Chip>
+      ),
+    },
+    {
+      id: "tokens",
+      header: "Tokens",
+      align: "end",
+      allowsSorting: true,
+      sortFn: (a, b) => a.activeTokenCount - b.activeTokenCount,
+      cell: (client) => (
+        <span className="tabular-nums">{client.activeTokenCount}</span>
+      ),
+    },
+    {
+      id: "consents",
+      header: "Consents",
+      align: "end",
+      allowsSorting: true,
+      sortFn: (a, b) => a.consentCount - b.consentCount,
+      cell: (client) => (
+        <span className="tabular-nums">{client.consentCount}</span>
+      ),
+    },
+    {
+      id: "createdAt",
+      header: "Created",
+      allowsSorting: true,
+      sortFn: (a, b) => createdTime(a) - createdTime(b),
+      cell: (client) => (
+        <span className="text-muted text-sm tabular-nums">
+          {client.createdAt
+            ? dateFormatter.format(new Date(client.createdAt))
+            : "—"}
+        </span>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      align: "end",
+      cell: (client) => (
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onPress={() => setDetailClientId(client.clientId)}
+          >
+            View
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            isDisabled={isPending}
+            onPress={() =>
+              handleToggleDisabled(client.clientId, !client.disabled)
+            }
+          >
+            {client.disabled ? "Enable" : "Disable"}
+          </Button>
+          <AlertDialog>
+            <Button variant="ghost" size="sm" isDisabled={isPending}>
+              Delete
+            </Button>
+            <AlertDialog.Backdrop>
+              <AlertDialog.Container>
+                <AlertDialog.Dialog>
+                  <AlertDialog.Header>
+                    <AlertDialog.Icon status="danger" />
+                    <AlertDialog.Heading>
+                      Delete OAuth client?
+                    </AlertDialog.Heading>
+                  </AlertDialog.Header>
+                  <AlertDialog.Body>
+                    <p>
+                      This permanently deletes &ldquo;
+                      {client.name || client.clientId}&rdquo; along with all its
+                      access tokens, refresh tokens, and consents. This cannot
+                      be undone.
+                    </p>
+                  </AlertDialog.Body>
+                  <AlertDialog.Footer>
+                    <Button slot="close" variant="tertiary">
+                      Cancel
+                    </Button>
+                    <Button
+                      slot="close"
+                      variant="danger"
+                      onPress={() => handleDelete(client.clientId)}
+                    >
+                      Delete
+                    </Button>
+                  </AlertDialog.Footer>
+                </AlertDialog.Dialog>
+              </AlertDialog.Container>
+            </AlertDialog.Backdrop>
+          </AlertDialog>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -139,75 +277,65 @@ export function OAuthClientsTable() {
             value={searchQuery}
             onChange={setSearchQuery}
           >
-            <Input
-              className="max-w-md"
-              placeholder="Search by name or client ID..."
-            />
+            <div className="max-w-md">
+              <Input placeholder="Search by name or client ID..." />
+            </div>
           </TextField>
         </div>
-        <Select
-          aria-label="Filter by status"
-          className="w-45"
-          value={statusFilter}
-          onChange={(value) => {
-            if (value) setStatusFilter(value as StatusFilter);
-          }}
-        >
-          <Select.Trigger>
-            <Select.Value />
-            <Select.Indicator />
-          </Select.Trigger>
-          <Select.Popover>
-            <ListBox>
-              <ListBox.Item id="all" textValue="All Clients">
-                All Clients
-                <ListBox.ItemIndicator />
-              </ListBox.Item>
-              <ListBox.Item id="enabled" textValue="Enabled">
-                Enabled
-                <ListBox.ItemIndicator />
-              </ListBox.Item>
-              <ListBox.Item id="disabled" textValue="Disabled">
-                Disabled
-                <ListBox.ItemIndicator />
-              </ListBox.Item>
-            </ListBox>
-          </Select.Popover>
-        </Select>
+        <div className="w-45">
+          <Select
+            aria-label="Filter by status"
+            value={statusFilter}
+            onChange={(value) => {
+              if (value) setStatusFilter(value as StatusFilter);
+            }}
+          >
+            <Select.Trigger>
+              <Select.Value />
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover>
+              <ListBox>
+                <ListBox.Item id="all" textValue="All Clients">
+                  All Clients
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+                <ListBox.Item id="enabled" textValue="Enabled">
+                  Enabled
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+                <ListBox.Item id="disabled" textValue="Disabled">
+                  Disabled
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+              </ListBox>
+            </Select.Popover>
+          </Select>
+        </div>
       </div>
 
       {isLoading ? (
         <Card>
-          <Card.Content className="py-12">
-            <p className="text-center text-muted">Loading OAuth clients...</p>
+          <Card.Content>
+            <div className="py-12">
+              <p className="text-center text-muted">Loading OAuth clients...</p>
+            </div>
           </Card.Content>
         </Card>
-      ) : filteredClients.length === 0 ? (
+      ) : clients.length === 0 ? (
         <Card>
-          <Card.Content className="py-12">
-            <EmptyState>
-              <EmptyState.Header>
-                <EmptyState.Title>No OAuth clients found</EmptyState.Title>
-                <EmptyState.Description>
-                  {clients.length === 0
-                    ? "No applications have registered with your OAuth provider yet."
-                    : "Try adjusting your search or filter criteria"}
-                </EmptyState.Description>
-              </EmptyState.Header>
-              {clients.length > 0 && (
-                <EmptyState.Content>
-                  <Button
-                    variant="outline"
-                    onPress={() => {
-                      setSearchQuery("");
-                      setStatusFilter("all");
-                    }}
-                  >
-                    Clear Filters
-                  </Button>
-                </EmptyState.Content>
-              )}
-            </EmptyState>
+          <Card.Content>
+            <div className="py-12">
+              <EmptyState>
+                <EmptyState.Header>
+                  <EmptyState.Title>No OAuth clients yet</EmptyState.Title>
+                  <EmptyState.Description>
+                    No applications have registered with your OAuth provider
+                    yet.
+                  </EmptyState.Description>
+                </EmptyState.Header>
+              </EmptyState>
+            </div>
           </Card.Content>
         </Card>
       ) : (
@@ -220,145 +348,43 @@ export function OAuthClientsTable() {
               )
             </Card.Title>
           </Card.Header>
-          <Card.Content className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="px-6 py-3 text-left font-medium text-sm">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-right font-medium text-sm">
-                      Tokens
-                    </th>
-                    <th className="px-6 py-3 text-right font-medium text-sm">
-                      Consents
-                    </th>
-                    <th className="px-6 py-3 text-left font-medium text-sm">
-                      Created
-                    </th>
-                    <th className="px-6 py-3 text-right font-medium text-sm">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredClients.map((client) => (
-                    <tr
-                      key={client.id}
-                      className={`border-b last:border-0 hover:bg-default/50 ${
-                        client.disabled ? "opacity-60" : ""
-                      }`}
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col gap-1">
-                          <span className="font-medium">
-                            {client.name || "Unnamed client"}
-                          </span>
-                          <span className="font-mono text-muted text-xs">
-                            {client.clientId}
-                          </span>
-                          <Chip size="sm" variant="soft" color="default">
-                            {client.public ? "public" : "confidential"}
-                          </Chip>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <Chip
-                          size="sm"
-                          variant="soft"
-                          color={client.disabled ? "danger" : "success"}
-                        >
-                          {client.disabled ? "disabled" : "enabled"}
-                        </Chip>
-                      </td>
-                      <td className="px-6 py-4 text-right tabular-nums">
-                        {client.activeTokenCount}
-                      </td>
-                      <td className="px-6 py-4 text-right tabular-nums">
-                        {client.consentCount}
-                      </td>
-                      <td className="px-6 py-4 text-muted text-sm">
-                        {client.createdAt
-                          ? dateFormatter.format(new Date(client.createdAt))
-                          : "—"}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onPress={() => setDetailClientId(client.clientId)}
-                          >
-                            View
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            isDisabled={isPending}
-                            onPress={() =>
-                              handleToggleDisabled(
-                                client.clientId,
-                                !client.disabled,
-                              )
-                            }
-                          >
-                            {client.disabled ? "Enable" : "Disable"}
-                          </Button>
-                          <AlertDialog>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              isDisabled={isPending}
-                            >
-                              Delete
-                            </Button>
-                            <AlertDialog.Backdrop>
-                              <AlertDialog.Container>
-                                <AlertDialog.Dialog>
-                                  <AlertDialog.Header>
-                                    <AlertDialog.Icon status="danger" />
-                                    <AlertDialog.Heading>
-                                      Delete OAuth client?
-                                    </AlertDialog.Heading>
-                                  </AlertDialog.Header>
-                                  <AlertDialog.Body>
-                                    <p>
-                                      This permanently deletes &ldquo;
-                                      {client.name || client.clientId}&rdquo;
-                                      along with all its access tokens, refresh
-                                      tokens, and consents. This cannot be
-                                      undone.
-                                    </p>
-                                  </AlertDialog.Body>
-                                  <AlertDialog.Footer>
-                                    <Button slot="close" variant="tertiary">
-                                      Cancel
-                                    </Button>
-                                    <Button
-                                      slot="close"
-                                      variant="danger"
-                                      onPress={() =>
-                                        handleDelete(client.clientId)
-                                      }
-                                    >
-                                      Delete
-                                    </Button>
-                                  </AlertDialog.Footer>
-                                </AlertDialog.Dialog>
-                              </AlertDialog.Container>
-                            </AlertDialog.Backdrop>
-                          </AlertDialog>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <Card.Content>
+            <DataGrid
+              aria-label="OAuth clients"
+              columns={columns}
+              contentClassName="min-w-[720px]"
+              data={filteredClients}
+              defaultSortDescriptor={{
+                column: "createdAt",
+                direction: "descending",
+              }}
+              getRowId={(client) => client.id}
+              renderEmptyState={() => (
+                <div className="py-6">
+                  <EmptyState>
+                    <EmptyState.Header>
+                      <EmptyState.Title>
+                        No OAuth clients found
+                      </EmptyState.Title>
+                      <EmptyState.Description>
+                        Try adjusting your search or filter criteria
+                      </EmptyState.Description>
+                    </EmptyState.Header>
+                    <EmptyState.Content>
+                      <Button
+                        variant="outline"
+                        onPress={() => {
+                          setSearchQuery("");
+                          setStatusFilter("all");
+                        }}
+                      >
+                        Clear Filters
+                      </Button>
+                    </EmptyState.Content>
+                  </EmptyState>
+                </div>
+              )}
+            />
           </Card.Content>
         </Card>
       )}

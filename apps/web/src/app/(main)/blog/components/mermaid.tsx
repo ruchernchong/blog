@@ -1,5 +1,6 @@
 "use client";
 
+import { Alert, Skeleton } from "@heroui/react";
 import { useEffect, useId, useRef, useState } from "react";
 
 interface MermaidProps {
@@ -28,21 +29,21 @@ export function Mermaid({ chart }: MermaidProps) {
           theme: "base",
           securityLevel: "loose",
           themeVariables: {
-            primaryColor: "#FAF9F7",
-            primaryTextColor: "#1F1F23",
-            primaryBorderColor: "#E07356",
-            lineColor: "#E07356",
-            secondaryColor: "#F3F2F0",
-            tertiaryColor: "#FDF8F7",
-            background: "#FAF9F7",
-            mainBkg: "#FAF9F7",
-            nodeBorder: "#E07356",
-            clusterBkg: "#F3F2F0",
-            clusterBorder: "#E5E4E2",
-            titleColor: "#1F1F23",
-            edgeLabelBackground: "#FAF9F7",
-            textColor: "#1F1F23",
-            fontFamily: "var(--font-sans), system-ui, sans-serif",
+            primaryColor: "#F5F5F5",
+            primaryTextColor: "#18181B",
+            primaryBorderColor: "#18181B",
+            lineColor: "#71717A",
+            secondaryColor: "#EBEBEC",
+            tertiaryColor: "#FFFFFF",
+            background: "#F5F5F5",
+            mainBkg: "#F5F5F5",
+            nodeBorder: "#18181B",
+            clusterBkg: "#EBEBEC",
+            clusterBorder: "#E4E4E7",
+            titleColor: "#18181B",
+            edgeLabelBackground: "#FFFFFF",
+            textColor: "#18181B",
+            fontFamily: "var(--font-mono), ui-monospace, monospace",
           },
         });
 
@@ -68,10 +69,15 @@ export function Mermaid({ chart }: MermaidProps) {
   if (error) {
     return (
       <figure className="my-8">
-        <div className="rounded-lg border border-danger/50 bg-danger/10 p-4 text-danger">
-          <p className="text-sm">{error}</p>
-          <pre className="mt-2 text-xs opacity-70">{chart}</pre>
-        </div>
+        <Alert status="danger">
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Title>{error}</Alert.Title>
+            <pre className="mt-2 overflow-x-auto text-xs opacity-70">
+              {chart}
+            </pre>
+          </Alert.Content>
+        </Alert>
       </figure>
     );
   }
@@ -79,7 +85,7 @@ export function Mermaid({ chart }: MermaidProps) {
   if (!svg) {
     return (
       <figure className="my-8">
-        <div className="h-32 w-full animate-pulse rounded-lg bg-default" />
+        <Skeleton className="h-32 w-full rounded-lg" />
       </figure>
     );
   }

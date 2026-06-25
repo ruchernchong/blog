@@ -39,7 +39,7 @@ export async function generateIcon({ size, fontSize }: GenerateIconOptions) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#d4513b",
+        background: "#18181B",
         borderRadius: "50%",
       }}
     >

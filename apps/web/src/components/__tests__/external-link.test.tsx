@@ -39,11 +39,21 @@ describe("ExternalLink", () => {
     expect(screen.getByText("Custom Content")).toBeInTheDocument();
   });
 
-  it("has accessible aria-label", () => {
+  it("has a default accessible aria-label", () => {
     render(
       <ExternalLink href="https://example.com">Example Link</ExternalLink>,
     );
     const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("aria-label", "Link to social media");
+    expect(link).toHaveAttribute("aria-label", "External link");
+  });
+
+  it("forwards a custom aria-label", () => {
+    render(
+      <ExternalLink href="https://example.com" aria-label="GitHub">
+        Example Link
+      </ExternalLink>,
+    );
+    const link = screen.getByRole("link");
+    expect(link).toHaveAttribute("aria-label", "GitHub");
   });
 });

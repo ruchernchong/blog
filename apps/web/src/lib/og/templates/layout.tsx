@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { OG_COLOURS, OG_CORAL_GRADIENT } from "../colours";
+import { OG_ACCENT_GRADIENT, OG_COLOURS } from "../colours";
 import { OG_CONFIG } from "../config";
 
 interface LayoutProps {
@@ -10,7 +10,7 @@ interface LayoutProps {
 /**
  * Base layout wrapper for OG images
  *
- * Provides coral gradient background, white content card, and site branding
+ * Provides the accent gradient background, white content card, and site branding
  */
 export function Layout({ children, showBranding = true }: LayoutProps) {
   return (
@@ -21,7 +21,7 @@ export function Layout({ children, showBranding = true }: LayoutProps) {
         display: "flex",
         flexDirection: "column",
         padding: 60,
-        background: OG_CORAL_GRADIENT,
+        background: OG_ACCENT_GRADIENT,
         fontFamily: OG_CONFIG.fontFamily,
       }}
     >

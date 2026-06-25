@@ -89,7 +89,7 @@ const generateMetadata = (
   };
 };
 
-const createContent = ({ title, summary, sections }: SeedPost) => {
+const createContent = ({ sections }: SeedPost) => {
   const body = sections
     .map(
       (section) => `## ${section}
@@ -102,11 +102,9 @@ This seed post gives the local Studio enough realistic MDX content to exercise r
     )
     .join("\n\n");
 
-  return `# ${title}
-
-${summary}
-
-${body}
+  // Title and summary are rendered by the page chrome, not the MDX body, so the
+  // seed body starts at the first section (matching Studio-authored content).
+  return `${body}
 
 ## Conclusion
 
