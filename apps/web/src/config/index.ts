@@ -20,11 +20,11 @@ export const SITE_DESCRIPTION =
   "Frontend Developer from Singapore. Interested in automating workflows and building in React, Node, and Typescript.";
 
 export const navLinks: NavLink[] = [
-  { title: "Blog", href: "/blog" },
-  { title: "Dashboard", href: "/dashboard" },
-  { title: "Usage", href: "/usage" },
-  { title: "About", href: "/about" },
-  { title: "Projects", href: "/projects" },
+  { title: "blog", href: "/blog" },
+  { title: "dashboard", href: "/dashboard" },
+  { title: "usage", href: "/usage" },
+  { title: "about", href: "/about" },
+  { title: "projects", href: "/projects" },
 ];
 
 export const MAX_LIKES_PER_USER = 50;
