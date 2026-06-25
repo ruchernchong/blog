@@ -1,3 +1,4 @@
+import { Link as HeroLink } from "@heroui/react";
 import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import rehypeShiki from "@shikijs/rehype";
@@ -34,23 +35,17 @@ function CustomLink({ href, children, ...props }: CustomLinkProps) {
   }
 
   return (
-    <a
+    <HeroLink
       href={href}
       target="_blank"
       rel="noopener noreferrer nofollow"
       className="text-foreground underline hover:text-muted"
-      {...props}
     >
-      <span>
-        {children}
-        <HugeiconsIcon
-          icon={ArrowUpRight01Icon}
-          size={8}
-          strokeWidth={2}
-          className="inline-flex align-super"
-        />
-      </span>
-    </a>
+      {children}
+      <HeroLink.Icon className="ml-0.5 size-3">
+        <HugeiconsIcon icon={ArrowUpRight01Icon} strokeWidth={2} />
+      </HeroLink.Icon>
+    </HeroLink>
   );
 }
 

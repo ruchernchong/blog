@@ -204,15 +204,12 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <ul className="flex flex-col">
+          <div className="flex flex-col gap-4">
             {latestPosts.map((post) => (
-              <li
-                key={post.slug}
-                className="border-border border-b last:border-0"
-              >
+              <Card key={post.slug} variant="transparent">
                 <Link
                   href={post.metadata.canonical as Route}
-                  className="group flex flex-col gap-2 py-5"
+                  className="group flex flex-col gap-2"
                 >
                   <h3 className="font-display font-medium text-foreground text-lg group-hover:text-accent">
                     {post.title}
@@ -236,9 +233,9 @@ export default async function HomePage() {
                     ))}
                   </AnnotationRail>
                 </Link>
-              </li>
+              </Card>
             ))}
-          </ul>
+          </div>
         </section>
       </div>
     </>

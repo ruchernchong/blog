@@ -1,5 +1,6 @@
 "use client";
 
+import { Alert, Skeleton } from "@heroui/react";
 import { useEffect, useId, useRef, useState } from "react";
 
 interface MermaidProps {
@@ -68,10 +69,15 @@ export function Mermaid({ chart }: MermaidProps) {
   if (error) {
     return (
       <figure className="my-8">
-        <div className="rounded-lg border border-danger/50 bg-danger/10 p-4 text-danger">
-          <p className="text-sm">{error}</p>
-          <pre className="mt-2 text-xs opacity-70">{chart}</pre>
-        </div>
+        <Alert status="danger">
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Title>{error}</Alert.Title>
+            <pre className="mt-2 overflow-x-auto text-xs opacity-70">
+              {chart}
+            </pre>
+          </Alert.Content>
+        </Alert>
       </figure>
     );
   }
@@ -79,7 +85,7 @@ export function Mermaid({ chart }: MermaidProps) {
   if (!svg) {
     return (
       <figure className="my-8">
-        <div className="h-32 w-full animate-pulse rounded-lg bg-default" />
+        <Skeleton className="h-32 w-full rounded-lg" />
       </figure>
     );
   }

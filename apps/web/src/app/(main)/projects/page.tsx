@@ -101,12 +101,9 @@ export default function ProjectsPage() {
       {archive.length > 0 && (
         <section className="flex flex-col gap-6">
           <Eyebrow>Archive</Eyebrow>
-          <ul className="flex flex-col">
+          <div className="flex flex-col gap-4">
             {archive.map((project) => (
-              <li
-                key={project.slug}
-                className="flex flex-col gap-2 border-border border-b py-5 last:border-0"
-              >
+              <Card key={project.slug} variant="transparent">
                 <div className="flex items-baseline justify-between gap-4">
                   <h2 className="font-display font-medium text-foreground text-lg">
                     {project.name}
@@ -123,9 +120,9 @@ export default function ProjectsPage() {
                     <span key={skill}>{skill}</span>
                   ))}
                 </AnnotationRail>
-              </li>
+              </Card>
             ))}
-          </ul>
+          </div>
         </section>
       )}
     </div>

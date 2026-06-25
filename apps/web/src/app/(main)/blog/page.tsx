@@ -83,9 +83,13 @@ export default async function BlogPage() {
       {seriesWithPosts.length > 0 && (
         <section className="flex flex-col gap-6">
           <Eyebrow>Series</Eyebrow>
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
             {seriesWithPosts.map((s) => (
-              <div key={s.slug} className="flex flex-col gap-2">
+              <Card
+                key={s.slug}
+                variant="transparent"
+                className="flex flex-col gap-2"
+              >
                 <h3 className="font-display font-medium text-foreground">
                   {s.title}
                   <span className="ml-2 font-mono text-muted text-xs">
@@ -109,7 +113,7 @@ export default async function BlogPage() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </Card>
             ))}
           </div>
         </section>
@@ -117,15 +121,12 @@ export default async function BlogPage() {
 
       <section className="flex flex-col gap-6">
         <Eyebrow>All posts</Eyebrow>
-        <ul className="flex flex-col">
+        <div className="flex flex-col gap-4">
           {gridPosts.map((post) => (
-            <li
-              key={post.slug}
-              className="border-border border-b last:border-0"
-            >
+            <Card key={post.slug} variant="transparent">
               <Link
                 href={post.metadata.canonical as Route}
-                className="group flex flex-col gap-2 py-5"
+                className="group flex flex-col gap-2"
               >
                 <h3 className="font-display font-medium text-foreground text-lg group-hover:text-accent">
                   {post.title}
@@ -141,9 +142,9 @@ export default async function BlogPage() {
                   tags={post.tags}
                 />
               </Link>
-            </li>
+            </Card>
           ))}
-        </ul>
+        </div>
       </section>
     </div>
   );

@@ -1,3 +1,4 @@
+import { buttonVariants } from "@heroui/styles";
 import type { Metadata } from "next";
 import type { WebPage, WithContext } from "schema-dts";
 import { StructuredData } from "@/app/components/structured-data";
@@ -69,7 +70,11 @@ export default function AboutPage() {
                 key={name}
                 href={link}
                 aria-label={name}
-                className="flex size-9 items-center justify-center rounded-md text-muted hover:bg-default hover:text-foreground"
+                className={buttonVariants({
+                  variant: "ghost",
+                  size: "sm",
+                  isIconOnly: true,
+                })}
               >
                 <Icons.Social name={name} className="size-4" />
               </ExternalLink>
