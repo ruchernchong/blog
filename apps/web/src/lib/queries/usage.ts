@@ -143,7 +143,12 @@ export async function repriceUnpricedTokenUsage(
       stillUnpriced++;
       continue;
     }
-    await db
+    // `costUsd IS NULL` guards against a concurrent ingest that upserted this
+    // same key (with fresh tokens + a real cost) between the select above and
+    // this write — without it, we'd clobber the newer cost with one computed
+    // from now-stale token counts. The narrowed WHERE makes the write a no-op
+    // in that race instead of a silent overwrite.
+    const updated = await db
       .update(tokenUsage)
       .set({ costUsd: cost.toFixed(6), updatedAt: sql`now()` })
       .where(
@@ -152,9 +157,13 @@ export async function repriceUnpricedTokenUsage(
           eq(tokenUsage.agent, row.agent),
           eq(tokenUsage.provider, row.provider),
           eq(tokenUsage.model, row.model),
+          isNull(tokenUsage.costUsd),
         ),
-      );
-    repriced++;
+      )
+      .returning({ date: tokenUsage.date });
+    if (updated.length > 0) {
+      repriced++;
+    }
   }
 
   return { scanned: rows.length, repriced, stillUnpriced };

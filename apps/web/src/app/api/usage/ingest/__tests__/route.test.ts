@@ -122,6 +122,20 @@ describe("POST /api/usage/ingest", () => {
     expect(mockRepriceUnpricedTokenUsage).toHaveBeenCalledOnce();
   });
 
+  it("should still succeed and revalidate when repricing fails", async () => {
+    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+    // models.dev outage: loadPricing throws *after* the upsert already wrote.
+    mockLoadPricing.mockRejectedValue(new Error("models.dev unavailable"));
+
+    const response = await POST(postRequest({ rows: [validRow] }));
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body).toEqual({ ok: true, upserted: 1, repriced: null });
+    expect(mockUpsertTokenUsage).toHaveBeenCalledOnce();
+    expect(mockRevalidateTag).toHaveBeenCalledWith("usage", "max");
+  });
+
   it("should upsert for an admin session", async () => {
     mockValidateMcpAuth.mockResolvedValue({
       type: "session",
