@@ -4,6 +4,7 @@ import { ERROR_IDS } from "@/constants/error-ids";
 import { handleApiError } from "@/lib/api/errors";
 import { validateMcpAuth } from "@/lib/api/mcp-auth";
 import { parseAndValidateBody } from "@/lib/api/validation";
+import { logWarning } from "@/lib/logger";
 import { loadPricing } from "@/lib/queries/models";
 import {
   repriceUnpricedTokenUsage,
@@ -44,7 +45,19 @@ export async function POST(request: Request) {
     const upserted = await upsertTokenUsage(result.data.rows);
     // Heal any stale-NULL orphans (priced models that were unpriceable at their
     // original ingest) straight from stored tokens — independent of local logs.
-    const repriced = await repriceUnpricedTokenUsage(await loadPricing());
+    // Best-effort: the write above is the primary, durable operation, so a
+    // pricing outage (models.dev down → `loadPricing` throws) must not turn a
+    // successful upsert into a caller-visible 500 with a stale cache.
+    let repriced: Awaited<ReturnType<typeof repriceUnpricedTokenUsage>> | null =
+      null;
+    try {
+      repriced = await repriceUnpricedTokenUsage(await loadPricing());
+    } catch (error) {
+      logWarning("Skipped repricing during usage ingest", {
+        errorId: ERROR_IDS.USAGE_INGEST_FAILED,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
     revalidateTag("usage", "max");
     return Response.json({ ok: true, upserted, repriced });
   } catch (error) {
