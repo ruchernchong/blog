@@ -4,7 +4,11 @@ import { ERROR_IDS } from "@/constants/error-ids";
 import { handleApiError } from "@/lib/api/errors";
 import { validateMcpAuth } from "@/lib/api/mcp-auth";
 import { parseAndValidateBody } from "@/lib/api/validation";
-import { upsertTokenUsage } from "@/lib/queries/usage";
+import { loadPricing } from "@/lib/queries/models";
+import {
+  repriceUnpricedTokenUsage,
+  upsertTokenUsage,
+} from "@/lib/queries/usage";
 
 /**
  * Ingest daily token-usage aggregates into *this* deployment's database.
@@ -17,7 +21,9 @@ import { upsertTokenUsage } from "@/lib/queries/usage";
  *
  * Writes are gated to the static MCP token or an admin session (OAuth sign-up is
  * open, so a plain authenticated session is not enough to overwrite prod data).
- * After a successful upsert the `usage` cache tag is revalidated so the public
+ * After the upsert, every still-`NULL`-cost row is repriced from its stored
+ * tokens (healing stale orphans whose source log was pruned, so re-ingesting can
+ * no longer reach them), then the `usage` cache tag is revalidated so the public
  * `/usage` page reflects the new data.
  */
 export async function POST(request: Request) {
@@ -36,8 +42,11 @@ export async function POST(request: Request) {
 
   try {
     const upserted = await upsertTokenUsage(result.data.rows);
+    // Heal any stale-NULL orphans (priced models that were unpriceable at their
+    // original ingest) straight from stored tokens — independent of local logs.
+    const repriced = await repriceUnpricedTokenUsage(await loadPricing());
     revalidateTag("usage", "max");
-    return Response.json({ ok: true, upserted });
+    return Response.json({ ok: true, upserted, repriced });
   } catch (error) {
     return handleApiError(
       error,

@@ -4,7 +4,10 @@ import { resolveProvider } from "@workspace/usage/providers";
 import type { TokenBreakdown } from "@workspace/usage/types";
 import { format } from "date-fns";
 import { loadPricing } from "@/lib/queries/models";
-import { upsertTokenUsage } from "@/lib/queries/usage";
+import {
+  repriceUnpricedTokenUsage,
+  upsertTokenUsage,
+} from "@/lib/queries/usage";
 import type { InsertTokenUsage } from "@/schema";
 
 /**
@@ -198,6 +201,13 @@ async function main() {
       `Upserting ${rows.length.toLocaleString()} rows → DATABASE_URL`,
     );
     await upsertTokenUsage(rows);
+    // Mirror the remote route: heal any stale-NULL orphans from stored tokens.
+    const { repriced } = await repriceUnpricedTokenUsage(await loadPricing());
+    if (repriced > 0) {
+      console.log(
+        `  repriced: ${repriced.toLocaleString()} previously-N.A. rows`,
+      );
+    }
   }
 
   printSummary(rows);

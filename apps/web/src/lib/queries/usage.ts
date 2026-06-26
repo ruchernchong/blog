@@ -1,3 +1,4 @@
+import type { Pricing } from "@workspace/usage/pricing";
 import type {
   AgentDayBreakdown,
   Cost,
@@ -9,7 +10,15 @@ import type {
   YearSummary,
 } from "@workspace/usage/types";
 import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns";
-import { asc, getTableColumns, type SQL, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  eq,
+  getTableColumns,
+  isNull,
+  type SQL,
+  sql,
+} from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import { db, type InsertTokenUsage, tokenUsage } from "@/schema";
 
@@ -85,6 +94,70 @@ export async function upsertTokenUsage(
       .onConflictDoUpdate({ target: [...CONFLICT_TARGET], set });
   }
   return rows.length;
+}
+
+export interface RepriceResult {
+  /** Rows that were `NULL`-cost going in. */
+  scanned: number;
+  /** Rows that now resolve to a price and were updated. */
+  repriced: number;
+  /** Rows still unpriceable (e.g. legacy `unknown`, or a model no pricing DB lists). */
+  stillUnpriced: number;
+}
+
+/**
+ * Recompute cost for every `NULL`-cost row from its *stored* token columns using
+ * current pricing, and persist the ones that now resolve.
+ *
+ * A row's cost is `NULL` when the model had no price at ingest time (models.dev
+ * had not yet listed it). The ingest upsert self-heals such a row on the next
+ * run — but only while its source log still exists; once the log is pruned the
+ * parser stops regenerating that (date, agent, provider, model) key, leaving a
+ * permanently stale-`NULL` orphan that re-ingesting can never reach. This pass
+ * is log-independent: it reprices straight from the persisted aggregate, so an
+ * orphan heals as soon as pricing catches up. Run after each ingest.
+ */
+export async function repriceUnpricedTokenUsage(
+  pricing: Pricing,
+): Promise<RepriceResult> {
+  const rows = await db
+    .select()
+    .from(tokenUsage)
+    .where(isNull(tokenUsage.costUsd));
+
+  let repriced = 0;
+  let stillUnpriced = 0;
+  for (const row of rows) {
+    const tokens: TokenBreakdown = {
+      input: row.inputTokens,
+      output: row.outputTokens,
+      cacheRead: row.cacheReadTokens,
+      cacheWrite: row.cacheWriteTokens,
+      reasoning: row.reasoningTokens,
+    };
+    const cost = pricing.costOf(tokens, row.model, {
+      agent: row.agent,
+      provider: row.provider,
+    });
+    if (cost === null) {
+      stillUnpriced++;
+      continue;
+    }
+    await db
+      .update(tokenUsage)
+      .set({ costUsd: cost.toFixed(6), updatedAt: sql`now()` })
+      .where(
+        and(
+          eq(tokenUsage.date, row.date),
+          eq(tokenUsage.agent, row.agent),
+          eq(tokenUsage.provider, row.provider),
+          eq(tokenUsage.model, row.model),
+        ),
+      );
+    repriced++;
+  }
+
+  return { scanned: rows.length, repriced, stillUnpriced };
 }
 
 /**
