@@ -1,3 +1,13 @@
+## [1.22.0](https://github.com/ruchernchong/blog/compare/v1.21.0...v1.22.0) (2026-06-26)
+
+### Features
+
+* reprice NULL-cost token_usage rows from stored tokens ([5a94f25](https://github.com/ruchernchong/blog/commit/5a94f2504427c00fbce5814cf366212c01230916))
+
+### Bug Fixes
+
+* harden token-usage reprice against pricing outage and races ([9615e42](https://github.com/ruchernchong/blog/commit/9615e42b0caf538fcfed051ddefe08f47e8d2288)), closes [#329](https://github.com/ruchernchong/blog/issues/329)
+
 ## [1.21.0](https://github.com/ruchernchong/blog/compare/v1.20.0...v1.21.0) (2026-06-21)
 
 ### Features
