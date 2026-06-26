@@ -4,7 +4,10 @@ import { resolveProvider } from "@workspace/usage/providers";
 import type { TokenBreakdown } from "@workspace/usage/types";
 import { format } from "date-fns";
 import { loadPricing } from "@/lib/queries/models";
-import { upsertTokenUsage } from "@/lib/queries/usage";
+import {
+  repriceUnpricedTokenUsage,
+  upsertTokenUsage,
+} from "@/lib/queries/usage";
 import type { InsertTokenUsage } from "@/schema";
 
 /**
@@ -181,18 +184,30 @@ function printSummary(rows: InsertTokenUsage[]) {
 
 async function main() {
   const rows = await buildRows();
-  if (rows.length === 0) {
-    console.log("Nothing to ingest.");
-    process.exit(0);
-  }
 
   // `usage:ingest:prod` sets this; the default local run leaves it unset so the
   // direct DATABASE_URL write can never accidentally target production.
   const toProduction = process.env.USAGE_INGEST_TARGET === "prod";
+
   if (toProduction) {
+    // Prod reprices server-side on each POST, so with no parsed rows there is
+    // nothing to send and nothing to do here.
+    if (rows.length === 0) {
+      console.log("Nothing to ingest.");
+      process.exit(0);
+    }
     const endpoint = resolveRemoteEndpoint();
     console.log(`Upserting ${rows.length.toLocaleString()} rows → ${endpoint}`);
     await postRows(endpoint, rows);
+    printSummary(rows);
+    process.exit(0);
+  }
+
+  // Local DATABASE_URL path. The reprice pass is log-independent — it heals
+  // DB-only stale-NULL orphans whose source logs were pruned — so it must run
+  // even when no fresh rows were parsed. Skip only the upsert in that case.
+  if (rows.length === 0) {
+    console.log("No new rows to ingest; running reprice pass only.");
   } else {
     console.log(
       `Upserting ${rows.length.toLocaleString()} rows → DATABASE_URL`,
@@ -200,7 +215,17 @@ async function main() {
     await upsertTokenUsage(rows);
   }
 
-  printSummary(rows);
+  // Mirror the remote route: heal any stale-NULL orphans from stored tokens.
+  const { repriced } = await repriceUnpricedTokenUsage(await loadPricing());
+  if (repriced > 0) {
+    console.log(
+      `  repriced: ${repriced.toLocaleString()} previously-N.A. rows`,
+    );
+  }
+
+  if (rows.length > 0) {
+    printSummary(rows);
+  }
   process.exit(0);
 }
 
