@@ -77,10 +77,22 @@ function excludedColumns(
 
 /**
  * Upsert daily `token_usage` aggregates on the composite key
- * (date, agent, provider, model). Idempotent: re-ingesting a day overwrites it
- * with freshly recomputed totals. Shared by the local `usage:ingest` script
+ * (date, agent, provider, model). Shared by the local `usage:ingest` script
  * (direct write) and `POST /api/usage/ingest` (remote write into whichever DB
- * the deployment is configured for). Returns the number of rows upserted.
+ * the deployment is configured for). Returns the number of rows submitted.
+ *
+ * **Non-decreasing on conflict.** The DB is the permanent lifetime record, but
+ * the ingest clients (e.g. ClaudeMeter) send an absolute snapshot recomputed from
+ * the agent logs currently on disk — and those logs are pruned/compacted over
+ * time. A blind overwrite would let a partially-pruned day re-send a *smaller*
+ * total and ratchet the stored lifetime value down (observed as Opus 4.7 tokens
+ * "getting lesser and lesser"). So a day is overwritten only when the incoming
+ * snapshot has a larger `totalTokens`, i.e. it is a more complete parse; smaller
+ * snapshots are ignored. The whole incoming row wins together (not per-column),
+ * which preserves the `input+output+cache = total` invariant and keeps `costUsd`
+ * consistent with its tokens. Trade-off: a day that was genuinely over-counted
+ * once can no longer be corrected downward via ingest — acceptable for a
+ * lifetime-cumulative record that should never shrink.
  */
 export async function upsertTokenUsage(
   rows: InsertTokenUsage[],
@@ -91,7 +103,11 @@ export async function upsertTokenUsage(
     await db
       .insert(tokenUsage)
       .values(chunk)
-      .onConflictDoUpdate({ target: [...CONFLICT_TARGET], set });
+      .onConflictDoUpdate({
+        target: [...CONFLICT_TARGET],
+        set,
+        setWhere: sql`excluded.total_tokens > ${tokenUsage.totalTokens}`,
+      });
   }
   return rows.length;
 }
