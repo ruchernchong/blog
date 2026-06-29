@@ -1,3 +1,9 @@
+## [1.22.1](https://github.com/ruchernchong/blog/compare/v1.22.0...v1.22.1) (2026-06-29)
+
+### Bug Fixes
+
+* make token_usage upsert non-decreasing to stop lifetime erosion ([d6d436d](https://github.com/ruchernchong/blog/commit/d6d436d800bc2ca19f8cde353141fabc21fc83be))
+
 ## [1.22.0](https://github.com/ruchernchong/blog/compare/v1.21.0...v1.22.0) (2026-06-26)
 
 ### Features
