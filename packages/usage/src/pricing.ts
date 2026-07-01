@@ -48,6 +48,18 @@ export interface ModelRate {
  * lookup so the cost is baked straight into the stored `costUsd`.
  */
 const PRIORITY_RATES: Record<string, Record<string, ModelRate>> = {
+  anthropic: {
+    // Standard (from 1 Sep 2026) pricing (docs: platform.claude.com/docs/en/about-claude/pricing).
+    // models.dev doesn't list claude-sonnet-5 yet, so this covers it until that catches
+    // up. Deliberately NOT the introductory rate ($2/$10) in effect through 31 Aug 2026 —
+    // this override always prices Sonnet 5 at the standard rate, same as Sonnet 4.5.
+    "claude-sonnet-5": {
+      input: 3,
+      output: 15,
+      cacheRead: 0.3,
+      cacheWrite: 3.75,
+    },
+  },
   openai: {
     "gpt-5.5-fast": { input: 12.5, output: 75, cacheRead: 1.25, cacheWrite: 0 },
   },
