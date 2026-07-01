@@ -1,3 +1,9 @@
+## [1.23.0](https://github.com/ruchernchong/blog/compare/v1.22.1...v1.23.0) (2026-07-01)
+
+### Features
+
+* add pricing override for claude-sonnet-5 ([08d92aa](https://github.com/ruchernchong/blog/commit/08d92aa512fc3e65a0bb9b21d131bbcfea5f2b87))
+
 ## [1.22.1](https://github.com/ruchernchong/blog/compare/v1.22.0...v1.22.1) (2026-06-29)
 
 ### Bug Fixes
