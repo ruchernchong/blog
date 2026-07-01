@@ -6,6 +6,8 @@ import { buildPricing, type ModelsDevApi } from "../pricing";
  * is deliberately absent: it is the fast-tier model id that models.dev does not
  * list, so it resolves only via the hardcoded `PRIORITY_RATES` override (and
  * stays null under any other provider, proving the override is provider-scoped).
+ * `claude-sonnet-5` is likewise deliberately absent: models.dev doesn't list it
+ * yet, so it resolves only via the `PRIORITY_RATES` override.
  */
 const api: ModelsDevApi = {
   anthropic: {
@@ -64,6 +66,19 @@ describe("buildPricing", () => {
     // The override is provider-scoped: no rate under a different provider.
     expect(
       pricing.priceFor("gpt-5.5-fast", { provider: "fireworks-ai" }),
+    ).toBeNull();
+  });
+
+  it("should override claude-sonnet-5 with the priority rate (anthropic-scoped)", () => {
+    // claude-sonnet-5 is priced at Sonnet 4.5's standard rate; models.dev lacks it.
+    const rate = pricing.priceFor("claude-sonnet-5", { agent: "claude" });
+    expect(rate?.input).toBe(3);
+    expect(rate?.output).toBe(15);
+    expect(rate?.cacheRead).toBe(0.3);
+    expect(rate?.cacheWrite).toBe(3.75);
+    // The override is provider-scoped: no rate under a different provider.
+    expect(
+      pricing.priceFor("claude-sonnet-5", { provider: "openai" }),
     ).toBeNull();
   });
 
