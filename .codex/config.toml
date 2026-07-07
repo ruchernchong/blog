@@ -5,3 +5,6 @@ env_http_headers = { "x-heroui-personal-token" = "HEROUI_PERSONAL_TOKEN" }
 [mcp_servers.heroui-react]
 command = "pnx"
 args = ["-y", "@heroui/react-mcp@latest"]
+
+[features]
+hooks = true
