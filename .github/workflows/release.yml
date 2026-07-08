@@ -17,6 +17,15 @@ jobs:
       contents: read
     env:
       HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      GH_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
+      GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+      UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
 
     steps:
       - name: Checkout
@@ -27,20 +36,21 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Cache Next.js build
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-        with:
-          path: apps/web/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('apps/web/src/**/*.{js,jsx,ts,tsx}', 'packages/**/*.{js,jsx,ts,tsx}') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-
-            ${{ runner.os }}-nextjs-
-
       - parallel:
           - name: Run Lint
             run: pnpm lint
 
           - name: Run Test
+            env:
+              BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+              DATABASE_URL: ${{ secrets.DATABASE_URL }}
+              GH_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
+              GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
+              GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+              GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+              UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+              UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
             run: pnpm test
 
           - name: Run Build
