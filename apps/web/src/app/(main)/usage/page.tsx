@@ -1,12 +1,11 @@
 import { AnalyticsUpIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { formatDistanceToNow } from "date-fns";
-import { enGB } from "date-fns/locale";
 import type { Metadata } from "next";
 import globalMetadata from "@/app/metadata";
 import { PageTitle } from "@/components/page-title";
 import { getProviderDisplayNames } from "@/lib/queries/models";
 import { getUsageProfile } from "@/lib/queries/usage";
+import { LastUpdatedClient } from "./components/last-updated.client";
 import { UsageBreakdown } from "./components/usage-breakdown";
 import { UsageHeatmap } from "./components/usage-heatmap";
 import { UsageStats } from "./components/usage-stats";
@@ -42,13 +41,6 @@ export default async function UsagePage() {
   const providerDisplayNames = await getProviderDisplayNames(
     getUsageProviderIds(profile),
   );
-  const lastUpdated = profile.lastUpdated
-    ? formatDistanceToNow(new Date(profile.lastUpdated), {
-        addSuffix: true,
-        includeSeconds: true,
-        locale: enGB,
-      })
-    : null;
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
@@ -66,8 +58,8 @@ export default async function UsagePage() {
             </div>
           }
         />
-        {lastUpdated && (
-          <p className="text-muted text-sm">Last updated {lastUpdated}</p>
+        {profile.lastUpdated && (
+          <LastUpdatedClient date={profile.lastUpdated} />
         )}
       </div>
 
