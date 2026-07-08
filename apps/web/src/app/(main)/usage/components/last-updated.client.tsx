@@ -1,7 +1,7 @@
 "use client";
 
 import { Typography } from "@heroui/react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistance } from "date-fns";
 import { enGB } from "date-fns/locale";
 
 interface LastUpdatedClientProps {
@@ -9,7 +9,7 @@ interface LastUpdatedClientProps {
 }
 
 export function LastUpdatedClient({ date }: LastUpdatedClientProps) {
-  const relative = formatDistanceToNow(new Date(date), {
+  const relative = formatDistance(new Date(date), new Date(), {
     addSuffix: true,
     includeSeconds: true,
     locale: enGB,

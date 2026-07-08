@@ -1,6 +1,7 @@
 import { AnalyticsUpIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import globalMetadata from "@/app/metadata";
 import { PageTitle } from "@/components/page-title";
 import { getProviderDisplayNames } from "@/lib/queries/models";
@@ -59,7 +60,9 @@ export default async function UsagePage() {
           }
         />
         {profile.lastUpdated && (
-          <LastUpdatedClient date={profile.lastUpdated} />
+          <Suspense fallback={null}>
+            <LastUpdatedClient date={profile.lastUpdated} />
+          </Suspense>
         )}
       </div>
 
