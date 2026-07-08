@@ -1,3 +1,14 @@
+## [1.24.0](https://github.com/ruchernchong/blog/compare/v1.23.0...v1.24.0) (2026-07-08)
+
+### Features
+
+* show usage last-updated time as relative ([487037e](https://github.com/ruchernchong/blog/commit/487037e8b11dd0a819b9eb842b5438f98b5ccd7b))
+
+### Bug Fixes
+
+* render usage last-updated time client-side ([de24273](https://github.com/ruchernchong/blog/commit/de2427340810af7ed7b980485436bfdd53052b39))
+* wrap usage last-updated client leaf in Suspense ([8b7e6b0](https://github.com/ruchernchong/blog/commit/8b7e6b0ae1695801df30ad606a37951fcff7a469))
+
 ## [1.23.0](https://github.com/ruchernchong/blog/compare/v1.22.1...v1.23.0) (2026-07-01)
 
 ### Features
