@@ -11,24 +11,12 @@ concurrency:
 
 jobs:
   checks:
-    name: ${{ matrix.task }}
+    name: Checks
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    strategy:
-      matrix:
-        task: [ Lint, Test, Build ]
     env:
-      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      GH_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
-      GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
-      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
-      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
-      UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
 
     steps:
       - name: Checkout
@@ -39,16 +27,7 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Run Lint
-        if: matrix.task == 'Lint'
-        run: pnpm lint
-
-      - name: Run Test
-        if: matrix.task == 'Test'
-        run: pnpm test
-
       - name: Cache Next.js build
-        if: matrix.task == 'Build'
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: apps/web/.next/cache
@@ -57,9 +36,25 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-
             ${{ runner.os }}-nextjs-
 
-      - name: Run Build
-        if: matrix.task == 'Build'
-        run: pnpm build
+      - parallel:
+          - name: Run Lint
+            run: pnpm lint
+
+          - name: Run Test
+            run: pnpm test
+
+          - name: Run Build
+            env:
+              BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+              DATABASE_URL: ${{ secrets.DATABASE_URL }}
+              GH_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
+              GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
+              GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+              GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+              UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+              UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+            run: pnpm build
 
   release:
     name: Release
