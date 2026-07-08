@@ -109,7 +109,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/mdast": "^4.0.4",
     "@types/mdx": "^2.0.11",
-    "@types/node": "^22.10.2",
+    "@types/node": "catalog:",
     "@types/react": "19.2.10",
     "@types/react-dom": "19.2.3",
     "@types/rss": "^0.0.32",
