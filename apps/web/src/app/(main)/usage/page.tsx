@@ -1,9 +1,10 @@
 import { AnalyticsUpIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { formatDistanceToNow } from "date-fns";
+import { enGB } from "date-fns/locale";
 import type { Metadata } from "next";
 import globalMetadata from "@/app/metadata";
 import { PageTitle } from "@/components/page-title";
-import { APP_LOCALE, APP_TIME_ZONE } from "@/constants/date-time";
 import { getProviderDisplayNames } from "@/lib/queries/models";
 import { getUsageProfile } from "@/lib/queries/usage";
 import { UsageBreakdown } from "./components/usage-breakdown";
@@ -16,15 +17,6 @@ const title = "Usage";
 const description =
   "Tokens and cost across my AI coding agents over time. Aggregates only.";
 const canonical = "/usage";
-
-const lastUpdatedFormatter = new Intl.DateTimeFormat(APP_LOCALE, {
-  day: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-  month: "short",
-  timeZone: APP_TIME_ZONE,
-  year: "numeric",
-});
 
 export const metadata: Metadata = {
   title,
@@ -51,7 +43,11 @@ export default async function UsagePage() {
     getUsageProviderIds(profile),
   );
   const lastUpdated = profile.lastUpdated
-    ? lastUpdatedFormatter.format(new Date(profile.lastUpdated))
+    ? formatDistanceToNow(new Date(profile.lastUpdated), {
+        addSuffix: true,
+        includeSeconds: true,
+        locale: enGB,
+      })
     : null;
 
   return (
