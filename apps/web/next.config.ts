@@ -94,6 +94,16 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        source: "/docs/:path*",
+        has: [{ type: "host", value: "docs.ruchern.dev" }],
+        destination: "/docs/:path*",
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "docs.ruchern.dev" }],
+        destination: "/docs/:path*",
+      },
+      {
         source: "/ingest/static/:path*",
         destination: "https://eu-assets.i.posthog.com/static/:path*",
       },

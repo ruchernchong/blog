@@ -23,18 +23,13 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "pnpm version ${nextRelease.version} --no-git-tag-version --no-git-checks && pnpm --dir apps/web version ${nextRelease.version} --no-git-tag-version --no-git-checks && pnpm --dir apps/docs version ${nextRelease.version} --no-git-tag-version --no-git-checks"
+        "prepareCmd": "pnpm version ${nextRelease.version} --no-git-tag-version --no-git-checks && pnpm --dir apps/web version ${nextRelease.version} --no-git-tag-version --no-git-checks"
       }
     ],
     [
       "@semantic-release/git",
       {
-        "assets": [
-          "package.json",
-          "apps/web/package.json",
-          "apps/docs/package.json",
-          "CHANGELOG.md"
-        ],
+        "assets": ["package.json", "apps/web/package.json", "CHANGELOG.md"],
         "message": "chore(release): v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],

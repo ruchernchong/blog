@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "dev": "turbo run @workspace/web#dev",
-    "dev:docs": "turbo run @workspace/docs#dev",
     "build": "turbo run build",
     "build:web": "turbo run @workspace/web#build",
     "start": "turbo run @workspace/web#start",
@@ -14,9 +13,6 @@
     "lint": "turbo run lint",
     "format": "turbo run format",
     "typecheck": "turbo run typecheck",
-    "docs:dev": "turbo run @workspace/docs#dev",
-    "docs:build": "turbo run @workspace/docs#build",
-    "docs:typecheck": "turbo run @workspace/docs#typecheck",
     "auth:generate": "turbo run @workspace/web#auth:generate",
     "db:drop": "turbo run @workspace/web#db:drop",
     "db:generate": "turbo run @workspace/web#db:generate",

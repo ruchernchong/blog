@@ -13,12 +13,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm format` - Format code with Biome
 - `pnpm typecheck` - TypeScript type checking across workspaces
 
-### Documentation Site
-
-- `pnpm docs:dev` - Start the `@workspace/docs` Fumadocs site (Next.js + `fumadocs-ui`/`fumadocs-mdx`)
-- `pnpm docs:build` - Build the docs site
-- `pnpm docs:typecheck` - Type check the docs site
-
 ### Database
 
 - `pnpm db:generate` - Generate migrations from schema
@@ -195,9 +189,9 @@ apps/
 │   ├── src/components/
 │   ├── src/lib/      # Web-owned queries, services, API utilities, and OG helpers
 │   ├── src/schema/   # Drizzle ORM database schemas
+│   ├── src/app/docs/ # Documentation routes (consolidated from docs.ruchern.dev)
 │   ├── public/
 │   └── migrations/
-└── docs/             # @workspace/docs Fumadocs documentation site
 packages/
 ├── mcp/              # @workspace/mcp private MCP server package
 └── usage/            # @workspace/usage usage parsers, pricing, and heatmap helpers
