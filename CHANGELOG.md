@@ -1,3 +1,9 @@
+## [1.25.0](https://github.com/ruchernchong/blog/compare/v1.24.0...v1.25.0) (2026-07-09)
+
+### Features
+
+* upgrade to Next.js 16.3 preview and adopt features ([4baf658](https://github.com/ruchernchong/blog/commit/4baf65802e88d7fc780e0575e177cc54e1580759))
+
 ## [1.24.0](https://github.com/ruchernchong/blog/compare/v1.23.0...v1.24.0) (2026-07-08)
 
 ### Features
