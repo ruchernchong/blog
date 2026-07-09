@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactCompiler: true,
   cacheComponents: true,
+  partialPrefetching: true,
   transpilePackages: ["@workspace/mcp", "@workspace/usage"],
   images: {
     qualities: [75, 100],
@@ -52,6 +53,7 @@ const nextConfig: NextConfig = {
   experimental: {
     mcpServer: true,
     turbopackFileSystemCacheForBuild: true,
+    turbopackRustReactCompiler: true,
     typedEnv: true,
   },
   async headers() {
