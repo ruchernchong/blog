@@ -7,7 +7,7 @@ function stripFrontmatter(content: string): string {
   return content.replace(/^---[\s\S]*?---\n*/, "");
 }
 
-export function getDocContent(slug: string): string | null {
+export async function getDocContent(slug: string): Promise<string | null> {
   const filePath = path.join(DOCS_DIR, `${slug}.mdx`);
   if (!fs.existsSync(filePath)) return null;
   const raw = fs.readFileSync(filePath, "utf-8");
