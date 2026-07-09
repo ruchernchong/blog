@@ -2,6 +2,7 @@
 
 import { Sidebar } from "@heroui-pro/react";
 import {
+  BookOpen01Icon,
   File01Icon,
   Image01Icon,
   Layers01Icon,
@@ -33,6 +34,11 @@ const navItems = [
     title: "OAuth Clients",
     url: "/studio/oauth-clients" as Route,
     icon: SquareLock01Icon,
+  },
+  {
+    title: "Docs",
+    url: "/docs" as Route,
+    icon: BookOpen01Icon,
   },
 ];
 

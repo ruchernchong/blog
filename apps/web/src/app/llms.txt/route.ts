@@ -32,6 +32,13 @@ This is the personal portfolio and blog of Ru Chern Chong, featuring:
 - Custom-built content management system
 - Privacy-focused visitor tracking
 
+## Documentation
+
+Technical documentation covering the ruchern.dev workspace:
+
+- [OAuth Provider Integration](${BASE_URL}/docs/oauth-provider) - How a client application authenticates users and calls protected ruchern.dev routes using the OAuth 2.1 / OIDC provider.
+- [Token Usage Ingestion](${BASE_URL}/docs/usage-ingestion) - Endpoint contract and operator workflow for importing local agent token usage into ruchern.dev.
+
 ## Key Pages
 
 - Home: ${BASE_URL}/
@@ -66,6 +73,13 @@ Built with cutting-edge technologies:
 - Umami-backed dashboard analytics while PostHog warms up in parallel
 - Real-time visitor statistics visualization
 - SEO optimization with structured data
+
+## Documentation Routes
+
+Technical documentation endpoints:
+- /docs - Documentation landing page
+- /docs/oauth-provider - OAuth 2.1 / OIDC provider integration guide
+- /docs/usage-ingestion - Token usage ingestion workflow and API contract
 
 ## API Routes
 
