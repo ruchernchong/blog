@@ -36,18 +36,28 @@ export interface ModelRate {
   cacheWrite: number;
 }
 
+const GPT_5_6_SOL_RATE: ModelRate = {
+  input: 5,
+  output: 30,
+  cacheRead: 0.5,
+  cacheWrite: 6.25,
+};
+
 /**
- * Fast-tier model ids that no pricing DB lists. OpenCode logs OpenAI's fast
- * (priority) service tier as the distinct model id `gpt-5.5-fast` — the `-fast`
- * suffix is the tier signal — but models.dev, OpenRouter, and LiteLLM all either
- * omit it or price it wrongly, so it otherwise resolves to "N.A.". We override
- * with OpenAI's published priority rate (2.5x the standard `gpt-5.5` rate: input
- * $12.50/M, cached input $1.25/M, output $75/M). Plain `gpt-5.5` is the standard
- * tier and is deliberately NOT overridden — models.dev prices it correctly.
- * Keyed provider → model to mirror `byProvider`; returned ahead of the models.dev
- * lookup so the cost is baked straight into the stored `costUsd`.
+ * Provider-scoped rates that must remain stable even when a pricing database is
+ * stale or missing a model. Returned ahead of the models.dev lookup so the cost
+ * is baked straight into the stored `costUsd`.
+ *
+ * OpenCode logs OpenAI's fast (priority) service tier as the distinct model id
+ * `gpt-5.5-fast`, which pricing databases omit or price incorrectly. GPT-5.6 is
+ * pinned to OpenAI's published standard-context rates, including the 90% cache-
+ * read discount and cache writes at 1.25x uncached input. The generic `gpt-5.6`
+ * id is a Sol alias. Long-context and unpublished fast/pro variants are not
+ * inferred from aggregate logs.
+ *
+ * @see https://openai.com/index/previewing-gpt-5-6-sol/
  */
-const PRIORITY_RATES: Record<string, Record<string, ModelRate>> = {
+const MODEL_RATE_OVERRIDES: Record<string, Record<string, ModelRate>> = {
   anthropic: {
     // Standard (from 1 Sep 2026) pricing (docs: platform.claude.com/docs/en/about-claude/pricing).
     // models.dev doesn't list claude-sonnet-5 yet, so this covers it until that catches
@@ -62,6 +72,20 @@ const PRIORITY_RATES: Record<string, Record<string, ModelRate>> = {
   },
   openai: {
     "gpt-5.5-fast": { input: 12.5, output: 75, cacheRead: 1.25, cacheWrite: 0 },
+    "gpt-5.6": GPT_5_6_SOL_RATE,
+    "gpt-5.6-sol": GPT_5_6_SOL_RATE,
+    "gpt-5.6-terra": {
+      input: 2.5,
+      output: 15,
+      cacheRead: 0.25,
+      cacheWrite: 3.125,
+    },
+    "gpt-5.6-luna": {
+      input: 1,
+      output: 6,
+      cacheRead: 0.1,
+      cacheWrite: 1.25,
+    },
   },
 };
 
@@ -140,9 +164,9 @@ export function buildPricing(api: ModelsDevApi): Pricing {
     // Prefer an explicit provider (multi-provider agents), else derive from agent.
     const provider =
       opts?.provider ?? (agent ? AGENT_PROVIDERS[agent] : undefined);
-    // Always-priority models override the standard models.dev rate.
-    if (provider && PRIORITY_RATES[provider]?.[canonical]) {
-      return PRIORITY_RATES[provider][canonical];
+    // Provider-scoped overrides take precedence over models.dev.
+    if (provider && MODEL_RATE_OVERRIDES[provider]?.[canonical]) {
+      return MODEL_RATE_OVERRIDES[provider][canonical];
     }
     if (provider && byProvider[provider]?.[canonical]) {
       return byProvider[provider][canonical];
