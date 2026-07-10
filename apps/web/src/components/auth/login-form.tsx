@@ -1,33 +1,36 @@
 "use client";
 
 import { Button, Card, cn, Spinner } from "@heroui/react";
-import { useSearchParams } from "next/navigation";
 import type { ComponentPropsWithoutRef } from "react";
 import { useState } from "react";
 import { AUTH_ERROR } from "@/constants/auth-error-ids";
 import { authClient } from "@/lib/auth-client";
 import { logError } from "@/lib/logger";
 
+interface LoginFormProps extends ComponentPropsWithoutRef<"div"> {
+  isOAuthRequest: boolean;
+}
+
 export const LoginForm = ({
   className,
+  isOAuthRequest,
   ...props
-}: ComponentPropsWithoutRef<"div">) => {
-  const params = useSearchParams();
+}: LoginFormProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
   // When the OAuth provider redirects an unauthenticated user here, it appends
   // the signed authorization query. Resume that flow after sign-in instead of
   // dropping the user into Studio.
-  const callbackURL = params.has("client_id")
-    ? `/api/auth/oauth2/authorize?${params.toString()}`
-    : "/studio/posts";
-
   const handleGoogleSignIn = async () => {
     setError(null);
     setIsLoading("google");
 
     try {
+      const callbackURL = isOAuthRequest
+        ? `/api/auth/oauth2/authorize${window.location.search}`
+        : "/studio/posts";
+
       await authClient.signIn.social({
         provider: "google",
         callbackURL,

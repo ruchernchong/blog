@@ -3,7 +3,6 @@ import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Figtree, Geist_Mono } from "next/font/google";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { ReactNode } from "react";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import "@/app/globals.css";
@@ -74,7 +73,7 @@ export default function RootLayout({
           clientOptions={{ api_host: "/ingest" }}
         >
           <PostHogPageView />
-          <NuqsAdapter>{children}</NuqsAdapter>
+          {children}
           <VercelAnalytics />
           <SpeedInsights />
         </PostHogProvider>

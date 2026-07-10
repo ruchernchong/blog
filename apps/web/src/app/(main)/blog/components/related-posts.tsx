@@ -1,16 +1,57 @@
-import { Card } from "@heroui/react";
+import { Card, Skeleton } from "@heroui/react";
 import { Tag01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Typography } from "@/components/typography";
 import { getRelatedPosts } from "@/lib/services/related-posts";
+
+const RELATED_POST_FALLBACKS = ["first-post", "second-post"] as const;
 
 interface RelatedPostsProps {
   slug: string;
 }
 
-export const RelatedPosts = async ({ slug }: RelatedPostsProps) => {
+export function RelatedPosts({ slug }: RelatedPostsProps) {
+  return (
+    <Suspense fallback={<RelatedPostsFallback />}>
+      <RelatedPostsContent slug={slug} />
+    </Suspense>
+  );
+}
+
+export function RelatedPostsFallback() {
+  return (
+    <div
+      role="status"
+      aria-label="Loading related articles"
+      className="not-prose flex flex-col gap-8"
+    >
+      <div aria-hidden="true" className="flex flex-col gap-4">
+        <Skeleton className="h-8 w-48 rounded-lg" />
+        <div className="grid gap-4 md:grid-cols-2">
+          {RELATED_POST_FALLBACKS.map((post) => (
+            <Card key={post}>
+              <Card.Header className="flex flex-col gap-4">
+                <div className="flex items-center justify-between gap-4">
+                  <Skeleton className="h-4 w-24 rounded-lg" />
+                  <Skeleton className="h-4 w-16 rounded-lg" />
+                </div>
+                <Skeleton className="h-6 w-4/5 rounded-lg" />
+              </Card.Header>
+              <Card.Content>
+                <Skeleton className="h-4 w-full rounded-lg" />
+              </Card.Content>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+async function RelatedPostsContent({ slug }: RelatedPostsProps) {
   const relatedPosts = await getRelatedPosts(slug, 4);
 
   if (!relatedPosts.length) return null;
@@ -61,4 +102,4 @@ export const RelatedPosts = async ({ slug }: RelatedPostsProps) => {
       </div>
     </div>
   );
-};
+}

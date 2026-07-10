@@ -2,16 +2,19 @@ import { ComputerTerminal01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
-
-import { LoginForm } from "@/components/auth/login-form";
+import type { SearchParams } from "nuqs/server";
+import { LoginPanel } from "@/components/auth/login-panel";
 
 export const metadata: Metadata = {
   title: "Login",
   description: "Sign in to access the content management system",
 };
 
-export default function LoginPage() {
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-default p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -28,9 +31,7 @@ export default function LoginPage() {
           </div>
           Portfolio
         </Link>
-        <Suspense>
-          <LoginForm />
-        </Suspense>
+        <LoginPanel searchParams={searchParams} />
       </div>
     </div>
   );

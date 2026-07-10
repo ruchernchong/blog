@@ -1,7 +1,8 @@
-import { Chip } from "@heroui/react";
+import { Chip, Skeleton } from "@heroui/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Typography } from "@/components/typography";
 import { getFeaturedPosts } from "@/lib/queries/posts";
 
@@ -18,7 +19,41 @@ import { getFeaturedPosts } from "@/lib/queries/posts";
 //   return views.toLocaleString();
 // }
 
-export async function FeaturedPost() {
+export function FeaturedPost() {
+  return (
+    <Suspense fallback={<FeaturedPostFallback />}>
+      <FeaturedPostContent />
+    </Suspense>
+  );
+}
+
+export function FeaturedPostFallback() {
+  return (
+    <div
+      role="status"
+      aria-label="Loading featured post"
+      className="rounded-2xl border border-border bg-surface p-6 md:p-8"
+    >
+      <div aria-hidden="true" className="flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-6 w-20 rounded-full" />
+          <Skeleton className="h-4 w-24 rounded-lg" />
+        </div>
+        <Skeleton className="h-8 w-4/5 rounded-lg" />
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-4 w-full rounded-lg" />
+          <Skeleton className="h-4 w-2/3 rounded-lg" />
+        </div>
+        <div className="flex gap-2">
+          <Skeleton className="h-6 w-16 rounded-full" />
+          <Skeleton className="h-6 w-20 rounded-full" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+async function FeaturedPostContent() {
   const featuredPosts = await getFeaturedPosts();
   // TODO: Re-enable popular fallback and visible view counts after caching Redis reads for /blog.
   // const [popularPosts, featuredPosts, viewCounts] = await Promise.all([

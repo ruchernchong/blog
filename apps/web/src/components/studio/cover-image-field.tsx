@@ -9,7 +9,6 @@ import {
   TextField,
 } from "@heroui/react";
 import Image from "next/image";
-import { Suspense } from "react";
 import { ImagePickerDialog } from "@/components/studio/image-picker-dialog";
 
 interface CoverImageFieldProps {
@@ -43,16 +42,14 @@ export function CoverImageField({
             placeholder="https://example.com/image.jpg"
             autoComplete="off"
           />
-          <Suspense fallback={null}>
-            <ImagePickerDialog
-              onSelect={onSelect}
-              trigger={
-                <Button type="button" variant="outline" size="sm">
-                  Browse
-                </Button>
-              }
-            />
-          </Suspense>
+          <ImagePickerDialog
+            onSelect={onSelect}
+            trigger={
+              <Button type="button" variant="outline" size="sm">
+                Browse
+              </Button>
+            }
+          />
         </div>
         <Description>{description}</Description>
         {errorMessage && <FieldError>{errorMessage}</FieldError>}
