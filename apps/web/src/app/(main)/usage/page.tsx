@@ -1,14 +1,13 @@
 import { AnalyticsUpIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import globalMetadata from "@/app/metadata";
 import { PageTitle } from "@/components/page-title";
 import { getProviderDisplayNames } from "@/lib/queries/models";
 import { getUsageProfile } from "@/lib/queries/usage";
-import { LastUpdatedClient } from "./components/last-updated.client";
 import { UsageBreakdown } from "./components/usage-breakdown";
 import { UsageHeatmap } from "./components/usage-heatmap";
+import { UsageLastUpdated } from "./components/usage-last-updated";
 import { UsageStats } from "./components/usage-stats";
 import { UsageTokenMix } from "./components/usage-token-mix";
 import { UsageTrend } from "./components/usage-trend";
@@ -59,11 +58,7 @@ export default async function UsagePage() {
             </div>
           }
         />
-        {profile.lastUpdated && (
-          <Suspense fallback={null}>
-            <LastUpdatedClient date={profile.lastUpdated} />
-          </Suspense>
-        )}
+        {profile.lastUpdated && <UsageLastUpdated date={profile.lastUpdated} />}
       </div>
 
       <section className="lg:col-span-8">

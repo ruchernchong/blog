@@ -1,7 +1,16 @@
-import { Card, Chip } from "@heroui/react";
+import { Card, Chip, Skeleton } from "@heroui/react";
 import * as motion from "motion/react-client";
 import { connection } from "next/server";
+import { Suspense } from "react";
 import { getPages } from "@/lib/queries/posthog";
+
+const PAGE_VIEW_FALLBACKS = [
+  "first-page",
+  "second-page",
+  "third-page",
+  "fourth-page",
+  "fifth-page",
+] as const;
 
 interface PageData {
   path: string;
@@ -56,7 +65,41 @@ function ViewsByPageRow({
   );
 }
 
-export async function ViewsByPage() {
+export function ViewsByPage() {
+  return (
+    <Suspense fallback={<ViewsByPageFallback />}>
+      <ViewsByPageContent />
+    </Suspense>
+  );
+}
+
+export function ViewsByPageFallback() {
+  return (
+    <Card role="status" aria-label="Loading page view rankings">
+      <div aria-hidden="true" className="flex flex-col gap-4">
+        <Card.Header>
+          <Skeleton className="h-6 w-36 rounded-lg" />
+        </Card.Header>
+        <Card.Content className="flex flex-col gap-4">
+          {PAGE_VIEW_FALLBACKS.map((page) => (
+            <div
+              key={page}
+              className="flex flex-col gap-2 border-border border-b pb-4 last:border-b-0 last:pb-0"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <Skeleton className="h-4 w-32 rounded-lg" />
+                <Skeleton className="h-4 w-12 rounded-lg" />
+              </div>
+              <Skeleton className="h-1.5 w-full rounded-full" />
+            </div>
+          ))}
+        </Card.Content>
+      </div>
+    </Card>
+  );
+}
+
+async function ViewsByPageContent() {
   await connection();
   const data = await getPages();
 

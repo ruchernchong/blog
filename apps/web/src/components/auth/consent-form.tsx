@@ -1,7 +1,6 @@
 "use client";
 
 import { Alert, Button, Card, Chip, Spinner, Typography } from "@heroui/react";
-import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { AUTH_ERROR } from "@/constants/auth-error-ids";
 import { authClient } from "@/lib/auth-client";
@@ -15,11 +14,12 @@ const SCOPE_DESCRIPTIONS: Record<string, string> = {
   mcp: "Manage your blog posts and media",
 };
 
-export function ConsentForm({ clientName }: { clientName?: string }) {
-  const params = useSearchParams();
-  const scopes = params.get("scope")?.split(" ").filter(Boolean) ?? [];
-  const oauthQuery = params.toString();
+interface ConsentFormProps {
+  clientName?: string;
+  scopes: string[];
+}
 
+export function ConsentForm({ clientName, scopes }: ConsentFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<"accept" | "deny" | null>(
     null,
@@ -33,11 +33,6 @@ export function ConsentForm({ clientName }: { clientName?: string }) {
     startTransition(async () => {
       const { data, error: consentError } = await authClient.oauth2.consent({
         accept,
-        // Forward the signed query from the consent URL so the provider can
-        // rebuild the pending authorization request. Calling the endpoint over
-        // HTTP (rather than a server action) gives it the request context it
-        // needs to issue the authorization code on the first attempt.
-        oauth_query: oauthQuery,
       });
 
       if (consentError) {

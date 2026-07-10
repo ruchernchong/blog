@@ -1,24 +1,10 @@
-import {
-  Book01Icon,
-  Calendar01Icon,
-  InformationCircleIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { format, formatISO } from "date-fns";
 import type { Metadata } from "next";
-import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import { Mdx } from "@/app/(main)/blog/components/mdx";
-import { RelatedPosts } from "@/app/(main)/blog/components/related-posts";
-import { ScrollProgress } from "@/app/(main)/blog/components/scroll-progress";
-import { StatsBar } from "@/app/(main)/blog/components/stats-bar";
-import { StructuredData } from "@/app/components/structured-data";
-import { Typography } from "@/components/typography";
 import {
   getPublishedPostBySlug,
   getPublishedPostSlugs,
 } from "@/lib/queries/posts";
+import { PostArticle } from "./components/post-article";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -68,83 +54,6 @@ export async function generateStaticParams() {
   return publishedPosts.map(({ slug }) => ({ slug }));
 }
 
-// Cached MDX component to avoid re-compilation on each request
-async function CachedMdx({ content, slug }: { content: string; slug: string }) {
-  "use cache";
-  cacheTag(`mdx:${slug}`);
-  cacheLife("max");
-
-  return <Mdx content={content} />;
-}
-
-async function PostContent({ slug }: { slug: string }) {
-  const post = await getPublishedPostBySlug(slug);
-
-  if (!post) {
-    return notFound();
-  }
-
-  const formattedDate = post.publishedAt
-    ? format(post.publishedAt, "dd MMM yyyy")
-    : "";
-
-  return (
-    <>
-      <ScrollProgress />
-      <StructuredData data={post.metadata.structuredData} />
-      <article className="prose mx-auto mb-16 flex max-w-4xl flex-col gap-12 prose-img:rounded-2xl prose-a:text-foreground prose-a:underline">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <StatsBar slug={post.slug} />
-          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-muted">
-            <div className="flex items-center gap-2">
-              <HugeiconsIcon icon={Calendar01Icon} size={20} strokeWidth={2} />
-              {post.publishedAt && (
-                <time
-                  className="whitespace-nowrap"
-                  dateTime={formatISO(post.publishedAt)}
-                  title={formattedDate}
-                >
-                  {formattedDate}
-                </time>
-              )}
-            </div>
-            <span>&middot;</span>
-            <div className="flex items-center gap-2">
-              <HugeiconsIcon icon={Book01Icon} size={20} strokeWidth={2} />
-              <span className="whitespace-nowrap">
-                {post.metadata.readingTime}
-              </span>
-            </div>
-          </div>
-          <Typography variant="h1">{post.title}</Typography>
-        </div>
-        <aside className="relative rounded-md border-l-4 border-l-border bg-default p-6">
-          <div className="absolute top-0 left-0 -translate-x-[50%] -translate-y-[50%] rounded-full bg-background p-2 text-foreground">
-            <HugeiconsIcon
-              icon={InformationCircleIcon}
-              size={32}
-              strokeWidth={2}
-            />
-          </div>
-          {post.summary}
-        </aside>
-        <Suspense
-          fallback={<div className="animate-pulse">Loading content...</div>}
-        >
-          <CachedMdx content={post.content} slug={slug} />
-        </Suspense>
-        <RelatedPosts slug={post.slug} />
-      </article>
-    </>
-  );
-}
-
-export default async function PostPage({ params }: PageProps) {
-  const { slug } = await params;
-
-  return (
-    <Suspense>
-      <PostContent slug={slug} />
-    </Suspense>
-  );
+export default function PostPage({ params }: PageProps) {
+  return <PostArticle params={params} />;
 }

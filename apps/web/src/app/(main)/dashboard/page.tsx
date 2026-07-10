@@ -3,7 +3,6 @@ import { DashboardBrowsingIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Suspense } from "react";
 import { LastUpdated } from "@/app/(main)/dashboard/components/last-updated";
 import { StatsGrid } from "@/app/(main)/dashboard/components/stats-grid";
 import { ViewsByPage } from "@/app/(main)/dashboard/components/views-by-page";
@@ -55,15 +54,9 @@ export default function DashboardPage() {
         <LastUpdated />
       </div>
 
-      <Suspense>
-        <StatsGrid />
-      </Suspense>
-      <Suspense>
-        <ViewsByPage />
-      </Suspense>
-      <Suspense>
-        <VisitsChart />
-      </Suspense>
+      <StatsGrid />
+      <ViewsByPage />
+      <VisitsChart />
 
       <div className="flex items-center justify-end">
         <Link

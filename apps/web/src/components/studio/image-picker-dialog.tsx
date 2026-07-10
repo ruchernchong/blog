@@ -2,7 +2,6 @@
 
 import { Button, Input, Modal, TextField } from "@heroui/react";
 import Image from "next/image";
-import { parseAsString, useQueryState } from "nuqs";
 import type { ReactElement } from "react";
 import { useEffect, useState, useTransition } from "react";
 import type { SelectMedia } from "@/schema";
@@ -19,10 +18,7 @@ export function ImagePickerDialog({
   const [open, setOpen] = useState(false);
   const [media, setMedia] = useState<SelectMedia[]>([]);
   const [isPending, startTransition] = useTransition();
-  const [searchQuery, setSearchQuery] = useQueryState(
-    "media_search",
-    parseAsString.withDefault(""),
-  );
+  const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState<SelectMedia | null>(null);
 
   useEffect(() => {

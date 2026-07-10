@@ -1,7 +1,6 @@
 import { Notebook02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { FeaturedPost } from "@/app/(main)/blog/components/featured-post";
 import { PostGrid } from "@/app/(main)/blog/components/post-grid";
 import { SeriesCards } from "@/app/(main)/blog/components/series-cards";
@@ -32,19 +31,9 @@ export default function BlogPage() {
       />
 
       <div className="flex flex-col gap-8">
-        <Suspense>
-          <FeaturedPost />
-        </Suspense>
-
-        <Suspense>
-          <SeriesCards />
-        </Suspense>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Suspense>
-            <PostGrid />
-          </Suspense>
-        </div>
+        <FeaturedPost />
+        <SeriesCards />
+        <PostGrid />
       </div>
     </>
   );

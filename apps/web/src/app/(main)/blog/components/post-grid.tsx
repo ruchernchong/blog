@@ -1,8 +1,11 @@
-import { Card, Chip } from "@heroui/react";
+import { Card, Chip, Skeleton } from "@heroui/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { getPublishedPostsForGrid } from "@/lib/queries/posts";
+
+const POST_FALLBACKS = ["first-post", "second-post", "third-post"] as const;
 
 // import { ViewIcon } from "@hugeicons/core-free-icons";
 // import { HugeiconsIcon } from "@hugeicons/react";
@@ -17,7 +20,42 @@ import { getPublishedPostsForGrid } from "@/lib/queries/posts";
 //   return views.toLocaleString();
 // }
 
-export async function PostGrid() {
+export function PostGrid() {
+  return (
+    <Suspense fallback={<PostGridFallback />}>
+      <PostGridContent />
+    </Suspense>
+  );
+}
+
+export function PostGridFallback() {
+  return (
+    <div
+      role="status"
+      aria-label="Loading blog posts"
+      className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+    >
+      {POST_FALLBACKS.map((post) => (
+        <Card key={post} aria-hidden="true">
+          <Card.Header className="flex flex-col gap-4">
+            <Skeleton className="h-4 w-24 rounded-lg" />
+            <Skeleton className="h-6 w-4/5 rounded-lg" />
+          </Card.Header>
+          <Card.Content className="flex flex-col gap-4">
+            <Skeleton className="h-4 w-full rounded-lg" />
+            <Skeleton className="h-4 w-2/3 rounded-lg" />
+            <div className="flex gap-2">
+              <Skeleton className="h-6 w-16 rounded-full" />
+              <Skeleton className="h-6 w-20 rounded-full" />
+            </div>
+          </Card.Content>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+async function PostGridContent() {
   const gridPosts = await getPublishedPostsForGrid();
   // TODO: Re-enable visible view counts after caching Redis reads for /blog.
   // const [gridPosts, viewCounts] = await Promise.all([
@@ -32,7 +70,7 @@ export async function PostGrid() {
   }
 
   return (
-    <>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {gridPosts.map((post) => {
         if (!post.publishedAt) return null;
 
@@ -88,6 +126,6 @@ export async function PostGrid() {
           </Card>
         );
       })}
-    </>
+    </div>
   );
 }
