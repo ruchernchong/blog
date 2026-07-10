@@ -1,3 +1,9 @@
+## [1.25.1](https://github.com/ruchernchong/blog/compare/v1.25.0...v1.25.1) (2026-07-10)
+
+### Bug Fixes
+
+* server-render last updated label ([77f11a1](https://github.com/ruchernchong/blog/commit/77f11a1af2d24a077d496ca69653611bddc604bd))
+
 ## [1.25.0](https://github.com/ruchernchong/blog/compare/v1.24.0...v1.25.0) (2026-07-09)
 
 ### Features
