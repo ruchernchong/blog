@@ -30,6 +30,7 @@ import { providerLogoUrl } from "@workspace/usage/providers";
 import type { Cost, UsageBreakdownRow } from "@workspace/usage/types";
 import Image from "next/image";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { FreeModelChip } from "./free-model-chip";
 
 interface BreakdownView {
   id: string;
@@ -210,13 +211,14 @@ function getColumns({
       isRowHeader: true,
       allowsSorting: true,
       cell: (row) => (
-        <span className="inline-flex min-w-0 items-center gap-2">
+        <span className="inline-flex w-full min-w-0 items-center gap-2 pe-8 sm:pe-0">
           <RowVisual row={row} viewId={viewId} />
           <span className="truncate font-medium text-xs">
             {viewId === "provider"
               ? (providerDisplayNames[row.key] ?? row.key)
               : row.key}
           </span>
+          <FreeModelChip cost={row.cost} viewId={viewId} />
         </span>
       ),
       minWidth: 240,
