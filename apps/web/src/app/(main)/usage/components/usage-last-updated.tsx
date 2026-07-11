@@ -9,7 +9,7 @@ interface UsageLastUpdatedProps {
 
 export function UsageLastUpdated({ date }: UsageLastUpdatedProps) {
   return (
-    <Typography className="text-muted" variant="body-sm">
+    <Typography as="span" className="text-muted" variant="body-sm">
       Last updated{" "}
       <Suspense fallback={<UsageLastUpdatedFallback />}>
         <LastUpdatedClient date={date} />
