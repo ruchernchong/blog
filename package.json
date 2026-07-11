@@ -52,7 +52,7 @@
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "semantic-release": "25.0.3",
-    "turbo": "2.9.16"
+    "turbo": "2.10.4"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx,json,css,md,mdx}": "biome check --write --no-errors-on-unmatched"
