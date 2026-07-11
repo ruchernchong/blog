@@ -1,3 +1,9 @@
+## [1.25.2](https://github.com/ruchernchong/blog/compare/v1.25.1...v1.25.2) (2026-07-11)
+
+### Bug Fixes
+
+* render usage last updated label as span element ([1089ec0](https://github.com/ruchernchong/blog/commit/1089ec08b41eb20a5dd1d6d6ac93057ef3388c23))
+
 ## [1.25.1](https://github.com/ruchernchong/blog/compare/v1.25.0...v1.25.1) (2026-07-10)
 
 ### Bug Fixes
