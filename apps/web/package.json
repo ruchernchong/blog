@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "portless blog next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "portless blog next start",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "biome check .",

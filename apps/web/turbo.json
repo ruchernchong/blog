@@ -32,6 +32,7 @@
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "start": {
+      "dependsOn": ["build"],
       "cache": false,
       "persistent": true
     },
