@@ -4,6 +4,37 @@
 
 @plugin "@tailwindcss/typography";
 
+@theme inline {
+  --font-mono: var(--font-geist-mono);
+}
+
+@theme {
+  --animate-status-pulse: status-pulse 2s ease-out infinite;
+  --animate-dangle-sway: dangle-sway 3.2s ease-in-out infinite;
+
+  @keyframes status-pulse {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in oklab, var(--success) 55%, transparent);
+    }
+    70% {
+      box-shadow: 0 0 0 6px color-mix(in oklab, var(--success) 0%, transparent);
+    }
+    100% {
+      box-shadow: 0 0 0 0 color-mix(in oklab, var(--success) 0%, transparent);
+    }
+  }
+
+  @keyframes dangle-sway {
+    0%,
+    100% {
+      transform: rotate(6deg);
+    }
+    50% {
+      transform: rotate(15deg);
+    }
+  }
+}
+
 @layer base {
   :root {
     color-scheme: light;
