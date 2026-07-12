@@ -1,70 +1,41 @@
-import { cacheLife, cacheTag } from "next/cache";
 import { ImageResponse } from "next/og";
-
-const TEXT = "R";
-const FONT_FAMILY = "Figtree";
-
-async function loadGoogleFont(font: string, text: string) {
-  "use cache";
-  cacheLife("max");
-  cacheTag(`icon:font:${font}`);
-
-  const url = `https://fonts.googleapis.com/css2?family=${font}&text=${encodeURIComponent(text)}`;
-  const css = await (await fetch(url)).text();
-  const resource = css.match(
-    /src: url\((.+)\) format\('(opentype|truetype)'\)/,
-  );
-
-  if (resource) {
-    const response = await fetch(resource[1]);
-    if (response.status === 200) {
-      return await response.arrayBuffer();
-    }
-  }
-
-  throw new Error("failed to load font data");
-}
+import { OG_COLOURS } from "@/lib/og/colours";
 
 interface GenerateIconOptions {
   size: number;
-  fontSize: number;
 }
 
-export async function generateIcon({ size, fontSize }: GenerateIconOptions) {
+export async function generateIcon({ size }: GenerateIconOptions) {
   return new ImageResponse(
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#d4513b",
-        borderRadius: "50%",
-      }}
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 32 32"
+      fill="none"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <span
-        style={{
-          fontFamily: FONT_FAMILY,
-          fontSize,
-          fontWeight: 600,
-          color: "#ffffff",
-          transform: "rotate(-15deg)",
-        }}
-      >
-        {TEXT}
-      </span>
-    </div>,
+      <rect width="32" height="32" rx="16" fill={OG_COLOURS.foreground} />
+      <path
+        d="M10 11 L15 16 L10 21"
+        stroke={OG_COLOURS.primary}
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <line
+        x1="17.5"
+        y1="21"
+        x2="23"
+        y2="21"
+        stroke={OG_COLOURS.primary}
+        strokeWidth="2.6"
+        strokeLinecap="round"
+      />
+    </svg>,
     {
       width: size,
       height: size,
-      fonts: [
-        {
-          name: FONT_FAMILY,
-          data: await loadGoogleFont(FONT_FAMILY, TEXT),
-          style: "normal",
-        },
-      ],
     },
   );
 }
