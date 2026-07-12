@@ -1,13 +1,12 @@
 import type { WebSite, WithContext } from "schema-dts";
-import { FeaturedWork } from "@/app/components/home/featured-work";
-import { HeroSection } from "@/app/components/home/hero-section";
-import { LatestPosts } from "@/app/components/home/latest-posts";
-// import { Suspense } from "react";
-// import { QuickStats } from "@/app/components/home/quick-stats";
-// import { SiteVisits } from "@/app/components/home/site-visits";
+import { AboutSection } from "@/app/components/home/about-section";
+import { HomeCard } from "@/app/components/home/home-card";
+import { HomeHero } from "@/app/components/home/home-hero";
+import { LatestWriting } from "@/app/components/home/latest-writing";
+import { ProjectFan } from "@/app/components/home/project-fan";
+import { WorkExperience } from "@/app/components/home/work-experience";
 import { StructuredData } from "@/app/components/structured-data";
 import { BASE_URL } from "@/config";
-import projects from "@/data/projects";
 
 const structuredData: WithContext<WebSite> = {
   "@context": "https://schema.org",
@@ -35,15 +34,13 @@ export default function HomePage() {
   return (
     <>
       <StructuredData data={structuredData} />
-      <div className="flex flex-col gap-12">
-        <HeroSection />
-        {/* TODO: Re-enable homepage visits after caching Umami reads to avoid request-time function invocations. */}
-        {/* <Suspense fallback={<QuickStats />}>
-          <SiteVisits />
-        </Suspense> */}
-        <FeaturedWork projects={projects} />
-        <LatestPosts />
-      </div>
+      <HomeCard>
+        <HomeHero />
+        <ProjectFan />
+        <AboutSection />
+        <WorkExperience />
+        <LatestWriting />
+      </HomeCard>
     </>
   );
 }
