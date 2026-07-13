@@ -1,10 +1,10 @@
-import { Notebook02Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
 import { FeaturedPost } from "@/app/(main)/blog/components/featured-post";
 import { PostGrid } from "@/app/(main)/blog/components/post-grid";
 import { SeriesCards } from "@/app/(main)/blog/components/series-cards";
-import { PageTitle } from "@/components/page-title";
+import { TopicsCloud } from "@/app/(main)/blog/components/topics-cloud";
+import { PageHeader } from "@/app/components/page-header";
+import { SurfaceCard } from "@/app/components/surface-card";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -12,29 +12,24 @@ export const metadata: Metadata = {
     "Writing on engineering, technology, and shipping side projects.",
 };
 
-export default function BlogPage() {
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tag?: string }>;
+}) {
+  const { tag } = await searchParams;
+
   return (
-    <>
-      <PageTitle
+    <SurfaceCard className="flex flex-col gap-12">
+      <PageHeader
         title="Blog"
-        description="My blog posts on coding, tech, and random thoughts."
-        icon={
-          <div className="flex size-10 items-center justify-center rounded-xl bg-accent/10">
-            <HugeiconsIcon
-              icon={Notebook02Icon}
-              size={20}
-              className="text-accent"
-            />
-          </div>
-        }
-        className="mb-8"
+        description="Notes on software, tooling, and building for the web."
       />
 
-      <div className="flex flex-col gap-8">
-        <FeaturedPost />
-        <SeriesCards />
-        <PostGrid />
-      </div>
-    </>
+      {!tag && <FeaturedPost />}
+      {!tag && <SeriesCards />}
+      <TopicsCloud activeTag={tag} />
+      <PostGrid tag={tag} />
+    </SurfaceCard>
   );
 }
