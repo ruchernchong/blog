@@ -29,7 +29,6 @@ export function PostArticle({ params }: PostArticleProps) {
 export function PostArticleFallback() {
   return (
     <div className="mx-auto flex max-w-[1120px] justify-center gap-11">
-      <div className="hidden w-53 shrink-0 lg:block" />
       <SurfaceCard className="flex min-w-0 flex-col gap-8">
         <div
           role="status"
@@ -47,6 +46,7 @@ export function PostArticleFallback() {
           </div>
         </div>
       </SurfaceCard>
+      <div className="hidden w-53 shrink-0 lg:block" />
     </div>
   );
 }
@@ -68,9 +68,6 @@ async function PostArticleContent({ params }: PostArticleProps) {
       <ScrollProgress />
       <StructuredData data={post.metadata.structuredData} />
       <div className="mx-auto flex max-w-[1120px] justify-center gap-11">
-        <aside className="hidden shrink-0 lg:block">
-          <PostToc />
-        </aside>
         <SurfaceCard className="flex min-w-0 flex-col gap-8">
           <StatsBar slug={post.slug} />
           <div className="flex flex-col gap-4">
@@ -109,6 +106,9 @@ async function PostArticleContent({ params }: PostArticleProps) {
           </div>
           <RelatedPosts slug={post.slug} />
         </SurfaceCard>
+        <aside className="hidden shrink-0 lg:block">
+          <PostToc />
+        </aside>
       </div>
     </>
   );
