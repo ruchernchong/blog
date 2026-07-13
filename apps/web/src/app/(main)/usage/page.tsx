@@ -1,8 +1,7 @@
-import { AnalyticsUpIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
+import { PageHeader } from "@/app/components/page-header";
+import { SurfaceCard } from "@/app/components/surface-card";
 import globalMetadata from "@/app/metadata";
-import { PageTitle } from "@/components/page-title";
 import { getProviderDisplayNames } from "@/lib/queries/models";
 import { getUsageProfile } from "@/lib/queries/usage";
 import { UsageBreakdown } from "./components/usage-breakdown";
@@ -43,46 +42,26 @@ export default async function UsagePage() {
   );
 
   return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
-      <div className="flex flex-col gap-2 lg:col-span-4">
-        <PageTitle
-          title="Usage"
-          description="Tokens and cost across my AI coding agents over time."
-          icon={
-            <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
-              <HugeiconsIcon
-                icon={AnalyticsUpIcon}
-                size={20}
-                className="text-primary"
-              />
-            </div>
-          }
-        />
+    <SurfaceCard width="wide" className="flex flex-col gap-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <PageHeader title="Usage" description={description} />
         {profile.lastUpdated && <UsageLastUpdated date={profile.lastUpdated} />}
       </div>
 
-      <section className="lg:col-span-8">
-        <UsageStats
-          summary={profile.summary}
-          contributions={profile.contributions}
-          byModel={profile.byModel}
-        />
-      </section>
-
-      <UsageHeatmap
-        className="lg:col-span-8 lg:row-span-2"
+      <UsageStats
+        summary={profile.summary}
         contributions={profile.contributions}
+        byModel={profile.byModel}
       />
 
-      <UsageTokenMix className="lg:col-span-4" tokenMix={profile.tokenMix} />
+      <UsageHeatmap contributions={profile.contributions} />
 
-      <UsageTrend
-        className="lg:col-span-4"
-        contributions={profile.contributions}
-      />
+      <div className="grid gap-4 lg:grid-cols-[5fr_7fr]">
+        <UsageTokenMix tokenMix={profile.tokenMix} />
+        <UsageTrend contributions={profile.contributions} />
+      </div>
 
       <UsageBreakdown
-        className="lg:col-span-12"
         providerDisplayNames={providerDisplayNames}
         title="Breakdown"
         views={[
@@ -106,7 +85,7 @@ export default async function UsagePage() {
           },
         ]}
       />
-    </div>
+    </SurfaceCard>
   );
 }
 

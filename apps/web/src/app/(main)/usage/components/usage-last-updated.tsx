@@ -1,6 +1,5 @@
 import { Skeleton } from "@heroui/react";
 import { Suspense } from "react";
-import { Typography } from "@/components/typography";
 import { LastUpdatedClient } from "./last-updated.client";
 
 interface UsageLastUpdatedProps {
@@ -9,12 +8,12 @@ interface UsageLastUpdatedProps {
 
 export function UsageLastUpdated({ date }: UsageLastUpdatedProps) {
   return (
-    <Typography as="span" className="text-muted" variant="body-sm">
+    <span className="shrink-0 font-mono text-muted text-sm">
       Last updated{" "}
       <Suspense fallback={<UsageLastUpdatedFallback />}>
         <LastUpdatedClient date={date} />
       </Suspense>
-    </Typography>
+    </span>
   );
 }
 
