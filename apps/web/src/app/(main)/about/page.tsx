@@ -1,16 +1,14 @@
-import { UserIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
 import type { WebPage, WithContext } from "schema-dts";
-import Employment from "@/app/(main)/about/components/employment";
+import { AboutHero } from "@/app/(main)/about/components/about-hero";
+import { EmploymentTimeline } from "@/app/(main)/about/components/employment-timeline";
+import { StatFigure } from "@/app/components/stat-figure";
 import { StructuredData } from "@/app/components/structured-data";
+import { SurfaceCard } from "@/app/components/surface-card";
 import globalMetadata from "@/app/metadata";
-import ExternalLink from "@/components/external-link";
-import * as Icons from "@/components/icons";
-import { PageTitle } from "@/components/page-title";
 import { BASE_URL } from "@/config";
 import companies from "@/data/companies";
-import socials from "@/data/socials";
+import projects from "@/data/projects";
 
 const title = "About";
 const description =
@@ -36,14 +34,21 @@ export const metadata: Metadata = {
   },
 };
 
+const yearOf = (date: string) => Number(date.split(" ").at(-1));
+const isShippingRole = (companyTitle: string) =>
+  /developer|engineer/i.test(companyTitle);
+
 export default async function AboutPage() {
   const sortedCompanies = companies.toSorted(
     (a, b) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime(),
   );
-  const currentPosition = sortedCompanies
-    .filter(({ dateEnd }) => !dateEnd)
-    .map(({ title, name }) => `${title} @ ${name}`)
-    .join(" | ");
+
+  const shippingSince = Math.min(
+    ...companies
+      .filter((c) => isShippingRole(c.title))
+      .map((c) => yearOf(c.dateStart)),
+  );
+  const yearsShipping = new Date().getFullYear() - shippingSince;
 
   const structuredData: WithContext<WebPage> = {
     "@context": "https://schema.org",
@@ -56,39 +61,22 @@ export default async function AboutPage() {
   return (
     <>
       <StructuredData data={structuredData} />
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-8">
-          <PageTitle
-            title="About Me"
-            description={currentPosition}
-            icon={
-              <div className="flex size-10 items-center justify-center rounded-xl bg-accent/10">
-                <HugeiconsIcon
-                  icon={UserIcon}
-                  size={20}
-                  className="text-accent"
-                />
-              </div>
-            }
-          />
-          <div className="flex flex-col gap-4">
-            <p className="text-muted">{description}</p>
-            <div className="flex gap-4">
-              {socials.map(({ name, link }) => (
-                <ExternalLink
-                  key={name}
-                  href={link}
-                  className="hover:text-foreground"
-                >
-                  <Icons.Social name={name} className="size-4" />
-                </ExternalLink>
-              ))}
-            </div>
-          </div>
+      <SurfaceCard className="flex flex-col gap-11">
+        <AboutHero intro={description} />
+
+        <div className="flex flex-wrap gap-9 border-separator border-y py-6">
+          <StatFigure label="years shipping" value={`${yearsShipping}+`} />
+          <StatFigure label="roles held" value={companies.length} />
+          <StatFigure label="projects shipped" value={projects.length} />
         </div>
-        <hr className="border-border" />
-        <Employment companies={sortedCompanies} />
-      </div>
+
+        <p className="font-semibold text-2xl leading-snug tracking-tight">
+          I care about the small details that make software feel{" "}
+          <span className="text-accent">considered</span> rather than assembled.
+        </p>
+
+        <EmploymentTimeline companies={sortedCompanies} />
+      </SurfaceCard>
     </>
   );
 }
