@@ -1,4 +1,4 @@
-import { KPI, KPIGroup, NumberValue } from "@heroui-pro/react";
+import { KPI, NumberValue } from "@heroui-pro/react";
 import {
   AiBrain02Icon,
   AnalyticsUpIcon,
@@ -12,7 +12,7 @@ import type {
   UsageBreakdownRow,
   UsageSummary,
 } from "@workspace/usage/types";
-import { type ComponentProps, Fragment, type ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 interface UsageStatsProps {
   summary: UsageSummary;
@@ -196,25 +196,10 @@ export function UsageStats({
   ];
 
   return (
-    <>
-      {/* Mobile / tablet: standalone cards in a responsive grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:hidden">
-        {cards.map(({ key, ...card }) => (
-          <UsageStatCard key={key} {...card} />
-        ))}
-      </div>
-
-      {/* Desktop: one unified KPIGroup bar with separators */}
-      <div className="hidden lg:block">
-        <KPIGroup>
-          {cards.map(({ key, ...card }, index) => (
-            <Fragment key={key}>
-              {index > 0 && <KPIGroup.Separator />}
-              <UsageStatCard {...card} />
-            </Fragment>
-          ))}
-        </KPIGroup>
-      </div>
-    </>
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      {cards.map(({ key, ...card }) => (
+        <UsageStatCard key={key} {...card} />
+      ))}
+    </div>
   );
 }

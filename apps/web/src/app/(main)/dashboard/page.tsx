@@ -1,14 +1,13 @@
 import { Link, Typography } from "@heroui/react";
-import { DashboardBrowsingIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { LastUpdated } from "@/app/(main)/dashboard/components/last-updated";
 import { StatsGrid } from "@/app/(main)/dashboard/components/stats-grid";
 import { ViewsByPage } from "@/app/(main)/dashboard/components/views-by-page";
 import { VisitsChart } from "@/app/(main)/dashboard/components/visits-chart";
+import { PageHeader } from "@/app/components/page-header";
+import { SurfaceCard } from "@/app/components/surface-card";
 import globalMetadata from "@/app/metadata";
-import { PageTitle } from "@/components/page-title";
 
 const title = "Dashboard";
 const description =
@@ -36,29 +35,23 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-1">
-        <PageTitle
+    <SurfaceCard width="wide" className="flex flex-col gap-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <PageHeader
           title="Dashboard"
-          description="Site visitor analytics and GitHub metrics."
-          icon={
-            <div className="flex size-10 items-center justify-center rounded-xl bg-accent/10">
-              <HugeiconsIcon
-                icon={DashboardBrowsingIcon}
-                size={20}
-                className="text-accent"
-              />
-            </div>
-          }
+          description="Live analytics for ruchern.dev, powered by PostHog."
         />
         <LastUpdated />
       </div>
 
       <StatsGrid />
-      <ViewsByPage />
-      <VisitsChart />
 
-      <div className="flex items-center justify-end">
+      <div className="grid gap-4 lg:grid-cols-2 lg:items-start">
+        <ViewsByPage />
+        <VisitsChart />
+      </div>
+
+      <div className="flex items-center justify-center">
         <Link
           href="https://posthog.com"
           target="_blank"
@@ -77,6 +70,6 @@ export default function DashboardPage() {
           />
         </Link>
       </div>
-    </div>
+    </SurfaceCard>
   );
 }
