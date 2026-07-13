@@ -23,29 +23,44 @@ export function PostToc({ containerId = "post-body" }: PostTocProps) {
       return;
     }
 
-    const nodes = Array.from(
-      container.querySelectorAll<HTMLHeadingElement>("h2[id]"),
-    );
-    setHeadings(
-      nodes.map((node) => ({ id: node.id, text: node.textContent ?? "" })),
-    );
+    let spy: IntersectionObserver | null = null;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
+    // Re-scan on every subtree change: the MDX body streams in through its
+    // own Suspense boundary, so headings may not exist on the first pass.
+    const scan = () => {
+      const nodes = Array.from(
+        container.querySelectorAll<HTMLHeadingElement>("h2[id]"),
+      );
+      setHeadings(
+        nodes.map((node) => ({ id: node.id, text: node.textContent ?? "" })),
+      );
+
+      spy?.disconnect();
+      spy = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              setActiveId(entry.target.id);
+            }
           }
-        }
-      },
-      { rootMargin: "0px 0px -70% 0px", threshold: 0 },
-    );
+        },
+        { rootMargin: "0px 0px -70% 0px", threshold: 0 },
+      );
 
-    for (const node of nodes) {
-      observer.observe(node);
-    }
+      for (const node of nodes) {
+        spy.observe(node);
+      }
+    };
 
-    return () => observer.disconnect();
+    scan();
+
+    const mutations = new MutationObserver(() => scan());
+    mutations.observe(container, { childList: true, subtree: true });
+
+    return () => {
+      spy?.disconnect();
+      mutations.disconnect();
+    };
   }, [containerId]);
 
   if (headings.length === 0) {
