@@ -45,8 +45,9 @@ async function TopicsCloudContent({ activeTag }: TopicsCloudProps) {
       <h2 className="font-semibold text-xl tracking-tight">Topics</h2>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5">
         {tags.map(([tag, tagCount], index) => {
-          const isPrimary = index === 0;
-          const isActive = tag === activeTag;
+          // Exactly one pill reads as solid coral: the active tag when
+          // filtering, otherwise the most-used tag for visual emphasis.
+          const isSolid = activeTag ? tag === activeTag : index === 0;
 
           return (
             <Link
@@ -55,17 +56,16 @@ async function TopicsCloudContent({ activeTag }: TopicsCloudProps) {
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 font-semibold tracking-tight transition-transform hover:-translate-y-0.5",
                 sizeForRatio(tagCount / maxCount),
-                isPrimary
+                isSolid
                   ? "bg-accent text-accent-foreground"
-                  : "bg-default/50",
-                isActive && "ring-2 ring-accent",
+                  : "bg-default/50 hover:bg-default",
               )}
             >
               {tag}
               <span
                 className={cn(
                   "font-mono text-xs",
-                  isPrimary ? "text-accent-foreground/70" : "text-muted",
+                  isSolid ? "text-accent-foreground/70" : "text-muted",
                 )}
               >
                 {tagCount}
