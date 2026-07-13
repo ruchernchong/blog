@@ -1,9 +1,6 @@
 import type { ReactNode } from "react";
+import { SurfaceCard } from "@/app/components/surface-card";
 
 export function HomeCard({ children }: { children: ReactNode }) {
-  return (
-    <div className="mx-auto flex w-full max-w-[680px] flex-col gap-14 rounded-3xl bg-surface px-6 py-10 shadow-(--surface-shadow) sm:px-14">
-      {children}
-    </div>
-  );
+  return <SurfaceCard className="flex flex-col gap-14">{children}</SurfaceCard>;
 }
