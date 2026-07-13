@@ -1,9 +1,5 @@
 import { Skeleton } from "@heroui/react";
-import {
-  Book01Icon,
-  Calendar01Icon,
-  InformationCircleIcon,
-} from "@hugeicons/core-free-icons";
+import { InformationCircleIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import { cacheLife, cacheTag } from "next/cache";
@@ -14,8 +10,9 @@ import { RelatedPosts } from "@/app/(main)/blog/components/related-posts";
 import { ScrollProgress } from "@/app/(main)/blog/components/scroll-progress";
 import { StatsBar } from "@/app/(main)/blog/components/stats-bar";
 import { StructuredData } from "@/app/components/structured-data";
-import { Typography } from "@/components/typography";
+import { SurfaceCard } from "@/app/components/surface-card";
 import { getPublishedPostBySlug } from "@/lib/queries/posts";
+import { PostToc } from "./post-toc.client";
 
 interface PostArticleProps {
   params: Promise<{ slug: string }>;
@@ -31,26 +28,26 @@ export function PostArticle({ params }: PostArticleProps) {
 
 export function PostArticleFallback() {
   return (
-    <article
-      role="status"
-      aria-label="Loading article"
-      className="prose mx-auto mb-16 flex max-w-4xl flex-col gap-12"
-    >
-      <div aria-hidden="true" className="flex flex-col gap-12">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-5 w-28 rounded-lg" />
-            <Skeleton className="h-5 w-24 rounded-lg" />
+    <div className="mx-auto flex max-w-[1120px] justify-center gap-11">
+      <div className="hidden w-53 shrink-0 lg:block" />
+      <SurfaceCard className="flex min-w-0 flex-col gap-8">
+        <div
+          role="status"
+          aria-label="Loading article"
+          className="flex flex-col gap-8"
+        >
+          <div aria-hidden="true" className="flex flex-col gap-6">
+            <Skeleton className="h-4 w-40 rounded-lg" />
+            <Skeleton className="h-10 w-4/5 rounded-xl" />
+            <div className="flex flex-col gap-2 rounded-xl border border-border bg-default/50 p-5">
+              <Skeleton className="h-4 w-full rounded-lg" />
+              <Skeleton className="h-4 w-3/4 rounded-lg" />
+            </div>
+            <PostBodyFallback />
           </div>
-          <Skeleton className="h-12 w-4/5 rounded-xl" />
         </div>
-        <div className="flex flex-col gap-2 rounded-md border-l-4 border-l-border bg-default p-6">
-          <Skeleton className="h-4 w-full rounded-lg" />
-          <Skeleton className="h-4 w-3/4 rounded-lg" />
-        </div>
-        <PostBodyFallback />
-      </div>
-    </article>
+      </SurfaceCard>
+    </div>
   );
 }
 
@@ -70,45 +67,49 @@ async function PostArticleContent({ params }: PostArticleProps) {
     <>
       <ScrollProgress />
       <StructuredData data={post.metadata.structuredData} />
-      <article className="prose mx-auto mb-16 flex max-w-4xl flex-col gap-12 prose-img:rounded-2xl prose-a:text-foreground prose-a:underline">
-        <div className="flex flex-col items-center gap-4 text-center">
+      <div className="mx-auto flex max-w-[1120px] justify-center gap-11">
+        <aside className="hidden shrink-0 lg:block">
+          <PostToc />
+        </aside>
+        <SurfaceCard className="flex min-w-0 flex-col gap-8">
           <StatsBar slug={post.slug} />
-          <div className="flex flex-wrap items-center justify-center gap-2 text-muted">
-            <div className="flex items-center gap-2">
-              <HugeiconsIcon icon={Calendar01Icon} size={20} strokeWidth={2} />
+          <div className="flex flex-col gap-4">
+            <span className="font-mono text-muted text-sm">
               {post.publishedAt && (
                 <time
-                  className="whitespace-nowrap"
                   dateTime={formatISO(post.publishedAt)}
                   title={formattedDate}
                 >
                   {formattedDate}
                 </time>
               )}
-            </div>
-            <span>&middot;</span>
-            <div className="flex items-center gap-2">
-              <HugeiconsIcon icon={Book01Icon} size={20} strokeWidth={2} />
-              <span className="whitespace-nowrap">
-                {post.metadata.readingTime}
+              {post.metadata.readingTime && ` · ${post.metadata.readingTime}`}
+            </span>
+            <h1 className="font-bold text-3xl tracking-tight sm:text-4xl">
+              {post.title}
+            </h1>
+          </div>
+          {post.summary && (
+            <aside className="flex gap-3 rounded-xl border border-border bg-default/50 p-5">
+              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-accent/15 text-accent">
+                <HugeiconsIcon
+                  icon={InformationCircleIcon}
+                  size={16}
+                  strokeWidth={2}
+                />
               </span>
-            </div>
+              <p className="text-muted leading-relaxed">{post.summary}</p>
+            </aside>
+          )}
+          <div
+            id="post-body"
+            className="prose max-w-none prose-img:rounded-2xl prose-a:text-foreground prose-a:underline"
+          >
+            <PostBody content={post.content} slug={slug} />
           </div>
-          <Typography variant="h1">{post.title}</Typography>
-        </div>
-        <aside className="relative rounded-md border-l-4 border-l-border bg-default p-6">
-          <div className="absolute top-0 left-0 -translate-x-[50%] -translate-y-[50%] rounded-full bg-background p-2 text-foreground">
-            <HugeiconsIcon
-              icon={InformationCircleIcon}
-              size={32}
-              strokeWidth={2}
-            />
-          </div>
-          {post.summary}
-        </aside>
-        <PostBody content={post.content} slug={slug} />
-        <RelatedPosts slug={post.slug} />
-      </article>
+          <RelatedPosts slug={post.slug} />
+        </SurfaceCard>
+      </div>
     </>
   );
 }
