@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cacheLife } from "next/cache";
 import type { WebPage, WithContext } from "schema-dts";
 import { AboutHero } from "@/app/(main)/about/components/about-hero";
 import { EmploymentTimeline } from "@/app/(main)/about/components/employment-timeline";
@@ -39,6 +40,9 @@ const isShippingRole = (companyTitle: string) =>
   /developer|engineer/i.test(companyTitle);
 
 export default async function AboutPage() {
+  "use cache";
+  cacheLife("days");
+
   const sortedCompanies = companies.toSorted(
     (a, b) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime(),
   );
