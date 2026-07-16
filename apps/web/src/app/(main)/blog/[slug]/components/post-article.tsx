@@ -73,7 +73,7 @@ export async function PostArticle({ slug }: { slug: string }) {
           )}
           <div
             id="post-body"
-            className="prose max-w-none prose-img:rounded-2xl prose-a:text-foreground prose-a:underline"
+            className="prose dark:prose-invert max-w-none prose-img:rounded-2xl prose-a:text-foreground prose-a:underline"
           >
             <Mdx content={post.content} />
           </div>
