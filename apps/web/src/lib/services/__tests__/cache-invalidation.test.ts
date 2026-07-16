@@ -83,6 +83,9 @@ describe("cache-invalidation", () => {
       expect(revalidateTag).toHaveBeenCalledWith("related:post-1", "max");
       expect(revalidateTag).toHaveBeenCalledWith("related:post-2", "max");
       expect(revalidateTag).toHaveBeenCalledWith("related:post-3", "max");
+      expect(revalidateTag).toHaveBeenCalledWith("post:post-1", "max");
+      expect(revalidateTag).toHaveBeenCalledWith("post:post-2", "max");
+      expect(revalidateTag).toHaveBeenCalledWith("post:post-3", "max");
     });
 
     it("should exclude specified slug from invalidation", async () => {
