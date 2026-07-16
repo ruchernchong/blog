@@ -18,30 +18,34 @@ export function Header() {
 
   return (
     <header className="flex justify-center px-4 pt-10">
-      <div className="flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full border border-border bg-surface p-1.5">
+      <div className="flex max-w-full items-center gap-0.5 rounded-full border border-border bg-surface p-1.5">
         <Link href="/" aria-label="Home" className="mr-1 flex shrink-0">
           <LogoMark size={30} />
         </Link>
-        {links.map(({ title, href }) => {
-          const isActive =
-            pathname === href || (pathname.startsWith(href) && href !== "/");
+        <div className="flex min-w-0 items-center gap-0.5 overflow-x-auto [mask-image:linear-gradient(to_right,transparent,black_12px,black_calc(100%-12px),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {links.map(({ title, href }) => {
+            const isActive =
+              pathname === href || (pathname.startsWith(href) && href !== "/");
 
-          return (
-            <Link
-              key={title}
-              href={href}
-              className={cn(
-                "shrink-0 rounded-full px-3 py-1.5 text-sm transition-colors",
-                isActive
-                  ? "bg-default font-semibold text-foreground"
-                  : "font-medium text-muted hover:text-foreground",
-              )}
-            >
-              {title}
-            </Link>
-          );
-        })}
-        <ThemeToggle />
+            return (
+              <Link
+                key={title}
+                href={href}
+                className={cn(
+                  "shrink-0 rounded-full px-3 py-1.5 text-sm transition-colors",
+                  isActive
+                    ? "bg-default font-semibold text-foreground"
+                    : "font-medium text-muted hover:text-foreground",
+                )}
+              >
+                {title}
+              </Link>
+            );
+          })}
+        </div>
+        <div className="shrink-0">
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
