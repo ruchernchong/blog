@@ -39,19 +39,19 @@ function FanCard({ label, title, className }: FanCardProps) {
 
 export function ProjectFan() {
   return (
-    <section className="flex flex-col items-center justify-center gap-5 md:-mx-30 md:flex-row">
+    <section className="flex flex-col items-center justify-center gap-5 md:-mx-8 md:flex-row lg:-mx-30">
       <FanCard
         label="isleapyear.app"
-        className="h-[150px] w-full md:w-50 md:-rotate-4 md:opacity-85"
+        className="h-[150px] w-full md:w-44 md:-rotate-4 md:opacity-85 lg:w-50"
       />
       <FanCard
         title="SG Cars Trends"
         label="sgcarstrends.com"
-        className="z-2 h-50 w-full transition-transform hover:-translate-y-1 md:w-70"
+        className="z-2 h-50 w-full transition-transform hover:-translate-y-1 md:w-60 lg:w-70"
       />
       <FanCard
         label="claude-kit"
-        className="h-[150px] w-full md:w-50 md:rotate-4 md:opacity-85"
+        className="h-[150px] w-full md:w-44 md:rotate-4 md:opacity-85 lg:w-50"
       />
     </section>
   );
