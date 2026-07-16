@@ -26,8 +26,9 @@ const formatDate = (date: string) =>
 export function VisitsChartClient({ data }: VisitsChartClientProps) {
   return (
     <Card>
-      <Card.Header>
-        <Card.Title>Recent Site Visits, 90 days</Card.Title>
+      <Card.Header className="flex items-center justify-between">
+        <Card.Title>Visits</Card.Title>
+        <span className="font-mono text-muted text-sm">Last 90 days</span>
       </Card.Header>
       <Card.Content>
         <LineChart data={data} height={300}>

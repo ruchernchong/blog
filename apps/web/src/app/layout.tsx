@@ -4,6 +4,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Figtree, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
+import { ThemeProvider } from "@/components/theme-provider";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import "@/app/globals.css";
 
@@ -64,19 +65,25 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en" className={`scroll-smooth ${figtree.variable}`}>
+    <html
+      lang="en"
+      className={`scroll-smooth ${figtree.variable}`}
+      suppressHydrationWarning
+    >
       <body
         className={`bg-background text-foreground antialiased ${geistMono.variable}`}
       >
-        <PostHogProvider
-          apiKey={process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN}
-          clientOptions={{ api_host: "/ingest" }}
-        >
-          <PostHogPageView />
-          {children}
-          <VercelAnalytics />
-          <SpeedInsights />
-        </PostHogProvider>
+        <ThemeProvider>
+          <PostHogProvider
+            apiKey={process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN}
+            clientOptions={{ api_host: "/ingest" }}
+          >
+            <PostHogPageView />
+            {children}
+            <VercelAnalytics />
+            <SpeedInsights />
+          </PostHogProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

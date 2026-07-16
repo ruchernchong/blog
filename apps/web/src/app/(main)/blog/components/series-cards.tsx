@@ -1,7 +1,8 @@
 import { Skeleton } from "@heroui/react";
+import type { Route } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { getPublishedSeriesWithPosts } from "@/lib/queries/series";
-import { SeriesCardsClient } from "./series-cards.client";
 
 const SERIES_FALLBACKS = [
   "first-series",
@@ -24,24 +25,17 @@ export function SeriesCardsFallback() {
       aria-label="Loading blog series"
       className="flex flex-col gap-4"
     >
-      <div aria-hidden="true" className="flex flex-col gap-4">
-        <div className="flex items-center gap-2">
-          <Skeleton className="size-5 rounded-lg" />
-          <Skeleton className="h-5 w-20 rounded-lg" />
-        </div>
-        <div className="flex gap-4 overflow-hidden">
-          {SERIES_FALLBACKS.map((series) => (
-            <div
-              key={series}
-              className="flex w-64 shrink-0 flex-col gap-4 rounded-2xl border border-border bg-surface p-4"
-            >
-              <Skeleton className="h-24 w-full rounded-lg" />
-              <Skeleton className="h-5 w-3/4 rounded-lg" />
-              <Skeleton className="h-4 w-full rounded-lg" />
-              <Skeleton className="h-6 w-16 rounded-full" />
-            </div>
-          ))}
-        </div>
+      <Skeleton className="h-6 w-20 rounded-lg" />
+      <div aria-hidden="true" className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {SERIES_FALLBACKS.map((series) => (
+          <div
+            key={series}
+            className="flex flex-col gap-1.5 rounded-xl border border-border p-4"
+          >
+            <Skeleton className="h-3 w-12 rounded-lg" />
+            <Skeleton className="h-4 w-3/4 rounded-lg" />
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -54,5 +48,33 @@ async function SeriesCardsContent() {
     return null;
   }
 
-  return <SeriesCardsClient series={publishedSeries} />;
+  return (
+    <section className="flex flex-col gap-4">
+      <h2 className="font-semibold text-xl tracking-tight">Series</h2>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {publishedSeries.map((item) => {
+          const firstPost = item.posts[0];
+
+          return (
+            <Link
+              key={item.id}
+              href={
+                firstPost
+                  ? (`/blog/${firstPost.slug}` as Route)
+                  : ("/blog" as Route)
+              }
+              className="flex flex-col gap-1.5 rounded-xl border border-border p-4 transition-colors hover:bg-default/50"
+            >
+              <span className="font-mono text-muted text-xs">
+                {item.postCount} {item.postCount === 1 ? "post" : "posts"}
+              </span>
+              <span className="font-semibold text-sm tracking-tight">
+                {item.title}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
+  );
 }
