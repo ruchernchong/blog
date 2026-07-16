@@ -1,3 +1,16 @@
+## [1.26.1](https://github.com/ruchernchong/blog/compare/v1.26.0...v1.26.1) (2026-07-16)
+
+### Bug Fixes
+
+* improve blog text contrast (WCAG AA) ([7bf65fe](https://github.com/ruchernchong/blog/commit/7bf65fe45c54b53c8c70ab19f9c2746c4add59df))
+* use typography dark modifier for prose ([999ab3f](https://github.com/ruchernchong/blog/commit/999ab3f815a42fe562276c9ccb0ec8cd4158b223))
+
+### Performance Improvements
+
+* cache related posts to speed up post nav ([710bbbe](https://github.com/ruchernchong/blog/commit/710bbbe194fede868e560d2321d25c4f3362ded8))
+* prerender blog listing and post pages ([3dff07d](https://github.com/ruchernchong/blog/commit/3dff07db7804ab79a923d5767ba41202c17fd3a0))
+* prerender blog post article into static HTML ([3316a45](https://github.com/ruchernchong/blog/commit/3316a45f7d9f2fdf990a75b90edfc0f32bf0a462))
+
 ## [1.26.0](https://github.com/ruchernchong/blog/compare/v1.25.2...v1.26.0) (2026-07-16)
 
 ### Features
