@@ -1,37 +1,9 @@
-import { Skeleton } from "@heroui/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import { getFeaturedPosts } from "@/lib/queries/posts";
 
-export function FeaturedPost() {
-  return (
-    <Suspense fallback={<FeaturedPostFallback />}>
-      <FeaturedPostContent />
-    </Suspense>
-  );
-}
-
-export function FeaturedPostFallback() {
-  return (
-    <div
-      role="status"
-      aria-label="Loading featured post"
-      className="rounded-2xl border border-border bg-default/50 p-7"
-    >
-      <div aria-hidden="true" className="flex flex-col gap-2.5">
-        <Skeleton className="h-3 w-20 rounded-lg" />
-        <Skeleton className="h-7 w-4/5 rounded-lg" />
-        <Skeleton className="h-4 w-full rounded-lg" />
-        <Skeleton className="h-4 w-2/3 rounded-lg" />
-        <Skeleton className="h-4 w-40 rounded-lg" />
-      </div>
-    </div>
-  );
-}
-
-async function FeaturedPostContent() {
+export async function FeaturedPost() {
   const featuredPosts = await getFeaturedPosts();
   const post = featuredPosts[0];
 
