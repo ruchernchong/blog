@@ -1,3 +1,25 @@
+## [1.26.0](https://github.com/ruchernchong/blog/compare/v1.25.2...v1.26.0) (2026-07-16)
+
+### Features
+
+* add shared surface card and page header primitives ([c10764d](https://github.com/ruchernchong/blog/commit/c10764d11b71225002a1485f548dae5a2efa9a9e))
+* add theme-aware svg favicon ([fb0540a](https://github.com/ruchernchong/blog/commit/fb0540afb942bac6caf1185c3afe387e519309f0))
+* move blog post table of contents to the right ([d27ccea](https://github.com/ruchernchong/blog/commit/d27ccea2cd2c0213e60e5d11a93aca11360abebf))
+* redesign homepage from Claude Design mock ([272c63d](https://github.com/ruchernchong/blog/commit/272c63d8a3071ca0a4cb18fa645a89b0cb17cc61))
+* restyle blog and post pages to design mocks ([f192c28](https://github.com/ruchernchong/blog/commit/f192c285d7b7c4defb17d869e3f75f87eb18b933))
+* restyle projects and about to design mocks ([7acf5f4](https://github.com/ruchernchong/blog/commit/7acf5f4345c3493706a7f77bf711c886daa0a13a))
+* restyle usage and dashboard to design mocks ([68d8e1f](https://github.com/ruchernchong/blog/commit/68d8e1fcb692c6475aa68ccb49a9e90c0e15499f))
+* update favicon to new logo mark ([5407dd9](https://github.com/ruchernchong/blog/commit/5407dd92f8fa645fde7da482216387fb7ccdc760))
+
+### Bug Fixes
+
+* centre blog post column with balanced toc gutter ([ef1a839](https://github.com/ruchernchong/blog/commit/ef1a83952b2528f5cac8616bed3e6352f2a6a020))
+* clarify selected topic pill in blog tag cloud ([c2af1f2](https://github.com/ruchernchong/blog/commit/c2af1f2e655f72744728f93f4968057a999f8bb0))
+* rebuild post toc when mdx body streams in ([c1d9f7c](https://github.com/ruchernchong/blog/commit/c1d9f7cf9ed43e190ae9b003285c3cea73240662))
+* replace invented copy with real wording on about and projects ([bfe5a5f](https://github.com/ruchernchong/blog/commit/bfe5a5f3e07b4f099d128b6596e757da6eb47c31))
+* resolve homepage responsiveness at tablet and mobile ([7179739](https://github.com/ruchernchong/blog/commit/7179739f9d30bc4d507d4915809ed7da5ab4a0aa))
+* unblock homepage redesign build ([933575c](https://github.com/ruchernchong/blog/commit/933575cb0fdae62dfe43975ec62f912da2f22433))
+
 ## [1.25.2](https://github.com/ruchernchong/blog/compare/v1.25.1...v1.25.2) (2026-07-11)
 
 ### Bug Fixes
