@@ -1,3 +1,9 @@
+## [1.27.0](https://github.com/ruchernchong/blog/compare/v1.26.1...v1.27.0) (2026-07-16)
+
+### Features
+
+* note Anthropic tokens exclude Claude Design ([fd3a253](https://github.com/ruchernchong/blog/commit/fd3a2533c1e3d2240a7ef8efaaec67640f9b000b))
+
 ## [1.26.1](https://github.com/ruchernchong/blog/compare/v1.26.0...v1.26.1) (2026-07-16)
 
 ### Bug Fixes
