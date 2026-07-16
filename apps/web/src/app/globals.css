@@ -77,7 +77,7 @@
     --overlay: var(--white);
     --overlay-foreground: var(--foreground);
 
-    --muted: oklch(0.5517 0.0138 285.94);
+    --muted: oklch(0.52 0.0138 285.94);
     --scrollbar: oklch(87.1% 0.006 286.286);
 
     --default: oklch(94% 0.001 286.375);
@@ -108,8 +108,8 @@
     --segment-foreground: var(--eclipse);
 
     /* Misc Colors */
-    --border: oklch(92% 0.004 286.32);
-    --separator: oklch(92% 0.004 286.32);
+    --border: oklch(82% 0.004 286.32);
+    --separator: oklch(82% 0.004 286.32);
     --focus: var(--accent);
     --link: var(--foreground);
 

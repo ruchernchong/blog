@@ -1,10 +1,8 @@
-import { Skeleton } from "@heroui/react";
 import { InformationCircleIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format, formatISO } from "date-fns";
 import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import { Mdx } from "@/app/(main)/blog/components/mdx";
 import { RelatedPosts } from "@/app/(main)/blog/components/related-posts";
 import { ScrollProgress } from "@/app/(main)/blog/components/scroll-progress";
@@ -14,46 +12,19 @@ import { SurfaceCard } from "@/app/components/surface-card";
 import { getPublishedPostBySlug } from "@/lib/queries/posts";
 import { PostToc } from "./post-toc.client";
 
-interface PostArticleProps {
-  params: Promise<{ slug: string }>;
-}
+/**
+ * The full article, cached and prerendered per slug so it lands in the static
+ * HTML instead of streaming behind a skeleton. Keyed by `post:${slug}` and
+ * `mdx:${slug}` so the existing invalidation (see cache-invalidation.ts) busts
+ * it on publish/update. Rendered directly (no Suspense) — for slugs in
+ * generateStaticParams this fills at build time; unknown slugs render on demand.
+ */
+export async function PostArticle({ slug }: { slug: string }) {
+  "use cache";
+  cacheLife("max");
+  cacheTag(`post:${slug}`);
+  cacheTag(`mdx:${slug}`);
 
-export function PostArticle({ params }: PostArticleProps) {
-  return (
-    <Suspense fallback={<PostArticleFallback />}>
-      <PostArticleContent params={params} />
-    </Suspense>
-  );
-}
-
-export function PostArticleFallback() {
-  return (
-    <div className="mx-auto flex w-full max-w-[1200px] items-start justify-center gap-11">
-      <div aria-hidden="true" className="hidden w-53 shrink-0 lg:block" />
-      <SurfaceCard className="flex min-w-0 flex-col gap-8">
-        <div
-          role="status"
-          aria-label="Loading article"
-          className="flex flex-col gap-8"
-        >
-          <div aria-hidden="true" className="flex flex-col gap-6">
-            <Skeleton className="h-4 w-40 rounded-lg" />
-            <Skeleton className="h-10 w-4/5 rounded-xl" />
-            <div className="flex flex-col gap-2 rounded-xl border border-border bg-default/50 p-5">
-              <Skeleton className="h-4 w-full rounded-lg" />
-              <Skeleton className="h-4 w-3/4 rounded-lg" />
-            </div>
-            <PostBodyFallback />
-          </div>
-        </div>
-      </SurfaceCard>
-      <div aria-hidden="true" className="hidden w-53 shrink-0 lg:block" />
-    </div>
-  );
-}
-
-async function PostArticleContent({ params }: PostArticleProps) {
-  const { slug } = await params;
   const post = await getPublishedPostBySlug(slug);
 
   if (!post) {
@@ -102,9 +73,9 @@ async function PostArticleContent({ params }: PostArticleProps) {
           )}
           <div
             id="post-body"
-            className="prose max-w-none prose-img:rounded-2xl prose-a:text-foreground prose-a:underline"
+            className="prose dark:prose-invert max-w-none prose-img:rounded-2xl prose-a:text-foreground prose-a:underline"
           >
-            <PostBody content={post.content} slug={slug} />
+            <Mdx content={post.content} />
           </div>
           <RelatedPosts slug={post.slug} />
         </SurfaceCard>
@@ -114,35 +85,4 @@ async function PostArticleContent({ params }: PostArticleProps) {
       </div>
     </>
   );
-}
-
-function PostBody({ content, slug }: { content: string; slug: string }) {
-  return (
-    <Suspense fallback={<PostBodyFallback />}>
-      <CachedMdx content={content} slug={slug} />
-    </Suspense>
-  );
-}
-
-export function PostBodyFallback() {
-  return (
-    <div role="status" aria-label="Loading article body">
-      <div aria-hidden="true" className="flex flex-col gap-4">
-        <Skeleton className="h-5 w-full rounded-lg" />
-        <Skeleton className="h-5 w-11/12 rounded-lg" />
-        <Skeleton className="h-5 w-4/5 rounded-lg" />
-        <Skeleton className="h-40 w-full rounded-xl" />
-        <Skeleton className="h-5 w-full rounded-lg" />
-        <Skeleton className="h-5 w-3/4 rounded-lg" />
-      </div>
-    </div>
-  );
-}
-
-async function CachedMdx({ content, slug }: { content: string; slug: string }) {
-  "use cache";
-  cacheTag(`mdx:${slug}`);
-  cacheLife("max");
-
-  return <Mdx content={content} />;
 }

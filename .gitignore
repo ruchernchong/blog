@@ -90,3 +90,5 @@ ds-bundle/
 .env*.local
 .vercel
 .env*
+# next-agents-md
+.next-docs/

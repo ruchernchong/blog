@@ -5,15 +5,12 @@ import { getPostsWithOverlappingTags } from "@/lib/queries/posts";
 import { removeFromPopular } from "@/lib/services/popular-posts";
 
 export async function invalidatePost(slug: string): Promise<void> {
-  const keysToDelete = [
-    CacheConfig.REDIS_KEYS.POST_STATS(slug),
-    CacheConfig.REDIS_KEYS.RELATED_CACHE(slug),
-  ];
-
-  await redis.del(...keysToDelete);
+  await redis.del(CacheConfig.REDIS_KEYS.POST_STATS(slug));
 
   // Invalidate Next.js Cache Components
   revalidateTag(`post:${slug}`, "max");
+  revalidateTag(`mdx:${slug}`, "max");
+  revalidateTag(`related:${slug}`, "max");
   revalidateTag("posts:list", "max");
   revalidateTag("posts:count", "max");
 }
@@ -39,13 +36,11 @@ export async function invalidateRelatedByTags(
     excludeSlug || "",
   );
 
-  // Invalidate related cache for each post
-  const keysToDelete = postsWithTags.map((post) =>
-    CacheConfig.REDIS_KEYS.RELATED_CACHE(post.slug),
-  );
-
-  if (keysToDelete.length > 0) {
-    await redis.del(...keysToDelete);
+  // Invalidate related cache for each overlapping post. The related list is
+  // embedded in the cached article (post:${slug}), so bust that too.
+  for (const post of postsWithTags) {
+    revalidateTag(`related:${post.slug}`, "max");
+    revalidateTag(`post:${post.slug}`, "max");
   }
 }
 
