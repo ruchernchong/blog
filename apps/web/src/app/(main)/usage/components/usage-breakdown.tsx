@@ -9,6 +9,7 @@ import {
   ListBox,
   Pagination,
   SearchField,
+  Typography,
 } from "@heroui/react";
 import {
   AreaChart,
@@ -808,6 +809,9 @@ export function UsageBreakdown({
             rowsPerPage={rowsPerPage}
           />
         )}
+        <Typography.Paragraph color="muted" size="xs">
+          Token usage from Anthropic excludes Claude Design at this moment.
+        </Typography.Paragraph>
       </Card.Content>
     </Card>
   );
