@@ -1,58 +1,57 @@
-import Link from "next/link";
+import { cacheLife } from "next/cache";
+import { SgtClock } from "@/app/components/sgt-clock";
 import ExternalLink from "@/components/external-link";
-import * as Icons from "@/components/icons";
-import { Logo } from "@/components/logo";
-import { navLinks, VERSION } from "@/config";
 import socials from "@/data/socials";
 
-export function Footer() {
+const footerLinks = [
+  ...socials.map(({ name, link }) => ({
+    name:
+      name === "Github" ? "GitHub" : name === "Linkedin" ? "LinkedIn" : name,
+    link,
+  })),
+  { name: "Email", link: "mailto:" },
+];
+
+export async function Footer() {
+  "use cache";
+  cacheLife("days");
+
+  const year = new Date().getFullYear();
+
   return (
-    <div className="container mx-auto flex justify-center px-4 pb-6">
-      <footer className="w-full rounded-2xl border border-border bg-surface p-6 shadow-sm">
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-            <Logo />
-            <div className="flex gap-6 md:gap-8">
-              <div className="flex flex-col gap-4">
-                <Link
-                  href="/"
-                  className="font-medium text-muted text-sm transition-all duration-200 hover:text-accent"
+    <div className="flex justify-center px-4 pb-12">
+      <footer className="flex w-full max-w-[680px] flex-col gap-8 border-separator border-t pt-10">
+        <div className="flex flex-col gap-2">
+          <span className="font-mono text-accent text-xs tracking-wide">
+            {"// end of file"}
+          </span>
+          <h2 className="font-semibold text-2xl tracking-tight">
+            Thanks for scrolling all the way down.
+          </h2>
+          <p className="text-muted text-sm leading-relaxed">
+            Written after midnight, somewhere in Singapore.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap gap-4">
+              {footerLinks.map(({ name, link }) => (
+                <ExternalLink
+                  key={name}
+                  href={link}
+                  className="font-medium text-foreground text-sm underline-offset-3 hover:underline"
                 >
-                  Home
-                </Link>
-                {navLinks.map(({ href, title }) => {
-                  return (
-                    <Link
-                      key={title}
-                      href={href}
-                      className="font-medium text-muted text-sm transition-all duration-200 hover:text-accent"
-                    >
-                      {title}
-                    </Link>
-                  );
-                })}
-              </div>
-              <div className="flex flex-col gap-4">
-                {socials.map(({ name, link }) => (
-                  <div key={name}>
-                    <ExternalLink
-                      href={link}
-                      className="font-medium text-muted text-sm transition-all duration-200 hover:text-accent"
-                    >
-                      <div className="inline-flex items-center gap-2">
-                        <Icons.Social name={name} className="h-4 w-4" />
-                        {name}
-                      </div>
-                    </ExternalLink>
-                  </div>
-                ))}
-              </div>
+                  {name}
+                </ExternalLink>
+              ))}
             </div>
+            <span className="text-muted text-sm">
+              Ru Chern · Developer & Writer · {year}
+            </span>
           </div>
-          <div className="border-border border-t" />
-          <div className="text-center text-muted text-sm md:text-right">
-            <span>v{VERSION}</span>
-          </div>
+
+          <SgtClock />
         </div>
       </footer>
     </div>

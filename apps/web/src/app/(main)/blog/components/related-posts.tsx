@@ -1,10 +1,8 @@
-import { Card, Skeleton } from "@heroui/react";
-import { Tag01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Skeleton } from "@heroui/react";
 import { format, formatISO } from "date-fns";
+import type { Route } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Typography } from "@/components/typography";
 import { getRelatedPosts } from "@/lib/services/related-posts";
 
 const RELATED_POST_FALLBACKS = ["first-post", "second-post"] as const;
@@ -23,31 +21,23 @@ export function RelatedPosts({ slug }: RelatedPostsProps) {
 
 export function RelatedPostsFallback() {
   return (
-    <div
+    <section
       role="status"
       aria-label="Loading related articles"
-      className="not-prose flex flex-col gap-8"
+      className="not-prose flex flex-col"
     >
-      <div aria-hidden="true" className="flex flex-col gap-4">
-        <Skeleton className="h-8 w-48 rounded-lg" />
-        <div className="grid gap-4 md:grid-cols-2">
-          {RELATED_POST_FALLBACKS.map((post) => (
-            <Card key={post}>
-              <Card.Header className="flex flex-col gap-4">
-                <div className="flex items-center justify-between gap-4">
-                  <Skeleton className="h-4 w-24 rounded-lg" />
-                  <Skeleton className="h-4 w-16 rounded-lg" />
-                </div>
-                <Skeleton className="h-6 w-4/5 rounded-lg" />
-              </Card.Header>
-              <Card.Content>
-                <Skeleton className="h-4 w-full rounded-lg" />
-              </Card.Content>
-            </Card>
-          ))}
+      <Skeleton className="mb-4 h-6 w-36 rounded-lg" />
+      {RELATED_POST_FALLBACKS.map((post) => (
+        <div
+          key={post}
+          aria-hidden="true"
+          className="flex flex-col gap-1.5 border-separator border-t py-4"
+        >
+          <Skeleton className="h-5 w-3/4 rounded-lg" />
+          <Skeleton className="h-4 w-24 rounded-lg" />
         </div>
-      </div>
-    </div>
+      ))}
+    </section>
   );
 }
 
@@ -57,49 +47,30 @@ async function RelatedPostsContent({ slug }: RelatedPostsProps) {
   if (!relatedPosts.length) return null;
 
   return (
-    <div className="not-prose flex flex-col gap-8">
-      <Typography variant="h2">Related Articles</Typography>
-      <div className="grid gap-4 md:grid-cols-2">
-        {relatedPosts.map((post) => {
-          if (!post.publishedAt) return null;
+    <section className="not-prose flex flex-col">
+      <h2 className="mb-4 font-semibold text-xl tracking-tight">
+        Related posts
+      </h2>
+      {relatedPosts.map((post) => {
+        if (!post.publishedAt) return null;
 
-          const formattedDate = format(post.publishedAt, "dd MMM yyyy");
+        const formattedDate = format(post.publishedAt, "dd MMM yyyy");
 
-          return (
-            <Card key={post.slug}>
-              <Link
-                href={`/blog/${post.slug}`}
-                className="flex h-full flex-col"
-              >
-                <Card.Header>
-                  <div className="flex items-center justify-between gap-4">
-                    <time
-                      dateTime={formatISO(post.publishedAt)}
-                      title={formattedDate}
-                      className="text-muted text-sm"
-                    >
-                      {formattedDate}
-                    </time>
-                    <div className="flex items-center gap-2 text-muted text-sm">
-                      <HugeiconsIcon
-                        icon={Tag01Icon}
-                        size={16}
-                        strokeWidth={2}
-                      />
-                      <span>
-                        {post.commonTagCount}{" "}
-                        {post.commonTagCount === 1 ? "tag" : "tags"}
-                      </span>
-                    </div>
-                  </div>
-                  <Card.Title className="capitalize">{post.title}</Card.Title>
-                </Card.Header>
-                <Card.Content>{post.summary}</Card.Content>
-              </Link>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
+        return (
+          <Link
+            key={post.slug}
+            href={`/blog/${post.slug}` as Route}
+            className="flex flex-col gap-1.5 border-separator border-t py-4 transition-transform hover:translate-x-1.5"
+          >
+            <span className="font-semibold capitalize">{post.title}</span>
+            <span className="font-mono text-muted text-sm">
+              <time dateTime={formatISO(post.publishedAt)}>
+                {formattedDate}
+              </time>
+            </span>
+          </Link>
+        );
+      })}
+    </section>
   );
 }

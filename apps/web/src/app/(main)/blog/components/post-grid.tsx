@@ -1,4 +1,4 @@
-import { Card, Chip, Skeleton } from "@heroui/react";
+import { Skeleton } from "@heroui/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
@@ -7,125 +7,83 @@ import { getPublishedPostsForGrid } from "@/lib/queries/posts";
 
 const POST_FALLBACKS = ["first-post", "second-post", "third-post"] as const;
 
-// import { ViewIcon } from "@hugeicons/core-free-icons";
-// import { HugeiconsIcon } from "@hugeicons/react";
-// import { getAllViewCounts } from "@/lib/services/post-stats";
+interface PostGridProps {
+  tag?: string;
+}
 
-// TODO: Re-enable when view count display is restored.
-// function formatViews(views: number): string {
-//   if (views >= 1000) {
-//     return `${(views / 1000).toFixed(1).replace(/\.0$/, "")}k`;
-//   }
-//
-//   return views.toLocaleString();
-// }
-
-export function PostGrid() {
+export function PostGrid({ tag }: PostGridProps) {
   return (
     <Suspense fallback={<PostGridFallback />}>
-      <PostGridContent />
+      <PostGridContent tag={tag} />
     </Suspense>
   );
 }
 
 export function PostGridFallback() {
   return (
-    <div
+    <section
       role="status"
       aria-label="Loading blog posts"
-      className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+      className="flex flex-col"
     >
+      <Skeleton className="mb-4 h-6 w-28 rounded-lg" />
       {POST_FALLBACKS.map((post) => (
-        <Card key={post} aria-hidden="true">
-          <Card.Header className="flex flex-col gap-4">
-            <Skeleton className="h-4 w-24 rounded-lg" />
-            <Skeleton className="h-6 w-4/5 rounded-lg" />
-          </Card.Header>
-          <Card.Content className="flex flex-col gap-4">
-            <Skeleton className="h-4 w-full rounded-lg" />
-            <Skeleton className="h-4 w-2/3 rounded-lg" />
-            <div className="flex gap-2">
-              <Skeleton className="h-6 w-16 rounded-full" />
-              <Skeleton className="h-6 w-20 rounded-full" />
-            </div>
-          </Card.Content>
-        </Card>
+        <div
+          key={post}
+          aria-hidden="true"
+          className="flex flex-col gap-1.5 border-separator border-t py-4"
+        >
+          <Skeleton className="h-5 w-3/4 rounded-lg" />
+          <Skeleton className="h-4 w-24 rounded-lg" />
+        </div>
       ))}
-    </div>
+    </section>
   );
 }
 
-async function PostGridContent() {
-  const gridPosts = await getPublishedPostsForGrid();
-  // TODO: Re-enable visible view counts after caching Redis reads for /blog.
-  // const [gridPosts, viewCounts] = await Promise.all([
-  //   getPublishedPostsForGrid(),
-  //   getAllViewCounts(),
-  // ]);
-
-  if (gridPosts.length === 0) {
-    return (
-      <p className="col-span-full text-center text-muted">No posts found.</p>
-    );
-  }
+async function PostGridContent({ tag }: PostGridProps) {
+  const gridPosts = await getPublishedPostsForGrid(tag);
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {gridPosts.map((post) => {
-        if (!post.publishedAt) return null;
+    <section className="flex flex-col">
+      <div className="mb-4 flex items-baseline justify-between gap-4">
+        <h2 className="font-semibold text-xl tracking-tight">
+          {tag ? `Tagged “${tag}”` : "All Posts"}
+        </h2>
+        {tag && (
+          <Link
+            href={"/blog" as Route}
+            className="font-medium text-muted text-sm transition-colors hover:text-foreground"
+          >
+            Clear
+          </Link>
+        )}
+      </div>
 
-        const formattedDate = format(post.publishedAt, "dd MMM yyyy");
+      {gridPosts.length === 0 ? (
+        <p className="text-muted">No posts found.</p>
+      ) : (
+        gridPosts.map((post) => {
+          if (!post.publishedAt) return null;
 
-        return (
-          <Card key={post.id} className="flex flex-col">
+          const formattedDate = format(post.publishedAt, "dd MMM yyyy");
+
+          return (
             <Link
+              key={post.id}
               href={`/blog/${post.slug}` as Route}
-              className="flex h-full flex-col"
+              className="flex flex-col gap-1.5 border-separator border-t py-4 transition-transform hover:translate-x-1.5"
             >
-              <Card.Header>
-                <div className="flex items-center justify-between gap-2">
-                  <time
-                    dateTime={formatISO(post.publishedAt)}
-                    title={formattedDate}
-                    className="text-muted text-sm"
-                  >
-                    {formattedDate}
-                  </time>
-                  {/* TODO: Re-enable view count display after caching Redis reads for /blog. */}
-                  {/* <div className="flex items-center gap-2 text-muted">
-                    <HugeiconsIcon icon={ViewIcon} size={16} strokeWidth={2} />
-                    <span className="text-sm">
-                      {formatViews(viewCounts.get(post.slug) ?? 0)}
-                    </span>
-                  </div> */}
-                </div>
-                <Card.Title className="line-clamp-2 capitalize">
-                  {post.title}
-                </Card.Title>
-              </Card.Header>
-              <Card.Content className="flex flex-1 flex-col gap-4">
-                <p className="line-clamp-2 flex-1 text-muted">{post.summary}</p>
-                {post.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {post.tags.slice(0, 2).map((postTag) => {
-                      return (
-                        <Chip
-                          key={postTag}
-                          size="sm"
-                          variant="secondary"
-                          className="text-xs"
-                        >
-                          {postTag}
-                        </Chip>
-                      );
-                    })}
-                  </div>
-                )}
-              </Card.Content>
+              <span className="font-semibold capitalize">{post.title}</span>
+              <span className="font-mono text-muted text-sm">
+                <time dateTime={formatISO(post.publishedAt)}>
+                  {formattedDate}
+                </time>
+              </span>
             </Link>
-          </Card>
-        );
-      })}
-    </div>
+          );
+        })
+      )}
+    </section>
   );
 }

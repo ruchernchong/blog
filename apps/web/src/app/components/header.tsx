@@ -4,63 +4,49 @@ import { cn } from "@heroui/react";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { PropsWithChildren } from "react";
-import { Logo } from "@/components/logo";
+import { LogoMark } from "@/components/logo-mark";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { navLinks } from "@/config";
 
-interface NavItemProps extends PropsWithChildren {
-  href: Route;
-  className?: string;
-  title?: string;
-}
+const links: { title: string; href: Route }[] = [
+  { title: "Home", href: "/" },
+  ...navLinks,
+];
 
 export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed top-4 right-4 left-4 z-50">
-      <div className="container mx-auto rounded-full border border-border/50 bg-background/50 px-6 py-2 shadow-sm backdrop-blur-lg transition-all duration-300">
-        <div className="flex items-center justify-between">
-          <NavItem
-            href="/"
-            className="font-bold text-foreground text-lg transition-all duration-200 hover:text-accent"
-            title="Ru Chern"
-          >
-            <Logo />
-          </NavItem>
-          <nav className="flex items-center gap-6">
-            {navLinks.map(({ title, href }) => {
-              const isActive =
-                pathname === href ||
-                (pathname.startsWith(href) && href !== "/");
+    <header className="flex justify-center px-4 pt-10">
+      <div className="flex max-w-full items-center gap-0.5 rounded-full border border-border bg-surface p-1.5">
+        <Link href="/" aria-label="Home" className="mr-1 flex shrink-0">
+          <LogoMark size={30} />
+        </Link>
+        <div className="flex min-w-0 items-center gap-0.5 overflow-x-auto [mask-image:linear-gradient(to_right,transparent,black_12px,black_calc(100%-12px),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {links.map(({ title, href }) => {
+            const isActive =
+              pathname === href || (pathname.startsWith(href) && href !== "/");
 
-              return (
-                <NavItem
-                  key={title}
-                  href={href}
-                  className={cn(
-                    "font-medium text-sm transition-all duration-200",
-                    isActive
-                      ? "text-accent underline decoration-2 decoration-primary underline-offset-4"
-                      : "text-muted hover:text-foreground",
-                  )}
-                  title={title}
-                >
-                  {title}
-                </NavItem>
-              );
-            })}
-          </nav>
+            return (
+              <Link
+                key={title}
+                href={href}
+                className={cn(
+                  "shrink-0 rounded-full px-3 py-1.5 text-sm transition-colors",
+                  isActive
+                    ? "bg-default font-semibold text-foreground"
+                    : "font-medium text-muted hover:text-foreground",
+                )}
+              >
+                {title}
+              </Link>
+            );
+          })}
+        </div>
+        <div className="shrink-0">
+          <ThemeToggle />
         </div>
       </div>
     </header>
-  );
-}
-
-function NavItem({ href, className, children }: NavItemProps) {
-  return (
-    <Link href={href} className={className}>
-      {children}
-    </Link>
   );
 }

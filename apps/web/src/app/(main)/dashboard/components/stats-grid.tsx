@@ -1,11 +1,4 @@
 import { Skeleton } from "@heroui/react";
-import {
-  AnalyticsUpIcon,
-  SourceCodeIcon,
-  StarIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { SiGithub } from "@icons-pack/react-simple-icons";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { StatCard } from "@/app/(main)/dashboard/components/stat-card";
@@ -37,13 +30,11 @@ export function StatsGridFallback() {
         <div
           key={stat}
           aria-hidden="true"
-          className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-6 shadow-sm"
+          className="flex flex-col gap-2 rounded-2xl border border-border bg-default/50 p-5"
         >
-          <div className="flex items-center gap-2">
-            <Skeleton className="size-5 rounded-lg" />
-            <Skeleton className="h-3 w-20 rounded-lg" />
-          </div>
-          <Skeleton className="h-10 w-24 rounded-lg" />
+          <Skeleton className="h-3 w-20 rounded-lg" />
+          <Skeleton className="h-8 w-24 rounded-lg" />
+          <Skeleton className="h-3 w-16 rounded-lg" />
         </div>
       ))}
     </div>
@@ -65,27 +56,19 @@ async function StatsGridContent() {
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       <StatCard
-        icon={
-          <HugeiconsIcon icon={AnalyticsUpIcon} size={20} strokeWidth={2} />
-        }
         label="Total Visits"
         value={totalVisits ?? 0}
+        note="this year"
+        animate
+        compact
       />
+      <StatCard label="Contributions" value={commits} note="this year" />
       <StatCard
-        icon={<SiGithub className="size-5" />}
         label="GitHub Followers"
         value={followers ?? 0}
+        note="on GitHub"
       />
-      <StatCard
-        icon={<HugeiconsIcon icon={StarIcon} size={20} strokeWidth={2} />}
-        label="GitHub Stars"
-        value={stars ?? 0}
-      />
-      <StatCard
-        icon={<HugeiconsIcon icon={SourceCodeIcon} size={20} strokeWidth={2} />}
-        label="Total Commits"
-        value={commits}
-      />
+      <StatCard label="GitHub Stars" value={stars ?? 0} note="across repos" />
     </div>
   );
 }

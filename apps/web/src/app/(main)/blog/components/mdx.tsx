@@ -83,9 +83,15 @@ const components: MDXComponents = {
   a: CustomLink,
   h1: (props) => <Typography variant="h1" {...props} />,
   h2: (props) => (
-    <Typography variant="h2" className="text-3xl text-accent" {...props} />
+    <Typography
+      variant="h2"
+      className="scroll-mt-24 text-3xl text-accent"
+      {...props}
+    />
   ),
-  h3: (props) => <Typography variant="h3" className="text-2xl" {...props} />,
+  h3: (props) => (
+    <Typography variant="h3" className="scroll-mt-24 text-2xl" {...props} />
+  ),
   img: ImageComponent,
 };
 
