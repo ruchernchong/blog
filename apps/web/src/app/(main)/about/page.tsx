@@ -69,14 +69,14 @@ export default async function AboutPage() {
         <AboutHero intro={description} />
 
         <div className="flex flex-wrap gap-9 border-separator border-y py-6">
-          <StatFigure label="years shipping" value={`${yearsShipping}+`} />
-          <StatFigure label="roles held" value={companies.length} />
-          <StatFigure label="projects shipped" value={projects.length} />
+          <StatFigure label="years" value={`${yearsShipping}+`} />
+          <StatFigure label="roles" value={companies.length} />
+          <StatFigure label="projects" value={projects.length} />
         </div>
 
         <p className="font-semibold text-2xl leading-snug tracking-tight">
-          I care about the small details that make software feel{" "}
-          <span className="text-accent">considered</span> rather than assembled.
+          Shipping code by day. Chasing{" "}
+          <span className="text-accent">ideas</span> by night.
         </p>
 
         <EmploymentTimeline companies={sortedCompanies} />
