@@ -1,4 +1,4 @@
-import redis from "@/config/redis";
+import { cacheLife, cacheTag } from "next/cache";
 import { CacheConfig } from "@/lib/config/cache.config";
 import {
   getPostBySlug,
@@ -17,8 +17,11 @@ export interface RelatedPost {
 /**
  * Get related posts for a given post slug
  *
- * Uses Jaccard similarity on tags to find related posts.
- * Results are cached in Redis with 24-hour TTL.
+ * Uses Jaccard similarity on tags to find related posts. The computation is
+ * cached via Next.js Cache Components (`cacheLife("max")`, keyed by
+ * `related:${slug}`) so the related-posts Suspense boundary is part of the
+ * prefetchable payload instead of a per-request dynamic hole. Invalidate with
+ * `revalidateTag(\`related:${slug}\`)` when a post's tags change.
  *
  * @param slug - Post slug to find related posts for
  * @param limit - Maximum number of related posts to return
@@ -28,9 +31,14 @@ export async function getRelatedPosts(
   slug: string,
   limit: number = CacheConfig.RELATED_POSTS.LIMIT,
 ): Promise<RelatedPost[]> {
-  // Check cache first
-  const cached = await getCachedRelated(slug);
-  if (cached) return cached.slice(0, limit);
+  const results = await computeRelatedPosts(slug);
+  return results.slice(0, limit);
+}
+
+async function computeRelatedPosts(slug: string): Promise<RelatedPost[]> {
+  "use cache";
+  cacheLife("max");
+  cacheTag(`related:${slug}`);
 
   // Fetch current post tags
   const currentPost = await getPostBySlug(slug);
@@ -67,15 +75,8 @@ export async function getRelatedPosts(
       (post) => post.similarity >= CacheConfig.RELATED_POSTS.MIN_SIMILARITY,
     );
 
-  // Sort by similarity and limit
-  const results = withSimilarity
-    .sort((a, b) => b.similarity - a.similarity)
-    .slice(0, limit);
-
-  // Cache for 24 hours
-  await cacheRelated(slug, results);
-
-  return results;
+  // Sort by similarity (highest first)
+  return withSimilarity.sort((a, b) => b.similarity - a.similarity);
 }
 
 /**
@@ -96,28 +97,4 @@ function calculateJaccardSimilarity(tags1: string[], tags2: string[]): number {
   if (unionSize === 0) return 0;
 
   return commonTags.length / unionSize;
-}
-
-/**
- * Get cached related posts
- *
- * @param slug - Post slug
- * @returns Cached related posts or null
- */
-async function getCachedRelated(slug: string): Promise<RelatedPost[] | null> {
-  const cacheKey = CacheConfig.REDIS_KEYS.RELATED_CACHE(slug);
-  return redis.get<RelatedPost[]>(cacheKey);
-}
-
-/**
- * Cache related posts with TTL
- *
- * @param slug - Post slug
- * @param posts - Related posts to cache
- */
-async function cacheRelated(slug: string, posts: RelatedPost[]): Promise<void> {
-  const cacheKey = CacheConfig.REDIS_KEYS.RELATED_CACHE(slug);
-  await redis.set(cacheKey, posts, {
-    ex: CacheConfig.RELATED_POSTS.TTL,
-  });
 }

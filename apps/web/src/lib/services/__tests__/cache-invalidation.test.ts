@@ -23,6 +23,7 @@ vi.mock("../popular-posts", () => ({
 }));
 
 // Import after mocks
+import { revalidateTag } from "next/cache";
 import redis from "@/config/redis";
 import {
   invalidatePopularPost,
@@ -37,20 +38,31 @@ describe("cache-invalidation", () => {
   });
 
   describe("invalidatePost", () => {
-    it("should delete both stats and related cache for a post", async () => {
+    it("should delete post stats from Redis", async () => {
       vi.mocked(redis.del).mockResolvedValue(undefined as any);
 
       await invalidatePost("test-post");
 
       expect(redis.del).toHaveBeenCalledWith(
         CacheConfig.REDIS_KEYS.POST_STATS("test-post"),
-        CacheConfig.REDIS_KEYS.RELATED_CACHE("test-post"),
       );
+    });
+
+    it("should revalidate post, mdx, related, list and count tags", async () => {
+      vi.mocked(redis.del).mockResolvedValue(undefined as any);
+
+      await invalidatePost("test-post");
+
+      expect(revalidateTag).toHaveBeenCalledWith("post:test-post", "max");
+      expect(revalidateTag).toHaveBeenCalledWith("mdx:test-post", "max");
+      expect(revalidateTag).toHaveBeenCalledWith("related:test-post", "max");
+      expect(revalidateTag).toHaveBeenCalledWith("posts:list", "max");
+      expect(revalidateTag).toHaveBeenCalledWith("posts:count", "max");
     });
   });
 
   describe("invalidateRelatedByTags", () => {
-    it("should invalidate related caches for all posts with overlapping tags", async () => {
+    it("should revalidate related tags for all posts with overlapping tags", async () => {
       const mockPosts = [
         { slug: "post-1", tags: ["typescript", "react"] },
         { slug: "post-2", tags: ["typescript"] },
@@ -60,7 +72,6 @@ describe("cache-invalidation", () => {
       vi.mocked(postsQueries.getPostsWithOverlappingTags).mockResolvedValue(
         mockPosts as any,
       );
-      vi.mocked(redis.del).mockResolvedValue(undefined as any);
 
       await invalidateRelatedByTags(["typescript", "react"]);
 
@@ -69,11 +80,9 @@ describe("cache-invalidation", () => {
         "",
       );
 
-      expect(redis.del).toHaveBeenCalledWith(
-        CacheConfig.REDIS_KEYS.RELATED_CACHE("post-1"),
-        CacheConfig.REDIS_KEYS.RELATED_CACHE("post-2"),
-        CacheConfig.REDIS_KEYS.RELATED_CACHE("post-3"),
-      );
+      expect(revalidateTag).toHaveBeenCalledWith("related:post-1", "max");
+      expect(revalidateTag).toHaveBeenCalledWith("related:post-2", "max");
+      expect(revalidateTag).toHaveBeenCalledWith("related:post-3", "max");
     });
 
     it("should exclude specified slug from invalidation", async () => {
@@ -98,7 +107,7 @@ describe("cache-invalidation", () => {
       await invalidateRelatedByTags([]);
 
       expect(postsQueries.getPostsWithOverlappingTags).not.toHaveBeenCalled();
-      expect(redis.del).not.toHaveBeenCalled();
+      expect(revalidateTag).not.toHaveBeenCalled();
     });
 
     it("should handle empty result from database", async () => {
@@ -106,7 +115,7 @@ describe("cache-invalidation", () => {
 
       await invalidateRelatedByTags(["typescript"]);
 
-      expect(redis.del).not.toHaveBeenCalled();
+      expect(revalidateTag).not.toHaveBeenCalled();
     });
   });
 
@@ -118,19 +127,15 @@ describe("cache-invalidation", () => {
       await invalidatePopularPost("test-post");
 
       expect(removeFromPopular).toHaveBeenCalledWith("test-post");
-
       expect(redis.del).toHaveBeenCalledWith(
         CacheConfig.REDIS_KEYS.POST_STATS("test-post"),
-        CacheConfig.REDIS_KEYS.RELATED_CACHE("test-post"),
       );
+      expect(revalidateTag).toHaveBeenCalledWith("related:test-post", "max");
     });
 
     it("should run operations in parallel", async () => {
-      const removePromise = Promise.resolve();
-      const delPromise = Promise.resolve(undefined as any);
-
-      vi.mocked(removeFromPopular).mockReturnValue(removePromise);
-      vi.mocked(redis.del).mockReturnValue(delPromise);
+      vi.mocked(removeFromPopular).mockResolvedValue(undefined);
+      vi.mocked(redis.del).mockResolvedValue(undefined as any);
 
       await invalidatePopularPost("test-post");
 

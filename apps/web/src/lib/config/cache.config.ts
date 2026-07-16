@@ -24,8 +24,6 @@ export const CacheConfig = {
   RELATED_POSTS: {
     /** Maximum number of related posts to return */
     LIMIT: 4,
-    /** Cache duration in seconds (24 hours) */
-    TTL: 86400,
     /** Minimum Jaccard similarity score to include a post (0.0 - 1.0) */
     MIN_SIMILARITY: 0.1,
   } as const,
@@ -46,7 +44,5 @@ export const CacheConfig = {
     POPULAR_SET: "posts:popular",
     /** Hash containing post statistics (views, likes) */
     POST_STATS: (slug: string) => `post:${slug}`,
-    /** Cached related posts list */
-    RELATED_CACHE: (slug: string) => `post:${slug}:related`,
   } as const,
 } as const;
