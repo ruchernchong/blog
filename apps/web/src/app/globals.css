@@ -196,28 +196,3 @@
     --chart-5: oklch(from var(--accent) calc(l + 0.24) c h);
   }
 }
-
-/*
- * Blog prose colours follow the semantic theme tokens so long-form content
- * stays legible in both themes. @tailwindcss/typography's defaults are not
- * theme-aware, so in dark mode inline `code` (near-black) rendered invisible
- * and body text was too dim. The doubled `.prose.prose` selector raises
- * specificity above the plugin's own `.prose` rule so these win; fenced code
- * blocks keep Shiki's own theme (pre-* left untouched).
- */
-.prose.prose {
-  --tw-prose-body: var(--foreground);
-  --tw-prose-headings: var(--foreground);
-  --tw-prose-lead: var(--muted);
-  --tw-prose-links: var(--foreground);
-  --tw-prose-bold: var(--foreground);
-  --tw-prose-counters: var(--muted);
-  --tw-prose-bullets: var(--muted);
-  --tw-prose-hr: var(--border);
-  --tw-prose-quotes: var(--foreground);
-  --tw-prose-quote-borders: var(--border);
-  --tw-prose-captions: var(--muted);
-  --tw-prose-code: var(--foreground);
-  --tw-prose-th-borders: var(--border);
-  --tw-prose-td-borders: var(--border);
-}

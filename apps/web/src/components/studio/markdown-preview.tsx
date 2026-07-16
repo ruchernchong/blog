@@ -18,7 +18,7 @@ export function MarkdownPreview({ markdown }: MarkdownPreviewProps) {
 
   return (
     <div className="h-full overflow-auto">
-      <article className="prose max-w-none p-6">
+      <article className="prose dark:prose-invert max-w-none p-6">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
       </article>
     </div>
