@@ -36,9 +36,11 @@ export async function invalidateRelatedByTags(
     excludeSlug || "",
   );
 
-  // Invalidate related cache for each overlapping post
+  // Invalidate related cache for each overlapping post. The related list is
+  // embedded in the cached article (post:${slug}), so bust that too.
   for (const post of postsWithTags) {
     revalidateTag(`related:${post.slug}`, "max");
+    revalidateTag(`post:${post.slug}`, "max");
   }
 }
 
