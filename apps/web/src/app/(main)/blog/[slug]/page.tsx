@@ -54,6 +54,16 @@ export async function generateStaticParams() {
   return publishedPosts.map(({ slug }) => ({ slug }));
 }
 
-export default function PostPage({ params }: PageProps) {
-  return <PostArticle params={params} />;
+export default async function PostPage({ params }: PageProps) {
+  const { slug } = await params;
+
+  // Existence check outside any `use cache` scope so notFound() (a thrown
+  // control signal) never fires inside a cached component. This is a cache hit.
+  const post = await getPublishedPostBySlug(slug);
+
+  if (!post) {
+    notFound();
+  }
+
+  return <PostArticle slug={slug} />;
 }

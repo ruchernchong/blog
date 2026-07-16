@@ -1,5 +1,4 @@
 import { render, screen } from "@testing-library/react";
-import { FeaturedPostFallback } from "@/app/(main)/blog/components/featured-post";
 import { StatsGridFallback } from "@/app/(main)/dashboard/components/stats-grid";
 import { UsageLastUpdatedFallback } from "@/app/(main)/usage/components/usage-last-updated";
 import { AuthPanelFallback } from "@/components/auth/auth-panel-fallback";
@@ -12,11 +11,6 @@ describe("Suspense fallbacks", () => {
       name: "auth panel",
       label: "Loading authentication",
       component: <AuthPanelFallback label="Loading authentication" />,
-    },
-    {
-      name: "featured post",
-      label: "Loading featured post",
-      component: <FeaturedPostFallback />,
     },
     {
       name: "dashboard statistics",

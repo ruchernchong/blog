@@ -1,47 +1,13 @@
-import { Skeleton } from "@heroui/react";
 import { format, formatISO } from "date-fns";
 import type { Route } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import { getRelatedPosts } from "@/lib/services/related-posts";
-
-const RELATED_POST_FALLBACKS = ["first-post", "second-post"] as const;
 
 interface RelatedPostsProps {
   slug: string;
 }
 
-export function RelatedPosts({ slug }: RelatedPostsProps) {
-  return (
-    <Suspense fallback={<RelatedPostsFallback />}>
-      <RelatedPostsContent slug={slug} />
-    </Suspense>
-  );
-}
-
-export function RelatedPostsFallback() {
-  return (
-    <section
-      role="status"
-      aria-label="Loading related articles"
-      className="not-prose flex flex-col"
-    >
-      <Skeleton className="mb-4 h-6 w-36 rounded-lg" />
-      {RELATED_POST_FALLBACKS.map((post) => (
-        <div
-          key={post}
-          aria-hidden="true"
-          className="flex flex-col gap-1.5 border-separator border-t py-4"
-        >
-          <Skeleton className="h-5 w-3/4 rounded-lg" />
-          <Skeleton className="h-4 w-24 rounded-lg" />
-        </div>
-      ))}
-    </section>
-  );
-}
-
-async function RelatedPostsContent({ slug }: RelatedPostsProps) {
+export async function RelatedPosts({ slug }: RelatedPostsProps) {
   const relatedPosts = await getRelatedPosts(slug, 4);
 
   if (!relatedPosts.length) return null;

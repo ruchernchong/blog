@@ -1,47 +1,8 @@
-import { Skeleton } from "@heroui/react";
 import type { Route } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import { getPublishedSeriesWithPosts } from "@/lib/queries/series";
 
-const SERIES_FALLBACKS = [
-  "first-series",
-  "second-series",
-  "third-series",
-] as const;
-
-export function SeriesCards() {
-  return (
-    <Suspense fallback={<SeriesCardsFallback />}>
-      <SeriesCardsContent />
-    </Suspense>
-  );
-}
-
-export function SeriesCardsFallback() {
-  return (
-    <section
-      role="status"
-      aria-label="Loading blog series"
-      className="flex flex-col gap-4"
-    >
-      <Skeleton className="h-6 w-20 rounded-lg" />
-      <div aria-hidden="true" className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {SERIES_FALLBACKS.map((series) => (
-          <div
-            key={series}
-            className="flex flex-col gap-1.5 rounded-xl border border-border p-4"
-          >
-            <Skeleton className="h-3 w-12 rounded-lg" />
-            <Skeleton className="h-4 w-3/4 rounded-lg" />
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-async function SeriesCardsContent() {
+export async function SeriesCards() {
   const publishedSeries = await getPublishedSeriesWithPosts();
 
   if (publishedSeries.length === 0) {

@@ -1,6 +1,5 @@
 import {
   and,
-  arrayContains,
   arrayOverlaps,
   count,
   desc,
@@ -33,34 +32,6 @@ export async function getPublishedPosts() {
       content: false,
     },
     where: and(eq(posts.status, "published"), isNull(posts.deletedAt)),
-    orderBy: desc(posts.publishedAt),
-  });
-}
-
-/**
- * Get published posts for the blog grid with optional filtering
- *
- * @param tag - Filter by tag (optional)
- * @returns Posts excluding featured when no tag filter, or all matching posts when filtered
- */
-export async function getPublishedPostsForGrid(tag?: string) {
-  "use cache";
-  cacheLife("max");
-  cacheTag("posts:list");
-
-  const conditions = [eq(posts.status, "published"), isNull(posts.deletedAt)];
-
-  if (tag) {
-    conditions.push(arrayContains(posts.tags, [tag]));
-  } else {
-    conditions.push(eq(posts.featured, false));
-  }
-
-  return db.query.posts.findMany({
-    columns: {
-      content: false,
-    },
-    where: and(...conditions),
     orderBy: desc(posts.publishedAt),
   });
 }
