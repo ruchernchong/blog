@@ -16,7 +16,7 @@ export function AboutHero({ intro }: AboutHeroProps) {
     <div className="grid grid-cols-1 items-start gap-9 sm:grid-cols-[1fr_148px]">
       <div className="flex flex-col gap-4">
         <span className="font-mono font-semibold text-accent text-xs uppercase tracking-widest">
-          Get to know me
+          About
         </span>
         <h1 className="font-bold text-4xl tracking-tighter">Ru Chern</h1>
         <p className="text-muted leading-relaxed">{intro}</p>

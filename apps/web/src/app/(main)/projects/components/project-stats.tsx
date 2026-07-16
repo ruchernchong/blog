@@ -28,12 +28,12 @@ export function ProjectStats() {
 function ProjectStatsFallback() {
   return (
     <StatRow>
-      <StatFigure label="shipped" value={shipped} />
+      <StatFigure label="projects" value={shipped} />
       <div className="flex flex-col gap-1">
         <div className="h-8 w-16 animate-pulse rounded bg-default" />
         <span className="text-muted text-sm">GitHub stars</span>
       </div>
-      <StatFigure label="live now" value={liveNow} />
+      <StatFigure label="live" value={liveNow} />
     </StatRow>
   );
 }
@@ -43,9 +43,9 @@ async function ProjectStatsContent() {
 
   return (
     <StatRow>
-      <StatFigure label="shipped" value={shipped} />
+      <StatFigure label="projects" value={shipped} />
       <StatFigure label="GitHub stars" value={stars} compact />
-      <StatFigure label="live now" value={liveNow} />
+      <StatFigure label="live" value={liveNow} />
     </StatRow>
   );
 }

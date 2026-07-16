@@ -37,7 +37,6 @@ export default function ProjectsPage() {
   return (
     <SurfaceCard className="flex flex-col gap-11">
       <PageHeader
-        eyebrow="Selected Work"
         title="Projects"
         description="Things I've built, from analytics platforms to satirical APIs."
       />
