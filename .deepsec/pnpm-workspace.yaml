@@ -1,1 +1,4 @@
 packages: []
+allowBuilds:
+  '@google/genai': false
+  protobufjs: false
