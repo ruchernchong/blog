@@ -9,7 +9,6 @@ const footerLinks = [
       name === "Github" ? "GitHub" : name === "Linkedin" ? "LinkedIn" : name,
     link,
   })),
-  { name: "Email", link: "mailto:" },
 ];
 
 export async function Footer() {
@@ -47,7 +46,7 @@ export async function Footer() {
               ))}
             </div>
             <span className="text-muted text-sm">
-              Ru Chern · Developer & Writer · {year}
+              Ru Chern · Software Engineer · {year}
             </span>
           </div>
 
