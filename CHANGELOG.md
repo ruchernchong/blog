@@ -1,3 +1,14 @@
+## [1.28.0](https://github.com/ruchernchong/blog/compare/v1.27.0...v1.28.0) (2026-07-18)
+
+### Features
+
+* add dynamic model pricing registry ([33a3136](https://github.com/ruchernchong/blog/commit/33a313606e3f31a3320ec20d6e2c37b0a6bd2e41))
+* show lifetime total commits on homepage ([68a9950](https://github.com/ruchernchong/blog/commit/68a995090cc72baec72fec6a1533d11f2e0c8e6b))
+
+### Performance Improvements
+
+* cache GitHub contributions query ([b6248dc](https://github.com/ruchernchong/blog/commit/b6248dcfaa5c87195f5551b9915ec27522ffb364))
+
 ## [1.27.0](https://github.com/ruchernchong/blog/compare/v1.26.1...v1.27.0) (2026-07-16)
 
 ### Features
