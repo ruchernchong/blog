@@ -107,21 +107,8 @@ export const getGitHubContributions = async (): Promise<GitHubProfile> => {
         user(login: "${GITHUB_USERNAME}") {
           contributionsCollection {
             totalCommitContributions
-            restrictedContributionsCount
-          }
-          repositoriesContributedTo(
-            first: 1
-            contributionTypes: [COMMIT, ISSUE, PULL_REQUEST, REPOSITORY]
-          ) {
-            totalCount
           }
           pullRequests(first: 1) {
-            totalCount
-          }
-          openIssues: issues(states: OPEN) {
-            totalCount
-          }
-          closedIssues: issues(states: CLOSED) {
             totalCount
           }
           followers {
@@ -134,6 +121,54 @@ export const getGitHubContributions = async (): Promise<GitHubProfile> => {
   });
 
   return data.user as GitHubProfile;
+};
+
+export const getGitHubTotalCommits = async (): Promise<number> => {
+  "use cache";
+  cacheLife("days");
+  cacheTag("github:commits:total");
+
+  const START_YEAR = 2014; // account created 2014-12-29
+  const currentYear = new Date().getUTCFullYear();
+  const years = Array.from(
+    { length: currentYear - START_YEAR + 1 },
+    (_, i) => START_YEAR + i,
+  );
+
+  // GitHub caps contributionsCollection at a 1-year span, and its per-query
+  // resource budget is content-dependent — heavy years (plus Apollo's injected
+  // __typename fields) trip RESOURCE_LIMITS_EXCEEDED when batched. Query one
+  // year per request in parallel instead. `no-cache` avoids Apollo normalising
+  // the id-less User across requests (which errors on merge); Next's "use cache"
+  // is the real cache. A failed year contributes 0 rather than zeroing the sum.
+  const counts = await Promise.all(
+    years.map((year) =>
+      gqlClient
+        .query<{
+          user: {
+            contributionsCollection: { totalCommitContributions: number };
+          };
+        }>({
+          fetchPolicy: "no-cache",
+          query: gql`
+            {
+              user(login: "${GITHUB_USERNAME}") {
+                contributionsCollection(from: "${year}-01-01T00:00:00Z", to: "${year}-12-31T23:59:59Z") {
+                  totalCommitContributions
+                }
+              }
+            }
+          `,
+        })
+        .then(
+          ({ data }) =>
+            data.user?.contributionsCollection?.totalCommitContributions ?? 0,
+        )
+        .catch(() => 0),
+    ),
+  );
+
+  return counts.reduce((sum, count) => sum + count, 0);
 };
 
 export const getGitHubFollowers = async (): Promise<number> => {

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getGitHubContributions, getGitHubStars } from "@/lib/github";
+import { getGitHubStars, getGitHubTotalCommits } from "@/lib/github";
 import { getTotalVisits } from "@/lib/queries/posthog";
 import { getUsageProfile } from "@/lib/queries/usage";
 import { AnimatedCounter } from "./animated-counter";
@@ -29,11 +29,9 @@ async function VisitsStat() {
   return <StatItem value={visits} label="visits / yr" />;
 }
 
-async function ContributionsStat() {
-  const contributions = await getGitHubContributions()
-    .then((profile) => profile.contributionsCollection.totalCommitContributions)
-    .catch(() => 0);
-  return <StatItem value={contributions} label="contributions" />;
+async function CommitsStat() {
+  const commits = await getGitHubTotalCommits().catch(() => 0);
+  return <StatItem value={commits} label="Total commits" />;
 }
 
 async function StarsStat() {
@@ -45,7 +43,7 @@ async function TokensStat() {
   const tokens = await getUsageProfile()
     .then((profile) => profile.summary.totalTokens)
     .catch(() => 0);
-  return <StatItem value={tokens} label="Claude tokens" />;
+  return <StatItem value={tokens} label="AI tokens" />;
 }
 
 export function HomeStats() {
@@ -54,13 +52,13 @@ export function HomeStats() {
       <Suspense fallback={<StatSkeleton label="visits / yr" />}>
         <VisitsStat />
       </Suspense>
-      <Suspense fallback={<StatSkeleton label="contributions" />}>
-        <ContributionsStat />
+      <Suspense fallback={<StatSkeleton label="Total commits" />}>
+        <CommitsStat />
       </Suspense>
       <Suspense fallback={<StatSkeleton label="GitHub stars" />}>
         <StarsStat />
       </Suspense>
-      <Suspense fallback={<StatSkeleton label="Claude tokens" />}>
+      <Suspense fallback={<StatSkeleton label="AI tokens" />}>
         <TokensStat />
       </Suspense>
     </div>
