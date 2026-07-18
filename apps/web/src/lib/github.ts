@@ -97,6 +97,10 @@ export const getGitHubPinnedRepositories = async (): Promise<
 };
 
 export const getGitHubContributions = async (): Promise<GitHubProfile> => {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("github:contributions");
+
   const { data } = await gqlClient.query({
     query: gql`
       {
