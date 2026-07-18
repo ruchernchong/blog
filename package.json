@@ -1,6 +1,6 @@
 {
   "name": "ruchern-dev",
-  "version": "1.28.0",
+  "version": "1.29.0",
   "type": "module",
   "private": true,
   "scripts": {
@@ -39,10 +39,10 @@
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@commitlint/types": "^20.5.0",
+    "@semantic-release-extras/verified-git-commit": "^1.0.11",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/commit-analyzer": "13.0.1",
     "@semantic-release/exec": "7.1.0",
-    "@semantic-release-extras/verified-git-commit": "^1.0.11",
     "@semantic-release/github": "12.0.8",
     "@semantic-release/release-notes-generator": "14.1.1",
     "conventional-changelog-conventionalcommits": "^9.1.0",
