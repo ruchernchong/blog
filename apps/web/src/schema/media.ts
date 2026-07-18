@@ -2,11 +2,11 @@ import {
   bigint,
   index,
   integer,
-  pgTable,
   text,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
+import { pgTable } from "./_table";
 
 export const media = pgTable(
   "media",

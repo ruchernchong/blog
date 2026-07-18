@@ -1,5 +1,5 @@
 import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
-import { verifyAccessToken } from "better-auth/oauth2";
+import { verifyBearerToken } from "better-auth/oauth2";
 import { eq } from "drizzle-orm";
 import { AUTH_ERROR } from "@/constants/auth-error-ids";
 import { OAUTH_RESOURCE } from "@/lib/api/oauth-protected-resource";
@@ -96,7 +96,7 @@ export async function validateMcpAuth(
       // `jwksUrl` explicitly (rather than relying on the resource-client wrapper
       // to resolve it) so verification is self-contained in the serverless
       // runtime — otherwise a valid token fails with "no token payload".
-      const payload = await verifyAccessToken(token, {
+      const payload = await verifyBearerToken(token, {
         jwksUrl: OAUTH_JWKS_URL,
         verifyOptions: {
           // The provider stamps the OIDC issuer (BASE_URL + /api/auth) into the

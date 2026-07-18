@@ -31,9 +31,10 @@ vi.mock("@/schema", async () => {
 
 import { upsertTokenUsage } from "../usage";
 
-// Mirror the production `db` casing (see schema/index.ts) so embedded columns
-// serialize to their real snake_case names, the way the live query is built.
-const dialect = new PgDialect({ casing: "snake_case" });
+// Drizzle v1 bakes the snake_case casing into columns at table-creation time
+// (via the pgTableCreator in schema/_table.ts), so the column names serialize
+// to their real snake_case form without configuring casing on the dialect.
+const dialect = new PgDialect();
 
 const baseRow = {
   date: "2026-05-30",

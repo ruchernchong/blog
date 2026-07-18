@@ -4,11 +4,11 @@ import {
   index,
   integer,
   numeric,
-  pgTable,
   primaryKey,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
+import { pgTable } from "./_table";
 
 /**
  * Merged model registry: pricing + display metadata per (provider, model).

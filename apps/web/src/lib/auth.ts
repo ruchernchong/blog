@@ -1,11 +1,12 @@
+import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";
 import { oauthProvider } from "@better-auth/oauth-provider";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { betterAuth } from "better-auth/minimal";
 import { nextCookies } from "better-auth/next-js";
 import { admin, jwt, lastLoginMethod, oAuthProxy } from "better-auth/plugins";
 import { bearer } from "better-auth/plugins/bearer";
 import { redisSecondaryStorage } from "@/lib/redis-secondary-storage";
 import { db } from "@/schema";
+import * as schema from "@/schema/schema";
 
 /**
  * Better Auth configuration for the application.
@@ -34,7 +35,7 @@ export const auth = betterAuth({
   },
   trustedOrigins: ["https://*.vercel.app"],
   disabledPaths: ["/token"],
-  database: drizzleAdapter(db, { provider: "pg" }),
+  database: drizzleAdapter(db, { provider: "pg", schema }),
   account: {
     accountLinking: {
       enabled: true,

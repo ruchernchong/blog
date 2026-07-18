@@ -7,5 +7,6 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DATABASE_URL,
   },
-  casing: "snake_case",
+  // NOTE: drizzle-kit v1 removed the top-level `casing: "snake_case"` option.
+  // The runtime casing still lives on the drizzle() client in schema/index.ts.
 });

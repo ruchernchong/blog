@@ -4,11 +4,11 @@ import {
   index,
   integer,
   numeric,
-  pgTable,
   primaryKey,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
+import { pgTable } from "./_table";
 
 /**
  * Daily token-usage aggregates per coding agent + model.

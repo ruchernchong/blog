@@ -13,9 +13,9 @@ vi.mock("@/lib/auth", () => {
 });
 
 // Mock the core verifier so OAuth token verification is exercised without a
-// real JWKS roundtrip. verifyAccessToken resolves a JWT payload or throws.
+// real JWKS roundtrip. verifyBearerToken resolves a JWT payload or throws.
 vi.mock("better-auth/oauth2", () => ({
-  verifyAccessToken: vi.fn(),
+  verifyBearerToken: vi.fn(),
 }));
 
 // Mock the database layer so the user lookup is exercised without a real
@@ -48,7 +48,7 @@ vi.mock("@/lib/api/oauth-protected-resource", () => ({
   OAUTH_RESOURCE: "https://auth.test/api/auth",
 }));
 
-import { verifyAccessToken } from "better-auth/oauth2";
+import { verifyBearerToken } from "better-auth/oauth2";
 import { OAUTH_RESOURCE } from "@/lib/api/oauth-protected-resource";
 import { auth } from "@/lib/auth";
 import { db } from "@/schema";
@@ -58,7 +58,7 @@ const mockGetSession = auth.api.getSession as unknown as ReturnType<
   typeof vi.fn
 >;
 
-const mockVerifyAccessToken = verifyAccessToken as unknown as ReturnType<
+const mockVerifyAccessToken = verifyBearerToken as unknown as ReturnType<
   typeof vi.fn
 >;
 

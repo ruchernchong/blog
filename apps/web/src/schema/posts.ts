@@ -1,14 +1,13 @@
-import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
   integer,
   jsonb,
-  pgTable,
   text,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
+import { pgTable } from "./_table";
 import { user } from "./auth";
 import { series } from "./series";
 
@@ -51,17 +50,6 @@ export const posts = pgTable(
     ];
   },
 );
-
-export const postsRelations = relations(posts, ({ one }) => ({
-  author: one(user, {
-    fields: [posts.authorId],
-    references: [user.id],
-  }),
-  series: one(series, {
-    fields: [posts.seriesId],
-    references: [series.id],
-  }),
-}));
 
 export interface PostMetadata {
   readingTime: string;
