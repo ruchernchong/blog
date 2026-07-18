@@ -1,3 +1,9 @@
+## [1.29.0](https://github.com/ruchernchong/blog/compare/v1.28.0...v1.29.0) (2026-07-18)
+
+### Features
+
+* use github-api verified release commits ([eea8798](https://github.com/ruchernchong/blog/commit/eea8798a9e204d002aff74370e19316e6ff02b40))
+
 ## [1.28.0](https://github.com/ruchernchong/blog/compare/v1.27.0...v1.28.0) (2026-07-18)
 
 ### Features
