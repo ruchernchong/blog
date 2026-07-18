@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getGitHubContributions, getGitHubStars } from "@/lib/github";
 import { getTotalVisits } from "@/lib/queries/posthog";
 import { getUsageProfile } from "@/lib/queries/usage";
@@ -14,41 +15,54 @@ function StatItem({ value, label }: { value: number; label: string }) {
   );
 }
 
-export function HomeStatsSkeleton() {
+function StatSkeleton({ label }: { label: string }) {
   return (
-    <div className="flex flex-wrap gap-8 pt-4">
-      {["visits / yr", "contributions", "GitHub stars", "Claude tokens"].map(
-        (label) => (
-          <div key={label} className="flex flex-col gap-1">
-            <div className="h-8 w-16 animate-pulse rounded bg-default" />
-            <span className="text-muted text-sm">{label}</span>
-          </div>
-        ),
-      )}
+    <div className="flex flex-col gap-1">
+      <div className="h-8 w-16 animate-pulse rounded bg-default" />
+      <span className="text-muted text-sm">{label}</span>
     </div>
   );
 }
 
-export async function HomeStats() {
-  const [visits, contributions, stars, tokens] = await Promise.all([
-    getTotalVisits().catch(() => 0),
-    getGitHubContributions()
-      .then(
-        (profile) => profile.contributionsCollection.totalCommitContributions,
-      )
-      .catch(() => 0),
-    getGitHubStars().catch(() => 0),
-    getUsageProfile()
-      .then((profile) => profile.summary.totalTokens)
-      .catch(() => 0),
-  ]);
+async function VisitsStat() {
+  const visits = await getTotalVisits().catch(() => 0);
+  return <StatItem value={visits} label="visits / yr" />;
+}
 
+async function ContributionsStat() {
+  const contributions = await getGitHubContributions()
+    .then((profile) => profile.contributionsCollection.totalCommitContributions)
+    .catch(() => 0);
+  return <StatItem value={contributions} label="contributions" />;
+}
+
+async function StarsStat() {
+  const stars = await getGitHubStars().catch(() => 0);
+  return <StatItem value={stars} label="GitHub stars" />;
+}
+
+async function TokensStat() {
+  const tokens = await getUsageProfile()
+    .then((profile) => profile.summary.totalTokens)
+    .catch(() => 0);
+  return <StatItem value={tokens} label="Claude tokens" />;
+}
+
+export function HomeStats() {
   return (
     <div className="flex flex-wrap gap-8 pt-4">
-      <StatItem value={visits} label="visits / yr" />
-      <StatItem value={contributions} label="contributions" />
-      <StatItem value={stars} label="GitHub stars" />
-      <StatItem value={tokens} label="Claude tokens" />
+      <Suspense fallback={<StatSkeleton label="visits / yr" />}>
+        <VisitsStat />
+      </Suspense>
+      <Suspense fallback={<StatSkeleton label="contributions" />}>
+        <ContributionsStat />
+      </Suspense>
+      <Suspense fallback={<StatSkeleton label="GitHub stars" />}>
+        <StarsStat />
+      </Suspense>
+      <Suspense fallback={<StatSkeleton label="Claude tokens" />}>
+        <TokensStat />
+      </Suspense>
     </div>
   );
 }

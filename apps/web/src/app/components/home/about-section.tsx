@@ -1,5 +1,4 @@
-import { Suspense } from "react";
-import { HomeStats, HomeStatsSkeleton } from "./home-stats";
+import { HomeStats } from "./home-stats";
 
 export function AboutSection() {
   return (
@@ -11,9 +10,7 @@ export function AboutSection() {
         building for the web with React, Node, and TypeScript. I track
         everything, from LTA car registrations to my own Claude token usage.
       </p>
-      <Suspense fallback={<HomeStatsSkeleton />}>
-        <HomeStats />
-      </Suspense>
+      <HomeStats />
     </section>
   );
 }
