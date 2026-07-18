@@ -5,7 +5,7 @@ import { handleApiError } from "@/lib/api/errors";
 import { validateMcpAuth } from "@/lib/api/mcp-auth";
 import { parseAndValidateBody } from "@/lib/api/validation";
 import { logWarning } from "@/lib/logger";
-import { loadPricing } from "@/lib/queries/models";
+import { loadPricing, syncModelRegistry } from "@/lib/queries/models";
 import {
   repriceUnpricedTokenUsage,
   upsertTokenUsage,
@@ -51,9 +51,12 @@ export async function POST(request: Request) {
     let repriced: Awaited<ReturnType<typeof repriceUnpricedTokenUsage>> | null =
       null;
     try {
+      // Refresh the registry from live sources + overrides so prod prices from
+      // the same merged snapshot the local ingest does; then reprice.
+      await syncModelRegistry();
       repriced = await repriceUnpricedTokenUsage(await loadPricing());
     } catch (error) {
-      logWarning("Skipped repricing during usage ingest", {
+      logWarning("Skipped model sync/repricing during usage ingest", {
         errorId: ERROR_IDS.USAGE_INGEST_FAILED,
         error: error instanceof Error ? error.message : String(error),
       });

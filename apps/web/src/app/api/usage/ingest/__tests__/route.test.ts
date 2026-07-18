@@ -11,6 +11,7 @@ vi.mock("@/lib/queries/usage", () => ({
 
 vi.mock("@/lib/queries/models", () => ({
   loadPricing: vi.fn(),
+  syncModelRegistry: vi.fn(),
 }));
 
 vi.mock("next/cache", () => ({

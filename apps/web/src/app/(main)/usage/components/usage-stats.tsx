@@ -18,6 +18,7 @@ interface UsageStatsProps {
   summary: UsageSummary;
   contributions: DayContribution[];
   byModel: UsageBreakdownRow[];
+  modelDisplayNames: Record<string, string>;
 }
 
 interface UsageStatCardProps {
@@ -99,6 +100,7 @@ export function UsageStats({
   summary,
   contributions,
   byModel,
+  modelDisplayNames,
 }: UsageStatsProps) {
   const trailingDays = contributions.slice(-SPARKLINE_DAYS);
   const costSparkline = trailingDays.map((day) => ({
@@ -173,7 +175,10 @@ export function UsageStats({
           className="truncate font-semibold text-2xl text-foreground tracking-tight"
           title={summary.favouriteModel ?? undefined}
         >
-          {summary.favouriteModel ?? "No usage yet"}
+          {summary.favouriteModel
+            ? (modelDisplayNames[summary.favouriteModel] ??
+              summary.favouriteModel)
+            : "No usage yet"}
         </dd>
       ),
       footer: topModel ? (

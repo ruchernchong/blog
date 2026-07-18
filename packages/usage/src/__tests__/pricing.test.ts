@@ -1,11 +1,18 @@
-import { buildPricing, type ModelsDevApi } from "../pricing";
+import { buildPricingFromRegistry } from "../pricing";
+import {
+  type ModelsDevApi,
+  mergeRegistry,
+  normaliseModelsDev,
+  SEED_OVERRIDES,
+} from "../registry";
 
 /**
  * Fixture mirroring the models.dev payload shape. `gpt-5.5` is priced under both
  * `openai` and `fireworks-ai` to prove provider selection. The GPT-5.6 entries
- * deliberately carry incorrect rates so the tests prove the pinned OpenAI
- * overrides take precedence. `gpt-5.5-fast` and `claude-sonnet-5` are absent,
- * so they resolve only via provider-scoped overrides.
+ * deliberately carry incorrect rates so the tests prove the seeded overrides
+ * take precedence. `gpt-5.5-fast` and `claude-sonnet-5` are absent from
+ * models.dev, so they resolve only via the seeded override entries — exactly
+ * as they do in production once merged from `SEED_OVERRIDES`.
  */
 const api: ModelsDevApi = {
   anthropic: {
@@ -33,8 +40,15 @@ const api: ModelsDevApi = {
   },
 };
 
-describe("buildPricing", () => {
-  const pricing = buildPricing(api);
+// Mirrors production: overrides > LiteLLM > models.dev, built into the registry.
+const registry = mergeRegistry({
+  overrides: SEED_OVERRIDES,
+  litellm: [],
+  modelsDev: normaliseModelsDev(api),
+});
+
+describe("buildPricingFromRegistry", () => {
+  const pricing = buildPricingFromRegistry(registry);
 
   it("should resolve a model under the agent's derived provider", () => {
     expect(pricing.priceFor("claude-sonnet", { agent: "claude" })?.input).toBe(

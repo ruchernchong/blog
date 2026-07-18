@@ -44,8 +44,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Usage Analytics Ingestion
 
-- `pnpm usage:ingest` - Parse local agent logs, price them, and upsert daily
-  `token_usage` aggregates into the `DATABASE_URL` database (local dev branch)
+Model pricing/metadata is a DB-backed registry (the `model` table), synced on
+each ingest from **LiteLLM** (primary rates) + **models.dev** (display names,
+release dates, rate gap-fill) + curated MCP-editable overrides (`is_override`
+rows, which win the merge). This replaces the former hardcoded pricing constants
+so a newly-released model prices automatically once a live source lists it; an
+override is the no-deploy fix for internal/routed slugs no public source carries.
+See `packages/usage/src/registry.ts` (pure normalise/merge) and
+`apps/web/src/lib/queries/models.ts` (`syncModelRegistry`).
+
+- `pnpm usage:ingest` - Parse local agent logs, sync the model registry, price
+  the logs, and upsert daily `token_usage` aggregates into the `DATABASE_URL`
+  database (local dev branch)
 - `pnpm usage:ingest:prod` - Same parse/price step locally, but POST the rows to
   the deployed `POST /api/usage/ingest` route, which upserts them using the
   deployment's own production `DATABASE_URL` (the prod connection string never
@@ -81,6 +91,13 @@ An MCP (Model Context Protocol) server for managing blog posts and media via Cla
 - `upload_from_path` - Upload image directly from local file path
 - `upload_from_url` - Upload image from a public URL
 - `delete_media` - Soft delete media
+
+**Model Registry Tools:**
+
+- `list_model_overrides` - List curated pricing overrides (`model` rows with `is_override`), optional provider filter
+- `get_model` - Get a single model registry row by (provider, id) with merged pricing/metadata + source provenance
+- `upsert_model_override` - Create/update a curated pricing/metadata/alias override (rates USD per 1M tokens); wins over the live LiteLLM/models.dev sources and reprices N.A. rows immediately
+- `delete_model_override` - Delete a curated override (only `is_override` rows; source-derived rows are refreshed on the next ingest)
 
 ### Configuration
 

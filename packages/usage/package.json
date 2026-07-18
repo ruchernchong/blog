@@ -16,6 +16,7 @@
     "./parsers": "./src/parsers/index.ts",
     "./pricing": "./src/pricing.ts",
     "./providers": "./src/providers.ts",
+    "./registry": "./src/registry.ts",
     "./types": "./src/types.ts"
   },
   "dependencies": {

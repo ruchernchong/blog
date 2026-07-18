@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/app/components/page-header";
 import { SurfaceCard } from "@/app/components/surface-card";
 import globalMetadata from "@/app/metadata";
-import { getProviderDisplayNames } from "@/lib/queries/models";
+import {
+  getModelDisplayNames,
+  getProviderDisplayNames,
+} from "@/lib/queries/models";
 import { getUsageProfile } from "@/lib/queries/usage";
 import { UsageBreakdown } from "./components/usage-breakdown";
 import { UsageHeatmap } from "./components/usage-heatmap";
@@ -37,9 +40,10 @@ export const metadata: Metadata = {
 
 export default async function UsagePage() {
   const profile = await getUsageProfile();
-  const providerDisplayNames = await getProviderDisplayNames(
-    getUsageProviderIds(profile),
-  );
+  const [providerDisplayNames, modelDisplayNames] = await Promise.all([
+    getProviderDisplayNames(getUsageProviderIds(profile)),
+    getModelDisplayNames(getUsageModelIds(profile)),
+  ]);
 
   return (
     <SurfaceCard width="wide" className="flex flex-col gap-6">
@@ -52,6 +56,7 @@ export default async function UsagePage() {
         summary={profile.summary}
         contributions={profile.contributions}
         byModel={profile.byModel}
+        modelDisplayNames={modelDisplayNames}
       />
 
       <UsageHeatmap contributions={profile.contributions} />
@@ -63,6 +68,7 @@ export default async function UsagePage() {
 
       <UsageBreakdown
         providerDisplayNames={providerDisplayNames}
+        modelDisplayNames={modelDisplayNames}
         title="Breakdown"
         views={[
           {
@@ -100,6 +106,17 @@ function getUsageProviderIds(
         ...(row.provider ? [row.provider] : []),
         ...row.providers,
       ]),
+    ]),
+  ].sort();
+}
+
+function getUsageModelIds(
+  profile: Awaited<ReturnType<typeof getUsageProfile>>,
+) {
+  return [
+    ...new Set([
+      ...profile.summary.models,
+      ...profile.byModel.map((row) => row.key),
     ]),
   ].sort();
 }

@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerMediaTools } from "./tools/media.tools";
+import { registerModelTools } from "./tools/models.tools";
 import { registerPostTools } from "./tools/posts.tools";
 
 export function createServer(): McpServer {
@@ -10,6 +11,7 @@ export function createServer(): McpServer {
 
   registerPostTools(server);
   registerMediaTools(server);
+  registerModelTools(server);
 
   return server;
 }

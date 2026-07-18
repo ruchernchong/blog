@@ -43,6 +43,7 @@ interface BreakdownView {
 interface UsageBreakdownProps {
   className?: string;
   providerDisplayNames: Record<string, string>;
+  modelDisplayNames: Record<string, string>;
   title: string;
   views: BreakdownView[];
 }
@@ -84,10 +85,15 @@ function rowDisplayName(
   row: UsageBreakdownRow,
   viewId: string,
   providerDisplayNames: Record<string, string>,
+  modelDisplayNames: Record<string, string>,
 ): string {
-  return viewId === "provider"
-    ? (providerDisplayNames[row.key] ?? row.key)
-    : row.key;
+  if (viewId === "provider") {
+    return providerDisplayNames[row.key] ?? row.key;
+  }
+  if (viewId === "model") {
+    return modelDisplayNames[row.key] ?? row.key;
+  }
+  return row.key;
 }
 
 function compareRows(
@@ -96,12 +102,18 @@ function compareRows(
   descriptor: DataGridSortDescriptor,
   viewId: string,
   providerDisplayNames: Record<string, string>,
+  modelDisplayNames: Record<string, string>,
 ): number {
   const result = (() => {
     switch (descriptor.column) {
       case "key":
-        return rowDisplayName(a, viewId, providerDisplayNames).localeCompare(
-          rowDisplayName(b, viewId, providerDisplayNames),
+        return rowDisplayName(
+          a,
+          viewId,
+          providerDisplayNames,
+          modelDisplayNames,
+        ).localeCompare(
+          rowDisplayName(b, viewId, providerDisplayNames, modelDisplayNames),
         );
       case "provider":
         return (a.provider ?? a.providers?.join(", ") ?? "").localeCompare(
@@ -198,9 +210,11 @@ function RowVisual({
 }
 
 function getColumns({
+  modelDisplayNames,
   providerDisplayNames,
   viewId,
 }: {
+  modelDisplayNames: Record<string, string>;
   providerDisplayNames: Record<string, string>;
   viewId: string;
 }): DataGridColumn<UsageBreakdownRow>[] {
@@ -214,10 +228,16 @@ function getColumns({
       cell: (row) => (
         <span className="inline-flex w-full min-w-0 items-center gap-2 pe-8 sm:pe-0">
           <RowVisual row={row} viewId={viewId} />
-          <span className="truncate font-medium text-xs">
-            {viewId === "provider"
-              ? (providerDisplayNames[row.key] ?? row.key)
-              : row.key}
+          <span
+            className="truncate font-medium text-xs"
+            title={viewId === "model" ? row.key : undefined}
+          >
+            {rowDisplayName(
+              row,
+              viewId,
+              providerDisplayNames,
+              modelDisplayNames,
+            )}
           </span>
           <FreeModelChip cost={row.cost} viewId={viewId} />
         </span>
@@ -573,6 +593,7 @@ function BreakdownPagination({
 export function UsageBreakdown({
   className,
   providerDisplayNames,
+  modelDisplayNames,
   title,
   views,
 }: UsageBreakdownProps) {
@@ -657,7 +678,12 @@ export function UsageBreakdown({
       const query = search.toLowerCase();
       rows = rows.filter((row) => {
         if (
-          rowDisplayName(row, active.id, providerDisplayNames)
+          rowDisplayName(
+            row,
+            active.id,
+            providerDisplayNames,
+            modelDisplayNames,
+          )
             .toLowerCase()
             .includes(query)
         ) {
@@ -677,14 +703,27 @@ export function UsageBreakdown({
     }
 
     return rows;
-  }, [active, providerDisplayNames, providerFilter, search]);
+  }, [active, modelDisplayNames, providerDisplayNames, providerFilter, search]);
 
   const sortedRows = useMemo(
     () =>
       [...filteredRows].sort((a, b) =>
-        compareRows(a, b, sortDescriptor, active.id, providerDisplayNames),
+        compareRows(
+          a,
+          b,
+          sortDescriptor,
+          active.id,
+          providerDisplayNames,
+          modelDisplayNames,
+        ),
       ),
-    [active.id, filteredRows, providerDisplayNames, sortDescriptor],
+    [
+      active.id,
+      filteredRows,
+      modelDisplayNames,
+      providerDisplayNames,
+      sortDescriptor,
+    ],
   );
 
   const pageCount = Math.max(1, Math.ceil(sortedRows.length / rowsPerPage));
@@ -708,13 +747,17 @@ export function UsageBreakdown({
 
   const columns = useMemo(
     () =>
-      getColumns({ providerDisplayNames, viewId: active.id }).filter(
+      getColumns({
+        modelDisplayNames,
+        providerDisplayNames,
+        viewId: active.id,
+      }).filter(
         (column) =>
           column.id === "key" ||
           visibleColumns === "all" ||
           visibleColumns.has(column.id),
       ),
-    [active.id, providerDisplayNames, visibleColumns],
+    [active.id, modelDisplayNames, providerDisplayNames, visibleColumns],
   );
 
   const columnOptions =
