@@ -92,6 +92,13 @@
       "when": 1784920876758,
       "tag": "0012_fantastic_giant_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1785774378228,
+      "tag": "0013_natural_scalphunter",
+      "breakpoints": true
     }
   ]
 }

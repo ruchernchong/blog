@@ -36,13 +36,42 @@ export const usageRowSchema = z.object({
 });
 
 /**
+ * One effort level's session count within a day. CamelCase matches AgentUsage's
+ * Codable payload and the existing token-row wire style.
+ */
+export const effortLevelCountSchema = z.object({
+  level: z.string().min(1),
+  sessionCount: nonNegativeInt,
+});
+
+/**
+ * Daily session-level effort aggregate for one agent. Counts are **sessions**,
+ * not requests or tokens. `levels` lists only classified sessions; unclassified
+ * sessions are tracked separately.
+ */
+export const effortRowSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "expected YYYY-MM-DD"),
+  agent: z.string().min(1),
+  levels: z.array(effortLevelCountSchema),
+  classifiedSessionCount: nonNegativeInt,
+  unclassifiedSessionCount: nonNegativeInt,
+});
+
+/**
  * A single request carries every daily aggregate the ingest produced. The cap is
  * a safety bound, comfortably above a multi-year, multi-agent history, and keeps
  * the JSON body within the serverless function's request-size limit.
+ *
+ * Token `rows` remain required (`min(1)`). Effort is optional: AgentUsage may
+ * omit `effortRows` / `effortSnapshotComplete` on older clients; defaults keep
+ * the payload backwards-compatible.
  */
 export const usageIngestSchema = z.object({
   rows: z.array(usageRowSchema).min(1).max(20000),
+  effortRows: z.array(effortRowSchema).max(20000).default([]),
+  effortSnapshotComplete: z.boolean().default(false),
 });
 
 export type UsageRow = z.infer<typeof usageRowSchema>;
+export type EffortRow = z.infer<typeof effortRowSchema>;
 export type UsageIngestPayload = z.infer<typeof usageIngestSchema>;

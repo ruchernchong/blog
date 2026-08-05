@@ -129,3 +129,87 @@ export interface UsageProfile {
   /** ISO timestamp of the most recent ingest, or null if no data. */
   lastUpdated: string | null;
 }
+
+/**
+ * Session count at a single effort level. Levels are open-ended strings
+ * (`minimal` | `low` | `medium` | `high` | `xhigh` | `max` | `ultra` | `mixed`
+ * | future); counts are **sessions**, not requests or tokens.
+ */
+export interface EffortLevelCount {
+  level: string;
+  sessionCount: number;
+}
+
+/**
+ * All-time effort distribution folded from daily `token_effort_usage` rows.
+ * `null` on `UsageProfile` means no effort data (or zero classified sessions).
+ */
+export interface EffortSummary {
+  levels: EffortLevelCount[];
+  classifiedSessionCount: number;
+  unclassifiedSessionCount: number;
+}
+
+/**
+ * Known effort levels in display order (lowest → highest). Unknown levels sort
+ * after these and before `mixed`.
+ */
+export const EFFORT_DISPLAY_ORDER = [
+  "minimal",
+  "low",
+  "medium",
+  "high",
+  "xhigh",
+  "max",
+  "ultra",
+] as const;
+
+const EFFORT_LABELS: Record<string, string> = {
+  minimal: "Minimal",
+  low: "Low",
+  medium: "Medium",
+  high: "High",
+  xhigh: "Extra high",
+  max: "Max",
+  ultra: "Ultra",
+  mixed: "Mixed",
+};
+
+/** Human-readable label for an effort level slug. */
+export function effortLevelLabel(level: string): string {
+  return (
+    EFFORT_LABELS[level] ??
+    level.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+  );
+}
+
+/** Compare two effort level slugs for display ordering. */
+export function compareEffortLevels(a: string, b: string): number {
+  if (a === "mixed" || b === "mixed") {
+    if (a === "mixed" && b === "mixed") {
+      return 0;
+    }
+    return a === "mixed" ? 1 : -1;
+  }
+
+  const aKnown = (EFFORT_DISPLAY_ORDER as readonly string[]).indexOf(a);
+  const bKnown = (EFFORT_DISPLAY_ORDER as readonly string[]).indexOf(b);
+
+  if (aKnown >= 0 && bKnown >= 0) {
+    return aKnown - bKnown;
+  }
+  if (aKnown >= 0) {
+    return -1;
+  }
+  if (bKnown >= 0) {
+    return 1;
+  }
+  return a.localeCompare(b);
+}
+
+/** Sort effort level counts into display order (mutates a copy). */
+export function sortEffortLevels(
+  levels: EffortLevelCount[],
+): EffortLevelCount[] {
+  return levels.toSorted((a, b) => compareEffortLevels(a.level, b.level));
+}
