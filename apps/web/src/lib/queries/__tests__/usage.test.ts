@@ -29,7 +29,7 @@ vi.mock("@/schema", async () => {
   return { ...actual, db };
 });
 
-import { upsertTokenUsage } from "../usage";
+import { upsertTokenEffortUsage, upsertTokenUsage } from "../usage";
 
 // Mirror the production `db` casing (see schema/index.ts) so embedded columns
 // serialize to their real snake_case names, the way the live query is built.
@@ -48,6 +48,14 @@ const baseRow = {
   totalTokens: 650,
   costUsd: "1.234560",
   messages: 5,
+};
+
+const baseEffortRow = {
+  date: "2026-06-02",
+  agent: "claude",
+  levels: [{ level: "high", sessionCount: 2 }],
+  classifiedSessionCount: 2,
+  unclassifiedSessionCount: 1,
 };
 
 describe("upsertTokenUsage", () => {
@@ -104,5 +112,47 @@ describe("upsertTokenUsage", () => {
     for (const config of onConflictConfigs) {
       expect(config.setWhere).toBeDefined();
     }
+  });
+});
+
+describe("upsertTokenEffortUsage", () => {
+  beforeEach(() => {
+    onConflictConfigs.length = 0;
+  });
+
+  it("should only overwrite when the incoming session total is larger", async () => {
+    await upsertTokenEffortUsage([baseEffortRow]);
+
+    expect(onConflictConfigs).toHaveLength(1);
+    const { setWhere } = onConflictConfigs[0];
+    expect(setWhere).toBeDefined();
+
+    const { sql } = dialect.sqlToQuery(setWhere as never);
+    expect(sql).toBe(
+      '(excluded.classified_session_count + excluded.unclassified_session_count) > ("token_effort_usage"."classified_session_count" + "token_effort_usage"."unclassified_session_count")',
+    );
+  });
+
+  it("should point effort columns at the incoming (excluded) value", async () => {
+    await upsertTokenEffortUsage([baseEffortRow]);
+
+    const { set } = onConflictConfigs[0];
+    for (const column of [
+      "levels",
+      "classifiedSessionCount",
+      "unclassifiedSessionCount",
+    ]) {
+      const { sql } = dialect.sqlToQuery(set[column] as never);
+      expect(sql).toBe(
+        `excluded.${column.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`)}`,
+      );
+    }
+  });
+
+  it("should return 0 and skip the DB when given an empty array", async () => {
+    const submitted = await upsertTokenEffortUsage([]);
+
+    expect(submitted).toBe(0);
+    expect(onConflictConfigs).toHaveLength(0);
   });
 });

@@ -13,7 +13,13 @@ import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns";
 import { and, asc, eq, isNull, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import { excludedColumns } from "@/lib/queries/upsert";
-import { db, type InsertTokenUsage, tokenUsage } from "@/schema";
+import {
+  db,
+  type InsertTokenEffortUsage,
+  type InsertTokenUsage,
+  tokenEffortUsage,
+  tokenUsage,
+} from "@/schema";
 
 /** Postgres caps bound parameters per statement; chunk large upserts under it. */
 const UPSERT_CHUNK_SIZE = 1000;
@@ -40,6 +46,21 @@ const UPDATE_COLUMNS = [
   "costUsd",
   "messages",
 ] as const satisfies (keyof typeof tokenUsage.$inferInsert)[];
+
+/**
+ * Composite primary key of `token_effort_usage`.
+ */
+const EFFORT_CONFLICT_TARGET = [
+  tokenEffortUsage.date,
+  tokenEffortUsage.agent,
+] as const;
+
+/** Columns refreshed from the incoming effort row on conflict. */
+const EFFORT_UPDATE_COLUMNS = [
+  "levels",
+  "classifiedSessionCount",
+  "unclassifiedSessionCount",
+] as const satisfies (keyof typeof tokenEffortUsage.$inferInsert)[];
 
 /**
  * Upsert daily `token_usage` aggregates on the composite key
@@ -76,6 +97,41 @@ export async function upsertTokenUsage(
         target: [...CONFLICT_TARGET],
         set,
         setWhere: sql`excluded.total_tokens > ${tokenUsage.totalTokens}`,
+      });
+  }
+  return rows.length;
+}
+
+/**
+ * Upsert daily `token_effort_usage` aggregates on `(date, agent)`.
+ *
+ * Same prune-erosion rationale as {@link upsertTokenUsage}: AgentUsage sends
+ * absolute session-count snapshots recomputed from logs that shrink over time.
+ * A day is overwritten only when the incoming snapshot has a larger
+ * `classifiedSessionCount + unclassifiedSessionCount`. Provided keys only —
+ * unspecified dates are never deleted, even when `effortSnapshotComplete` is
+ * true on the wire.
+ */
+export async function upsertTokenEffortUsage(
+  rows: InsertTokenEffortUsage[],
+): Promise<number> {
+  if (rows.length === 0) {
+    return 0;
+  }
+
+  const set = {
+    ...excludedColumns(tokenEffortUsage, EFFORT_UPDATE_COLUMNS),
+    updatedAt: sql`now()`,
+  };
+  for (let i = 0; i < rows.length; i += UPSERT_CHUNK_SIZE) {
+    const chunk = rows.slice(i, i + UPSERT_CHUNK_SIZE);
+    await db
+      .insert(tokenEffortUsage)
+      .values(chunk)
+      .onConflictDoUpdate({
+        target: [...EFFORT_CONFLICT_TARGET],
+        set,
+        setWhere: sql`(excluded.classified_session_count + excluded.unclassified_session_count) > (${tokenEffortUsage.classifiedSessionCount} + ${tokenEffortUsage.unclassifiedSessionCount})`,
       });
   }
   return rows.length;

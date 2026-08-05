@@ -6,6 +6,7 @@ vi.mock("@/lib/api/mcp-auth", () => ({
 
 vi.mock("@/lib/queries/usage", () => ({
   upsertTokenUsage: vi.fn(),
+  upsertTokenEffortUsage: vi.fn(),
 }));
 
 vi.mock("workflow/api", () => ({
@@ -23,11 +24,12 @@ vi.mock("next/cache", () => ({
 import { revalidateTag } from "next/cache";
 import { start } from "workflow/api";
 import { validateMcpAuth } from "@/lib/api/mcp-auth";
-import { upsertTokenUsage } from "@/lib/queries/usage";
+import { upsertTokenEffortUsage, upsertTokenUsage } from "@/lib/queries/usage";
 import { POST } from "../route";
 
 const mockValidateMcpAuth = vi.mocked(validateMcpAuth);
 const mockUpsertTokenUsage = vi.mocked(upsertTokenUsage);
+const mockUpsertTokenEffortUsage = vi.mocked(upsertTokenEffortUsage);
 const mockStart = vi.mocked(start);
 const mockRevalidateTag = vi.mocked(revalidateTag);
 
@@ -47,6 +49,14 @@ const validRow = {
   messages: 5,
 };
 
+const validEffortRow = {
+  date: "2026-06-02",
+  agent: "claude",
+  levels: [{ level: "high", sessionCount: 2 }],
+  classifiedSessionCount: 2,
+  unclassifiedSessionCount: 1,
+};
+
 function postRequest(body: unknown) {
   return new Request("http://localhost/api/usage/ingest", {
     method: "POST",
@@ -62,6 +72,7 @@ describe("POST /api/usage/ingest", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUpsertTokenUsage.mockResolvedValue(1);
+    mockUpsertTokenEffortUsage.mockResolvedValue(1);
     mockStart.mockResolvedValue({ runId: "run_123" } as Awaited<
       ReturnType<typeof start>
     >);
@@ -103,9 +114,11 @@ describe("POST /api/usage/ingest", () => {
     expect(await response.json()).toEqual({
       ok: true,
       upserted: 1,
+      effortUpserted: 0,
       syncRunId: "run_123",
     });
     expect(mockUpsertTokenUsage).toHaveBeenCalledWith([validRow]);
+    expect(mockUpsertTokenEffortUsage).not.toHaveBeenCalled();
     expect(mockStart).toHaveBeenCalledOnce();
     expect(mockRevalidateTag).toHaveBeenCalledWith("usage", "max");
   });
@@ -133,6 +146,7 @@ describe("POST /api/usage/ingest", () => {
     expect(await response.json()).toEqual({
       ok: true,
       upserted: 1,
+      effortUpserted: 0,
       syncRunId: null,
     });
     expect(mockRevalidateTag).toHaveBeenCalledWith("usage", "max");
@@ -174,5 +188,72 @@ describe("POST /api/usage/ingest", () => {
 
     expect(response.status).toBe(400);
     expect(mockUpsertTokenUsage).not.toHaveBeenCalled();
+  });
+
+  it("should skip effort upsert when effortRows is omitted", async () => {
+    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+
+    const response = await POST(postRequest({ rows: [validRow] }));
+
+    expect(response.status).toBe(200);
+    expect(mockUpsertTokenUsage).toHaveBeenCalledWith([validRow]);
+    expect(mockUpsertTokenEffortUsage).not.toHaveBeenCalled();
+    expect(await response.json()).toMatchObject({ effortUpserted: 0 });
+  });
+
+  it("should skip effort upsert when effortRows is empty", async () => {
+    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+
+    const response = await POST(
+      postRequest({ rows: [validRow], effortRows: [] }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mockUpsertTokenUsage).toHaveBeenCalledWith([validRow]);
+    expect(mockUpsertTokenEffortUsage).not.toHaveBeenCalled();
+    expect(await response.json()).toMatchObject({ effortUpserted: 0 });
+  });
+
+  it("should upsert effort rows when provided", async () => {
+    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+    mockUpsertTokenEffortUsage.mockResolvedValue(1);
+
+    const response = await POST(
+      postRequest({
+        rows: [validRow],
+        effortRows: [validEffortRow],
+        effortSnapshotComplete: true,
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mockUpsertTokenUsage).toHaveBeenCalledWith([validRow]);
+    expect(mockUpsertTokenEffortUsage).toHaveBeenCalledWith([validEffortRow]);
+    expect(await response.json()).toEqual({
+      ok: true,
+      upserted: 1,
+      effortUpserted: 1,
+      syncRunId: "run_123",
+    });
+  });
+
+  it("should return 400 when effort rows are malformed", async () => {
+    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+
+    const response = await POST(
+      postRequest({
+        rows: [validRow],
+        effortRows: [
+          {
+            ...validEffortRow,
+            levels: [{ level: "high", sessionCount: -1 }],
+          },
+        ],
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(mockUpsertTokenUsage).not.toHaveBeenCalled();
+    expect(mockUpsertTokenEffortUsage).not.toHaveBeenCalled();
   });
 });

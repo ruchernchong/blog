@@ -6,7 +6,7 @@ import { handleApiError } from "@/lib/api/errors";
 import { validateMcpAuth } from "@/lib/api/mcp-auth";
 import { parseAndValidateBody } from "@/lib/api/validation";
 import { logWarning } from "@/lib/logger";
-import { upsertTokenUsage } from "@/lib/queries/usage";
+import { upsertTokenEffortUsage, upsertTokenUsage } from "@/lib/queries/usage";
 import { syncModelRegistryWorkflow } from "@/workflows/sync-model-registry";
 
 /**
@@ -27,6 +27,9 @@ import { syncModelRegistryWorkflow } from "@/workflows/sync-model-registry";
  * per-source retries and a visible success/failure record — this route used to
  * do all of it inline behind a `logWarning`, which is how a missing table went
  * unnoticed for a week.
+ *
+ * Optional `effortRows` (AgentUsage) are upserted after token rows when present.
+ * Effort lives inside the same `"usage"` cache tag via `getUsageProfile`.
  */
 export async function POST(request: Request) {
   const auth = await validateMcpAuth(request);
@@ -44,6 +47,10 @@ export async function POST(request: Request) {
 
   try {
     const upserted = await upsertTokenUsage(result.data.rows);
+    const effortUpserted =
+      result.data.effortRows.length > 0
+        ? await upsertTokenEffortUsage(result.data.effortRows)
+        : 0;
 
     // Fire-and-forget: `start` returns as soon as the run is enqueued. The
     // upsert above is the durable operation, so a scheduling failure must not
@@ -62,7 +69,7 @@ export async function POST(request: Request) {
     // Publish the rows just written. The workflow revalidates again once the
     // registry lands, which is what refreshes display names.
     revalidateTag("usage", "max");
-    return Response.json({ ok: true, upserted, syncRunId });
+    return Response.json({ ok: true, upserted, effortUpserted, syncRunId });
   } catch (error) {
     return handleApiError(
       error,
