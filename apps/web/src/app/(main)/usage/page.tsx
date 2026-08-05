@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/app/components/page-header";
 import { SurfaceCard } from "@/app/components/surface-card";
 import globalMetadata from "@/app/metadata";
+import { DataIslandErrorBoundary } from "@/components/data-island-error-boundary";
 import {
   getModelDisplayNames,
   getProviderDisplayNames,
@@ -52,45 +53,55 @@ export default async function UsagePage() {
         {profile.lastUpdated && <UsageLastUpdated date={profile.lastUpdated} />}
       </div>
 
-      <UsageStats
-        summary={profile.summary}
-        contributions={profile.contributions}
-        byModel={profile.byModel}
-        modelDisplayNames={modelDisplayNames}
-      />
+      <DataIslandErrorBoundary label="Usage statistics">
+        <UsageStats
+          summary={profile.summary}
+          contributions={profile.contributions}
+          byModel={profile.byModel}
+          modelDisplayNames={modelDisplayNames}
+        />
+      </DataIslandErrorBoundary>
 
-      <UsageHeatmap contributions={profile.contributions} />
+      <DataIslandErrorBoundary label="Usage heatmap">
+        <UsageHeatmap contributions={profile.contributions} />
+      </DataIslandErrorBoundary>
 
       <div className="grid gap-4 lg:grid-cols-[5fr_7fr]">
-        <UsageTokenMix tokenMix={profile.tokenMix} />
-        <UsageTrend contributions={profile.contributions} />
+        <DataIslandErrorBoundary label="Token mix">
+          <UsageTokenMix tokenMix={profile.tokenMix} />
+        </DataIslandErrorBoundary>
+        <DataIslandErrorBoundary label="Usage trend">
+          <UsageTrend contributions={profile.contributions} />
+        </DataIslandErrorBoundary>
       </div>
 
-      <UsageBreakdown
-        providerDisplayNames={providerDisplayNames}
-        modelDisplayNames={modelDisplayNames}
-        title="Breakdown"
-        views={[
-          {
-            id: "model",
-            label: "Model",
-            description: "Tokens and cost grouped by model",
-            rows: profile.byModel,
-          },
-          {
-            id: "provider",
-            label: "Provider",
-            description: "Tokens and cost grouped by provider",
-            rows: profile.byProvider,
-          },
-          {
-            id: "agent",
-            label: "Agent",
-            description: "Tokens and cost grouped by agent",
-            rows: profile.byAgent,
-          },
-        ]}
-      />
+      <DataIslandErrorBoundary label="Usage breakdown">
+        <UsageBreakdown
+          providerDisplayNames={providerDisplayNames}
+          modelDisplayNames={modelDisplayNames}
+          title="Breakdown"
+          views={[
+            {
+              id: "model",
+              label: "Model",
+              description: "Tokens and cost grouped by model",
+              rows: profile.byModel,
+            },
+            {
+              id: "provider",
+              label: "Provider",
+              description: "Tokens and cost grouped by provider",
+              rows: profile.byProvider,
+            },
+            {
+              id: "agent",
+              label: "Agent",
+              description: "Tokens and cost grouped by agent",
+              rows: profile.byAgent,
+            },
+          ]}
+        />
+      </DataIslandErrorBoundary>
     </SurfaceCard>
   );
 }

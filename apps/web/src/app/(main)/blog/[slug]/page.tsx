@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import {
   getPublishedPostBySlug,
   getPublishedPostSlugs,
 } from "@/lib/queries/posts";
-import { PostArticle } from "./components/post-article";
+import { PostArticle, PostArticleFallback } from "./components/post-article";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -54,7 +55,19 @@ export async function generateStaticParams() {
   return publishedPosts.map(({ slug }) => ({ slug }));
 }
 
-export default async function PostPage({ params }: PageProps) {
+/**
+ * Sync shell so Instant Navigations can paint the post layout immediately.
+ * Params + existence/`notFound` stay in the Suspense child (outside `"use cache"`).
+ */
+export default function PostPage({ params }: PageProps) {
+  return (
+    <Suspense fallback={<PostArticleFallback />}>
+      <PostPageContent params={params} />
+    </Suspense>
+  );
+}
+
+async function PostPageContent({ params }: PageProps) {
   const { slug } = await params;
 
   // Existence check outside any `use cache` scope so notFound() (a thrown

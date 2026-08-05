@@ -53,9 +53,10 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   experimental: {
     mcpServer: true,
-    turbopackFileSystemCacheForBuild: true,
     turbopackRustReactCompiler: true,
     typedEnv: true,
+    useOffline: true,
+    useTypeScriptCli: true,
   },
   async headers() {
     return [

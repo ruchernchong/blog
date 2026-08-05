@@ -8,6 +8,7 @@ import { VisitsChart } from "@/app/(main)/dashboard/components/visits-chart";
 import { PageHeader } from "@/app/components/page-header";
 import { SurfaceCard } from "@/app/components/surface-card";
 import globalMetadata from "@/app/metadata";
+import { DataIslandErrorBoundary } from "@/components/data-island-error-boundary";
 
 const title = "Dashboard";
 const description =
@@ -44,11 +45,17 @@ export default function DashboardPage() {
         <LastUpdated />
       </div>
 
-      <StatsGrid />
+      <DataIslandErrorBoundary label="Dashboard statistics">
+        <StatsGrid />
+      </DataIslandErrorBoundary>
 
       <div className="grid gap-4 lg:grid-cols-2 lg:items-start">
-        <ViewsByPage />
-        <VisitsChart />
+        <DataIslandErrorBoundary label="Views by page">
+          <ViewsByPage />
+        </DataIslandErrorBoundary>
+        <DataIslandErrorBoundary label="Recent visits">
+          <VisitsChart />
+        </DataIslandErrorBoundary>
       </div>
 
       <div className="flex items-center justify-center">

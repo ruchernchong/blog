@@ -14,8 +14,8 @@ pnpm build           # Build for production
 ## Tech Stack
 
 ### Core Stack
-- **Framework**: Next.js 16.1 with App Router and React 19.2
-- **Language**: TypeScript 5.2 (strict mode)
+- **Framework**: Next.js 16.3 with App Router and React 19.2
+- **Language**: TypeScript 7 (strict mode)
 - **Styling**: Tailwind CSS v4 (PostCSS-only config)
 - **UI Components**: HeroUI v3 (Pro + OSS) with HugeIcons
 - **Animation**: Motion, React Spring, View Transitions API
