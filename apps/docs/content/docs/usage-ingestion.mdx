@@ -3,7 +3,7 @@ title: Token Usage Ingestion
 description: Endpoint contract and operator workflow for importing local agent token usage into ruchern.dev.
 ---
 
-The token usage ingestion workflow parses local coding-agent logs, prices the token usage, folds events into daily aggregates, and writes those aggregates into the `token_usage` table.
+The token usage ingestion workflow parses local coding-agent logs, prices the token usage, folds events into daily aggregates, and writes those aggregates into the `token_usage` table. AgentUsage may also POST session-level effort aggregates into `token_effort_usage`.
 
 Parsing happens locally because agent logs live on the machine that ran the agents. Production writes happen through the deployed API route, so the production `DATABASE_URL` never has to be present on a local machine.
 
@@ -30,7 +30,7 @@ The static bearer token is the expected path for production ingestion.
 
 ## Request Body
 
-The body must match `UsageIngestPayload` from `@workspace/usage/ingest`.
+The body must match `UsageIngestPayload` from `@workspace/usage/ingest`. Field names are **camelCase** (matching AgentUsage Codable and the token-row wire style).
 
 ```json
 {
@@ -49,9 +49,21 @@ The body must match `UsageIngestPayload` from `@workspace/usage/ingest`.
       "costUsd": "0.012345",
       "messages": 3
     }
-  ]
+  ],
+  "effortRows": [
+    {
+      "date": "2026-06-02",
+      "agent": "claude",
+      "levels": [{ "level": "high", "sessionCount": 2 }],
+      "classifiedSessionCount": 2,
+      "unclassifiedSessionCount": 1
+    }
+  ],
+  "effortSnapshotComplete": true
 }
 ```
+
+`effortRows` and `effortSnapshotComplete` are optional (default `[]` / `false`) for older clients. Token `rows` remain required — effort-only POSTs are rejected (`400`).
 
 ## Row Contract
 
@@ -74,19 +86,39 @@ Each row represents one daily aggregate for a specific `(date, agent, provider, 
 
 The request must include at least one row and at most `20,000` rows.
 
+## Effort Row Contract
+
+Each effort row is one daily session-level aggregate for `(date, agent)`. Counts are **sessions**, not requests or tokens — each session contributes its dominant effort level (ties → `mixed`). Levels are open-ended strings (`minimal` | `low` | `medium` | `high` | `xhigh` | `max` | `ultra` | `mixed` | future).
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `date` | `YYYY-MM-DD` string | Local calendar date for the aggregate. |
+| `agent` | string | Coding tool that produced the sessions. |
+| `levels` | array of `{ level, sessionCount }` | Classified sessions by effort level. |
+| `classifiedSessionCount` | non-negative integer | Sessions with a known dominant effort. |
+| `unclassifiedSessionCount` | non-negative integer | Sessions without a classifiable effort. |
+
+`effortSnapshotComplete` is accepted on the wire but does **not** delete unspecified dates — only provided keys are upserted.
+
 ## Idempotency
 
-Ingestion is idempotent. Rows are upserted by the composite key:
+Ingestion is idempotent. Token rows are upserted by the composite key:
 
 ```txt
 date + agent + provider + model
 ```
 
-Re-running ingestion recomputes the aggregates from local logs and overwrites existing rows for the same key. This keeps local logs as the source of truth.
+Effort rows are upserted by:
+
+```txt
+date + agent
+```
+
+**Non-decreasing on conflict.** Both tables guard against prune erosion: a day is overwritten only when the incoming snapshot is more complete — larger `totalTokens` for tokens, or larger `classifiedSessionCount + unclassifiedSessionCount` for effort. Smaller re-parses from pruned logs are ignored. The whole incoming row wins together.
 
 ## Cache Revalidation
 
-After a successful upsert, the route revalidates the `usage` cache tag so the public usage page can pick up the new data.
+After a successful upsert, the route revalidates the `usage` cache tag so the public usage page can pick up the new data (tokens and effort share this tag via `getUsageProfile`).
 
 ## Local Ingestion
 
@@ -96,7 +128,7 @@ Use local ingestion to write directly to the database in `DATABASE_URL`.
 pnpm usage:ingest
 ```
 
-This is intended for a local development branch/database.
+This is intended for a local development branch/database. Local parsers currently emit token rows only; effort rows come from AgentUsage.
 
 ## Production Ingestion
 
@@ -135,7 +167,17 @@ curl -X POST "https://ruchern.dev/api/usage/ingest" \
         "costUsd": "0.012345",
         "messages": 3
       }
-    ]
+    ],
+    "effortRows": [
+      {
+        "date": "2026-06-02",
+        "agent": "claude",
+        "levels": [{ "level": "high", "sessionCount": 2 }],
+        "classifiedSessionCount": 2,
+        "unclassifiedSessionCount": 1
+      }
+    ],
+    "effortSnapshotComplete": true
   }'
 ```
 
@@ -144,9 +186,13 @@ curl -X POST "https://ruchern.dev/api/usage/ingest" \
 ```json
 {
   "ok": true,
-  "upserted": 1
+  "upserted": 1,
+  "effortUpserted": 1,
+  "syncRunId": "run_123"
 }
 ```
+
+`effortUpserted` is `0` when `effortRows` is omitted or empty.
 
 ## Failure Modes
 
@@ -159,6 +205,7 @@ curl -X POST "https://ruchern.dev/api/usage/ingest" \
 ## Source Files
 
 - `packages/usage/src/ingest.ts` defines the wire schema.
-- `apps/web/src/scripts/ingest-usage.ts` parses, prices, folds, and posts rows.
+- `apps/web/src/scripts/ingest-usage.ts` parses, prices, folds, and posts token rows.
 - `apps/web/src/app/api/usage/ingest/route.ts` authenticates and upserts rows.
 - `apps/web/src/lib/queries/usage.ts` performs the chunked upsert and usage profile aggregation.
+- `apps/web/src/schema/token-effort-usage.ts` defines the `token_effort_usage` table.

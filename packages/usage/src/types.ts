@@ -126,6 +126,11 @@ export interface UsageProfile {
   byModel: UsageBreakdownRow[];
   /** All-time tokens split by category, for the token-mix bar. */
   tokenMix: TokenBreakdown;
+  /**
+   * All-time session effort distribution, or `null` when no effort rows exist
+   * or no sessions were classified.
+   */
+  effort: EffortSummary | null;
   /** ISO timestamp of the most recent ingest, or null if no data. */
   lastUpdated: string | null;
 }
@@ -212,4 +217,47 @@ export function sortEffortLevels(
   levels: EffortLevelCount[],
 ): EffortLevelCount[] {
   return levels.toSorted((a, b) => compareEffortLevels(a.level, b.level));
+}
+
+/**
+ * Fold daily effort rows into an all-time summary. Returns `null` when there
+ * are no rows or zero classified sessions.
+ */
+export function foldEffortSummary(
+  rows: ReadonlyArray<{
+    levels: EffortLevelCount[];
+    classifiedSessionCount: number;
+    unclassifiedSessionCount: number;
+  }>,
+): EffortSummary | null {
+  if (rows.length === 0) {
+    return null;
+  }
+
+  const levelTotals = new Map<string, number>();
+  let classifiedSessionCount = 0;
+  let unclassifiedSessionCount = 0;
+
+  for (const row of rows) {
+    classifiedSessionCount += row.classifiedSessionCount;
+    unclassifiedSessionCount += row.unclassifiedSessionCount;
+    for (const { level, sessionCount } of row.levels) {
+      levelTotals.set(level, (levelTotals.get(level) ?? 0) + sessionCount);
+    }
+  }
+
+  if (classifiedSessionCount === 0) {
+    return null;
+  }
+
+  return {
+    levels: sortEffortLevels(
+      [...levelTotals.entries()].map(([level, sessionCount]) => ({
+        level,
+        sessionCount,
+      })),
+    ),
+    classifiedSessionCount,
+    unclassifiedSessionCount,
+  };
 }

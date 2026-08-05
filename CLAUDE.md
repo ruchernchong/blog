@@ -64,6 +64,10 @@ See `packages/usage/src/registry.ts` (pure normalise/merge) and
   touches the local machine). Requires `BLOG_MCP_AUTH_TOKEN` and Vercel's
   `VERCEL_PROJECT_PRODUCTION_URL` (or `VERCEL_URL`) in the environment.
 
+AgentUsage may also POST session-level `effortRows` into `token_effort_usage`
+(alongside token rows); the `/usage` page folds these into an all-time effort
+distribution. Local CLI parsers do not emit effort.
+
 ### MCP Server
 
 - `pnpm mcp` - Start the private workspace MCP server for blog management

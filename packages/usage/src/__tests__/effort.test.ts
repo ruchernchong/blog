@@ -3,6 +3,7 @@ import { usageIngestSchema } from "../ingest";
 import {
   compareEffortLevels,
   effortLevelLabel,
+  foldEffortSummary,
   sortEffortLevels,
 } from "../types";
 
@@ -140,5 +141,54 @@ describe("effort display helpers", () => {
   it("should compare mixed as last", () => {
     expect(compareEffortLevels("ultra", "mixed")).toBeLessThan(0);
     expect(compareEffortLevels("mixed", "alpha")).toBeGreaterThan(0);
+  });
+});
+
+describe("foldEffortSummary", () => {
+  it("should return null for an empty row list", () => {
+    expect(foldEffortSummary([])).toBeNull();
+  });
+
+  it("should return null when no sessions were classified", () => {
+    expect(
+      foldEffortSummary([
+        {
+          levels: [],
+          classifiedSessionCount: 0,
+          unclassifiedSessionCount: 4,
+        },
+      ]),
+    ).toBeNull();
+  });
+
+  it("should sum levels across days and keep display order", () => {
+    const summary = foldEffortSummary([
+      {
+        levels: [
+          { level: "high", sessionCount: 2 },
+          { level: "low", sessionCount: 1 },
+        ],
+        classifiedSessionCount: 3,
+        unclassifiedSessionCount: 1,
+      },
+      {
+        levels: [
+          { level: "high", sessionCount: 1 },
+          { level: "mixed", sessionCount: 1 },
+        ],
+        classifiedSessionCount: 2,
+        unclassifiedSessionCount: 0,
+      },
+    ]);
+
+    expect(summary).toEqual({
+      levels: [
+        { level: "low", sessionCount: 1 },
+        { level: "high", sessionCount: 3 },
+        { level: "mixed", sessionCount: 1 },
+      ],
+      classifiedSessionCount: 5,
+      unclassifiedSessionCount: 1,
+    });
   });
 });
