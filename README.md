@@ -55,8 +55,8 @@ pnpm build           # Build for production
 - **Series Support**: Organise posts into series with navigation
 
 ### Analytics & Stats
-- **Analytics**: Umami, PostHog, and Vercel Analytics run in parallel during the PostHog warm-up period
-- **Dashboard**: Umami-backed visitor analytics at /dashboard until PostHog has 90 days of production data
+- **Analytics**: PostHog and Vercel Analytics
+- **Dashboard**: PostHog-backed visitor analytics (Query API) at /dashboard
 - **Post Statistics**: Client-side views tracking (likes temporarily disabled)
 - **Popular Posts**: Top posts by view count
 - **Related Posts**: Tag-based recommendations with Jaccard similarity

@@ -14,6 +14,12 @@ This file provides guidance to coding agents when working with code in this repo
 - `pnpm format` - Format code with Biome
 - `pnpm typecheck` - TypeScript type checking across workspaces
 
+### Documentation Site
+
+- `pnpm docs:dev` - Start the `@workspace/docs` Fumadocs site
+- `pnpm docs:build` - Build the docs site
+- `pnpm docs:typecheck` - Type check the docs site
+
 ### Database
 
 - `pnpm db:generate` - Generate migrations from schema
@@ -25,6 +31,7 @@ This file provides guidance to coding agents when working with code in this repo
 - `pnpm db:drop` - Drop database tables
 - `pnpm db:studio` - Open Drizzle Studio
 - `pnpm db:seed` - Seed database with test data
+- `pnpm auth:generate` - Regenerate the Better Auth Drizzle schema into `apps/web/src/schema/auth.ts`
 
 ### Testing
 
@@ -39,7 +46,8 @@ This file provides guidance to coding agents when working with code in this repo
 
 ### Usage collector
 
-- `pnpm usage:measure:go` / `pnpm usage:ingest:go` - Go collector (`packages/usage/go`). Parses Claude, Codex, OpenCode, and Cursor; `ingest:go` POSTs `/api/usage/ingest`. Auth is `usage-ingest login` (OAuth, admin, Keychain). LaunchAgent: `packages/usage/go/macos/INSTALL.md`
+- `pnpm usage:measure:go` / `pnpm usage:ingest:go` - Go collector (`packages/usage/go`, Go 1.25+). Parses Claude, Codex, OpenCode, and Cursor; `ingest:go` POSTs `/api/usage/ingest`. Auth is `usage-ingest login` (OAuth, admin, Keychain). `USAGE_INGEST_DRY_RUN=1` prints the payload without POSTing. LaunchAgent: `packages/usage/go/macos/INSTALL.md`
+- `pnpm usage:ingest` / `pnpm usage:ingest:prod` - Node ingest (`apps/web/src/scripts/ingest-usage.ts`). `usage:ingest` upserts into the `DATABASE_URL` database; `:prod` POSTs to the deployed `/api/usage/ingest` route
 
 ### MCP Server
 
@@ -70,6 +78,13 @@ An MCP (Model Context Protocol) server for managing blog posts and media via Cla
 - `upload_from_path` - Upload image directly from local file path
 - `upload_from_url` - Upload image from a public URL
 - `delete_media` - Soft delete media
+
+**Model Registry Tools:**
+
+- `list_model_overrides` - List curated pricing overrides, optional provider filter
+- `get_model` - Get a single model registry row by (provider, id)
+- `upsert_model_override` - Create/update a curated pricing/metadata/alias override
+- `delete_model_override` - Delete a curated override
 
 ### Configuration
 
@@ -127,6 +142,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 - **Storage**: Cloudflare R2 for media assets
 - **Authentication**: Better Auth with OAuth (GitHub, Google); also acts as an OAuth 2.1 / OIDC provider (`@better-auth/oauth-provider`'s `oauthProvider` + `jwt()`)
 - **Cache**: Upstash Redis for related posts, analytics, and post statistics
+- **UI**: HeroUI v3 — Pro (`@heroui-pro/react`) + OSS (`@heroui/react`)
 - **Styling**: Tailwind CSS v4
 - **Testing**: Vitest with React Testing Library
 - **Code Quality**: Biome for linting/formatting, TypeScript 7 (strict mode)
@@ -139,8 +155,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 - **Related Posts**: Tag-based recommendations using Jaccard similarity
 - **OpenGraph Images**: Dynamic OG image generation via `opengraph-image.tsx` route files
 - **Series Support**: Organise posts into series with navigation and ordering
-- **Analytics**: Umami-backed dashboard with PostHog and Vercel Analytics running in parallel during the PostHog warm-up
-  period
+- **Analytics**: PostHog-backed dashboard (Query API) with Vercel Analytics
 - **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers
 - **RSS Feed**: Dynamic `/feed.xml` endpoint
 - **OAuth Provider**: The app is its own OAuth 2.1 / OIDC provider via `@better-auth/oauth-provider`'s `oauthProvider` plugin (paired with `jwt()`). Clients authenticate users with the Authorization Code flow (PKCE required) and use the issued access token as a bearer; public clients self-register via dynamic client registration. Discovery at `/api/auth/.well-known/openid-configuration`. Protected routes resolve OAuth bearers in `validateMcpAuth` (`lib/api/mcp-auth.ts`)
@@ -155,13 +170,14 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 
 ```
 apps/
-└── web/              # @workspace/web Next.js app for ruchern.dev
-    ├── src/app/      # App Router routes, Studio, API routes, and auth pages
-    ├── src/components/
-    ├── src/lib/      # Web-owned queries, services, API utilities, and OG helpers
-    ├── src/schema/   # Drizzle ORM database schemas
-    ├── public/
-    └── migrations/
+├── web/              # @workspace/web Next.js app for ruchern.dev
+│   ├── src/app/      # App Router routes, Studio, API routes, and auth pages
+│   ├── src/components/
+│   ├── src/lib/      # Web-owned queries, services, API utilities, and OG helpers
+│   ├── src/schema/   # Drizzle ORM database schemas
+│   ├── public/
+│   └── migrations/
+└── docs/             # @workspace/docs Fumadocs documentation site
 packages/
 ├── mcp/              # @workspace/mcp private MCP server package
 └── usage/            # @workspace/usage usage parsers, pricing, and heatmap helpers
@@ -192,11 +208,10 @@ See `apps/web/.env.example` for all required variables:
 - `GOOGLE_CLIENT_ID/SECRET` - Google OAuth
 - `GH_ACCESS_TOKEN` - GitHub API access token for repository data
 - `IP_SALT` - Salt for hashing IP addresses (privacy protection)
-- `UMAMI_API_URL` - Umami analytics API endpoint
-- `UMAMI_API_TOKEN` - Umami API authentication token
-- `UMAMI_WEBSITE_ID` - Umami website identifier
 - `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` - PostHog project token from the Vercel integration
 - `NEXT_PUBLIC_POSTHOG_HOST` - PostHog ingest host from the Vercel integration, using EU Cloud
+- `POSTHOG_PROJECT_ID` - PostHog numeric project ID for server-side Query API
+- `POSTHOG_API_KEY` - PostHog Personal API Key with `query:read` scope
 - `CLOUDFLARE_ACCOUNT_ID` - R2 storage
 - `R2_ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET_NAME/PUBLIC_URL` - R2 config
 - `BLOG_MCP_AUTH_TOKEN` - Static bearer for headless MCP/CLI clients (remote MCP server, `usage:ingest:prod`). Retained alongside OAuth; slated for removal once those clients migrate. The OAuth provider itself needs no extra env vars
@@ -227,6 +242,9 @@ See `apps/web/.env.example` for all required variables:
 ### Components
 
 - **Use HeroUI for UI**: HeroUI Pro (`@heroui-pro/react`) first, then HeroUI OSS (`@heroui/react`) as fallback
+- HeroUI v3 conventions: `onPress` (not `onClick`), `isDisabled`, compound components (`Card.Header`); badges are
+  `Chip`; style links as buttons with `buttonVariants()` from `@heroui/styles` on a Next `Link`
+- Icons come from `@hugeicons/*`
 - Use `cn()` from `@heroui/react` for conditional class merging
 - Follow component-naming skill conventions
 
