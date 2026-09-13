@@ -55,6 +55,9 @@ jobs:
           - name: Run Knip
             run: pnpm knip
 
+          - name: Run Typecheck
+            run: pnpm typecheck
+
           - name: Run Test
             env:
               BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
