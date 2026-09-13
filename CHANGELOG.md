@@ -1,3 +1,11 @@
+## [1.37.1](https://github.com/ruchernchong/blog/compare/v1.37.0...v1.37.1) (2026-09-13)
+
+### Bug Fixes
+
+* correct token counting in usage parsers ([527de09](https://github.com/ruchernchong/blog/commit/527de09a011f63673b08227ce1dde0c7ef226f12))
+* keep ingesting when one parser or file fails ([be40103](https://github.com/ruchernchong/blog/commit/be4010373fa405b764d2b2b75a55008064b85289))
+* serialise oauth token refresh across runs ([e3522d5](https://github.com/ruchernchong/blog/commit/e3522d5bd2ca367308faa07f7a8fd63d55ff31b7))
+
 ## [1.37.0](https://github.com/ruchernchong/blog/compare/v1.36.0...v1.37.0) (2026-09-13)
 
 ### Features
