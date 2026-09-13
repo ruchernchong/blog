@@ -26,9 +26,10 @@ func parseClaude(home string, emit func(usageEvent)) (parserStats, bool, error) 
 	if err != nil {
 		return parserStats{}, false, err
 	}
-	seen := map[string]struct{}{}
-	var buckets tokenBuckets
-	events := 0
+	// Streaming writes one line per content block with the same message.id, and
+	// usage grows until the final line, so keep the largest value per field.
+	seen := map[string]int{}
+	var pending []usageEvent
 	for _, file := range files {
 		err := eachJSONL(file, func(raw []byte) {
 			var line claudeLine
@@ -42,13 +43,6 @@ func parseClaude(home string, emit func(usageEvent)) (parserStats, bool, error) 
 			if !ok {
 				return
 			}
-			key := firstNonEmpty(line.Message.ID, line.RequestID, line.UUID)
-			if key != "" {
-				if _, dup := seen[key]; dup {
-					return
-				}
-				seen[key] = struct{}{}
-			}
 			u := line.Message.Usage
 			tok := tokenBuckets{
 				input:      int64(u.InputTokens),
@@ -56,15 +50,26 @@ func parseClaude(home string, emit func(usageEvent)) (parserStats, bool, error) 
 				cacheRead:  int64(u.CacheReadInputTokens),
 				cacheWrite: int64(u.CacheCreationInputTokens),
 			}
-			events++
-			buckets.add(tok)
-			emit(usageEvent{ts: ts, agent: "claude", model: line.Message.Model, tokens: tok})
+			key := firstNonEmpty(line.Message.ID, line.RequestID, line.UUID)
+			if key != "" {
+				if i, dup := seen[key]; dup {
+					pending[i].tokens.keepMax(tok)
+					return
+				}
+				seen[key] = len(pending)
+			}
+			pending = append(pending, usageEvent{ts: ts, agent: "claude", model: line.Message.Model, tokens: tok})
 		})
 		if err != nil {
 			return parserStats{}, false, err
 		}
 	}
-	return finish("claude", started, len(files), bytes, events, buckets), true, nil
+	var buckets tokenBuckets
+	for _, event := range pending {
+		buckets.add(event.tokens)
+		emit(event)
+	}
+	return finish("claude", started, len(files), bytes, len(pending), buckets), true, nil
 }
 
 func parseCodex(home string, emit func(usageEvent)) (parserStats, bool, error) {
@@ -84,7 +89,10 @@ func parseCodex(home string, emit func(usageEvent)) (parserStats, bool, error) {
 	var buckets tokenBuckets
 	events := 0
 	for _, file := range files {
-		currentModel := "unknown"
+		currentModel := ""
+		firstModel := ""
+		var prevTotal *codexTokenUsage
+		var fileEvents []usageEvent
 		err := eachJSONL(file, func(raw []byte) {
 			var line codexLine
 			if json.Unmarshal(raw, &line) != nil {
@@ -95,9 +103,20 @@ func parseCodex(home string, emit func(usageEvent)) (parserStats, bool, error) {
 			}
 			if line.Payload.Model != "" {
 				currentModel = line.Payload.Model
+				if firstModel == "" {
+					firstModel = currentModel
+				}
 			}
 			if line.Payload.Type != "token_count" || line.Payload.Info == nil || line.Payload.Info.LastTokenUsage == nil {
 				return
+			}
+			// Codex re-emits token_count without a new turn (the cumulative total is
+			// unchanged); counting last_token_usage again would double it.
+			if total := line.Payload.Info.TotalTokenUsage; total != nil {
+				if prevTotal != nil && *total == *prevTotal {
+					return
+				}
+				prevTotal = total
 			}
 			ts, ok := parseTimestamp(line.Timestamp)
 			if !ok {
@@ -115,12 +134,23 @@ func parseCodex(home string, emit func(usageEvent)) (parserStats, bool, error) {
 				output = 0
 			}
 			tok := tokenBuckets{input: input, output: output, cacheRead: cached, reasoning: reasoning}
-			events++
-			buckets.add(tok)
-			emit(usageEvent{ts: ts, agent: "codex", model: currentModel, tokens: tok})
+			fileEvents = append(fileEvents, usageEvent{ts: ts, agent: "codex", model: currentModel, tokens: tok})
 		})
 		if err != nil {
 			return parserStats{}, false, err
+		}
+		// token_count can precede the first turn_context, so attribute those
+		// events to the session's first model.
+		if firstModel == "" {
+			firstModel = "unknown"
+		}
+		for _, event := range fileEvents {
+			if event.model == "" {
+				event.model = firstModel
+			}
+			events++
+			buckets.add(event.tokens)
+			emit(event)
 		}
 	}
 	return finish("codex", started, len(files), bytes, events, buckets), true, nil
@@ -233,18 +263,21 @@ type claudeLine struct {
 	} `json:"message"`
 }
 
+type codexTokenUsage struct {
+	InputTokens           float64 `json:"input_tokens"`
+	CachedInputTokens     float64 `json:"cached_input_tokens"`
+	OutputTokens          float64 `json:"output_tokens"`
+	ReasoningOutputTokens float64 `json:"reasoning_output_tokens"`
+}
+
 type codexLine struct {
 	Timestamp string `json:"timestamp"`
 	Payload   *struct {
 		Type  string `json:"type"`
 		Model string `json:"model"`
 		Info  *struct {
-			LastTokenUsage *struct {
-				InputTokens           float64 `json:"input_tokens"`
-				CachedInputTokens     float64 `json:"cached_input_tokens"`
-				OutputTokens          float64 `json:"output_tokens"`
-				ReasoningOutputTokens float64 `json:"reasoning_output_tokens"`
-			} `json:"last_token_usage"`
+			LastTokenUsage  *codexTokenUsage `json:"last_token_usage"`
+			TotalTokenUsage *codexTokenUsage `json:"total_token_usage"`
 		} `json:"info"`
 	} `json:"payload"`
 }
@@ -275,6 +308,14 @@ func (b *tokenBuckets) add(other tokenBuckets) {
 	b.cacheRead += other.cacheRead
 	b.cacheWrite += other.cacheWrite
 	b.reasoning += other.reasoning
+}
+
+func (b *tokenBuckets) keepMax(other tokenBuckets) {
+	b.input = max(b.input, other.input)
+	b.output = max(b.output, other.output)
+	b.cacheRead = max(b.cacheRead, other.cacheRead)
+	b.cacheWrite = max(b.cacheWrite, other.cacheWrite)
+	b.reasoning = max(b.reasoning, other.reasoning)
 }
 
 func anyExists(paths []string) bool {

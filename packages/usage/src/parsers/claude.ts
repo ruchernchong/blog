@@ -38,7 +38,7 @@ export async function detect(): Promise<boolean> {
 export async function parse(): Promise<AgentParseResult> {
   const files = await listFiles(CLAUDE_DIR, ".jsonl");
   const events: UsageEvent[] = [];
-  const seen = new Set<string>();
+  const seen = new Map<string, UsageEvent>();
 
   for (const file of files) {
     await eachJsonLine(file, (record) => {
@@ -47,24 +47,33 @@ export async function parse(): Promise<AgentParseResult> {
       const model = line.message?.model;
       if (!usage || !model || model === "<synthetic>") return;
 
+      const tokens = {
+        input: usage.input_tokens ?? 0,
+        output: usage.output_tokens ?? 0,
+        cacheRead: usage.cache_read_input_tokens ?? 0,
+        cacheWrite: usage.cache_creation_input_tokens ?? 0,
+        reasoning: 0,
+      };
+
+      // Streaming repeats the message.id per content block and usage grows
+      // until the final line, so keep the largest value per field.
       const dedupeKey = line.message?.id ?? line.requestId ?? line.uuid;
-      if (dedupeKey) {
-        if (seen.has(dedupeKey)) return;
-        seen.add(dedupeKey);
+      const existing = dedupeKey ? seen.get(dedupeKey) : undefined;
+      if (existing) {
+        for (const key of Object.keys(tokens) as (keyof typeof tokens)[]) {
+          existing.tokens[key] = Math.max(existing.tokens[key], tokens[key]);
+        }
+        return;
       }
 
-      events.push({
+      const event: UsageEvent = {
         ts: line.timestamp ?? "",
         agent: "claude",
         model,
-        tokens: {
-          input: usage.input_tokens ?? 0,
-          output: usage.output_tokens ?? 0,
-          cacheRead: usage.cache_read_input_tokens ?? 0,
-          cacheWrite: usage.cache_creation_input_tokens ?? 0,
-          reasoning: 0,
-        },
-      });
+        tokens,
+      };
+      events.push(event);
+      if (dedupeKey) seen.set(dedupeKey, event);
     });
   }
 

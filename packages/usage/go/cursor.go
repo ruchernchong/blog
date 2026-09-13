@@ -148,7 +148,6 @@ func loadCursorKV(db *sql.DB, prefix string) ([]kvRow, error) {
 }
 
 func mapCursorComposer(composerID string, composerJSON map[string]any, bubbles []kvRow) []cursorEvent {
-	composerModel := cursorModelName(composerJSON, nil)
 	var bubbleEvents []cursorEvent
 	for _, bubble := range bubbles {
 		var bubbleJSON map[string]any
@@ -176,7 +175,7 @@ func mapCursorComposer(composerID string, composerJSON map[string]any, bubbles [
 			ts = jsonTime(composerJSON["createdAt"])
 		}
 		if ts.IsZero() {
-			ts = time.Now()
+			continue
 		}
 		model := cursorModelName(composerJSON, bubbleJSON)
 		bubbleEvents = append(bubbleEvents, cursorEvent{
@@ -190,32 +189,9 @@ func mapCursorComposer(composerID string, composerJSON map[string]any, bubbles [
 			},
 		})
 	}
-	if len(bubbleEvents) > 0 {
-		return bubbleEvents
-	}
-	meter := jsonInt(composerJSON["contextTokensUsed"])
-	if meter == 0 {
-		if breakdown, ok := composerJSON["promptTokenBreakdown"].(map[string]any); ok {
-			meter = jsonInt(breakdown["totalUsedTokens"])
-		}
-	}
-	if meter == 0 {
-		return nil
-	}
-	ts := jsonTime(composerJSON["createdAt"])
-	if ts.IsZero() {
-		ts = time.Now()
-	}
-	return []cursorEvent{{
-		id: "cursor-meter-" + composerID,
-		usageEvent: usageEvent{
-			ts:       ts,
-			agent:    "cursor",
-			provider: cursorProvider(composerModel),
-			model:    composerModel,
-			tokens:   tokenBuckets{input: meter},
-		},
-	}}
+	// No fallback to contextTokensUsed / promptTokenBreakdown: those measure how
+	// full the context window is, not tokens consumed.
+	return bubbleEvents
 }
 
 func cursorModelName(composerJSON, bubbleJSON map[string]any) string {
