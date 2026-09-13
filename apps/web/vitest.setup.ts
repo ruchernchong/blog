@@ -1,5 +1,5 @@
 import { cleanup } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
 
 // Mock Next.js headers function to avoid request context errors in tests
 vi.mock("next/headers", () => ({

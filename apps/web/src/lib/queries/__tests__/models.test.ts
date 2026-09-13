@@ -23,8 +23,9 @@ vi.mock("@/lib/logger", () => ({
 vi.mock("@/schema", () => ({
   db: { select: () => ({ from: () => ({ where: async () => [] }) }) },
   model: {},
-  // `models.ts` pulls in the reprice helper, which reaches for this table.
+  // `models.ts` pulls in the reprice helper, which reaches for these tables.
   tokenUsage: {},
+  tokenEffortUsage: {},
 }));
 
 vi.mock("@/lib/queries/model-registry", () => ({

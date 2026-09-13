@@ -33,6 +33,8 @@ catalog:
   tailwind-merge: ^3.6.0
   tailwindcss: ^4.3.0
   typescript: 7.0.2
+  vitest: 5.0.0
+  "@vitest/coverage-v8": 5.0.0
 
 # `workflow` pulls in zod 4.3.6, and a second zod 4.x copy changes hoisting for
 # @hookform/resolvers@3, which declares zod only as a loose peer — it silently
