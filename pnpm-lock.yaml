@@ -6,9 +6,6 @@ importers:
   .:
     configDependencies: {}
     packageManagerDependencies:
-      '@pnpm/exe':
-        specifier: 12.3.4
-        version: 12.3.4
       pnpm:
         specifier: 12.3.4
         version: 12.3.4
@@ -59,11 +56,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@pnpm/exe@12.3.4':
-    resolution: {integrity: sha512-Rq7JokWAyYF9IFfn8zofB/q2AgnZlmoMuH5fMHB2+Ta61I9aD7sNm+woZpx6iH+5vb38chdSoYRvOtSqlH72YQ==}
-    engines: {node: '>=18.*'}
-    hasBin: true
-
   pnpm@12.3.4:
     resolution: {integrity: sha512-lhqkH7B32joEpEHZ+OFevAyW2o73ELLrZ7+e58sGEOq9SPH9hfUc/+c4RnhfoPh8VqOocqHYk/hEZ0G1zORUVw==}
     engines: {node: '>=18.*'}
@@ -94,17 +86,6 @@ snapshots:
 
   '@pnpm/exe.win32-x64@12.3.4':
     optional: true
-
-  '@pnpm/exe@12.3.4':
-    optionalDependencies:
-      '@pnpm/exe.darwin-arm64': 12.3.4
-      '@pnpm/exe.darwin-x64': 12.3.4
-      '@pnpm/exe.linux-arm64': 12.3.4
-      '@pnpm/exe.linux-arm64-musl': 12.3.4
-      '@pnpm/exe.linux-x64': 12.3.4
-      '@pnpm/exe.linux-x64-musl': 12.3.4
-      '@pnpm/exe.win32-arm64': 12.3.4
-      '@pnpm/exe.win32-x64': 12.3.4
 
   pnpm@12.3.4:
     optionalDependencies:
@@ -216,8 +197,8 @@ importers:
         specifier: ^16.2.7
         version: 16.4.0
       node:
-        specifier: runtime:^26.8.0
-        version: runtime:26.8.1
+        specifier: runtime:26.8.2
+        version: runtime:26.8.2
       portless:
         specifier: 0.10.2
         version: 0.10.2
@@ -8105,7 +8086,7 @@ packages:
     resolution: {integrity: sha512-J6l92tKHX6w8Jy5nO1Vuc01NoIiRGi/d6qBKVxh+IQ8Cr3b6HbVNfKiF8ZpFKufTwpwxMmce2W3iQZ861ZRyTg==}
     engines: {node: '>=18'}
 
-  node@runtime:26.8.1:
+  node@runtime:26.8.2:
     resolution:
       type: variations
       variants:
@@ -8113,9 +8094,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-LU0HWYDdrNqgWeJ+wfHFU6TdQmIr2edB4eTDSBcwFAM=
+            integrity: sha256-iXqaQYiTLhmwQqxiRUGPgHuauXFVncxCiN1XcZHVNr0=
             type: binary
-            url: https://nodejs.org/download/release/v26.8.1/node-v26.8.1-aix-ppc64.tar.gz
+            url: https://nodejs.org/download/release/v26.8.2/node-v26.8.2-aix-ppc64.tar.gz
           targets:
             - cpu: ppc64
               os: aix
@@ -8123,9 +8104,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-bld/0Nnbd224IwZinkQanazkFnAmIq690XHJ36pB9NI=
+            integrity: sha256-l0ttX7L8fDP/I1TbCQK06Rwt4B7IrMbeSOVDyX4YyeE=
             type: binary
-            url: https://nodejs.org/download/release/v26.8.1/node-v26.8.1-darwin-arm64.tar.gz
+            url: https://nodejs.org/download/release/v26.8.2/node-v26.8.2-darwin-arm64.tar.gz
           targets:
             - cpu: arm64
               os: darwin
@@ -8133,9 +8114,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-/pxtv5yOG0RDgD114qIDZuQg2uZQx0fbsRayKXV1G68=
+            integrity: sha256-rbj+stSYffPXLS7Eb0/EtYA5yFm4w/DjzC08bLr4Ypw=
             type: binary
-            url: https://nodejs.org/download/release/v26.8.1/node-v26.8.1-darwin-x64.tar.gz
+            url: https://nodejs.org/download/release/v26.8.2/node-v26.8.2-darwin-x64.tar.gz
           targets:
             - cpu: x64
               os: darwin
@@ -8143,9 +8124,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-1flzzpdeS9A+bCA4Jg9+kgFhWqjh7ik8cvjcwqbZ/ds=
+            integrity: sha256-dGzb8hVltOoG93ZCuw6FRm3ou3IiQr4sXgBvJyw2HGM=
             type: binary
-            url: https://nodejs.org/download/release/v26.8.1/node-v26.8.1-linux-arm64.tar.gz
+            url: https://nodejs.org/download/release/v26.8.2/node-v26.8.2-linux-arm64.tar.gz
           targets:
             - cpu: arm64
               os: linux
@@ -8153,9 +8134,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-otDRIQjis89WkbFgVLG2xdhH0wbm8I1m/cY2PpmMejk=
+            integrity: sha256-1ghXhcX4cZJ1P8coJWU7P6A/hGj4AJEcz9wnAcrN4K8=
             type: binary
-            url: https://nodejs.org/download/release/v26.8.1/node-v26.8.1-linux-ppc64le.tar.gz
+            url: https://nodejs.org/download/release/v26.8.2/node-v26.8.2-linux-ppc64le.tar.gz
           targets:
             - cpu: ppc64le
               os: linux
@@ -8163,9 +8144,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-72un7U4iqWAp1ppcq5GvjnnlwUPI1jPECYOATcrJgi8=
+            integrity: sha256-rT5/0BNAFuub2jZT1u832fNgnsbiWg0SLmwz/bsrsNc=
             type: binary
-            url: https://nodejs.org/download/release/v26.8.1/node-v26.8.1-linux-s390x.tar.gz
+            url: https://nodejs.org/download/release/v26.8.2/node-v26.8.2-linux-s390x.tar.gz
           targets:
             - cpu: s390x
               os: linux
@@ -8173,9 +8154,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-erg+reDp7r2bo1IxuI0iWuXHKrVWlaPXqWEVocRe2Vw=
+            integrity: sha256-aIVMZpAfiL/oVFDDsuQCmW7yfvccdVFQGSL4aXAaiD8=
             type: binary
-            url: https://nodejs.org/download/release/v26.8.1/node-v26.8.1-linux-x64-musl.tar.gz
+            url: https://nodejs.org/download/release/v26.8.2/node-v26.8.2-linux-x64-musl.tar.gz
           targets:
             - cpu: x64
               os: linux
@@ -8184,9 +8165,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-srdmYPpN7U4LKkHuPAxlHNUuqBcOrZHrrB4UesPVVkM=
+            integrity: sha256-uts/5qYbheE1LKZWTcVri3vV7NXEdMUqzCHdDN1YbzU=
             type: binary
-            url: https://nodejs.org/download/release/v26.8.1/node-v26.8.1-linux-x64.tar.gz
+            url: https://nodejs.org/download/release/v26.8.2/node-v26.8.2-linux-x64.tar.gz
           targets:
             - cpu: x64
               os: linux
@@ -8194,10 +8175,10 @@ packages:
             archive: zip
             bin:
               node: node.exe
-            integrity: sha256-CdYgBaqdyo/Nm9zoGW9ap4Pu44GNWvdAietylxA8AtQ=
-            prefix: node-v26.8.1-win-arm64
+            integrity: sha256-pOg2LiaPH88XNfBG4K2wiLKO60APscM/5cyU0aPUJXA=
+            prefix: node-v26.8.2-win-arm64
             type: binary
-            url: https://nodejs.org/download/release/v26.8.1/node-v26.8.1-win-arm64.zip
+            url: https://nodejs.org/download/release/v26.8.2/node-v26.8.2-win-arm64.zip
           targets:
             - cpu: arm64
               os: win32
@@ -8205,10 +8186,10 @@ packages:
             archive: zip
             bin:
               node: node.exe
-            integrity: sha256-V2k9jpPRsE57feRqylPs1j6XVk5z3jamhCjX/wjYNYc=
-            prefix: node-v26.8.1-win-x64
+            integrity: sha256-zwL10MBseUuE8ncXfVzzdD0JJMpJ9mQc1DXdfLbukIU=
+            prefix: node-v26.8.2-win-x64
             type: binary
-            url: https://nodejs.org/download/release/v26.8.1/node-v26.8.1-win-x64.zip
+            url: https://nodejs.org/download/release/v26.8.2/node-v26.8.2-win-x64.zip
           targets:
             - cpu: x64
               os: win32
@@ -8216,9 +8197,9 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-D+eK/etKTSc7FKu9S5RsdyiFxYmUydI7HIrgpZovilM=
+            integrity: sha256-ElQ3oLWdaVkrj0u4E6RyRTN6+sjJc9Fat3IPDsVdGC0=
             type: binary
-            url: https://unofficial-builds.nodejs.org/download/release/v26.8.1/node-v26.8.1-linux-arm64-musl.tar.gz
+            url: https://unofficial-builds.nodejs.org/download/release/v26.8.2/node-v26.8.2-linux-arm64-musl.tar.gz
           targets:
             - cpu: arm64
               os: linux
@@ -8227,14 +8208,14 @@ packages:
             archive: tarball
             bin:
               node: bin/node
-            integrity: sha256-ExNaaiEG+dER+ptIyIAe0RmtQ+fh0A3hfXepxEiZqto=
+            integrity: sha256-aW6wGAJIoGyYk/Pwe8xOJoCJHIMRjHOq8d4zDv0FORA=
             type: binary
-            url: https://unofficial-builds.nodejs.org/download/release/v26.8.1/node-v26.8.1-linux-x64-musl.tar.gz
+            url: https://unofficial-builds.nodejs.org/download/release/v26.8.2/node-v26.8.2-linux-x64-musl.tar.gz
           targets:
             - cpu: x64
               os: linux
               libc: musl
-    version: 26.8.1
+    version: 26.8.2
     hasBin: true
 
   normalize-package-data@6.0.2:
@@ -18707,7 +18688,7 @@ snapshots:
 
   node-releases@2.0.50: {}
 
-  node@runtime:26.8.1: {}
+  node@runtime:26.8.2: {}
 
   normalize-package-data@6.0.2:
     dependencies:
