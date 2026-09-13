@@ -1,27 +1,10 @@
 name: CI
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
-  workflow_call:
-    secrets:
-      HEROUI_AUTH_TOKEN:
-        required: true
-      BETTER_AUTH_SECRET:
-        required: true
-      DATABASE_URL:
-        required: true
-      GH_CLIENT_ID:
-        required: true
-      GH_CLIENT_SECRET:
-        required: true
-      GOOGLE_CLIENT_ID:
-        required: true
-      GOOGLE_CLIENT_SECRET:
-        required: true
-      UPSTASH_REDIS_REST_TOKEN:
-        required: true
-      UPSTASH_REDIS_REST_URL:
-        required: true
 
 permissions: {}
 

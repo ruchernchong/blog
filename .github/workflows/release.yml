@@ -12,25 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  checks:
-    name: Checks
-    uses: ./.github/workflows/ci.yml # zizmor: ignore[self-repository]
-    permissions:
-      contents: read
-    secrets:
-      HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
-      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      GH_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
-      GH_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
-      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
-      UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
-
   release:
     name: Release
-    needs: checks
     runs-on: ubuntu-latest
     permissions:
       contents: write
