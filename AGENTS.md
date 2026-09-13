@@ -36,6 +36,10 @@ This file provides guidance to coding agents when working with code in this repo
 
 - `pnpm release` - Create semantic release
 
+### Usage collector
+
+- `pnpm usage:measure:go` / `pnpm usage:ingest:go` - Go collector (`packages/usage/go`). Parses Claude, Codex, OpenCode, and Cursor; `ingest:go` POSTs `/api/usage/ingest`. Auth is `usage-ingest login` (OAuth, admin, Keychain). LaunchAgent: `packages/usage/go/macos/INSTALL.md`
+
 ### MCP Server
 
 - `pnpm mcp` - Start the private workspace MCP server for blog management
