@@ -49,6 +49,18 @@ export async function listFiles(
   return out;
 }
 
+/** Sum `stat.size` for existing files. Missing paths contribute 0. */
+export async function totalBytes(files: string[]): Promise<number> {
+  let sum = 0;
+  for (const file of files) {
+    const info = await stat(file).catch(() => null);
+    if (info) {
+      sum += info.size;
+    }
+  }
+  return sum;
+}
+
 /**
  * Stream a JSONL file line by line, invoking `onRecord` with each parsed object.
  * Malformed lines are skipped silently (agent logs occasionally contain partials).

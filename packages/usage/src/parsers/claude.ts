@@ -1,5 +1,6 @@
 import type { UsageEvent } from "../types";
-import { eachJsonLine, listFiles, pathExists } from "./shared";
+import { eachJsonLine, listFiles, pathExists, totalBytes } from "./shared.ts";
+import type { AgentParseResult } from "./stats.ts";
 
 const CLAUDE_DIR = "~/.claude/projects";
 
@@ -34,7 +35,7 @@ export async function detect(): Promise<boolean> {
   return pathExists(CLAUDE_DIR);
 }
 
-export async function parse(): Promise<UsageEvent[]> {
+export async function parse(): Promise<AgentParseResult> {
   const files = await listFiles(CLAUDE_DIR, ".jsonl");
   const events: UsageEvent[] = [];
   const seen = new Set<string>();
@@ -67,5 +68,9 @@ export async function parse(): Promise<UsageEvent[]> {
     });
   }
 
-  return events.filter((event) => event.ts);
+  return {
+    events: events.filter((event) => event.ts),
+    files: files.length,
+    bytes: await totalBytes(files),
+  };
 }

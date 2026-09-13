@@ -3,6 +3,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import type { UsageEvent } from "../types";
+import type { AgentParseResult } from "./stats.ts";
 
 /**
  * Parse OpenCode usage from its SQLite store (`opencode.db`).
@@ -77,12 +78,14 @@ export async function detect(): Promise<boolean> {
   }
 }
 
-export async function parse(): Promise<UsageEvent[]> {
+export async function parse(): Promise<AgentParseResult> {
   const events: UsageEvent[] = [];
+  const path = dbPath();
+  const bytes = statSync(path).size;
 
   // Read-only open avoids write locks and won't create -wal/-shm files; a live
   // WAL just means we may read a slightly stale snapshot, fine for daily rollups.
-  const db = new DatabaseSync(dbPath(), { readOnly: true });
+  const db = new DatabaseSync(path, { readOnly: true });
   try {
     const stmt = db.prepare("SELECT data FROM message");
     for (const row of stmt.iterate()) {
@@ -101,5 +104,9 @@ export async function parse(): Promise<UsageEvent[]> {
     db.close();
   }
 
-  return events.filter((event) => event.ts);
+  return {
+    events: events.filter((event) => event.ts),
+    files: 1,
+    bytes,
+  };
 }

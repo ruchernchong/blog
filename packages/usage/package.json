@@ -5,6 +5,9 @@
   "private": true,
   "scripts": {
     "lint": "biome check .",
+    "measure": "node src/scripts/measure.ts",
+    "measure:go": "go run -C ./go .",
+    "ingest:go": "go run -C ./go . ingest",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
