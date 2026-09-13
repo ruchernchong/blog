@@ -17,6 +17,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/zalando/go-keyring"
@@ -110,6 +111,16 @@ func logout() error {
 }
 
 func bearerToken() (string, error) {
+	// Better Auth rotates refresh tokens and revokes the whole family on reuse,
+	// so two runs refreshing with the same token (the hourly LaunchAgent and a
+	// manual run) would both be signed out. Hold a lock across load, refresh
+	// and save so the second run reads the token the first one saved.
+	unlock, err := lockTokens()
+	if err != nil {
+		return "", err
+	}
+	defer unlock()
+
 	tokens, err := loadTokens()
 	if err != nil {
 		return "", err
@@ -397,6 +408,27 @@ func loadTokens() (oauthTokens, error) {
 func clientIDPath() string {
 	home, _ := os.UserHomeDir()
 	return filepath.Join(home, ".config", "ruchern", "usage-ingest-client-id")
+}
+
+// lockTokens takes an exclusive advisory lock shared by every usage-ingest
+// process, blocking until any in-flight refresh has saved its tokens.
+func lockTokens() (func(), error) {
+	path := filepath.Join(filepath.Dir(clientIDPath()), "usage-ingest.lock")
+	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+		return nil, err
+	}
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0o600)
+	if err != nil {
+		return nil, err
+	}
+	if err := syscall.Flock(int(file.Fd()), syscall.LOCK_EX); err != nil {
+		file.Close()
+		return nil, fmt.Errorf("lock %s: %w", path, err)
+	}
+	return func() {
+		_ = syscall.Flock(int(file.Fd()), syscall.LOCK_UN)
+		_ = file.Close()
+	}, nil
 }
 
 func pkce() (verifier, challenge string, err error) {

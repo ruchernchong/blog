@@ -258,6 +258,7 @@ func TestBearerToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Setenv("HOME", t.TempDir())
 			keyring.MockInit()
 			if tt.stored != "" {
 				if err := keyring.Set(keyringService, keyringAccount, tt.stored); err != nil {

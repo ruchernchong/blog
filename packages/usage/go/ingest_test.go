@@ -145,6 +145,7 @@ func TestIngestDryRun(t *testing.T) {
 }
 
 func TestIngestPostsRows(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
 	keyring.MockInit()
 	if err := saveTokens(oauthTokens{AccessToken: "access-123", ExpiryUnix: time.Now().Add(time.Hour).Unix(), ClientID: "client"}); err != nil {
 		t.Fatal(err)
@@ -196,6 +197,7 @@ func TestIngestPostsRows(t *testing.T) {
 }
 
 func TestIngestErrorStatus(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
 	keyring.MockInit()
 	if err := saveTokens(oauthTokens{AccessToken: "access-123", ExpiryUnix: time.Now().Add(time.Hour).Unix()}); err != nil {
 		t.Fatal(err)
@@ -218,6 +220,7 @@ func TestIngestErrorStatus(t *testing.T) {
 }
 
 func TestIngestNotSignedIn(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
 	keyring.MockInit()
 	t.Setenv("USAGE_INGEST_URL", unexpectedServer(t).URL)
 	t.Setenv("USAGE_INGEST_DRY_RUN", "")
