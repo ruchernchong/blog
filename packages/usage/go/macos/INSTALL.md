@@ -4,6 +4,8 @@ Hourly job: parse local Claude / Codex / OpenCode / Cursor logs and POST daily
 rows to `https://ruchern.dev/api/usage/ingest`. Auth is OAuth (admin account),
 not `BLOG_MCP_AUTH_TOKEN`.
 
+Requires **Go 1.25+** on the PATH (`install.sh` runs `go build`).
+
 ## 1. Build and sign in
 
 Use the **installed** binary for login so Keychain access matches launchd.
@@ -23,8 +25,9 @@ rejects non-admin OAuth). Tokens go in the login Keychain
 ~/.local/bin/usage-ingest-run
 ```
 
-Check `/usage`. Costs may show N.A. until the server model-registry workflow
-finishes. Then:
+If there are no local log rows it prints `Nothing to ingest.` and does not POST.
+Otherwise check `/usage`. Costs may show N.A. until the server model-registry
+workflow finishes. Then:
 
 ```zsh
 launchctl kickstart -k "gui/$(id -u)/dev.ruchern.usage-ingest"
