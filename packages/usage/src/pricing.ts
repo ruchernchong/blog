@@ -63,9 +63,16 @@ export function buildPricingFromRegistry(entries: ModelEntry[]): Pricing {
   // gpt-5-codex). A parallel index keyed by `canonicalSlug` absorbs the
   // punctuation differences between sources (AI Gateway's `claude-opus-4.8` vs
   // the logs' `claude-opus-4-8`); it is only consulted when the exact id misses.
-  const byProvider: Record<string, Record<string, ModelRate>> = Object.create(null);
-  const byProviderCanonical: Record<string, Record<string, ModelRate>> = Object.create(null);
-  const aliasByProvider: Record<string, Record<string, string>> = Object.create(null);
+  const byProvider: Record<string, Record<string, ModelRate>> = Object.create(
+    null,
+  );
+  const byProviderCanonical: Record<
+    string,
+    Record<string, ModelRate>
+  > = Object.create(null);
+  const aliasByProvider: Record<string, Record<string, string>> = Object.create(
+    null,
+  );
 
   for (const entry of entries) {
     if (entry.aliasTarget) {
