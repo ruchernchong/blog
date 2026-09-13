@@ -1,1 +1,2 @@
 *.config.js linguist-vendored
+.agents/** linguist-vendored
