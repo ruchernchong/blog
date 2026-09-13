@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "vitest-browser-react";
 import { ViewCounter } from "@/app/(main)/blog/components/view-counter";
 
 vi.mock("@/app/_actions/stats", () => ({
@@ -6,16 +6,17 @@ vi.mock("@/app/_actions/stats", () => ({
 }));
 
 describe("ViewCounter", () => {
-  it("renders view count", async () => {
+  it("should render view count", async () => {
     const component = await ViewCounter({ slug: "test-post" });
-    render(component);
-    expect(screen.getByText("42")).toBeInTheDocument();
+    const screen = await render(component);
+    await expect.element(screen.getByText("42")).toBeInTheDocument();
   });
 
-  it("renders in proper container", async () => {
+  it("should render in a proper container", async () => {
     const component = await ViewCounter({ slug: "test-post" });
-    render(component);
+    const screen = await render(component);
     const viewCount = screen.getByText("42");
-    expect(viewCount.closest("div")).toBeInTheDocument();
+    await expect.element(viewCount).toBeInTheDocument();
+    expect(viewCount.element().closest("div")).not.toBeNull();
   });
 });

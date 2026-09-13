@@ -51,7 +51,9 @@ jobs:
               GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
               UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
               UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
-            run: pnpm test
+            run: |
+              pnpm --filter @workspace/web exec playwright install --with-deps chromium
+              pnpm test
 
   release:
     name: Release

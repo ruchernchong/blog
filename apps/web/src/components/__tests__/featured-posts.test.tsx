@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "vitest-browser-react";
 import FeaturedPosts from "@/app/(main)/blog/components/featured-posts";
 import type { PostMetadata, SelectPost } from "@/schema";
 
@@ -67,22 +67,28 @@ const mockPosts: SelectPost[] = [
 ];
 
 describe("FeaturedPosts", () => {
-  it("renders featured posts with title", () => {
-    render(<FeaturedPosts featuredPosts={mockPosts} />);
-    expect(screen.getByText("Featured Posts")).toBeInTheDocument();
+  it("should render featured posts with title", async () => {
+    const screen = await render(<FeaturedPosts featuredPosts={mockPosts} />);
+    await expect
+      .element(screen.getByText("Featured Posts"))
+      .toBeInTheDocument();
   });
 
-  it("renders only first 3 posts when more than 3 provided", () => {
-    render(<FeaturedPosts featuredPosts={mockPosts} />);
-    expect(screen.getByText("first post")).toBeInTheDocument();
-    expect(screen.getByText("second post")).toBeInTheDocument();
-    expect(screen.getByText("third post")).toBeInTheDocument();
-    expect(screen.queryByText("fourth post")).not.toBeInTheDocument();
+  it("should render only the first 3 posts when more than 3 are provided", async () => {
+    const screen = await render(<FeaturedPosts featuredPosts={mockPosts} />);
+    await expect.element(screen.getByText("first post")).toBeInTheDocument();
+    await expect.element(screen.getByText("second post")).toBeInTheDocument();
+    await expect.element(screen.getByText("third post")).toBeInTheDocument();
+    await expect
+      .element(screen.getByText("fourth post"))
+      .not.toBeInTheDocument();
   });
 
-  it("renders empty when no posts provided", () => {
-    render(<FeaturedPosts featuredPosts={[]} />);
-    expect(screen.getByText("Featured Posts")).toBeInTheDocument();
-    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  it("should render empty when no posts are provided", async () => {
+    const screen = await render(<FeaturedPosts featuredPosts={[]} />);
+    await expect
+      .element(screen.getByText("Featured Posts"))
+      .toBeInTheDocument();
+    await expect.element(screen.getByRole("link")).not.toBeInTheDocument();
   });
 });

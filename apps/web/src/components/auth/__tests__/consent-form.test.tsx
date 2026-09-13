@@ -1,6 +1,5 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
+import { render } from "vitest-browser-react";
 import { ConsentForm } from "@/components/auth/consent-form";
 import { authClient } from "@/lib/auth-client";
 
@@ -27,28 +26,33 @@ describe("ConsentForm", () => {
     } as never);
   });
 
-  it("should render the server-parsed client and scopes", () => {
-    render(
+  it("should render the server-parsed client and scopes", async () => {
+    const screen = await render(
       <ConsentForm clientName="Codex" scopes={["openid", "profile", "mcp"]} />,
     );
 
-    expect(
-      screen.getByText("Codex wants to access your account"),
-    ).toBeVisible();
-    expect(screen.getByText("Verify your identity")).toBeVisible();
-    expect(
-      screen.getByText("Read your basic profile information"),
-    ).toBeVisible();
-    expect(screen.getByText("Manage your blog posts and media")).toBeVisible();
+    await expect
+      .element(screen.getByText("Codex wants to access your account"))
+      .toBeVisible();
+    await expect
+      .element(screen.getByText("Verify your identity"))
+      .toBeVisible();
+    await expect
+      .element(screen.getByText("Read your basic profile information"))
+      .toBeVisible();
+    await expect
+      .element(screen.getByText("Manage your blog posts and media"))
+      .toBeVisible();
   });
 
   it("should let the OAuth provider client attach the signed query", async () => {
-    const user = userEvent.setup();
-    render(<ConsentForm clientName="Codex" scopes={["openid"]} />);
+    const screen = await render(
+      <ConsentForm clientName="Codex" scopes={["openid"]} />,
+    );
 
-    await user.click(screen.getByRole("button", { name: "Allow" }));
+    await screen.getByRole("button", { name: "Allow" }).click();
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(submitConsent).toHaveBeenCalledWith({ accept: true });
     });
   });
