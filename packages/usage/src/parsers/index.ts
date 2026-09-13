@@ -1,13 +1,13 @@
 import { performance } from "node:perf_hooks";
 import type { UsageEvent } from "../types";
-import * as claude from "./claude.ts";
-import * as codex from "./codex.ts";
-import * as opencode from "./opencode.ts";
-import type { AgentParseResult, ParserStats } from "./stats.ts";
-import { statsFromParse } from "./stats.ts";
+import * as claude from "./claude";
+import * as codex from "./codex";
+import * as opencode from "./opencode";
+import type { AgentParseResult, ParserStats } from "./stats";
+import { statsFromParse } from "./stats";
 
-export type { AgentParseResult, ParserStats } from "./stats.ts";
-export { formatParserStatsTable, statsFromParse } from "./stats.ts";
+export type { AgentParseResult, ParserStats } from "./stats";
+export { formatParserStatsTable, statsFromParse } from "./stats";
 
 export interface AgentParser {
   /** Stable agent key stored in the DB (e.g. "claude", "codex"). */

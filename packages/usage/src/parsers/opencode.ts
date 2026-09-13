@@ -3,7 +3,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import type { UsageEvent } from "../types";
-import type { AgentParseResult } from "./stats.ts";
+import type { AgentParseResult } from "./stats";
 
 /**
  * Parse OpenCode usage from its SQLite store (`opencode.db`).
