@@ -1,0 +1,10 @@
+{"timestamp":"2026-09-12T15:00:00.000Z","type":"session_meta","payload":{"id":"session-1"}}
+{"timestamp":"2026-09-12T15:00:00.500Z","type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"input_tokens":4,"output_tokens":2},"last_token_usage":{"input_tokens":4,"output_tokens":2}}}}
+{"timestamp":"2026-09-12T15:00:01.000Z","type":"turn_context","payload":{"model":"gpt-5-codex"}}
+{broken
+{"timestamp":"2026-09-12T15:00:02.000Z","type":"event_msg","payload":{"type":"token_count","info":null}}
+{"timestamp":"2026-09-12T15:59:59.999Z","type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"input_tokens":1004,"cached_input_tokens":800,"output_tokens":302,"reasoning_output_tokens":200},"last_token_usage":{"input_tokens":1000,"cached_input_tokens":800,"output_tokens":300,"reasoning_output_tokens":200}}}}
+{"timestamp":"2026-09-12T15:59:59.999Z","type":"event_msg","payload":{"type":"token_count","info":{"total_token_usage":{"input_tokens":1004,"cached_input_tokens":800,"output_tokens":302,"reasoning_output_tokens":200},"last_token_usage":{"input_tokens":1000,"cached_input_tokens":800,"output_tokens":300,"reasoning_output_tokens":200}}}}
+{"timestamp":"2026-09-12T15:59:59.999Z","type":"event_msg","payload":{"type":"agent_message","message":"done"}}
+{"timestamp":"bad","type":"event_msg","payload":{"type":"token_count","info":{"last_token_usage":{"input_tokens":1,"output_tokens":1}}}}
+{"timestamp":"2026-09-12T16:00:00.000Z","type":"event_msg","payload":{"type":"token_count","info":{"last_token_usage":{"input_tokens":5,"cached_input_tokens":10,"output_tokens":1,"reasoning_output_tokens":4}}}}
