@@ -37,15 +37,6 @@ jobs:
       contents: read
     env:
       HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
-      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      GH_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
-      GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
-      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
-      UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
 
     steps:
       - name: Checkout
