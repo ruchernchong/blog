@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
 import type { Cost } from "@workspace/usage/types";
+import { render } from "vitest-browser-react";
 import { FreeModelChip } from "../free-model-chip";
 
 function renderChip(viewId: string, cost: Cost) {
@@ -7,27 +7,27 @@ function renderChip(viewId: string, cost: Cost) {
 }
 
 describe("FreeModelChip", () => {
-  it("should display Free for a model with an exact zero cost", () => {
-    renderChip("model", 0);
+  it("should display Free for a model with an exact zero cost", async () => {
+    const screen = await renderChip("model", 0);
 
-    expect(screen.getByText("Free")).toBeInTheDocument();
+    await expect.element(screen.getByText("Free")).toBeInTheDocument();
   });
 
-  it("should not display Free for positive or unpriced model costs", () => {
+  it("should not display Free for positive or unpriced model costs", async () => {
     for (const cost of [0.001, null]) {
-      const view = renderChip("model", cost);
+      const screen = await renderChip("model", cost);
 
-      expect(screen.queryByText("Free")).not.toBeInTheDocument();
-      view.unmount();
+      await expect.element(screen.getByText("Free")).not.toBeInTheDocument();
+      await screen.unmount();
     }
   });
 
-  it("should not display Free outside the model view", () => {
+  it("should not display Free outside the model view", async () => {
     for (const viewId of ["provider", "agent"]) {
-      const view = renderChip(viewId, 0);
+      const screen = await renderChip(viewId, 0);
 
-      expect(screen.queryByText("Free")).not.toBeInTheDocument();
-      view.unmount();
+      await expect.element(screen.getByText("Free")).not.toBeInTheDocument();
+      await screen.unmount();
     }
   });
 });

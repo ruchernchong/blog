@@ -40,6 +40,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm test` - Run all tests
 - `pnpm test:watch` - Run tests in watch mode
 - `pnpm --filter @workspace/web test <path>` - Run a specific web test file
+- Web tests use Vitest projects: `*.test.ts` run in `node`, `*.test.tsx` run in Chromium via Browser Mode (`vitest-browser-react`). First run needs `pnpm --filter @workspace/web exec playwright install chromium`
 
 ### Release
 

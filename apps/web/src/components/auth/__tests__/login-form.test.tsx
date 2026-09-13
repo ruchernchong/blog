@@ -1,6 +1,5 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
+import { render } from "vitest-browser-react";
 import { LoginForm } from "@/components/auth/login-form";
 import { authClient } from "@/lib/auth-client";
 
@@ -26,17 +25,16 @@ describe("LoginForm", () => {
   });
 
   it("should resume the OAuth authorisation request after sign-in", async () => {
-    const user = userEvent.setup();
     window.history.replaceState(
       {},
       "",
       "/login?client_id=client-123&scope=openid%20mcp&state=signed",
     );
-    render(<LoginForm isOAuthRequest />);
+    const screen = await render(<LoginForm isOAuthRequest />);
 
-    await user.click(screen.getByRole("button", { name: /Login with Google/ }));
+    await screen.getByRole("button", { name: /Login with Google/ }).click();
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(socialSignIn).toHaveBeenCalledWith({
         provider: "google",
         callbackURL:
@@ -46,12 +44,11 @@ describe("LoginForm", () => {
   });
 
   it("should open Studio after a regular sign-in", async () => {
-    const user = userEvent.setup();
-    render(<LoginForm isOAuthRequest={false} />);
+    const screen = await render(<LoginForm isOAuthRequest={false} />);
 
-    await user.click(screen.getByRole("button", { name: /Login with Google/ }));
+    await screen.getByRole("button", { name: /Login with Google/ }).click();
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(socialSignIn).toHaveBeenCalledWith({
         provider: "google",
         callbackURL: "/studio/posts",

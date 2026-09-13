@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
 import type { Route } from "next";
+import { render } from "vitest-browser-react";
 import BlogPost from "@/app/(main)/blog/components/blog-post";
 
 const mockProps = {
@@ -10,19 +10,24 @@ const mockProps = {
 };
 
 describe("BlogPost", () => {
-  it("renders blog post content", () => {
-    render(<BlogPost {...mockProps} />);
-    expect(screen.getByText("test blog post")).toBeInTheDocument();
-    expect(
-      screen.getByText("This is a test blog post excerpt"),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Monday, 15 January 2024")).toBeInTheDocument();
-    expect(screen.getByText("Read more")).toBeInTheDocument();
+  it("should render blog post content", async () => {
+    const screen = await render(<BlogPost {...mockProps} />);
+    await expect
+      .element(screen.getByText("test blog post"))
+      .toBeInTheDocument();
+    await expect
+      .element(screen.getByText("This is a test blog post excerpt"))
+      .toBeInTheDocument();
+    await expect
+      .element(screen.getByText("Monday, 15 January 2024"))
+      .toBeInTheDocument();
+    await expect.element(screen.getByText("Read more")).toBeInTheDocument();
   });
 
-  it("renders link with correct href", () => {
-    render(<BlogPost {...mockProps} />);
-    const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", "/posts/test-blog-post");
+  it("should render link with correct href", async () => {
+    const screen = await render(<BlogPost {...mockProps} />);
+    await expect
+      .element(screen.getByRole("link"))
+      .toHaveAttribute("href", "/posts/test-blog-post");
   });
 });

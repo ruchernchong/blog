@@ -1,9 +1,18 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "vitest-browser-react";
 import { StatsGridFallback } from "@/app/(main)/dashboard/components/stats-grid";
 import { UsageLastUpdatedFallback } from "@/app/(main)/usage/components/usage-last-updated";
 import { AuthPanelFallback } from "@/components/auth/auth-panel-fallback";
 import { StudioAccessFallback } from "@/components/studio/studio-access-fallback";
 import { StudioFormFallback } from "@/components/studio/studio-form-fallback";
+
+// stats-grid.tsx also exports server-only data loaders; keep them out of the browser bundle
+vi.mock("next/server", () => ({ connection: vi.fn() }));
+vi.mock("@/lib/github", () => ({
+  getGitHubContributions: vi.fn(),
+  getGitHubFollowers: vi.fn(),
+  getGitHubStars: vi.fn(),
+}));
+vi.mock("@/lib/queries/posthog", () => ({ getTotalVisits: vi.fn() }));
 
 describe("Suspense fallbacks", () => {
   it.each([
@@ -32,12 +41,14 @@ describe("Suspense fallbacks", () => {
       label: "Loading editor",
       component: <StudioFormFallback label="Loading editor" />,
     },
-  ])("should expose an accessible status for the $name fallback", ({
+  ])("should expose an accessible status for the $name fallback", async ({
     component,
     label,
   }) => {
-    render(component);
+    const screen = await render(component);
 
-    expect(screen.getByRole("status", { name: label })).toBeVisible();
+    await expect
+      .element(screen.getByRole("status", { name: label }))
+      .toBeVisible();
   });
 });

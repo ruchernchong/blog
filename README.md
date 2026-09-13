@@ -33,7 +33,7 @@ pnpm build           # Build for production
 
 ### Development & Quality
 - **Monorepo**: pnpm workspaces with Turborepo
-- **Testing**: Vitest with React Testing Library
+- **Testing**: Vitest (Browser Mode with Playwright) and vitest-browser-react
 - **Linting**: Biome for code quality and formatting
 - **Unused code**: Knip for unused files, exports, and dependencies
 - **Git Hooks**: Husky with Commitlint and lint-staged

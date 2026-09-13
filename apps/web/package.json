@@ -100,9 +100,6 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.14",
     "@tailwindcss/typography": "^0.5.8",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^14.6.1",
     "@types/mdast": "^4.0.4",
     "@types/mdx": "^2.0.11",
     "@types/node": "catalog:",
@@ -111,14 +108,17 @@
     "@types/rss": "^0.0.32",
     "@vercel/config": "catalog:",
     "@vitejs/plugin-react": "^5.1.0",
+    "@vitest/browser": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "babel-plugin-react-compiler": "^1.0.0",
     "drizzle-kit": "^0.31.10",
     "drizzle-seed": "^0.3.1",
-    "jsdom": "^26.1.0",
+    "playwright": "1.63.0",
     "postcss": "^8.5.23",
     "tailwindcss": "^4.0.14",
     "tsx": "^4.20.6",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "vitest-browser-react": "2.3.0"
   }
 }
