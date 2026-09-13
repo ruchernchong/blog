@@ -1,5 +1,6 @@
 import type { UsageEvent } from "../types";
-import { eachJsonLine, listFiles, pathExists } from "./shared";
+import { eachJsonLine, listFiles, pathExists, totalBytes } from "./shared.ts";
+import type { AgentParseResult } from "./stats.ts";
 
 const CODEX_DIRS = ["~/.codex/sessions", "~/.codex/archived_sessions"];
 
@@ -42,7 +43,7 @@ export async function detect(): Promise<boolean> {
   return false;
 }
 
-export async function parse(): Promise<UsageEvent[]> {
+export async function parse(): Promise<AgentParseResult> {
   const files: string[] = [];
   for (const dir of CODEX_DIRS) {
     files.push(...(await listFiles(dir, ".jsonl")));
@@ -88,5 +89,9 @@ export async function parse(): Promise<UsageEvent[]> {
     });
   }
 
-  return events.filter((event) => event.ts);
+  return {
+    events: events.filter((event) => event.ts),
+    files: files.length,
+    bytes: await totalBytes(files),
+  };
 }

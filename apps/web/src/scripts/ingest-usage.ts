@@ -1,5 +1,8 @@
 import "dotenv/config";
-import { parseAllAgents } from "@workspace/usage/parsers";
+import {
+  formatParserStatsTable,
+  parseAllAgents,
+} from "@workspace/usage/parsers";
 import { resolveProvider } from "@workspace/usage/providers";
 import type { TokenBreakdown } from "@workspace/usage/types";
 import { format } from "date-fns";
@@ -45,9 +48,12 @@ function emptyTokens(): TokenBreakdown {
 /** Parse, price, and fold the local agent logs into daily `token_usage` rows. */
 async function buildRows(): Promise<InsertTokenUsage[]> {
   console.log("Parsing agent logs …");
-  const { agents, events } = await parseAllAgents();
+  const { agents, events, stats } = await parseAllAgents();
   console.log(`  agents: ${agents.join(", ") || "(none found)"}`);
   console.log(`  events: ${events.length.toLocaleString()}`);
+  if (stats.length > 0) {
+    console.log(formatParserStatsTable(stats));
+  }
 
   if (events.length === 0) return [];
 

@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "lib": ["ESNext"],
+    "allowImportingTsExtensions": true,
     "noEmit": true,
     "isolatedModules": true,
     "esModuleInterop": true,

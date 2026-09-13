@@ -31,6 +31,8 @@
     "db:seed": "turbo run @workspace/web#db:seed",
     "usage:ingest": "turbo run @workspace/web#usage:ingest",
     "usage:ingest:prod": "turbo run @workspace/web#usage:ingest:prod",
+    "usage:ingest:go": "pnpm --filter @workspace/usage ingest:go",
+    "usage:measure:go": "pnpm --filter @workspace/usage measure:go",
     "mcp": "turbo run @workspace/mcp#mcp",
     "prepare": "husky",
     "release": "semantic-release"
