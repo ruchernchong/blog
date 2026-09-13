@@ -1,3 +1,33 @@
+## [1.37.0](https://github.com/ruchernchong/blog/compare/v1.36.0...v1.37.0) (2026-09-13)
+
+### Features
+
+* add better-auth 1.7 schema migration ([3dc955b](https://github.com/ruchernchong/blog/commit/3dc955bb9b51586b118315b1296d8e13b51788fa))
+* add Go usage collector with OAuth ([96fb791](https://github.com/ruchernchong/blog/commit/96fb7916996303b9632816c82119557769b4eed2))
+* add token_effort_usage schema and effort ingest Zod ([199227a](https://github.com/ruchernchong/blog/commit/199227a20551eb69fc6050d521f3c56b5d732c9e))
+* add token_effort_usage schema and effort ingest Zod ([f240149](https://github.com/ruchernchong/blog/commit/f240149dff863197f9e51054ba23af51efa07c62))
+* add token_effort_usage schema and effort ingest Zod ([9eb44b0](https://github.com/ruchernchong/blog/commit/9eb44b0ff9857dd7b4bf518e81a87dcd6bf72130))
+* map oauth clients to 1.7 auth fields ([0b08abe](https://github.com/ruchernchong/blog/commit/0b08abe65050d7c50a5771c0ad0142e9cbafc3bf))
+* rename usage search params to nuqs docs convention ([0887057](https://github.com/ruchernchong/blog/commit/08870570228a92da619d42713d5d1c60ac9024f1))
+* show all-time effort levels on /usage ([f8e1df6](https://github.com/ruchernchong/blog/commit/f8e1df6a1d87b8de84ce3ae80c526dcf8cc5611b))
+* sync usage filters to url with nuqs ([c724757](https://github.com/ruchernchong/blog/commit/c724757aa60447f9fcd8c7510e8c457eea20f3d9))
+* tidy usage search params naming and types ([fb21e35](https://github.com/ruchernchong/blog/commit/fb21e35be12c84388743fceb34a229f05fca9a43))
+* upsert effortRows on usage ingest ([d0bb0af](https://github.com/ruchernchong/blog/commit/d0bb0af3ef9d3ffa2aaf575a5bdfe604f1c45157))
+* upsert effortRows on usage ingest ([649fc35](https://github.com/ruchernchong/blog/commit/649fc35c9283806777ac2a1a4c1d943ecdd2ebf1))
+* upsert effortRows on usage ingest ([0ebe372](https://github.com/ruchernchong/blog/commit/0ebe372e0dca0034f63083e4018dd2bb01e8b36c))
+* upsert effortRows on usage ingest ([ebf3841](https://github.com/ruchernchong/blog/commit/ebf38411e30cd3c0a32e419b02c5081eb52a6e5c))
+
+### Bug Fixes
+
+* align better-auth to 1.7.x to restore Vercel builds ([1bd3e2c](https://github.com/ruchernchong/blog/commit/1bd3e2c9606d22100c9c85f883faccb0047d271f))
+* drop .ts suffixes from usage parser imports ([89f0763](https://github.com/ruchernchong/blog/commit/89f07637c7514ac07d760e6857d4cc8104660795))
+* make redis increment atomic with Lua ([48ed0a5](https://github.com/ruchernchong/blog/commit/48ed0a5f27d9452d6d504ce74bb3959464add090))
+* register mcp oauth resource for 1.7 provider ([756640d](https://github.com/ruchernchong/blog/commit/756640d4212d6f4467e25d4a8a4d709884f18dc7))
+
+### Performance Improvements
+
+* use neon-http db.batch for usage profile reads ([575ca12](https://github.com/ruchernchong/blog/commit/575ca1231405ba46184e7828a65de4aa2b3dade0))
+
 ## [1.36.0](https://github.com/ruchernchong/blog/compare/v1.35.0...v1.36.0) (2026-08-18)
 
 ### Features
