@@ -14,63 +14,19 @@ concurrency:
 jobs:
   checks:
     name: Checks
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/ci.yml # zizmor: ignore[self-repository]
     permissions:
       contents: read
-    env:
+    secrets:
       HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
       BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      GH_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
-      GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
+      GH_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
+      GH_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
       GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
       UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Setup
-        uses: ./.github/actions/setup # zizmor: ignore[self-repository]
-
-      - parallel:
-          - name: Run Lint
-            run: pnpm lint
-
-          - name: Run Knip
-            run: pnpm knip
-
-          - name: Run Test
-            env:
-              BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-              DATABASE_URL: ${{ secrets.DATABASE_URL }}
-              GH_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
-              GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
-              GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-              GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-              UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
-              UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
-            run: pnpm test
-
-          - name: Run Build
-            env:
-              BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-              DATABASE_URL: ${{ secrets.DATABASE_URL }}
-              GH_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
-              GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
-              GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-              GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-              UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
-              UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
-            run: pnpm build
 
   release:
     name: Release
