@@ -45,6 +45,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `pnpm release` - Create semantic release
 
+### Usage collector
+
+- `pnpm usage:measure:go` / `pnpm usage:ingest:go` - Go collector (`packages/usage/go`). Parses Claude, Codex, OpenCode, and Cursor; `ingest:go` POSTs `/api/usage/ingest`. Auth is `usage-ingest login` (OAuth, admin, Keychain). LaunchAgent: `packages/usage/go/macos/INSTALL.md`
+
 ### Usage Analytics Ingestion
 
 Model pricing/metadata is a DB-backed registry (the `model` table), synced on
