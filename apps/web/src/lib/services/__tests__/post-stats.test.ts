@@ -13,12 +13,14 @@ vi.mock("@/config/redis", () => ({
     get: vi.fn(),
     set: vi.fn(),
     zadd: vi.fn(),
+    zrange: vi.fn(),
   },
 }));
 
 // Import after mocks
 import redis from "@/config/redis";
 import {
+  getAllViewCounts,
   getLikesByUser,
   getPostStats,
   getTotalLikes,
@@ -240,6 +242,21 @@ describe("post-stats", () => {
       const result = await getTotalLikes("test-post");
 
       expect(result).toBe(0);
+    });
+  });
+
+  describe("getAllViewCounts", () => {
+    it("should map slugs to their view counts", async () => {
+      vi.mocked(redis.zrange).mockResolvedValue(["post-a", 10, "post-b", "5"]);
+
+      const result = await getAllViewCounts();
+
+      expect(result).toEqual(
+        new Map([
+          ["post-a", 10],
+          ["post-b", 5],
+        ]),
+      );
     });
   });
 });

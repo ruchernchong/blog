@@ -9,6 +9,12 @@ export default defineConfig({
     globals: true,
     coverage: {
       enabled: true,
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
+      },
     },
     projects: [
       {

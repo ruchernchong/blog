@@ -55,4 +55,24 @@ describe("LoginForm", () => {
       });
     });
   });
+
+  it("should show the sign-in error message", async () => {
+    socialSignIn.mockRejectedValue(new Error("Popup closed"));
+    const screen = await render(<LoginForm isOAuthRequest={false} />);
+
+    await screen.getByRole("button", { name: /Login with Google/ }).click();
+
+    await expect.element(screen.getByText("Popup closed")).toBeVisible();
+  });
+
+  it("should show a default message for unknown errors", async () => {
+    socialSignIn.mockRejectedValue("nope");
+    const screen = await render(<LoginForm isOAuthRequest={false} />);
+
+    await screen.getByRole("button", { name: /Login with Google/ }).click();
+
+    await expect
+      .element(screen.getByText("Failed to sign in with Google"))
+      .toBeVisible();
+  });
 });
