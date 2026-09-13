@@ -8,14 +8,13 @@ on:
 
 permissions: {}
 
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   checks:
     name: Checks
     runs-on: ubuntu-latest
+    concurrency:
+      group: ci-${{ github.ref }}
+      cancel-in-progress: true
     permissions:
       contents: read
     env:
@@ -54,15 +53,34 @@ jobs:
               UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
             run: pnpm test
 
-          - name: Run Build
-            env:
-              BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-              DATABASE_URL: ${{ secrets.DATABASE_URL }}
-              GH_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
-              GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
-              GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-              GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-              UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
-              UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
-            run: pnpm build
+  release:
+    name: Release
+    needs: checks
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: release
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    env:
+      HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
+      HUSKY: 0
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true # semantic-release git commit
+
+      - name: Setup
+        uses: ./.github/actions/setup # zizmor: ignore[self-repository]
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm release
