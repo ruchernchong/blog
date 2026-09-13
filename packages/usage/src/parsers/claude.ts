@@ -1,6 +1,6 @@
 import type { UsageEvent } from "../types";
-import { eachJsonLine, listFiles, pathExists, totalBytes } from "./shared.ts";
-import type { AgentParseResult } from "./stats.ts";
+import { eachJsonLine, listFiles, pathExists, totalBytes } from "./shared";
+import type { AgentParseResult } from "./stats";
 
 const CLAUDE_DIR = "~/.claude/projects";
 

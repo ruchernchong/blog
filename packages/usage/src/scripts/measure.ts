@@ -1,4 +1,4 @@
-import { formatParserStatsTable, parseAllAgents } from "../parsers/index.ts";
+import { formatParserStatsTable, parseAllAgents } from "../parsers";
 
 /**
  * Time every detected agent parser against this machine's logs.

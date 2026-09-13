@@ -45,6 +45,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `pnpm release` - Create semantic release
 
+### Usage collector
+
+- `pnpm usage:measure:go` / `pnpm usage:ingest:go` - Go collector (`packages/usage/go`). Parses Claude, Codex, OpenCode, and Cursor; `ingest:go` POSTs `/api/usage/ingest`. Auth is `usage-ingest login` (OAuth, admin, Keychain). LaunchAgent: `packages/usage/go/macos/INSTALL.md`
+
 ### Usage Analytics Ingestion
 
 Model pricing/metadata is a DB-backed registry (the `model` table), synced on
@@ -68,7 +72,8 @@ See `packages/usage/src/registry.ts` (pure normalise/merge) and
   Parses Claude, Codex, OpenCode, and Cursor on this machine (~6× less RAM than
   Node). `ingest:go` POSTs daily rows with `costUsd: null` so the ingest route
   prices them. Auth is `usage-ingest login` (OAuth, admin account, Keychain).
-  `USAGE_INGEST_DRY_RUN=1` prints the payload without POSTing. LaunchAgent:
+  `USAGE_INGEST_DRY_RUN=1` prints the payload without POSTing. Public install
+  (Go 1.25+, LaunchAgent): README.md “Usage collector (macOS)” and
   `packages/usage/go/macos/INSTALL.md`.
 
 AgentUsage may also POST session-level `effortRows` into `token_effort_usage`
