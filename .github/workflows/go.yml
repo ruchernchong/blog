@@ -1,0 +1,53 @@
+name: Go
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/usage/go/**"
+      - ".github/workflows/go.yml"
+  pull_request:
+    branches: ["**"]
+    paths:
+      - "packages/usage/go/**"
+      - ".github/workflows/go.yml"
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/usage/go
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: packages/usage/go/go.mod
+          cache-dependency-path: packages/usage/go/go.sum
+
+      - parallel:
+          - name: Check formatting
+            run: test -z "$(gofmt -l . | tee /dev/stderr)"
+
+          - name: Vet
+            run: go vet ./...
+
+          - name: Build
+            run: go build ./...
+
+          - name: Test
+            run: go test ./...
