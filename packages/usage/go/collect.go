@@ -64,6 +64,7 @@ type collectResult struct {
 	EventCount int
 	Stats      []parserStats
 	Rows       []ingestRow
+	Warnings   []string
 }
 
 func collect(home string) (*collectResult, error) {
@@ -109,10 +110,13 @@ func collect(home string) (*collectResult, error) {
 		{"cursor", parseCursor},
 	}
 
+	// A failing parser (or file) is a warning, not a fatal error: the server only
+	// overwrites a day when the new total is larger, so ingesting the agents
+	// that did parse can never erase what an earlier complete run stored.
 	for _, parser := range parsers {
 		stats, detected, err := parser.run(home, emit)
 		if err != nil {
-			return nil, fmt.Errorf("%s: %w", parser.name, err)
+			out.Warnings = append(out.Warnings, fmt.Sprintf("%s: %v", parser.name, err))
 		}
 		if !detected {
 			continue

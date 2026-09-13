@@ -43,6 +43,9 @@ func main() {
 	if err != nil {
 		fatal("%v", err)
 	}
+	for _, warning := range result.Warnings {
+		fmt.Fprintf(os.Stderr, "warning: %s\n", warning)
+	}
 
 	switch cmd {
 	case "measure", "":

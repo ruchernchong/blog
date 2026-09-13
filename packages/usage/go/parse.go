@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -30,6 +32,7 @@ func parseClaude(home string, emit func(usageEvent)) (parserStats, bool, error) 
 	// usage grows until the final line, so keep the largest value per field.
 	seen := map[string]int{}
 	var pending []usageEvent
+	var fileErrs []error
 	for _, file := range files {
 		err := eachJSONL(file, func(raw []byte) {
 			var line claudeLine
@@ -61,7 +64,7 @@ func parseClaude(home string, emit func(usageEvent)) (parserStats, bool, error) 
 			pending = append(pending, usageEvent{ts: ts, agent: "claude", model: line.Message.Model, tokens: tok})
 		})
 		if err != nil {
-			return parserStats{}, false, err
+			fileErrs = append(fileErrs, fmt.Errorf("%s: %w", file, err))
 		}
 	}
 	var buckets tokenBuckets
@@ -69,7 +72,7 @@ func parseClaude(home string, emit func(usageEvent)) (parserStats, bool, error) 
 		buckets.add(event.tokens)
 		emit(event)
 	}
-	return finish("claude", started, len(files), bytes, len(pending), buckets), true, nil
+	return finish("claude", started, len(files), bytes, len(pending), buckets), true, errors.Join(fileErrs...)
 }
 
 func parseCodex(home string, emit func(usageEvent)) (parserStats, bool, error) {
@@ -88,6 +91,7 @@ func parseCodex(home string, emit func(usageEvent)) (parserStats, bool, error) {
 	}
 	var buckets tokenBuckets
 	events := 0
+	var fileErrs []error
 	for _, file := range files {
 		currentModel := ""
 		firstModel := ""
@@ -137,7 +141,7 @@ func parseCodex(home string, emit func(usageEvent)) (parserStats, bool, error) {
 			fileEvents = append(fileEvents, usageEvent{ts: ts, agent: "codex", model: currentModel, tokens: tok})
 		})
 		if err != nil {
-			return parserStats{}, false, err
+			fileErrs = append(fileErrs, fmt.Errorf("%s: %w", file, err))
 		}
 		// token_count can precede the first turn_context, so attribute those
 		// events to the session's first model.
@@ -153,7 +157,7 @@ func parseCodex(home string, emit func(usageEvent)) (parserStats, bool, error) {
 			emit(event)
 		}
 	}
-	return finish("codex", started, len(files), bytes, events, buckets), true, nil
+	return finish("codex", started, len(files), bytes, events, buckets), true, errors.Join(fileErrs...)
 }
 
 func parseOpenCode(home string, emit func(usageEvent)) (parserStats, bool, error) {
