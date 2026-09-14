@@ -184,6 +184,8 @@ func TestIngestPostsRows(t *testing.T) {
 	assertRowsPayload(t, body, rows)
 	for _, want := range []string{
 		"Upserting 2 rows → " + srv.URL,
+		`Response: 200 in `,
+		` {"ok":true}`,
 		"Done.",
 		"rows:    2",
 		"days:    2",

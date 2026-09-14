@@ -112,7 +112,7 @@ func logout() error {
 
 func bearerToken() (string, error) {
 	// Better Auth rotates refresh tokens and revokes the whole family on reuse,
-	// so two runs refreshing with the same token (the hourly LaunchAgent and a
+	// so two runs refreshing with the same token (the 15-minute LaunchAgent and a
 	// manual run) would both be signed out. Hold a lock across load, refresh
 	// and save so the second run reads the token the first one saved.
 	unlock, err := lockTokens()

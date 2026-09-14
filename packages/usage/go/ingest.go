@@ -48,6 +48,7 @@ func ingest(result *collectResult) error {
 	req.Header.Set("authorization", "Bearer "+token)
 
 	client := &http.Client{Timeout: 2 * time.Minute}
+	started := time.Now()
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
@@ -57,6 +58,7 @@ func ingest(result *collectResult) error {
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return fmt.Errorf("ingest endpoint %d: %s", resp.StatusCode, strings.TrimSpace(string(detail)))
 	}
+	fmt.Printf("Response: %d in %s %s\n", resp.StatusCode, time.Since(started).Round(time.Millisecond), strings.TrimSpace(string(detail)))
 
 	printIngestSummary(result.Rows)
 	return nil

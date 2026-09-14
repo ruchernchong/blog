@@ -1,6 +1,6 @@
 # Install the usage collector (macOS LaunchAgent)
 
-Hourly job: parse local Claude / Codex / OpenCode / Cursor logs and POST daily
+Every-15-minutes job: parse local Claude / Codex / OpenCode / Cursor logs and POST daily
 rows to `https://ruchern.dev/api/usage/ingest`. Auth is OAuth (admin account),
 not `BLOG_MCP_AUTH_TOKEN`.
 

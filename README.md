@@ -101,7 +101,7 @@ See [CLAUDE.md](./CLAUDE.md) for complete command reference including:
 
 A Go binary parses local Claude, Codex, OpenCode, and Cursor logs and POSTs daily
 rows to `https://ruchern.dev/api/usage/ingest`. Auth is OAuth (admin account),
-not `BLOG_MCP_AUTH_TOKEN`. Hourly LaunchAgent optional.
+not `BLOG_MCP_AUTH_TOKEN`. 15-minute LaunchAgent optional.
 
 Requires **Go 1.25+** (`install.sh` runs `go build`). Install:
 [packages/usage/go/macos/INSTALL.md](./packages/usage/go/macos/INSTALL.md)
