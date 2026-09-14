@@ -1,3 +1,11 @@
+## [1.38.0](https://github.com/ruchernchong/blog/compare/v1.37.1...v1.38.0) (2026-09-14)
+
+### Features
+
+* log run timing and shorten ingest interval to 15m ([96c3d71](https://github.com/ruchernchong/blog/commit/96c3d71bb22570420eef534f8c27c8e2ce8f27ed))
+* replace go usage collector with rust ([cde7a15](https://github.com/ruchernchong/blog/commit/cde7a15ac44c81806dedf5b25893c4d109a9575d))
+* scaffold rust usage collector crate ([6d4f84b](https://github.com/ruchernchong/blog/commit/6d4f84b4b3116093887c24a3540ee1b7d1635517))
+
 ## [1.37.1](https://github.com/ruchernchong/blog/compare/v1.37.0...v1.37.1) (2026-09-13)
 
 ### Bug Fixes
