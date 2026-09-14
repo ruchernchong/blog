@@ -27,6 +27,7 @@ coverage/
 .cache/
 .turbo/
 packages/usage/go/measure
+packages/usage/rust/target/
 apps/docs/.source/
 
 # Misc

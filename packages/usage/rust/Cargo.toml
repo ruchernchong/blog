@@ -1,0 +1,26 @@
+[package]
+name = "usage-ingest"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.104"
+base64 = "0.23.1"
+chrono = "0.4.45"
+getrandom = "0.4.3"
+keyring = "4.2.0"
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+sha2 = "0.11.0"
+ureq = "3.4.2"
+url = "2.5.8"
+walkdir = "2.5.0"
+
+[dev-dependencies]
+mockito = "1.7.2"
+tempfile = "3.27.0"
+
+[profile.release]
+lto = true
+codegen-units = 1
