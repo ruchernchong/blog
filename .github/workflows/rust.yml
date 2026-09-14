@@ -2,17 +2,17 @@ name: Rust
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
     paths:
       - "packages/usage/rust/**"
       - ".github/workflows/rust.yml"
   pull_request:
-    branches: ["**"]
+    branches: [ main ]
     paths:
       - "packages/usage/rust/**"
       - ".github/workflows/rust.yml"
 
-permissions: {}
+permissions: { }
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
