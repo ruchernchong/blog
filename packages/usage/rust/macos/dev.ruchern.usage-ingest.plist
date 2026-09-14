@@ -11,7 +11,7 @@
   <key>WorkingDirectory</key>
   <string>__HOME__</string>
   <key>StartInterval</key>
-  <integer>3600</integer>
+  <integer>900</integer>
   <key>RunAtLoad</key>
   <true/>
   <key>StandardOutPath</key>

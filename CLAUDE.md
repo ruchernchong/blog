@@ -48,7 +48,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Usage collector
 
-- `pnpm usage:measure:go` / `pnpm usage:ingest:go` - Go collector (`packages/usage/go`). Parses Claude, Codex, OpenCode, and Cursor; `ingest:go` POSTs `/api/usage/ingest`. Auth is `usage-ingest login` (OAuth, admin, Keychain). LaunchAgent: `packages/usage/go/macos/INSTALL.md`
+- `pnpm usage:measure:rust` / `pnpm usage:ingest:rust` - Rust collector (`packages/usage/rust`). Parses Claude, Codex, OpenCode, and Cursor; `ingest:rust` POSTs `/api/usage/ingest`. Auth is `usage-ingest login` (OAuth, admin, Keychain). LaunchAgent: `packages/usage/rust/macos/INSTALL.md`
 
 ### Usage Analytics Ingestion
 
@@ -69,13 +69,12 @@ See `packages/usage/src/registry.ts` (pure normalise/merge) and
   deployment's own production `DATABASE_URL` (the prod connection string never
   touches the local machine). Requires `BLOG_MCP_AUTH_TOKEN` and Vercel's
   `VERCEL_PROJECT_PRODUCTION_URL` (or `VERCEL_URL`) in the environment.
-- `pnpm usage:measure:go` / `pnpm usage:ingest:go` - Go collector (`packages/usage/go`).
-  Parses Claude, Codex, OpenCode, and Cursor on this machine (~6× less RAM than
-  Node). `ingest:go` POSTs daily rows with `costUsd: null` so the ingest route
-  prices them. Auth is `usage-ingest login` (OAuth, admin account, Keychain).
-  `USAGE_INGEST_DRY_RUN=1` prints the payload without POSTing. Public install
-  (Go 1.25+, LaunchAgent): README.md “Usage collector (macOS)” and
-  `packages/usage/go/macos/INSTALL.md`.
+- `pnpm usage:measure:rust` / `pnpm usage:ingest:rust` - Rust collector (`packages/usage/rust`).
+  Parses Claude, Codex, OpenCode, and Cursor on this machine. `ingest:rust` POSTs
+  daily rows with `costUsd: null` so the ingest route prices them. Auth is
+  `usage-ingest login` (OAuth, admin account, Keychain). `USAGE_INGEST_DRY_RUN=1`
+  prints the payload without POSTing. Public install (Rust toolchain, LaunchAgent):
+  README.md “Usage collector (macOS)” and `packages/usage/rust/macos/INSTALL.md`.
 
 AgentUsage may also POST session-level `effortRows` into `token_effort_usage`
 (alongside token rows); the `/usage` page folds these into an all-time effort

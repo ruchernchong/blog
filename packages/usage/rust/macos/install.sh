@@ -16,7 +16,8 @@ DOMAIN="gui/${UID_NUM}"
 mkdir -p "$BIN_DIR" "$LAUNCH_AGENTS" "$LOGS"
 
 echo "Building $BIN"
-go build -C "$ROOT" -o "$BIN" .
+cargo build --release --manifest-path "$ROOT/Cargo.toml"
+install -m 755 "$ROOT/target/release/usage-ingest" "$BIN"
 
 install -m 755 "$ROOT/macos/usage-ingest-run.sh" "$WRAPPER"
 

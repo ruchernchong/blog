@@ -6,8 +6,8 @@
   "scripts": {
     "lint": "biome check .",
     "measure": "node src/scripts/measure.ts",
-    "measure:go": "go run -C ./go .",
-    "ingest:go": "go run -C ./go . ingest",
+    "measure:rust": "cargo run --release --manifest-path rust/Cargo.toml --",
+    "ingest:rust": "cargo run --release --manifest-path rust/Cargo.toml -- ingest",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
