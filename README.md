@@ -99,15 +99,15 @@ See [CLAUDE.md](./CLAUDE.md) for complete command reference including:
 
 ### Usage collector (macOS)
 
-A Go binary parses local Claude, Codex, OpenCode, and Cursor logs and POSTs daily
+A Rust binary parses local Claude, Codex, OpenCode, and Cursor logs and POSTs daily
 rows to `https://ruchern.dev/api/usage/ingest`. Auth is OAuth (admin account),
 not `BLOG_MCP_AUTH_TOKEN`. 15-minute LaunchAgent optional.
 
-Requires **Go 1.25+** (`install.sh` runs `go build`). Install:
-[packages/usage/go/macos/INSTALL.md](./packages/usage/go/macos/INSTALL.md)
+Requires a **Rust toolchain** (`install.sh` runs `cargo build --release`). Install:
+[packages/usage/rust/macos/INSTALL.md](./packages/usage/rust/macos/INSTALL.md)
 
 ```zsh
-zsh packages/usage/go/macos/install.sh
+zsh packages/usage/rust/macos/install.sh
 ~/.local/bin/usage-ingest login    # admin account
 ~/.local/bin/usage-ingest-run      # POST if there are rows; then check /usage
 ```

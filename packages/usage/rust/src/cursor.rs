@@ -52,7 +52,9 @@ pub fn parse_cursor(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
                 if id.is_empty() {
                     continue;
                 }
-                let Some(raw) = value_bytes(row.get_ref(1)?) else { continue };
+                let Some(raw) = value_bytes(row.get_ref(1)?) else {
+                    continue;
+                };
                 if let Ok(composer) = serde_json::from_slice::<CursorComposer>(raw) {
                     composers.insert(id.to_string(), composer);
                 }
@@ -71,12 +73,18 @@ pub fn parse_cursor(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
         while let Some(row) = rows.next()? {
             let key: String = row.get(0)?;
             let rest = key.strip_prefix("bubbleId:").unwrap_or(&key);
-            let Some((composer_id, _)) = rest.split_once(':') else { continue };
+            let Some((composer_id, _)) = rest.split_once(':') else {
+                continue;
+            };
             if composer_id.is_empty() {
                 continue;
             }
-            let Some(composer) = composers.get(composer_id) else { continue };
-            let Some(raw) = value_bytes(row.get_ref(1)?) else { continue };
+            let Some(composer) = composers.get(composer_id) else {
+                continue;
+            };
+            let Some(raw) = value_bytes(row.get_ref(1)?) else {
+                continue;
+            };
             let Some(event) = map_cursor_bubble(composer_id, composer, &key, raw) else {
                 continue;
             };
@@ -239,5 +247,338 @@ pub fn json_time(value: Option<&Value>) -> Option<DateTime<Utc>> {
         }
         Value::String(s) => parse_timestamp(s),
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rusqlite::params;
+    use serde_json::json;
+    use tempfile::TempDir;
+
+    fn composer_created() -> DateTime<Utc> {
+        Utc.with_ymd_and_hms(2026, 9, 12, 15, 0, 0).unwrap()
+    }
+
+    fn bubble_created() -> DateTime<Utc> {
+        Utc.with_ymd_and_hms(2026, 9, 12, 15, 30, 0).unwrap()
+    }
+
+    #[test]
+    fn test_json_int() {
+        assert_eq!(json_int(Some(&json!(12.9))), 12);
+        assert_eq!(json_int(Some(&json!(34))), 34);
+        assert_eq!(json_int(Some(&json!("42"))), 42);
+        assert_eq!(json_int(Some(&json!("7.8"))), 7);
+        assert_eq!(json_int(Some(&json!("abc"))), 0);
+        assert_eq!(json_int(None), 0);
+        assert_eq!(json_int(Some(&json!(true))), 0);
+    }
+
+    #[test]
+    fn test_json_time() {
+        let ts = bubble_created();
+        assert_eq!(json_time(Some(&json!(ts.timestamp_millis()))), Some(ts));
+        assert_eq!(json_time(Some(&json!(ts.timestamp()))), Some(ts));
+        assert_eq!(json_time(Some(&json!("2026-09-12T15:30:00Z"))), Some(ts));
+        assert_eq!(json_time(Some(&json!(12345))), None);
+        assert_eq!(json_time(Some(&json!("yesterday"))), None);
+        assert_eq!(json_time(None), None);
+    }
+
+    #[test]
+    fn test_cursor_model_name() {
+        let cases = [
+            (
+                json!({"modelConfig": {"modelName": "claude-4-sonnet"}}),
+                json!({"modelInfo": {"modelName": "gpt-5"}}),
+                "gpt-5",
+            ),
+            (
+                json!({"modelConfig": {"selectedModels": [{"modelId": "grok-code-fast-1"}], "modelName": "claude-4-sonnet"}}),
+                json!({"modelInfo": {"modelName": "default"}}),
+                "grok-code-fast-1",
+            ),
+            (
+                json!({"modelConfig": {"selectedModels": [{"modelId": "default"}], "modelName": "claude-4-sonnet"}}),
+                json!({}),
+                "claude-4-sonnet",
+            ),
+            (
+                json!({"modelConfig": {"modelName": "default"}}),
+                json!({}),
+                "cursor-auto",
+            ),
+            (json!({}), json!({}), "cursor-auto"),
+        ];
+        for (composer_json, bubble_json, want) in cases {
+            let composer: CursorComposer = serde_json::from_value(composer_json).unwrap();
+            let bubble: CursorBubble = serde_json::from_value(bubble_json).unwrap();
+            assert_eq!(cursor_model_name(&composer, &bubble), want);
+        }
+    }
+
+    #[test]
+    fn test_cursor_provider() {
+        assert_eq!(cursor_provider("grok-code-fast-1"), "xai");
+        assert_eq!(cursor_provider("Grok-4"), "xai");
+        assert_eq!(cursor_provider("claude-4-sonnet"), "cursor");
+        assert_eq!(cursor_provider("cursor-auto"), "cursor");
+    }
+
+    /// Go batched bubbles per composer (`mapCursorComposer`); the Rust port maps
+    /// one bubble at a time, so each Go subtest becomes one or more
+    /// `map_cursor_bubble` calls compared against the same expected events.
+    #[test]
+    fn test_map_cursor_composer() {
+        let composer_ms = composer_created().timestamp_millis();
+        let bubble_ms = bubble_created().timestamp_millis();
+
+        // Subtest: "bubble token counts".
+        let composer: CursorComposer = serde_json::from_value(json!({
+            "createdAt": composer_ms,
+            "modelConfig": {"modelName": "claude-4-sonnet"},
+        }))
+        .unwrap();
+        let bubbles: Vec<(&str, Vec<u8>)> = vec![
+            (
+                "bubbleId:c1:b1",
+                serde_json::to_vec(&json!({
+                    "bubbleId": "b1",
+                    "createdAt": bubble_ms,
+                    "tokenCount": {"inputTokens": 100, "outputTokens": 20},
+                    "modelInfo": {"modelName": "gpt-5"},
+                }))
+                .unwrap(),
+            ),
+            (
+                "bubbleId:c1:b2",
+                serde_json::to_vec(&json!({"tokenCount": {"inputTokens": 0, "outputTokens": 0}}))
+                    .unwrap(),
+            ),
+            ("bubbleId:c1:b3", b"not json".to_vec()),
+            (
+                "bubbleId:c1:b4",
+                serde_json::to_vec(&json!({"text": "no tokens"})).unwrap(),
+            ),
+            (
+                "bubbleId:c1:b5",
+                serde_json::to_vec(&json!({"tokenCounts": {"input": "7", "output": 3}})).unwrap(),
+            ),
+        ];
+        let got: Vec<CursorEvent> = bubbles
+            .iter()
+            .filter_map(|(key, raw)| map_cursor_bubble("c1", &composer, key, raw))
+            .collect();
+        let want = vec![
+            CursorEvent {
+                id: "cursor-bubble-c1-b1".to_string(),
+                usage: UsageEvent {
+                    ts: bubble_created(),
+                    agent: "cursor",
+                    provider: "cursor".to_string(),
+                    model: "gpt-5".to_string(),
+                    tokens: Tokens {
+                        input: 100,
+                        output: 20,
+                        ..Default::default()
+                    },
+                },
+            },
+            CursorEvent {
+                id: "cursor-bubble-c1-b5".to_string(),
+                usage: UsageEvent {
+                    ts: composer_created(),
+                    agent: "cursor",
+                    provider: "cursor".to_string(),
+                    model: "claude-4-sonnet".to_string(),
+                    tokens: Tokens {
+                        input: 7,
+                        output: 3,
+                        ..Default::default()
+                    },
+                },
+            },
+        ];
+        assert_eq!(got, want);
+
+        // Subtest: "context meter is not usage" (contextTokensUsed /
+        // promptTokenBreakdown never feed tokens, so a bubble without a token
+        // count still yields nothing).
+        let composer: CursorComposer = serde_json::from_value(json!({
+            "createdAt": composer_ms,
+            "contextTokensUsed": 500,
+            "promptTokenBreakdown": {"totalUsedTokens": 42},
+        }))
+        .unwrap();
+        let raw = serde_json::to_vec(&json!({"text": "hello"})).unwrap();
+        assert!(map_cursor_bubble("c2", &composer, "bubbleId:c2:x", &raw).is_none());
+
+        // Subtest: "bubble without any timestamp is skipped".
+        let composer = CursorComposer::default();
+        let raw = serde_json::to_vec(&json!({"tokenCount": {"inputTokens": 5, "outputTokens": 5}}))
+            .unwrap();
+        assert!(map_cursor_bubble("c3", &composer, "bubbleId:c3:b1", &raw).is_none());
+
+        // Subtest "no usage" had no bubbles at all in Go; under the per-bubble
+        // API there is nothing to call, so it is vacuously covered.
+    }
+
+    fn cursor_db_path(home: &Path) -> std::path::PathBuf {
+        home.join("Library/Application Support/Cursor/User/globalStorage/state.vscdb")
+    }
+
+    #[test]
+    fn test_parse_cursor() {
+        let home = TempDir::new().unwrap();
+        let composer_ms = composer_created().timestamp_millis();
+        let bubble_ms = bubble_created().timestamp_millis();
+        let db_path = cursor_db_path(home.path());
+        std::fs::create_dir_all(db_path.parent().unwrap()).unwrap();
+        {
+            let conn = Connection::open(&db_path).unwrap();
+            conn.execute(
+                "CREATE TABLE cursorDiskKV (key TEXT UNIQUE ON CONFLICT REPLACE, value BLOB)",
+                [],
+            )
+            .unwrap();
+            let rows: Vec<(&str, Vec<u8>)> = vec![
+                (
+                    "composerData:c1",
+                    serde_json::to_vec(&json!({
+                        "createdAt": composer_ms,
+                        "modelConfig": {"modelName": "claude-4-sonnet"},
+                    }))
+                    .unwrap(),
+                ),
+                (
+                    "bubbleId:c1:b1",
+                    serde_json::to_vec(&json!({
+                        "bubbleId": "b1",
+                        "createdAt": bubble_ms,
+                        "tokenCount": {"inputTokens": 100, "outputTokens": 20},
+                        "modelInfo": {"modelName": "gpt-5"},
+                    }))
+                    .unwrap(),
+                ),
+                // Same bubbleId as b1, so it is deduplicated.
+                (
+                    "bubbleId:c1:b3",
+                    serde_json::to_vec(&json!({
+                        "bubbleId": "b1",
+                        "tokenCount": {"inputTokens": 999, "outputTokens": 999},
+                    }))
+                    .unwrap(),
+                ),
+                (
+                    "bubbleId:c1:b5",
+                    serde_json::to_vec(&json!({"tokenCounts": {"input": 7, "output": 3}})).unwrap(),
+                ),
+                (
+                    "composerData:c2",
+                    serde_json::to_vec(&json!({
+                        "createdAt": composer_ms,
+                        "contextTokensUsed": 500,
+                        "modelConfig": {"selectedModels": [{"modelId": "grok-code-fast-1"}]},
+                    }))
+                    .unwrap(),
+                ),
+                (
+                    "composerData:c3",
+                    serde_json::to_vec(&json!({
+                        "createdAt": composer_ms,
+                        "promptTokenBreakdown": {"totalUsedTokens": 42},
+                    }))
+                    .unwrap(),
+                ),
+                (
+                    "bubbleId:c3:x",
+                    serde_json::to_vec(&json!({"text": "no tokens"})).unwrap(),
+                ),
+                ("composerData:c4", serde_json::to_vec(&json!({})).unwrap()),
+                ("composerData:bad", b"not json".to_vec()),
+                (
+                    "bubbleId:malformed",
+                    serde_json::to_vec(&json!({"tokenCount": {"inputTokens": 1}})).unwrap(),
+                ),
+                (
+                    "bubbleId:orphan:z",
+                    serde_json::to_vec(&json!({
+                        "tokenCount": {"inputTokens": 1000, "outputTokens": 1000},
+                    }))
+                    .unwrap(),
+                ),
+                ("ItemTable:other", serde_json::to_vec(&json!({})).unwrap()),
+            ];
+            for (key, value) in rows {
+                conn.execute(
+                    "INSERT INTO cursorDiskKV (key, value) VALUES (?1, ?2)",
+                    params![key, value],
+                )
+                .unwrap();
+            }
+        }
+        let file_size = std::fs::metadata(&db_path).unwrap().len();
+
+        let mut events = Vec::new();
+        let parsed = parse_cursor(home.path(), &mut |event| events.push(event));
+        events.sort_by_key(|event| event.tokens.input);
+
+        // Composers c2 and c3 only carry context-window meters, so they emit
+        // nothing.
+        let want = vec![
+            UsageEvent {
+                ts: composer_created(),
+                agent: "cursor",
+                provider: "cursor".to_string(),
+                model: "claude-4-sonnet".to_string(),
+                tokens: Tokens {
+                    input: 7,
+                    output: 3,
+                    ..Default::default()
+                },
+            },
+            UsageEvent {
+                ts: bubble_created(),
+                agent: "cursor",
+                provider: "cursor".to_string(),
+                model: "gpt-5".to_string(),
+                tokens: Tokens {
+                    input: 100,
+                    output: 20,
+                    ..Default::default()
+                },
+            },
+        ];
+        assert_eq!(events, want);
+
+        let stats = parsed.stats.expect("cursor should be detected");
+        assert_eq!(stats.agent, "cursor");
+        assert_eq!(stats.files, 1);
+        assert_eq!(stats.bytes, file_size);
+        assert_eq!(stats.events, 2);
+        assert_eq!(stats.input_tokens, 107);
+        assert_eq!(stats.output_tokens, 23);
+        assert_eq!(stats.cache_read_tokens, 0);
+        assert_eq!(stats.cache_write_tokens, 0);
+        assert_eq!(stats.reasoning_tokens, 0);
+    }
+
+    #[test]
+    fn test_parse_cursor_without_kv_table() {
+        let home = TempDir::new().unwrap();
+        let db_path = cursor_db_path(home.path());
+        std::fs::create_dir_all(db_path.parent().unwrap()).unwrap();
+        {
+            let conn = Connection::open(&db_path).unwrap();
+            conn.execute("CREATE TABLE ItemTable (key TEXT, value BLOB)", [])
+                .unwrap();
+        }
+
+        let mut events = Vec::new();
+        let parsed = parse_cursor(home.path(), &mut |event| events.push(event));
+        assert!(parsed.stats.is_none());
+        assert!(events.is_empty());
     }
 }

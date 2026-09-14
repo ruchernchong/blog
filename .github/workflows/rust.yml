@@ -1,0 +1,57 @@
+name: Rust
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/usage/rust/**"
+      - ".github/workflows/rust.yml"
+  pull_request:
+    branches: ["**"]
+    paths:
+      - "packages/usage/rust/**"
+      - ".github/workflows/rust.yml"
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/usage/rust
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          workspaces: packages/usage/rust
+
+      - parallel:
+          - name: Check formatting
+            run: cargo fmt --check
+
+          - name: Clippy
+            run: cargo clippy --all-targets -- -D warnings
+
+          - name: Build
+            run: cargo build --locked
+
+          - name: Test
+            run: cargo test --locked

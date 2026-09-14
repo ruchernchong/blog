@@ -6,7 +6,9 @@ use std::fs::{DirBuilder, File, OpenOptions};
 use std::os::unix::fs::{DirBuilderExt, OpenOptionsExt};
 use std::path::PathBuf;
 
+#[cfg_attr(test, allow(dead_code))]
 pub const KEYRING_SERVICE: &str = "dev.ruchern.usage-ingest";
+#[cfg_attr(test, allow(dead_code))]
 pub const KEYRING_ACCOUNT: &str = "oauth-tokens";
 pub const NOT_SIGNED_IN: &str = "not signed in — run: usage-ingest login";
 
@@ -144,7 +146,11 @@ pub mod backend {
     }
 
     fn check() -> Result<()> {
-        if let Some(message) = FAILURE.lock().unwrap_or_else(PoisonError::into_inner).clone() {
+        if let Some(message) = FAILURE
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .clone()
+        {
             bail!(message);
         }
         Ok(())

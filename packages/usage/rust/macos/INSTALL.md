@@ -4,14 +4,15 @@ Every-15-minutes job: parse local Claude / Codex / OpenCode / Cursor logs and PO
 rows to `https://ruchern.dev/api/usage/ingest`. Auth is OAuth (admin account),
 not `BLOG_MCP_AUTH_TOKEN`.
 
-Requires **Go 1.25+** on the PATH (`install.sh` runs `go build`).
+Requires a **Rust toolchain** on the PATH (`install.sh` runs `cargo build --release`).
+Install via [rustup](https://rustup.rs) or Homebrew (`brew install rust`).
 
 ## 1. Build and sign in
 
 Use the **installed** binary for login so Keychain access matches launchd.
 
 ```zsh
-zsh packages/usage/go/macos/install.sh
+zsh packages/usage/rust/macos/install.sh
 ~/.local/bin/usage-ingest login
 ```
 
@@ -49,5 +50,5 @@ prompts (same machine, same binary path, usually not).
 
 ```zsh
 ~/.local/bin/usage-ingest logout
-zsh packages/usage/go/macos/uninstall.sh
+zsh packages/usage/rust/macos/uninstall.sh
 ```
