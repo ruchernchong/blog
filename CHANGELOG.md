@@ -1,3 +1,13 @@
+## [1.39.0](https://github.com/ruchernchong/blog/compare/v1.38.2...v1.39.0) (2026-09-16)
+
+### Features
+
+* derive usage cost at read time ([93c33e0](https://github.com/ruchernchong/blog/commit/93c33e07732b648baf822b21e1ffd7d452aa339f)), closes [#343](https://github.com/ruchernchong/blog/issues/343)
+
+### Bug Fixes
+
+* register usage cost parity script ([394a0a2](https://github.com/ruchernchong/blog/commit/394a0a26c5f3942c130a9e7c91b4ffc6e6c9b7a9)), closes [#343](https://github.com/ruchernchong/blog/issues/343)
+
 ## [1.38.2](https://github.com/ruchernchong/blog/compare/v1.38.1...v1.38.2) (2026-09-16)
 
 ### Bug Fixes
