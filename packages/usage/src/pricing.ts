@@ -37,12 +37,28 @@ export interface PriceOpts {
 
 export interface Pricing {
   priceFor(model: string, opts?: PriceOpts): ModelRate | null;
+  /**
+   * The id a model rolls up under: its provider-scoped alias target when one
+   * is registered (e.g. `grok-4.6-build` → `grok-4.6`), else the model itself.
+   */
+  canonicalModel(model: string, opts?: PriceOpts): string;
   /** Cost in USD, or `null` when the model cannot be priced (rendered "N.A."). */
   costOf(
     tokens: TokenBreakdown,
     model: string,
     opts?: PriceOpts,
   ): number | null;
+}
+
+/**
+ * Suffixes a backend appends to the model id the user actually picked. The
+ * Grok CLI serves `grok-4.6` as `grok-4.6-build`; the suffix is a routing
+ * detail, not a different model, so it folds away when no alias is registered.
+ */
+const BACKEND_SUFFIX = /-build$/;
+
+export function stripBackendSuffix(model: string): string {
+  return model.replace(BACKEND_SUFFIX, "");
 }
 
 function toRate(rate: Partial<ModelRate>): ModelRate | null {
@@ -92,14 +108,24 @@ export function buildPricingFromRegistry(entries: ModelEntry[]): Pricing {
 
   const warned = new Set<string>();
 
-  function priceFor(model: string, opts?: PriceOpts): ModelRate | null {
-    const agent = opts?.agent;
+  function providerOf(opts?: PriceOpts): string | undefined {
     // Prefer an explicit provider (multi-provider agents), else derive from agent.
-    const provider =
-      opts?.provider ?? (agent ? AGENT_PROVIDERS[agent] : undefined);
-    if (!provider) return null;
+    return (
+      opts?.provider ?? (opts?.agent ? AGENT_PROVIDERS[opts.agent] : undefined)
+    );
+  }
+
+  function canonicalModel(model: string, opts?: PriceOpts): string {
+    const provider = providerOf(opts);
     // Resolve a provider-scoped alias (replaces the old agent-keyed MODEL_ALIASES).
-    const target = aliasByProvider[provider]?.[model] ?? model;
+    const aliased = provider ? aliasByProvider[provider]?.[model] : undefined;
+    return aliased ?? stripBackendSuffix(model);
+  }
+
+  function priceFor(model: string, opts?: PriceOpts): ModelRate | null {
+    const provider = providerOf(opts);
+    if (!provider) return null;
+    const target = canonicalModel(model, opts);
     return (
       byProvider[provider]?.[target] ??
       byProviderCanonical[provider]?.[canonicalSlug(target)] ??
@@ -135,5 +161,5 @@ export function buildPricingFromRegistry(entries: ModelEntry[]): Pricing {
     );
   }
 
-  return { priceFor, costOf };
+  return { priceFor, canonicalModel, costOf };
 }

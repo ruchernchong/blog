@@ -265,10 +265,11 @@ export async function getUsageProfile(): Promise<UsageProfile> {
 
     addTokens(tokenMix, row);
 
-    const cost = pricing.costOf(tokensOf(row), row.model, {
-      agent: row.agent,
-      provider: row.provider,
-    });
+    const priceOpts = { agent: row.agent, provider: row.provider };
+    const cost = pricing.costOf(tokensOf(row), row.model, priceOpts);
+    // Alias ids (e.g. grok-4.6-build) fold into their target so one model is
+    // one row; the stored id is untouched.
+    const modelKey = pricing.canonicalModel(row.model, priceOpts);
 
     const day = getOrCreateDay(dayMap, row.date);
     day.tokens += row.totalTokens;
@@ -277,10 +278,10 @@ export async function getUsageProfile(): Promise<UsageProfile> {
     addTokens(day.breakdown, row);
 
     addToRollup(getOrCreateRollup(day.agents, row.agent), row, cost);
-    addToRollup(getOrCreateRollup(day.models, row.model), row, cost);
+    addToRollup(getOrCreateRollup(day.models, modelKey), row, cost);
     addToRollup(getOrCreateRollup(agentTotals, row.agent), row, cost);
     addToRollup(getOrCreateRollup(providerTotals, row.provider), row, cost);
-    addToRollup(getOrCreateRollup(modelTotals, row.model), row, cost);
+    addToRollup(getOrCreateRollup(modelTotals, modelKey), row, cost);
   }
 
   // --- Dense day array (fill gaps) + intensity scale ------------------------
