@@ -92,3 +92,4 @@ ds-bundle/
 .env*
 # next-agents-md
 .next-docs/
+.neon
