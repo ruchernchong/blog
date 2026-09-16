@@ -1,3 +1,4 @@
+import type { ComponentProps } from "react";
 import { vi } from "vitest";
 import { render } from "vitest-browser-react";
 import { LoginForm } from "@/components/auth/login-form";
@@ -17,6 +18,13 @@ vi.mock("@/lib/logger", () => ({
 
 const socialSignIn = vi.mocked(authClient.signIn.social);
 
+type LoginFormProps = ComponentProps<typeof LoginForm>;
+
+const INVALID_CLIENT = {
+  oauthError: "invalid_client",
+  oauthErrorDescription: "client_id is required",
+} as const;
+
 describe("LoginForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -24,34 +32,58 @@ describe("LoginForm", () => {
     window.history.replaceState({}, "", "/login");
   });
 
-  it("should resume the OAuth authorisation request after sign-in", async () => {
-    window.history.replaceState(
-      {},
-      "",
-      "/login?client_id=client-123&scope=openid%20mcp&state=signed",
-    );
-    const screen = await render(<LoginForm isOAuthRequest />);
+  it.each([
+    {
+      name: "should resume the OAuth authorisation request after sign-in",
+      href: "/login?client_id=client-123&scope=openid%20mcp&state=signed",
+      props: { isOAuthRequest: true } satisfies LoginFormProps,
+      callbackURL:
+        "/api/auth/oauth2/authorize?client_id=client-123&scope=openid+mcp&state=signed",
+    },
+    {
+      name: "should open Studio after a regular sign-in",
+      href: "/login",
+      props: { isOAuthRequest: false } satisfies LoginFormProps,
+      callbackURL: "/studio/posts",
+    },
+    {
+      name: "should not resume OAuth when only error query params are present",
+      href: "/login?error=invalid_client&error_description=client_id+is+required",
+      props: {
+        isOAuthRequest: false,
+        ...INVALID_CLIENT,
+      } satisfies LoginFormProps,
+      callbackURL: "/studio/posts",
+    },
+    {
+      name: "should resume authorise without a query when only error params remain",
+      href: "/login?error=invalid_client&error_description=client_id+is+required",
+      props: {
+        isOAuthRequest: true,
+        ...INVALID_CLIENT,
+      } satisfies LoginFormProps,
+      callbackURL: "/api/auth/oauth2/authorize",
+    },
+    {
+      name: "should omit error query params from the Google authorisation resume",
+      href: "/login?client_id=client-123&scope=openid%20mcp&error=invalid_client&error_description=client_id+is+required",
+      props: {
+        isOAuthRequest: true,
+        ...INVALID_CLIENT,
+      } satisfies LoginFormProps,
+      callbackURL:
+        "/api/auth/oauth2/authorize?client_id=client-123&scope=openid+mcp",
+    },
+  ])("$name", async ({ href, props, callbackURL }) => {
+    window.history.replaceState({}, "", href);
+    const screen = await render(<LoginForm {...props} />);
 
     await screen.getByRole("button", { name: /Login with Google/ }).click();
 
     await vi.waitFor(() => {
       expect(socialSignIn).toHaveBeenCalledWith({
         provider: "google",
-        callbackURL:
-          "/api/auth/oauth2/authorize?client_id=client-123&scope=openid+mcp&state=signed",
-      });
-    });
-  });
-
-  it("should open Studio after a regular sign-in", async () => {
-    const screen = await render(<LoginForm isOAuthRequest={false} />);
-
-    await screen.getByRole("button", { name: /Login with Google/ }).click();
-
-    await vi.waitFor(() => {
-      expect(socialSignIn).toHaveBeenCalledWith({
-        provider: "google",
-        callbackURL: "/studio/posts",
+        callbackURL,
       });
     });
   });
@@ -76,104 +108,29 @@ describe("LoginForm", () => {
       .toBeVisible();
   });
 
-  it("should show the OAuth authorisation error from the query", async () => {
-    const screen = await render(
-      <LoginForm
-        isOAuthRequest={false}
-        oauthError="invalid_client"
-        oauthErrorDescription="client_id is required"
-      />,
-    );
+  it.each([
+    {
+      name: "should show the OAuth authorisation error from the query",
+      props: {
+        isOAuthRequest: false,
+        ...INVALID_CLIENT,
+      } satisfies LoginFormProps,
+      description: "client_id is required",
+    },
+    {
+      name: "should fall back to the error code when no description is provided",
+      props: {
+        isOAuthRequest: false,
+        oauthError: "invalid_client",
+      } satisfies LoginFormProps,
+      description: "invalid_client",
+    },
+  ])("$name", async ({ props, description }) => {
+    const screen = await render(<LoginForm {...props} />);
 
     await expect
       .element(screen.getByText("Authorisation failed"))
       .toBeVisible();
-    await expect
-      .element(screen.getByText("client_id is required"))
-      .toBeVisible();
-  });
-
-  it("should fall back to the error code when no description is provided", async () => {
-    const screen = await render(
-      <LoginForm isOAuthRequest={false} oauthError="invalid_client" />,
-    );
-
-    await expect
-      .element(screen.getByText("Authorisation failed"))
-      .toBeVisible();
-    await expect.element(screen.getByText("invalid_client")).toBeVisible();
-  });
-
-  it("should not resume OAuth when only error query params are present", async () => {
-    window.history.replaceState(
-      {},
-      "",
-      "/login?error=invalid_client&error_description=client_id+is+required",
-    );
-    const screen = await render(
-      <LoginForm
-        isOAuthRequest={false}
-        oauthError="invalid_client"
-        oauthErrorDescription="client_id is required"
-      />,
-    );
-
-    await screen.getByRole("button", { name: /Login with Google/ }).click();
-
-    await vi.waitFor(() => {
-      expect(socialSignIn).toHaveBeenCalledWith({
-        provider: "google",
-        callbackURL: "/studio/posts",
-      });
-    });
-  });
-
-  it("should resume authorise without a query when only error params remain", async () => {
-    window.history.replaceState(
-      {},
-      "",
-      "/login?error=invalid_client&error_description=client_id+is+required",
-    );
-    const screen = await render(
-      <LoginForm
-        isOAuthRequest
-        oauthError="invalid_client"
-        oauthErrorDescription="client_id is required"
-      />,
-    );
-
-    await screen.getByRole("button", { name: /Login with Google/ }).click();
-
-    await vi.waitFor(() => {
-      expect(socialSignIn).toHaveBeenCalledWith({
-        provider: "google",
-        callbackURL: "/api/auth/oauth2/authorize",
-      });
-    });
-  });
-
-  it("should omit error query params from the Google authorisation resume", async () => {
-    window.history.replaceState(
-      {},
-      "",
-      "/login?client_id=client-123&scope=openid%20mcp&error=invalid_client&error_description=client_id+is+required",
-    );
-    const screen = await render(
-      <LoginForm
-        isOAuthRequest
-        oauthError="invalid_client"
-        oauthErrorDescription="client_id is required"
-      />,
-    );
-
-    await screen.getByRole("button", { name: /Login with Google/ }).click();
-
-    await vi.waitFor(() => {
-      expect(socialSignIn).toHaveBeenCalledWith({
-        provider: "google",
-        callbackURL:
-          "/api/auth/oauth2/authorize?client_id=client-123&scope=openid+mcp",
-      });
-    });
+    await expect.element(screen.getByText(description)).toBeVisible();
   });
 });
