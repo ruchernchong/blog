@@ -13,8 +13,9 @@ import type { TokenBreakdown } from "./types";
  * (multi-provider agents like OpenCode) or derived from the agent (Claude →
  * anthropic, Codex → openai). A model whose provider cannot be resolved is
  * unpriceable rather than borrowing another provider's rate — the same slug is
- * routinely a different price under a different provider. Pricing runs only in
- * the local ingest script and the reprice pass, never in the browser.
+ * routinely a different price under a different provider. Pricing runs on the
+ * server: the `/usage` read path, local ingest, and the reprice pass — never
+ * in the browser.
  */
 
 /** USD per 1,000,000 tokens for each token kind. */

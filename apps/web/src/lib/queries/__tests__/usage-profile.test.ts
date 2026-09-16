@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mocks } = vi.hoisted(() => ({
   mocks: {
-    batchResult: [[], []] as unknown[],
+    batchResult: [[], [], []] as unknown[],
     unpricedRows: [] as unknown[],
     updated: [] as unknown[],
   },
@@ -32,6 +32,33 @@ vi.mock("@/schema", async () => {
 
 import { getUsageProfile, repriceUnpricedTokenUsage } from "../usage";
 
+const MILLION = 1_000_000;
+
+/** $1/M input so `inputTokens / 1e6` is the derived USD cost. */
+function pricingRow(
+  provider: string,
+  id: string,
+  inputRate: string,
+  outputRate = "0",
+) {
+  return {
+    provider,
+    id,
+    inputRate,
+    outputRate,
+    cacheReadRate: "0",
+    cacheWriteRate: "0",
+    aliasTarget: null as string | null,
+  };
+}
+
+const fixtureRegistry = [
+  pricingRow("anthropic", "claude-opus", "1"),
+  pricingRow("openrouter", "claude-opus", "1"),
+  pricingRow("anthropic", "free", "0"),
+  pricingRow("anthropic", "m1", "1"),
+];
+
 const base = {
   date: "2026-01-01",
   agent: "claude",
@@ -43,14 +70,20 @@ const base = {
   cacheWriteTokens: 0,
   reasoningTokens: 0,
   totalTokens: 0,
-  costUsd: null as string | null,
+  // Deliberately wrong: the profile must ignore stored costUsd.
+  costUsd: "999" as string | null,
   messages: 1,
   updatedAt: new Date("2026-01-01T00:00:00Z"),
 };
 
 describe("getUsageProfile", () => {
   beforeEach(() => {
-    mocks.batchResult = [[], []];
+    mocks.batchResult = [[], [], []];
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("should return an empty profile when there are no rows", async () => {
@@ -64,9 +97,19 @@ describe("getUsageProfile", () => {
   it("should build contributions, rollups and summary from rows", async () => {
     mocks.batchResult = [
       [
-        { ...base, date: "2025-12-31", totalTokens: 100, costUsd: "1" },
-        { ...base, totalTokens: 400, costUsd: "2" },
-        { ...base, provider: "openrouter", totalTokens: 10, costUsd: "0.5" },
+        {
+          ...base,
+          date: "2025-12-31",
+          inputTokens: MILLION,
+          totalTokens: 100,
+        },
+        { ...base, inputTokens: 2 * MILLION, totalTokens: 400 },
+        {
+          ...base,
+          provider: "openrouter",
+          inputTokens: 0.5 * MILLION,
+          totalTokens: 10,
+        },
         {
           ...base,
           date: "2026-01-03",
@@ -79,14 +122,13 @@ describe("getUsageProfile", () => {
           date: "2026-01-04",
           model: "free",
           totalTokens: 0,
-          costUsd: "0",
         },
         {
           ...base,
           date: "2026-01-05",
           model: "m1",
+          inputTokens: MILLION,
           totalTokens: 500,
-          costUsd: "1",
         },
         { ...base, date: "2026-01-05", model: "m2", totalTokens: 1 },
         { ...base, date: "2026-01-05", model: "m3", totalTokens: 1 },
@@ -103,6 +145,7 @@ describe("getUsageProfile", () => {
           updatedAt: new Date("2026-01-09T00:00:00Z"),
         },
       ],
+      fixtureRegistry,
     ];
 
     const profile = await getUsageProfile();
@@ -119,10 +162,12 @@ describe("getUsageProfile", () => {
 
     const opus = profile.byModel.find((row) => row.key === "claude-opus");
     expect(opus?.provider).toBeNull();
+    // $1 + $2 (anthropic) + $0.50 (openrouter) from 1M-token input buckets.
     expect(opus?.cost).toBe(3.5);
     expect(
       profile.byModel.find((row) => row.key === "unknown")?.cost,
     ).toBeNull();
+    expect(profile.byModel.find((row) => row.key === "free")?.cost).toBe(0);
     expect(
       profile.byModel.find((row) => row.key === "free")?.costPerMillionTokens,
     ).toBeNull();
@@ -137,7 +182,7 @@ describe("getUsageProfile", () => {
   });
 
   it("should have no active days when every row has zero tokens", async () => {
-    mocks.batchResult = [[{ ...base, totalTokens: 0 }], []];
+    mocks.batchResult = [[{ ...base, totalTokens: 0 }], [], fixtureRegistry];
 
     const profile = await getUsageProfile();
 
@@ -154,6 +199,7 @@ describe("getUsageProfile", () => {
         { ...base, date: "2025-07-20", totalTokens: 200 },
       ],
       [],
+      fixtureRegistry,
     ];
 
     const profile = await getUsageProfile();

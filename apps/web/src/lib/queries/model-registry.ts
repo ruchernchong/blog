@@ -49,8 +49,32 @@ export function entryToRow(entry: ModelEntry): InsertModel {
   };
 }
 
-/** A `model` table row → a {@link ModelEntry} for merging/pricing. */
-export function rowToEntry(row: SelectModel): ModelEntry {
+/**
+ * Narrow `model` projection used to build pricing: identity, the four rates,
+ * and `aliasTarget`. Metadata (name, source, dates) is unused by `costOf`.
+ */
+export const MODEL_PRICING_COLUMNS = {
+  provider: model.provider,
+  id: model.id,
+  inputRate: model.inputRate,
+  outputRate: model.outputRate,
+  cacheReadRate: model.cacheReadRate,
+  cacheWriteRate: model.cacheWriteRate,
+  aliasTarget: model.aliasTarget,
+} as const;
+
+export type ModelPricingRow = {
+  provider: string;
+  id: string;
+  inputRate: string | null;
+  outputRate: string | null;
+  cacheReadRate: string | null;
+  cacheWriteRate: string | null;
+  aliasTarget: string | null;
+};
+
+/** Pricing columns → a {@link ModelEntry} `costOf` can consume. */
+export function pricingRowToEntry(row: ModelPricingRow): ModelEntry {
   const num = (value: string | null): number | undefined =>
     value == null ? undefined : Number(value);
   const input = num(row.inputRate);
@@ -58,7 +82,6 @@ export function rowToEntry(row: SelectModel): ModelEntry {
   return {
     provider: row.provider,
     id: row.id,
-    displayName: row.displayName ?? undefined,
     rate:
       input != null || output != null
         ? {
@@ -68,11 +91,21 @@ export function rowToEntry(row: SelectModel): ModelEntry {
             cacheWrite: num(row.cacheWriteRate),
           }
         : undefined,
+    // `costOf` ignores source; a placeholder keeps {@link ModelEntry} satisfied.
+    source: "override",
+    aliasTarget: row.aliasTarget ?? undefined,
+  };
+}
+
+/** A `model` table row → a {@link ModelEntry} for merging/pricing. */
+export function rowToEntry(row: SelectModel): ModelEntry {
+  return {
+    ...pricingRowToEntry(row),
+    displayName: row.displayName ?? undefined,
     contextLimit: row.contextLimit ?? undefined,
     releaseDate: row.releaseDate ?? undefined,
     source: row.source,
     isOverride: row.isOverride,
-    aliasTarget: row.aliasTarget ?? undefined,
   };
 }
 
