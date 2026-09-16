@@ -1,3 +1,9 @@
+## [1.40.0](https://github.com/ruchernchong/blog/compare/v1.39.0...v1.40.0) (2026-09-16)
+
+### Features
+
+* add grok usage parser to rust collector ([46054c8](https://github.com/ruchernchong/blog/commit/46054c8f9894c5c61a6658026f5458328a9b3be0))
+
 ## [1.39.0](https://github.com/ruchernchong/blog/compare/v1.38.2...v1.39.0) (2026-09-16)
 
 ### Features
