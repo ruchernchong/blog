@@ -1,4 +1,7 @@
-import type { Pricing } from "@workspace/usage/pricing";
+import {
+  buildPricingFromRegistry,
+  type Pricing,
+} from "@workspace/usage/pricing";
 import {
   type AgentDayBreakdown,
   type Cost,
@@ -14,11 +17,16 @@ import {
 import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns";
 import { and, asc, eq, isNull, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
+import {
+  MODEL_PRICING_COLUMNS,
+  pricingRowToEntry,
+} from "@/lib/queries/model-registry";
 import { excludedColumns } from "@/lib/queries/upsert";
 import {
   db,
   type InsertTokenEffortUsage,
   type InsertTokenUsage,
+  model,
   tokenEffortUsage,
   tokenUsage,
 } from "@/schema";
@@ -171,14 +179,7 @@ export async function repriceUnpricedTokenUsage(
   let repriced = 0;
   let stillUnpriced = 0;
   for (const row of rows) {
-    const tokens: TokenBreakdown = {
-      input: row.inputTokens,
-      output: row.outputTokens,
-      cacheRead: row.cacheReadTokens,
-      cacheWrite: row.cacheWriteTokens,
-      reasoning: row.reasoningTokens,
-    };
-    const cost = pricing.costOf(tokens, row.model, {
+    const cost = pricing.costOf(tokensOf(row), row.model, {
       agent: row.agent,
       provider: row.provider,
     });
@@ -216,9 +217,12 @@ export async function repriceUnpricedTokenUsage(
  * Build the public `UsageProfile` from the daily `token_usage` aggregates
  * (and optional `token_effort_usage` session-level effort rows).
  *
- * Pure read (no mutations). All cost arithmetic treats a `null` `costUsd` as
- * N.A. — it is excluded from sums rather than counted as $0, and a group whose
- * rows are *all* N.A. (e.g. the legacy Codex `unknown` model) reports `null`.
+ * Pure read (no mutations). Display cost is `costOf(stored tokens, current
+ * registry)` — API equivalent at provider list prices, not an invoice. A
+ * `null` cost is N.A.: excluded from sums rather than counted as $0, and a
+ * group whose rows are *all* N.A. (e.g. the legacy Codex `unknown` model)
+ * reports `null`. Stored `costUsd` is unused here; it remains a parity net
+ * for ingest/reprice.
  */
 export async function getUsageProfile(): Promise<UsageProfile> {
   "use cache";
@@ -226,8 +230,10 @@ export async function getUsageProfile(): Promise<UsageProfile> {
   cacheLife("days");
   cacheTag("usage");
 
-  // neon-http: one HTTP round-trip via Neon's batch API (Promise.all would be two).
-  const [rows, effortRows] = await db.batch([
+  // neon-http: one HTTP round-trip via Neon's batch API. The model select is
+  // in this batch (not Promise.all / loadPricing) so we do not add a round-trip
+  // and do not import models.ts (which already imports this module).
+  const [rows, effortRows, modelRows] = await db.batch([
     db
       .select()
       .from(tokenUsage)
@@ -237,11 +243,14 @@ export async function getUsageProfile(): Promise<UsageProfile> {
         asc(tokenUsage.model),
       ),
     db.select().from(tokenEffortUsage),
+    db.select(MODEL_PRICING_COLUMNS).from(model),
   ]);
 
   if (rows.length === 0) {
     return emptyProfile();
   }
+
+  const pricing = buildPricingFromRegistry(modelRows.map(pricingRowToEntry));
 
   // --- Fold rows into per-day aggregates ------------------------------------
   const dayMap = new Map<string, DayAggregate>();
@@ -256,17 +265,22 @@ export async function getUsageProfile(): Promise<UsageProfile> {
 
     addTokens(tokenMix, row);
 
+    const cost = pricing.costOf(tokensOf(row), row.model, {
+      agent: row.agent,
+      provider: row.provider,
+    });
+
     const day = getOrCreateDay(dayMap, row.date);
     day.tokens += row.totalTokens;
     day.messages += row.messages;
-    day.costValues.push(row.costUsd);
+    day.costValues.push(cost);
     addTokens(day.breakdown, row);
 
-    addToRollup(getOrCreateRollup(day.agents, row.agent), row);
-    addToRollup(getOrCreateRollup(day.models, row.model), row);
-    addToRollup(getOrCreateRollup(agentTotals, row.agent), row);
-    addToRollup(getOrCreateRollup(providerTotals, row.provider), row);
-    addToRollup(getOrCreateRollup(modelTotals, row.model), row);
+    addToRollup(getOrCreateRollup(day.agents, row.agent), row, cost);
+    addToRollup(getOrCreateRollup(day.models, row.model), row, cost);
+    addToRollup(getOrCreateRollup(agentTotals, row.agent), row, cost);
+    addToRollup(getOrCreateRollup(providerTotals, row.provider), row, cost);
+    addToRollup(getOrCreateRollup(modelTotals, row.model), row, cost);
   }
 
   // --- Dense day array (fill gaps) + intensity scale ------------------------
@@ -317,7 +331,7 @@ export async function getUsageProfile(): Promise<UsageProfile> {
 interface RollupAggregate {
   tokens: number;
   messages: number;
-  costValues: (string | null)[];
+  costValues: (number | null)[];
   dailyTokens: Map<string, number>;
   providers: Set<string>;
 }
@@ -326,7 +340,7 @@ interface DayAggregate {
   date: string;
   tokens: number;
   messages: number;
-  costValues: (string | null)[];
+  costValues: (number | null)[];
   breakdown: TokenBreakdown;
   agents: Map<string, RollupAggregate>;
   models: Map<string, RollupAggregate>;
@@ -377,10 +391,11 @@ function getOrCreateRollup(
 function addToRollup(
   rollup: RollupAggregate,
   row: typeof tokenUsage.$inferSelect,
+  cost: number | null,
 ): void {
   rollup.tokens += row.totalTokens;
   rollup.messages += row.messages;
-  rollup.costValues.push(row.costUsd);
+  rollup.costValues.push(cost);
   rollup.providers.add(row.provider);
   rollup.dailyTokens.set(
     row.date,
@@ -399,13 +414,23 @@ function addTokens(
   breakdown.reasoning += row.reasoningTokens;
 }
 
+function tokensOf(row: typeof tokenUsage.$inferSelect): TokenBreakdown {
+  return {
+    input: row.inputTokens,
+    output: row.outputTokens,
+    cacheRead: row.cacheReadTokens,
+    cacheWrite: row.cacheWriteTokens,
+    reasoning: row.reasoningTokens,
+  };
+}
+
 /** Sum priced values; `null` if every value is N.A. (none priced). */
-function sumCost(values: (string | null)[]): Cost {
+function sumCost(values: (number | null)[]): Cost {
   let total = 0;
   let priced = false;
   for (const value of values) {
     if (value !== null) {
-      total += Number(value);
+      total += value;
       priced = true;
     }
   }
