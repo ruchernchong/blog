@@ -8,6 +8,7 @@ describe("providerForAgent", () => {
   it("should map known single-provider agents", () => {
     expect(providerForAgent("claude")).toBe("anthropic");
     expect(providerForAgent("codex")).toBe("openai");
+    expect(providerForAgent("grok")).toBe("xai");
   });
 
   it("should fall back to the agent key for an unmapped agent", () => {

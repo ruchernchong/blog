@@ -16,6 +16,7 @@ import type { Provider } from "./types";
 export const AGENT_PROVIDERS: Record<string, Provider> = {
   claude: "anthropic",
   codex: "openai",
+  grok: "xai",
 };
 
 const MODELS_DEV_LOGO_PROVIDER_IDS: Record<string, string> = {

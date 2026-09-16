@@ -48,7 +48,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Usage collector
 
-- `pnpm usage:measure:rust` / `pnpm usage:ingest:rust` - Rust collector (`packages/usage/rust`). Parses Claude, Codex, OpenCode, and Cursor; `ingest:rust` POSTs `/api/usage/ingest`. Auth is `usage-ingest login` (OAuth, admin, Keychain). LaunchAgent: `packages/usage/rust/macos/INSTALL.md`
+- `pnpm usage:measure:rust` / `pnpm usage:ingest:rust` - Rust collector (`packages/usage/rust`). Parses Claude, Codex, OpenCode, Cursor, and Grok; `ingest:rust` POSTs `/api/usage/ingest`. Auth is `usage-ingest login` (OAuth, admin, Keychain). LaunchAgent: `packages/usage/rust/macos/INSTALL.md`
 
 ### Usage Analytics Ingestion
 
@@ -70,7 +70,7 @@ See `packages/usage/src/registry.ts` (pure normalise/merge) and
   touches the local machine). Requires `BLOG_MCP_AUTH_TOKEN` and Vercel's
   `VERCEL_PROJECT_PRODUCTION_URL` (or `VERCEL_URL`) in the environment.
 - `pnpm usage:measure:rust` / `pnpm usage:ingest:rust` - Rust collector (`packages/usage/rust`).
-  Parses Claude, Codex, OpenCode, and Cursor on this machine. `ingest:rust` POSTs
+  Parses Claude, Codex, OpenCode, Cursor, and Grok on this machine. `ingest:rust` POSTs
   daily rows with `costUsd: null` so the ingest route prices them. Auth is
   `usage-ingest login` (OAuth, admin account, Keychain). `USAGE_INGEST_DRY_RUN=1`
   prints the payload without POSTing. Public install (Rust toolchain, LaunchAgent):
