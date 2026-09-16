@@ -1,3 +1,9 @@
+## [1.38.2](https://github.com/ruchernchong/blog/compare/v1.38.1...v1.38.2) (2026-09-16)
+
+### Bug Fixes
+
+* show oauth errors on the login page ([575f944](https://github.com/ruchernchong/blog/commit/575f944ffc46b37594dec870808c0847ba083b44)), closes [#326](https://github.com/ruchernchong/blog/issues/326)
+
 ## [1.38.1](https://github.com/ruchernchong/blog/compare/v1.38.0...v1.38.1) (2026-09-16)
 
 ### Bug Fixes
