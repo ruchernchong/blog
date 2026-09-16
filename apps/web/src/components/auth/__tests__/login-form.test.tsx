@@ -38,7 +38,7 @@ describe("LoginForm", () => {
       expect(socialSignIn).toHaveBeenCalledWith({
         provider: "google",
         callbackURL:
-          "/api/auth/oauth2/authorize?client_id=client-123&scope=openid%20mcp&state=signed",
+          "/api/auth/oauth2/authorize?client_id=client-123&scope=openid+mcp&state=signed",
       });
     });
   });
@@ -74,5 +74,106 @@ describe("LoginForm", () => {
     await expect
       .element(screen.getByText("Failed to sign in with Google"))
       .toBeVisible();
+  });
+
+  it("should show the OAuth authorisation error from the query", async () => {
+    const screen = await render(
+      <LoginForm
+        isOAuthRequest={false}
+        oauthError="invalid_client"
+        oauthErrorDescription="client_id is required"
+      />,
+    );
+
+    await expect
+      .element(screen.getByText("Authorisation failed"))
+      .toBeVisible();
+    await expect
+      .element(screen.getByText("client_id is required"))
+      .toBeVisible();
+  });
+
+  it("should fall back to the error code when no description is provided", async () => {
+    const screen = await render(
+      <LoginForm isOAuthRequest={false} oauthError="invalid_client" />,
+    );
+
+    await expect
+      .element(screen.getByText("Authorisation failed"))
+      .toBeVisible();
+    await expect.element(screen.getByText("invalid_client")).toBeVisible();
+  });
+
+  it("should not resume OAuth when only error query params are present", async () => {
+    window.history.replaceState(
+      {},
+      "",
+      "/login?error=invalid_client&error_description=client_id+is+required",
+    );
+    const screen = await render(
+      <LoginForm
+        isOAuthRequest={false}
+        oauthError="invalid_client"
+        oauthErrorDescription="client_id is required"
+      />,
+    );
+
+    await screen.getByRole("button", { name: /Login with Google/ }).click();
+
+    await vi.waitFor(() => {
+      expect(socialSignIn).toHaveBeenCalledWith({
+        provider: "google",
+        callbackURL: "/studio/posts",
+      });
+    });
+  });
+
+  it("should resume authorise without a query when only error params remain", async () => {
+    window.history.replaceState(
+      {},
+      "",
+      "/login?error=invalid_client&error_description=client_id+is+required",
+    );
+    const screen = await render(
+      <LoginForm
+        isOAuthRequest
+        oauthError="invalid_client"
+        oauthErrorDescription="client_id is required"
+      />,
+    );
+
+    await screen.getByRole("button", { name: /Login with Google/ }).click();
+
+    await vi.waitFor(() => {
+      expect(socialSignIn).toHaveBeenCalledWith({
+        provider: "google",
+        callbackURL: "/api/auth/oauth2/authorize",
+      });
+    });
+  });
+
+  it("should omit error query params from the Google authorisation resume", async () => {
+    window.history.replaceState(
+      {},
+      "",
+      "/login?client_id=client-123&scope=openid%20mcp&error=invalid_client&error_description=client_id+is+required",
+    );
+    const screen = await render(
+      <LoginForm
+        isOAuthRequest
+        oauthError="invalid_client"
+        oauthErrorDescription="client_id is required"
+      />,
+    );
+
+    await screen.getByRole("button", { name: /Login with Google/ }).click();
+
+    await vi.waitFor(() => {
+      expect(socialSignIn).toHaveBeenCalledWith({
+        provider: "google",
+        callbackURL:
+          "/api/auth/oauth2/authorize?client_id=client-123&scope=openid+mcp",
+      });
+    });
   });
 });

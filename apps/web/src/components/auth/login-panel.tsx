@@ -21,7 +21,14 @@ export function LoginPanelFallback() {
 }
 
 async function LoginPanelContent({ searchParams }: LoginPanelProps) {
-  const { clientId } = await oauthSearchParamsCache.parse(searchParams);
+  const { clientId, error, errorDescription } =
+    await oauthSearchParamsCache.parse(searchParams);
 
-  return <LoginForm isOAuthRequest={Boolean(clientId)} />;
+  return (
+    <LoginForm
+      isOAuthRequest={Boolean(clientId)}
+      oauthError={error}
+      oauthErrorDescription={errorDescription}
+    />
+  );
 }

@@ -23,6 +23,9 @@ import { db } from "@/schema";
  * - DATABASE_URL: PostgreSQL connection string (via db import)
  */
 export const auth = betterAuth({
+  onAPIError: {
+    errorURL: "/login",
+  },
   secondaryStorage: redisSecondaryStorage,
   baseURL: {
     allowedHosts: [
