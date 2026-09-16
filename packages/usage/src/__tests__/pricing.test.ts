@@ -70,27 +70,25 @@ describe("buildPricingFromRegistry", () => {
     ).toBe(1.25);
   });
 
-  it("should fold an alias id into its target with canonicalModel", () => {
+  it("should canonicalise to the registry id pricing resolved", () => {
+    // Alias → target.
     expect(
       pricing.canonicalModel("codex-auto-review", { agent: "codex" }),
     ).toBe("gpt-5-codex");
+    // Exact id → itself.
     expect(pricing.canonicalModel("gpt-5.5", { agent: "codex" })).toBe(
       "gpt-5.5",
     );
-    // Aliases are provider-scoped: no provider, no alias fold.
+    // Punctuation/date variant → the registry's spelling.
+    expect(
+      pricing.canonicalModel("claude-sonnet-20260101", { agent: "claude" }),
+    ).toBe("claude-sonnet");
+    // Unknown id, or no provider, stays its own key.
+    expect(pricing.canonicalModel("mystery", { agent: "claude" })).toBe(
+      "mystery",
+    );
     expect(pricing.canonicalModel("codex-auto-review")).toBe(
       "codex-auto-review",
-    );
-  });
-
-  it("should strip a backend -build suffix when no alias is registered", () => {
-    expect(pricing.canonicalModel("grok-4.6-build", { provider: "xai" })).toBe(
-      "grok-4.6",
-    );
-    expect(pricing.canonicalModel("grok-4.5-build")).toBe("grok-4.5");
-    // Only a trailing suffix folds; the segment elsewhere is part of the id.
-    expect(pricing.canonicalModel("grok-build-0.1", { provider: "xai" })).toBe(
-      "grok-build-0.1",
     );
   });
 

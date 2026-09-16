@@ -183,12 +183,12 @@ describe("getUsageProfile", () => {
     expect(profile.lastUpdated).toBe("2026-01-09T00:00:00.000Z");
   });
 
-  it("should fold alias and -build model ids into one model row", async () => {
+  it("should fold aliased model ids into one model row", async () => {
     mocks.batchResult = [
       [
         // Cursor stores the id the user picked; the Grok CLI stores the served
-        // -build id (registered as an alias). A third id has no alias row and
-        // relies on the suffix fallback.
+        // -build id (registered as an alias). A third id has no registry entry
+        // and must stay its own, unpriced row.
         {
           ...base,
           agent: "cursor",
@@ -221,15 +221,16 @@ describe("getUsageProfile", () => {
 
     expect(profile.byModel.map((row) => row.key)).toEqual([
       "grok-4.6",
-      "grok-4.5",
+      "grok-4.5-build",
     ]);
     const grok = profile.byModel[0];
     expect(grok.tokens).toBe(30);
     // Priced per stored id ($1/M via the alias), then summed under the target.
     expect(grok.cost).toBe(3);
+    expect(profile.byModel[1].cost).toBeNull();
     expect(profile.contributions[0].models.map((row) => row.model)).toEqual([
       "grok-4.6",
-      "grok-4.5",
+      "grok-4.5-build",
     ]);
   });
 

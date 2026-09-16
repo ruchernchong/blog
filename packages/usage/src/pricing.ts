@@ -38,8 +38,10 @@ export interface PriceOpts {
 export interface Pricing {
   priceFor(model: string, opts?: PriceOpts): ModelRate | null;
   /**
-   * The id a model rolls up under: its provider-scoped alias target when one
-   * is registered (e.g. `grok-4.6-build` → `grok-4.6`), else the model itself.
+   * The registry id a model is billed as, via the same resolution `priceFor`
+   * uses (exact id, provider-scoped alias, then punctuation/date-insensitive
+   * slug match). Falls back to the model itself when nothing prices it, so an
+   * unknown id stays its own (N.A.) row rather than merging with anything.
    */
   canonicalModel(model: string, opts?: PriceOpts): string;
   /** Cost in USD, or `null` when the model cannot be priced (rendered "N.A."). */
@@ -48,17 +50,6 @@ export interface Pricing {
     model: string,
     opts?: PriceOpts,
   ): number | null;
-}
-
-/**
- * Suffixes a backend appends to the model id the user actually picked. The
- * Grok CLI serves `grok-4.6` as `grok-4.6-build`; the suffix is a routing
- * detail, not a different model, so it folds away when no alias is registered.
- */
-const BACKEND_SUFFIX = /-build$/;
-
-export function stripBackendSuffix(model: string): string {
-  return model.replace(BACKEND_SUFFIX, "");
 }
 
 function toRate(rate: Partial<ModelRate>): ModelRate | null {
@@ -85,7 +76,7 @@ export function buildPricingFromRegistry(entries: ModelEntry[]): Pricing {
   );
   const byProviderCanonical: Record<
     string,
-    Record<string, ModelRate>
+    Record<string, string>
   > = Object.create(null);
   const aliasByProvider: Record<string, Record<string, string>> = Object.create(
     null,
@@ -103,7 +94,7 @@ export function buildPricingFromRegistry(entries: ModelEntry[]): Pricing {
     byProvider[entry.provider][entry.id] = rate;
     byProviderCanonical[entry.provider] ??= Object.create(null);
     // First entry wins, so an exact-id duplicate never displaces an earlier one.
-    byProviderCanonical[entry.provider][canonicalSlug(entry.id)] ??= rate;
+    byProviderCanonical[entry.provider][canonicalSlug(entry.id)] ??= entry.id;
   }
 
   const warned = new Set<string>();
@@ -115,22 +106,25 @@ export function buildPricingFromRegistry(entries: ModelEntry[]): Pricing {
     );
   }
 
-  function canonicalModel(model: string, opts?: PriceOpts): string {
+  /** The registry id `model` resolves to under its provider, or `null`. */
+  function resolve(model: string, opts?: PriceOpts): string | null {
     const provider = providerOf(opts);
+    if (!provider) return null;
     // Resolve a provider-scoped alias (replaces the old agent-keyed MODEL_ALIASES).
-    const aliased = provider ? aliasByProvider[provider]?.[model] : undefined;
-    return aliased ?? stripBackendSuffix(model);
+    const target = aliasByProvider[provider]?.[model] ?? model;
+    if (byProvider[provider]?.[target]) return target;
+    return byProviderCanonical[provider]?.[canonicalSlug(target)] ?? null;
+  }
+
+  function canonicalModel(model: string, opts?: PriceOpts): string {
+    return resolve(model, opts) ?? model;
   }
 
   function priceFor(model: string, opts?: PriceOpts): ModelRate | null {
     const provider = providerOf(opts);
-    if (!provider) return null;
-    const target = canonicalModel(model, opts);
-    return (
-      byProvider[provider]?.[target] ??
-      byProviderCanonical[provider]?.[canonicalSlug(target)] ??
-      null
-    );
+    const id = resolve(model, opts);
+    if (!provider || id === null) return null;
+    return byProvider[provider][id];
   }
 
   function costOf(
