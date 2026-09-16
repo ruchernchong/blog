@@ -49,10 +49,10 @@ export default async function Image() {
     <UsageHeatmap
       layout={layout}
       title="Usage"
-      description="Tokens and cost across my AI coding agents over time."
+      description="The API equivalent of my AI coding agents at provider list prices."
       stats={[
         {
-          label: "Total cost",
+          label: "API equivalent",
           value: usdFormatter.format(profile.summary.totalCost),
         },
         {

@@ -119,7 +119,7 @@ export function UsageStats({
   const cards: (UsageStatCardProps & { key: string })[] = [
     {
       key: "cost",
-      title: "Total Cost",
+      title: "API Equivalent",
       icon: DollarCircleIcon,
       status: "warning",
       value: summary.totalCost,

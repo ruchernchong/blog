@@ -22,7 +22,7 @@ import { UsageTrend } from "./components/usage-trend";
 
 const title = "Usage";
 const description =
-  "Tokens, cost, and reasoning effort across my AI coding agents over time. Aggregates only.";
+  "The API equivalent of my AI coding agents at provider list prices. Tokens, cost, and reasoning effort. Not what I paid. Aggregates only.";
 const canonical = "/usage";
 
 export const metadata: Metadata = {
@@ -99,19 +99,19 @@ function getBreakdownViews(profile: UsageProfile): BreakdownView[] {
     {
       id: "model",
       label: "Model",
-      description: "Tokens and cost grouped by model",
+      description: "Tokens and API-equivalent cost grouped by model",
       rows: profile.byModel,
     },
     {
       id: "provider",
       label: "Provider",
-      description: "Tokens and cost grouped by provider",
+      description: "Tokens and API-equivalent cost grouped by provider",
       rows: profile.byProvider,
     },
     {
       id: "agent",
       label: "Agent",
-      description: "Tokens and cost grouped by agent",
+      description: "Tokens and API-equivalent cost grouped by agent",
       rows: profile.byAgent,
     },
   ];

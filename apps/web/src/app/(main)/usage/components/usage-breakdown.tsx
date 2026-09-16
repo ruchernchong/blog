@@ -56,7 +56,7 @@ const HIDEABLE_COLUMNS = [
   { id: "provider", label: "Provider" },
   { id: "trend", label: "Trend" },
   { id: "tokens", label: "Tokens" },
-  { id: "cost", label: "Cost" },
+  { id: "cost", label: "API Equivalent" },
   { id: "costPerMillionTokens", label: "$ / 1M Tokens" },
   { id: "messages", label: "Messages" },
 ];
@@ -324,12 +324,12 @@ function getColumns({
     },
     {
       id: "cost",
-      header: "Cost",
+      header: "API Equivalent",
       align: "end",
       allowsSorting: true,
       cell: (row) => <CostValue cost={row.cost} />,
       cellClassName: "tabular-nums",
-      minWidth: 125,
+      minWidth: 150,
       pinned: "end",
     },
     {

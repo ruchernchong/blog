@@ -236,7 +236,7 @@ function Cell({
           <dl className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <Stat
               icon={DollarCircleIcon}
-              label="Cost"
+              label="API equivalent"
               value={formatCost(day.totals.cost)}
             />
             <Stat
