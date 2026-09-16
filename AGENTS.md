@@ -46,7 +46,7 @@ This file provides guidance to coding agents when working with code in this repo
 
 ### Usage collector
 
-- `pnpm usage:measure:rust` / `pnpm usage:ingest:rust` - Rust collector (`packages/usage/rust`). Parses Claude, Codex, OpenCode, and Cursor; `ingest:rust` POSTs `/api/usage/ingest`. Auth is `usage-ingest login` (OAuth, admin, Keychain). `USAGE_INGEST_DRY_RUN=1` prints the payload without POSTing. LaunchAgent: `packages/usage/rust/macos/INSTALL.md`
+- `pnpm usage:measure:rust` / `pnpm usage:ingest:rust` - Rust collector (`packages/usage/rust`). Parses Claude, Codex, OpenCode, Cursor, and Grok; `ingest:rust` POSTs `/api/usage/ingest`. Auth is `usage-ingest login` (OAuth, admin, Keychain). `USAGE_INGEST_DRY_RUN=1` prints the payload without POSTing. LaunchAgent: `packages/usage/rust/macos/INSTALL.md`
 - `pnpm usage:ingest` / `pnpm usage:ingest:prod` - Node ingest (`apps/web/src/scripts/ingest-usage.ts`). `usage:ingest` upserts into the `DATABASE_URL` database; `:prod` POSTs to the deployed `/api/usage/ingest` route
 
 ### MCP Server

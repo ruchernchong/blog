@@ -1,4 +1,4 @@
-use crate::{cursor, parse};
+use crate::{cursor, grok, parse};
 use chrono::{DateTime, Local, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -132,11 +132,12 @@ fn collect_with(home: &Path, local_date: impl Fn(DateTime<Utc>) -> String) -> Co
         row.messages += 1;
     };
 
-    let parsers: [(&str, Parser); 4] = [
+    let parsers: [(&str, Parser); 5] = [
         ("claude", parse::parse_claude),
         ("codex", parse::parse_codex),
         ("opencode", parse::parse_opencode),
         ("cursor", cursor::parse_cursor),
+        ("grok", grok::parse_grok),
     ];
 
     // A failing parser (or file) is a warning, not a fatal error: the server only
@@ -174,6 +175,7 @@ pub fn provider_for_agent(agent: &str) -> &str {
     match agent {
         "claude" => "anthropic",
         "codex" => "openai",
+        "grok" => "xai",
         other => other,
     }
 }
@@ -585,6 +587,7 @@ mod tests {
             ("codex", "openai"),
             ("opencode", "opencode"),
             ("cursor", "cursor"),
+            ("grok", "xai"),
         ] {
             assert_eq!(provider_for_agent(agent), want);
         }

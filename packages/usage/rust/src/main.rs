@@ -7,6 +7,7 @@
 //	usage-ingest ingest       # POST rows (OAuth bearer; server prices)
 mod collect;
 mod cursor;
+mod grok;
 mod ingest;
 mod oauth;
 mod parse;
