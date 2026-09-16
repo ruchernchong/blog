@@ -37,6 +37,13 @@ export interface PriceOpts {
 
 export interface Pricing {
   priceFor(model: string, opts?: PriceOpts): ModelRate | null;
+  /**
+   * The registry id a model is billed as, via the same resolution `priceFor`
+   * uses (exact id, provider-scoped alias, then punctuation/date-insensitive
+   * slug match). Falls back to the model itself when nothing prices it, so an
+   * unknown id stays its own (N.A.) row rather than merging with anything.
+   */
+  canonicalModel(model: string, opts?: PriceOpts): string;
   /** Cost in USD, or `null` when the model cannot be priced (rendered "N.A."). */
   costOf(
     tokens: TokenBreakdown,
@@ -69,7 +76,7 @@ export function buildPricingFromRegistry(entries: ModelEntry[]): Pricing {
   );
   const byProviderCanonical: Record<
     string,
-    Record<string, ModelRate>
+    Record<string, string>
   > = Object.create(null);
   const aliasByProvider: Record<string, Record<string, string>> = Object.create(
     null,
@@ -87,24 +94,37 @@ export function buildPricingFromRegistry(entries: ModelEntry[]): Pricing {
     byProvider[entry.provider][entry.id] = rate;
     byProviderCanonical[entry.provider] ??= Object.create(null);
     // First entry wins, so an exact-id duplicate never displaces an earlier one.
-    byProviderCanonical[entry.provider][canonicalSlug(entry.id)] ??= rate;
+    byProviderCanonical[entry.provider][canonicalSlug(entry.id)] ??= entry.id;
   }
 
   const warned = new Set<string>();
 
-  function priceFor(model: string, opts?: PriceOpts): ModelRate | null {
-    const agent = opts?.agent;
+  function providerOf(opts?: PriceOpts): string | undefined {
     // Prefer an explicit provider (multi-provider agents), else derive from agent.
-    const provider =
-      opts?.provider ?? (agent ? AGENT_PROVIDERS[agent] : undefined);
+    return (
+      opts?.provider ?? (opts?.agent ? AGENT_PROVIDERS[opts.agent] : undefined)
+    );
+  }
+
+  /** The registry id `model` resolves to under its provider, or `null`. */
+  function resolve(model: string, opts?: PriceOpts): string | null {
+    const provider = providerOf(opts);
     if (!provider) return null;
     // Resolve a provider-scoped alias (replaces the old agent-keyed MODEL_ALIASES).
     const target = aliasByProvider[provider]?.[model] ?? model;
-    return (
-      byProvider[provider]?.[target] ??
-      byProviderCanonical[provider]?.[canonicalSlug(target)] ??
-      null
-    );
+    if (byProvider[provider]?.[target]) return target;
+    return byProviderCanonical[provider]?.[canonicalSlug(target)] ?? null;
+  }
+
+  function canonicalModel(model: string, opts?: PriceOpts): string {
+    return resolve(model, opts) ?? model;
+  }
+
+  function priceFor(model: string, opts?: PriceOpts): ModelRate | null {
+    const provider = providerOf(opts);
+    const id = resolve(model, opts);
+    if (!provider || id === null) return null;
+    return byProvider[provider][id];
   }
 
   function costOf(
@@ -135,5 +155,5 @@ export function buildPricingFromRegistry(entries: ModelEntry[]): Pricing {
     );
   }
 
-  return { priceFor, costOf };
+  return { priceFor, canonicalModel, costOf };
 }

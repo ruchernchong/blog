@@ -57,6 +57,8 @@ const fixtureRegistry = [
   pricingRow("openrouter", "claude-opus", "1"),
   pricingRow("anthropic", "free", "0"),
   pricingRow("anthropic", "m1", "1"),
+  pricingRow("xai", "grok-4.6", "1"),
+  { ...pricingRow("xai", "grok-4.6-build", "0"), aliasTarget: "grok-4.6" },
 ];
 
 const base = {
@@ -179,6 +181,57 @@ describe("getUsageProfile", () => {
     expect(profile.summary.bestDay?.date).toBe("2026-01-01");
     expect(profile.effort?.classifiedSessionCount).toBe(2);
     expect(profile.lastUpdated).toBe("2026-01-09T00:00:00.000Z");
+  });
+
+  it("should fold aliased model ids into one model row", async () => {
+    mocks.batchResult = [
+      [
+        // Cursor stores the id the user picked; the Grok CLI stores the served
+        // -build id (registered as an alias). A third id has no registry entry
+        // and must stay its own, unpriced row.
+        {
+          ...base,
+          agent: "cursor",
+          provider: "xai",
+          model: "grok-4.6",
+          inputTokens: MILLION,
+          totalTokens: 10,
+        },
+        {
+          ...base,
+          agent: "grok",
+          provider: "xai",
+          model: "grok-4.6-build",
+          inputTokens: 2 * MILLION,
+          totalTokens: 20,
+        },
+        {
+          ...base,
+          agent: "grok",
+          provider: "xai",
+          model: "grok-4.5-build",
+          totalTokens: 5,
+        },
+      ],
+      [],
+      fixtureRegistry,
+    ];
+
+    const profile = await getUsageProfile();
+
+    expect(profile.byModel.map((row) => row.key)).toEqual([
+      "grok-4.6",
+      "grok-4.5-build",
+    ]);
+    const grok = profile.byModel[0];
+    expect(grok.tokens).toBe(30);
+    // Priced per stored id ($1/M via the alias), then summed under the target.
+    expect(grok.cost).toBe(3);
+    expect(profile.byModel[1].cost).toBeNull();
+    expect(profile.contributions[0].models.map((row) => row.model)).toEqual([
+      "grok-4.6",
+      "grok-4.5-build",
+    ]);
   });
 
   it("should have no active days when every row has zero tokens", async () => {

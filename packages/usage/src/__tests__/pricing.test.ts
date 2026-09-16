@@ -70,6 +70,28 @@ describe("buildPricingFromRegistry", () => {
     ).toBe(1.25);
   });
 
+  it("should canonicalise to the registry id pricing resolved", () => {
+    // Alias → target.
+    expect(
+      pricing.canonicalModel("codex-auto-review", { agent: "codex" }),
+    ).toBe("gpt-5-codex");
+    // Exact id → itself.
+    expect(pricing.canonicalModel("gpt-5.5", { agent: "codex" })).toBe(
+      "gpt-5.5",
+    );
+    // Punctuation/date variant → the registry's spelling.
+    expect(
+      pricing.canonicalModel("claude-sonnet-20260101", { agent: "claude" }),
+    ).toBe("claude-sonnet");
+    // Unknown id, or no provider, stays its own key.
+    expect(pricing.canonicalModel("mystery", { agent: "claude" })).toBe(
+      "mystery",
+    );
+    expect(pricing.canonicalModel("codex-auto-review")).toBe(
+      "codex-auto-review",
+    );
+  });
+
   it("should select rate by explicit provider for multi-provider agents", () => {
     expect(pricing.priceFor("gpt-5.5", { provider: "openai" })?.input).toBe(1);
     expect(
