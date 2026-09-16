@@ -1,3 +1,9 @@
+## [1.41.0](https://github.com/ruchernchong/blog/compare/v1.40.0...v1.41.0) (2026-09-16)
+
+### Features
+
+* fold model aliases into one usage row ([6459220](https://github.com/ruchernchong/blog/commit/6459220fa3be9a02e8ce925f7965cb1c9d2b08e6))
+
 ## [1.40.0](https://github.com/ruchernchong/blog/compare/v1.39.0...v1.40.0) (2026-09-16)
 
 ### Features
