@@ -11,7 +11,7 @@ import { db, model, tokenUsage } from "@/schema";
  * `costOf(stored tokens, current registry)` after `toFixed(6)`.
  *
  * Not wired into CI. Run locally:
- *   pnpm --filter @workspace/web exec tsx src/scripts/compare-usage-cost-parity.ts
+ *   pnpm --filter @workspace/web usage:compare-cost
  *
  * Refuses `NODE_ENV=production`. Do not point DATABASE_URL at production.
  */
@@ -135,7 +135,9 @@ async function main(): Promise<void> {
     `totals: stored=${fmtUsd(storedTotal)} derived=${fmtUsd(derivedTotal)}`,
   );
   console.log("per-provider:");
-  for (const name of [...byProvider.keys()].sort()) {
+  for (const name of [...byProvider.keys()].sort((a, b) =>
+    a.localeCompare(b),
+  )) {
     const provider = byProvider.get(name);
     if (!provider) continue;
     const classCounts = CLASSES.map(
