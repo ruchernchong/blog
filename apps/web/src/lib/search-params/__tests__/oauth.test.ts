@@ -17,13 +17,33 @@ describe("oauthSearchParams", () => {
     expect(result).toEqual({
       clientId: "client-123",
       scope: "openid profile mcp",
+      error: null,
+      errorDescription: null,
+    });
+  });
+
+  it("should parse OAuth error query parameters", () => {
+    const result = loadOAuthSearchParams(
+      "?error=invalid_client&error_description=client_id+is+required",
+    );
+
+    expect(result).toEqual({
+      clientId: null,
+      scope: null,
+      error: "invalid_client",
+      errorDescription: "client_id is required",
     });
   });
 
   it("should return null values when OAuth parameters are absent", () => {
     const result = loadOAuthSearchParams("");
 
-    expect(result).toEqual({ clientId: null, scope: null });
+    expect(result).toEqual({
+      clientId: null,
+      scope: null,
+      error: null,
+      errorDescription: null,
+    });
   });
 
   it("should use the first value when a parameter is repeated", () => {

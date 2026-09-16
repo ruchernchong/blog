@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, cn, Spinner } from "@heroui/react";
+import { Alert, Button, Card, cn, Spinner } from "@heroui/react";
 import type { ComponentPropsWithoutRef } from "react";
 import { useState } from "react";
 import { AUTH_ERROR } from "@/constants/auth-error-ids";
@@ -9,26 +9,47 @@ import { logError } from "@/lib/logger";
 
 interface LoginFormProps extends ComponentPropsWithoutRef<"div"> {
   isOAuthRequest: boolean;
+  oauthError?: string | null;
+  oauthErrorDescription?: string | null;
+}
+
+const OAUTH_ERROR_QUERY_KEYS = ["error", "error_description"] as const;
+
+function getOAuthAuthorizeCallbackURL() {
+  const params = new URLSearchParams(window.location.search);
+
+  for (const key of OAUTH_ERROR_QUERY_KEYS) {
+    params.delete(key);
+  }
+
+  const search = params.toString();
+  return search
+    ? `/api/auth/oauth2/authorize?${search}`
+    : "/api/auth/oauth2/authorize";
 }
 
 export const LoginForm = ({
   className,
   isOAuthRequest,
+  oauthError,
+  oauthErrorDescription,
   ...props
 }: LoginFormProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<string | null>(null);
+  const oauthErrorMessage = oauthErrorDescription ?? oauthError;
 
   // When the OAuth provider redirects an unauthenticated user here, it appends
   // the signed authorization query. Resume that flow after sign-in instead of
-  // dropping the user into Studio.
+  // dropping the user into Studio. Error query params are display-only and must
+  // not be forwarded back into authorize.
   const handleGoogleSignIn = async () => {
     setError(null);
     setIsLoading("google");
 
     try {
       const callbackURL = isOAuthRequest
-        ? `/api/auth/oauth2/authorize${window.location.search}`
+        ? getOAuthAuthorizeCallbackURL()
         : "/studio/posts";
 
       await authClient.signIn.social({
@@ -52,9 +73,18 @@ export const LoginForm = ({
           <Card.Title className="text-xl">Welcome back</Card.Title>
           <Card.Description>Login with your Google account</Card.Description>
         </Card.Header>
-        <Card.Content>
+        <Card.Content className="flex flex-col gap-4">
+          {oauthErrorMessage && (
+            <Alert status="danger">
+              <Alert.Indicator />
+              <Alert.Content>
+                <Alert.Title>Authorisation failed</Alert.Title>
+                <Alert.Description>{oauthErrorMessage}</Alert.Description>
+              </Alert.Content>
+            </Alert>
+          )}
           {error && (
-            <div className="mb-4 rounded-lg border border-danger bg-danger/10 p-3">
+            <div className="rounded-lg border border-danger bg-danger/10 p-3">
               <p className="text-danger text-sm">{error}</p>
             </div>
           )}
