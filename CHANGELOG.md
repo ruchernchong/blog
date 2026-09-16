@@ -1,3 +1,9 @@
+## [1.38.1](https://github.com/ruchernchong/blog/compare/v1.38.0...v1.38.1) (2026-09-16)
+
+### Bug Fixes
+
+* frame usage cost as API equivalent ([70cbe97](https://github.com/ruchernchong/blog/commit/70cbe975d98ba02e166823ecebe0057216f2ef15))
+
 ## [1.38.0](https://github.com/ruchernchong/blog/compare/v1.37.1...v1.38.0) (2026-09-14)
 
 ### Features
