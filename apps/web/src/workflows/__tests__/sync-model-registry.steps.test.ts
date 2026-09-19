@@ -4,23 +4,42 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 // over have to be created with `vi.hoisted`.
 const {
   getStepMetadata,
+  getWritable,
+  streamWrite,
+  streamClose,
+  streamReleaseLock,
   refreshRegistrySource,
   loadPricing,
   syncModelRegistry,
   repriceUnpricedTokenUsage,
   revalidateTag,
   logWarning,
-} = vi.hoisted(() => ({
-  getStepMetadata: vi.fn(),
-  refreshRegistrySource: vi.fn(),
-  loadPricing: vi.fn(),
-  syncModelRegistry: vi.fn(),
-  repriceUnpricedTokenUsage: vi.fn(),
-  revalidateTag: vi.fn(),
-  logWarning: vi.fn(),
-}));
+} = vi.hoisted(() => {
+  const streamWrite = vi.fn();
+  const streamClose = vi.fn();
+  const streamReleaseLock = vi.fn();
+  return {
+    getStepMetadata: vi.fn(),
+    streamWrite,
+    streamClose,
+    streamReleaseLock,
+    getWritable: vi.fn(() => ({
+      getWriter: () => ({
+        write: streamWrite,
+        releaseLock: streamReleaseLock,
+      }),
+      close: streamClose,
+    })),
+    refreshRegistrySource: vi.fn(),
+    loadPricing: vi.fn(),
+    syncModelRegistry: vi.fn(),
+    repriceUnpricedTokenUsage: vi.fn(),
+    revalidateTag: vi.fn(),
+    logWarning: vi.fn(),
+  };
+});
 
-vi.mock("workflow", () => ({ getStepMetadata }));
+vi.mock("workflow", () => ({ getStepMetadata, getWritable }));
 
 vi.mock("next/cache", () => ({ revalidateTag }));
 
@@ -67,6 +86,14 @@ describe("refreshSource", () => {
       entries: 42,
       degraded: false,
     });
+    expect(streamWrite).toHaveBeenCalledWith({
+      type: "source",
+      source: "gateway",
+      entries: 42,
+      degraded: false,
+      error: null,
+    });
+    expect(streamReleaseLock).toHaveBeenCalled();
   });
 
   it("should rethrow while attempts remain, so the step retries", async () => {
@@ -83,6 +110,7 @@ describe("refreshSource", () => {
         "AI Gateway returned 503",
       );
     }
+    expect(streamWrite).not.toHaveBeenCalled();
   });
 
   it("should degrade on the final attempt rather than fail the run", async () => {
@@ -98,6 +126,13 @@ describe("refreshSource", () => {
       source: "gateway",
       entries: 0,
       degraded: true,
+    });
+    expect(streamWrite).toHaveBeenCalledWith({
+      type: "source",
+      source: "gateway",
+      entries: 0,
+      degraded: true,
+      error: "AI Gateway returned 503",
     });
   });
 
@@ -127,6 +162,13 @@ describe("refreshSource logging", () => {
         attempt: finalAttempt,
       }),
     );
+    expect(streamWrite).toHaveBeenCalledWith({
+      type: "source",
+      source: "openrouter",
+      entries: 0,
+      degraded: true,
+      error: "socket hang up",
+    });
   });
 });
 
@@ -153,19 +195,44 @@ describe("repriceFromRegistry", () => {
 
     await expect(repriceFromRegistry()).resolves.toBe(5);
     expect(repriceUnpricedTokenUsage).toHaveBeenCalledWith({});
+    expect(streamWrite).toHaveBeenCalledWith({
+      type: "reprice",
+      repriced: 5,
+      degraded: false,
+      error: null,
+    });
   });
 
-  it("should degrade to zero rather than fail the run when repricing throws", async () => {
+  it("should rethrow while attempts remain, so the step retries", async () => {
+    repriceUnpricedTokenUsage.mockRejectedValue(new Error("db down"));
+
+    for (let attempt = 1; attempt <= finalAttempt - 1; attempt++) {
+      getStepMetadata.mockReturnValue({ attempt });
+      await expect(repriceFromRegistry()).rejects.toThrow("db down");
+    }
+    expect(streamWrite).not.toHaveBeenCalled();
+    expect(logWarning).not.toHaveBeenCalled();
+  });
+
+  it("should degrade to zero rather than fail the run on the final attempt", async () => {
+    getStepMetadata.mockReturnValue({ attempt: finalAttempt });
     repriceUnpricedTokenUsage.mockRejectedValue(new Error("db down"));
 
     await expect(repriceFromRegistry()).resolves.toBe(0);
     expect(logWarning).toHaveBeenCalledWith(
       "Skipped repricing during model registry sync",
-      expect.objectContaining({ error: "db down" }),
+      expect.objectContaining({ error: "db down", attempt: finalAttempt }),
     );
+    expect(streamWrite).toHaveBeenCalledWith({
+      type: "reprice",
+      repriced: 0,
+      degraded: true,
+      error: "db down",
+    });
   });
 
   it("should stringify a non-Error repricing failure", async () => {
+    getStepMetadata.mockReturnValue({ attempt: finalAttempt });
     loadPricing.mockRejectedValue("registry unreachable");
 
     await expect(repriceFromRegistry()).resolves.toBe(0);
@@ -174,13 +241,19 @@ describe("repriceFromRegistry", () => {
       expect.objectContaining({ error: "registry unreachable" }),
     );
   });
+
+  it("should keep the retry budget and the degrade boundary in step", () => {
+    expect(repriceFromRegistry.maxRetries).toBe(refreshSource.maxRetries);
+  });
 });
 
 describe("publishRegistry", () => {
   it("should revalidate both the usage and provider-name caches", async () => {
+    vi.clearAllMocks();
     await publishRegistry();
 
     expect(revalidateTag).toHaveBeenCalledWith("usage", "max");
     expect(revalidateTag).toHaveBeenCalledWith("models:providers", "max");
+    expect(streamClose).toHaveBeenCalled();
   });
 });
