@@ -6,7 +6,7 @@ This file provides guidance to coding agents when working with code in this repo
 
 ### Development
 
-- `pnpm dev` - Start the web development server via Turborepo
+- `pnpm dev` - Start the web development server via Turborepo (served on a `portless` `.localhost` URL, not raw `localhost:3000`)
 - `pnpm build` - Build all workspace packages
 - `pnpm start` - Start the web production server
 - `pnpm lint` - Run linting across workspaces with Biome
@@ -16,7 +16,7 @@ This file provides guidance to coding agents when working with code in this repo
 
 ### Documentation Site
 
-- `pnpm docs:dev` - Start the `@workspace/docs` Fumadocs site
+- `pnpm docs:dev` - Start the `@workspace/docs` Fumadocs site (Next.js + `fumadocs-ui`/`fumadocs-mdx`)
 - `pnpm docs:build` - Build the docs site
 - `pnpm docs:typecheck` - Type check the docs site
 
@@ -31,7 +31,7 @@ This file provides guidance to coding agents when working with code in this repo
 - `pnpm db:drop` - Drop database tables
 - `pnpm db:studio` - Open Drizzle Studio
 - `pnpm db:seed` - Seed database with test data
-- `pnpm auth:generate` - Regenerate the Better Auth Drizzle schema into `apps/web/src/schema/auth.ts`
+- `pnpm auth:generate` - Regenerate the Better Auth Drizzle schema (core + `jwt`/OAuth provider tables) into `apps/web/src/schema/auth.ts`
 
 ### Testing
 
@@ -44,10 +44,35 @@ This file provides guidance to coding agents when working with code in this repo
 
 - `pnpm release` - Create semantic release
 
-### Usage collector
+### Usage Analytics Ingestion
 
-- `pnpm usage:measure:rust` / `pnpm usage:ingest:rust` - Rust collector (`packages/usage/rust`). Parses Claude, Codex, OpenCode, Cursor, and Grok; `ingest:rust` POSTs `/api/usage/ingest`. Auth is `usage-ingest login` (OAuth, admin, Keychain). `USAGE_INGEST_DRY_RUN=1` prints the payload without POSTing. LaunchAgent: `packages/usage/rust/macos/INSTALL.md`
-- `pnpm usage:ingest` / `pnpm usage:ingest:prod` - Node ingest (`apps/web/src/scripts/ingest-usage.ts`). `usage:ingest` upserts into the `DATABASE_URL` database; `:prod` POSTs to the deployed `/api/usage/ingest` route
+Model pricing/metadata is a DB-backed registry (the `model` table), synced on
+each ingest from **LiteLLM** (primary rates) + **models.dev** (display names,
+release dates, rate gap-fill) + curated MCP-editable overrides (`is_override`
+rows, which win the merge). This replaces the former hardcoded pricing constants
+so a newly-released model prices automatically once a live source lists it; an
+override is the no-deploy fix for internal/routed slugs no public source carries.
+See `packages/usage/src/registry.ts` (pure normalise/merge) and
+`apps/web/src/lib/queries/models.ts` (`syncModelRegistry`).
+
+- `pnpm usage:ingest` - Parse local agent logs, sync the model registry, price
+  the logs, and upsert daily `token_usage` aggregates into the `DATABASE_URL`
+  database (local dev branch)
+- `pnpm usage:ingest:prod` - Same parse/price step locally, but POST the rows to
+  the deployed `POST /api/usage/ingest` route, which upserts them using the
+  deployment's own production `DATABASE_URL` (the prod connection string never
+  touches the local machine). Requires `BLOG_MCP_AUTH_TOKEN` and Vercel's
+  `VERCEL_PROJECT_PRODUCTION_URL` (or `VERCEL_URL`) in the environment.
+- `pnpm usage:measure:rust` / `pnpm usage:ingest:rust` - Rust collector (`packages/usage/rust`).
+  Parses Claude, Codex, OpenCode, Cursor, and Grok on this machine. `ingest:rust` POSTs
+  daily rows with `costUsd: null` so the ingest route prices them. Auth is
+  `usage-ingest login` (OAuth, admin account, Keychain). `USAGE_INGEST_DRY_RUN=1`
+  prints the payload without POSTing. Public install (Rust toolchain, LaunchAgent):
+  README.md “Usage collector (macOS)” and `packages/usage/rust/macos/INSTALL.md`.
+
+AgentUsage may also POST session-level `effortRows` into `token_effort_usage`
+(alongside token rows); the `/usage` page folds these into an all-time effort
+distribution. Local CLI parsers do not emit effort.
 
 ### MCP Server
 
@@ -81,10 +106,10 @@ An MCP (Model Context Protocol) server for managing blog posts and media via Cla
 
 **Model Registry Tools:**
 
-- `list_model_overrides` - List curated pricing overrides, optional provider filter
-- `get_model` - Get a single model registry row by (provider, id)
-- `upsert_model_override` - Create/update a curated pricing/metadata/alias override
-- `delete_model_override` - Delete a curated override
+- `list_model_overrides` - List curated pricing overrides (`model` rows with `is_override`), optional provider filter
+- `get_model` - Get a single model registry row by (provider, id) with merged pricing/metadata + source provenance
+- `upsert_model_override` - Create/update a curated pricing/metadata/alias override (rates USD per 1M tokens); wins over the live LiteLLM/models.dev sources and reprices N.A. rows immediately
+- `delete_model_override` - Delete a curated override (only `is_override` rows; source-derived rows are refreshed on the next ingest)
 
 ### Configuration
 
@@ -129,6 +154,30 @@ Claude mobile app.
 }
 ```
 
+## OAuth Provider
+
+The app is its own OAuth 2.1 / OIDC provider via the `@better-auth/oauth-provider`
+plugin (`oauthProvider`) paired with the `jwt()` plugin (`apps/web/src/lib/auth.ts`).
+Clients authenticate users with the Authorization Code flow (PKCE required) and use
+the issued access token as a bearer against protected routes (e.g.
+`POST /api/usage/ingest`). Public clients (no secret) are supported and clients
+self-register via dynamic client registration. The required consent screen lives at
+`/consent` (`apps/web/src/app/consent/`).
+
+- **Discovery:** `/api/auth/.well-known/openid-configuration`; MCP clients also read RFC 9728 protected-resource metadata at `/.well-known/oauth-protected-resource` (`apps/web/src/app/.well-known/oauth-protected-resource/route.ts`)
+- **Endpoints:** `/api/auth/oauth2/authorize`, `/api/auth/oauth2/token`, `/api/auth/oauth2/userinfo`, `/api/auth/oauth2/register`, `/api/auth/oauth2/introspect`, plus JWKS at `/api/auth/jwks`
+- **Scopes:** `openid`, `profile`, `email`, `offline_access`, and `mcp` (configured in `oauthProvider`). The `mcp` scope gates the MCP API — a token without it gets `403 insufficient_scope`
+- **Schema:** `oauthClient`, `oauthAccessToken`, `oauthRefreshToken`, `oauthConsent`, and `jwks` — generated via `pnpm auth:generate` into `apps/web/src/schema/auth.ts` (no separate `oauth.ts`)
+- **Token validation:** `validateMcpAuth` (`lib/api/mcp-auth.ts`) verifies an OAuth bearer with `verifyAccessToken` from `better-auth/oauth2`, passing an explicit `jwksUrl` (`${OAUTH_RESOURCE}/jwks`) for local JWKS verification, then rejects tokens from a disabled `oauthClient` and loads the owning user/role by the token subject. The `/api/mcp` route additionally requires the `mcp` scope. Access/refresh tokens are stored hashed.
+
+### Client flow
+
+1. Register a client at `POST /api/auth/oauth2/register` (e.g. a public client with `token_endpoint_auth_method: "none"` and a custom redirect URI), or configure a trusted client in the plugin options.
+2. Generate a PKCE `code_verifier` → `code_challenge` (S256).
+3. Authorize: `GET /api/auth/oauth2/authorize?response_type=code&client_id=…&redirect_uri=…&code_challenge=…&code_challenge_method=S256&scope=openid%20email%20mcp&resource=<api base url>&state=…`. Include the `mcp` scope for MCP API access. Pass `resource` (RFC 8707) so the access token is issued as a JWT verifiable via JWKS; the user approves at `/consent`.
+4. Exchange the code at `POST /api/auth/oauth2/token` for an access (and refresh) token.
+5. Send `Authorization: Bearer <access_token>` to protected routes.
+
 ## Architecture Overview
 
 A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP server, and usage tooling.
@@ -140,7 +189,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 - **Content**: Database-backed MDX with next-mdx-remote
 - **Database**: Neon PostgreSQL with Drizzle ORM
 - **Storage**: Cloudflare R2 for media assets
-- **Authentication**: Better Auth with OAuth (GitHub, Google); also acts as an OAuth 2.1 / OIDC provider (`@better-auth/oauth-provider`'s `oauthProvider` + `jwt()`)
+- **Authentication**: Better Auth with OAuth (GitHub, Google); also acts as an OAuth 2.1 / OIDC provider (`@better-auth/oauth-provider` + `jwt()`)
 - **Cache**: Upstash Redis for related posts, analytics, and post statistics
 - **UI**: HeroUI v3 — Pro (`@heroui-pro/react`) + OSS (`@heroui/react`)
 - **Styling**: Tailwind CSS v4
@@ -158,7 +207,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 - **Analytics**: PostHog-backed dashboard (Query API) with Vercel Analytics
 - **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers
 - **RSS Feed**: Dynamic `/feed.xml` endpoint
-- **OAuth Provider**: The app is its own OAuth 2.1 / OIDC provider via `@better-auth/oauth-provider`'s `oauthProvider` plugin (paired with `jwt()`). Clients authenticate users with the Authorization Code flow (PKCE required) and use the issued access token as a bearer; public clients self-register via dynamic client registration. Discovery at `/api/auth/.well-known/openid-configuration`. Protected routes resolve OAuth bearers in `validateMcpAuth` (`lib/api/mcp-auth.ts`)
+- **OAuth Provider**: The app is its own OAuth 2.1 / OIDC provider via `@better-auth/oauth-provider` (`oauthProvider`) with the `jwt()` plugin. Clients authenticate users with the Authorization Code flow (PKCE required) and use the issued JWT access token as a bearer; public clients self-register via dynamic client registration and approve access at `/consent`. Discovery at `/api/auth/.well-known/openid-configuration`. Protected routes verify OAuth bearers in `validateMcpAuth` (`lib/api/mcp-auth.ts`) via `verifyAccessToken` from `better-auth/oauth2` with an explicit JWKS URL (local JWKS)
 
 ### Temporary Changes
 
@@ -241,10 +290,13 @@ See `apps/web/.env.example` for all required variables:
 
 ### Components
 
-- **Use HeroUI for UI**: HeroUI Pro (`@heroui-pro/react`) first, then HeroUI OSS (`@heroui/react`) as fallback
-- HeroUI v3 conventions: `onPress` (not `onClick`), `isDisabled`, compound components (`Card.Header`); badges are
-  `Chip`; style links as buttons with `buttonVariants()` from `@heroui/styles` on a Next `Link`
-- Icons come from `@hugeicons/*`
+- **Use HeroUI for UI**: HeroUI Pro (`@heroui-pro/react`) first, then HeroUI OSS
+  (`@heroui/react`) as fallback. shadcn has been fully removed.
+- HeroUI v3 conventions: `onPress` (not `onClick`), `isDisabled` (not `disabled`), compound
+  components (`Card.Header`, `Select.Trigger`, `Modal.Backdrop`); `TextField` owns controlled
+  `value`/`onChange(string)`; badges are `Chip`; style links as buttons with
+  `buttonVariants()` from `@heroui/styles` on a Next `Link` (avoid `render` props)
+- Icons come from `@hugeicons/*` (HeroUI ships none)
 - Use `cn()` from `@heroui/react` for conditional class merging
 - Follow component-naming skill conventions
 
@@ -276,9 +328,8 @@ Invoke skills with `/component-naming`, `/design-language-system`, or `/blog-voi
 
 ## Documentation
 
-- Update CLAUDE.md when changing commands or architecture
+- Update AGENTS.md when changing commands or architecture
 - Update README.md when modifying tech stack
-
 
 
 <!-- BEGIN:nextjs-agent-rules -->

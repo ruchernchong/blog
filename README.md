@@ -91,11 +91,11 @@ pnpm build           # Build for production
 6. Start dev server: `pnpm dev`
 
 ### Available Commands
-See [CLAUDE.md](./CLAUDE.md) for complete command reference including:
+See [AGENTS.md](./AGENTS.md) for complete command reference including:
 - Development, testing, and build commands
 - Database management (migrations, studio, seeding)
 - Code quality tools (linting, formatting, type checking)
-- Custom slash commands for Claude Code
+- Custom slash commands for coding agents
 
 ### Usage collector (macOS)
 
@@ -141,7 +141,7 @@ Automated via semantic-release on push to `main` branch:
 
 ## Documentation
 
-See [CLAUDE.md](./CLAUDE.md) for comprehensive documentation including:
+See [AGENTS.md](./AGENTS.md) for comprehensive documentation including:
 
 - Available commands
 - Architecture overview
