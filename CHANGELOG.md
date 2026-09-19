@@ -1,3 +1,9 @@
+## [1.41.1](https://github.com/ruchernchong/blog/compare/v1.41.0...v1.41.1) (2026-09-19)
+
+### Bug Fixes
+
+* stream registry sync events and retry reprice ([a302acb](https://github.com/ruchernchong/blog/commit/a302acbdf239500efe47a513c009cba29d0ee69b))
+
 ## [1.41.0](https://github.com/ruchernchong/blog/compare/v1.40.0...v1.41.0) (2026-09-16)
 
 ### Features
