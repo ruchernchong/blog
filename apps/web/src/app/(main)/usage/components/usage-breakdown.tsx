@@ -3,6 +3,7 @@
 import {
   Button,
   Chip,
+  cn,
   Dropdown,
   Label,
   SearchField,
@@ -118,12 +119,18 @@ function CostValue({ cost }: { cost: Cost }) {
   );
 }
 
-function ProviderLogo({ provider }: { provider: string }) {
+function ProviderLogo({
+  className,
+  provider,
+}: {
+  className?: string;
+  provider: string;
+}) {
   return (
     <Image
       alt=""
       aria-hidden
-      className="size-6 shrink-0 opacity-80 dark:invert"
+      className={cn("size-6 shrink-0 opacity-80 dark:invert", className)}
       height={24}
       src={providerLogoUrl(provider)}
       unoptimized
@@ -145,18 +152,22 @@ function ProviderValue({
     return "-";
   }
 
+  // Rows have a fixed height, so stacked providers shrink to fit two lines.
+  const isStacked = providers.length > 1;
+
   return (
-    <span className="inline-flex min-w-0 items-center gap-2">
-      <span className="flex shrink-0 items-center gap-1">
-        {providers.map((provider) => (
-          <ProviderLogo key={provider} provider={provider} />
-        ))}
-      </span>
-      <span className="truncate">
-        {providers
-          .map((provider) => providerDisplayNames[provider] ?? provider)
-          .join(", ")}
-      </span>
+    <span className={cn("flex min-w-0 flex-col", isStacked && "gap-1 text-xs")}>
+      {providers.map((provider) => (
+        <span className="inline-flex min-w-0 items-center gap-2" key={provider}>
+          <ProviderLogo
+            className={cn(isStacked && "size-4")}
+            provider={provider}
+          />
+          <span className="truncate">
+            {providerDisplayNames[provider] ?? provider}
+          </span>
+        </span>
+      ))}
     </span>
   );
 }
