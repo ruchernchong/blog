@@ -4,8 +4,10 @@ import { Layout } from "./layout";
 
 interface UsageHeatmapProps {
   layout: HeatmapLayout;
-  title: string;
-  description: string;
+  /** Small coral label above the headline, e.g. "Usage". */
+  eyebrow: string;
+  /** The page's generated summary sentence. */
+  headline: string;
   stats?: UsageHeatmapStat[];
 }
 
@@ -15,7 +17,8 @@ interface UsageHeatmapStat {
 }
 
 /**
- * OG image template for the Usage page.
+ * OG image template for the Usage page: mirrors the page hero, with the
+ * generated summary sentence as the headline over the heatmap and figures.
  *
  * Renders the activity heatmap using Satori-compatible inline styles only —
  * no CSS variables, no Tailwind, flexbox only (no grid).
@@ -24,8 +27,8 @@ interface UsageHeatmapStat {
  */
 export function UsageHeatmap({
   layout,
-  title,
-  description,
+  eyebrow,
+  headline,
   stats,
 }: UsageHeatmapProps) {
   const CELL = 16;
@@ -34,28 +37,34 @@ export function UsageHeatmap({
 
   return (
     <Layout>
-      {/* Title + description */}
+      {/* Eyebrow + headline */}
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         <div
           style={{
-            fontSize: 60,
+            fontSize: 18,
             fontWeight: 700,
-            color: OG_COLOURS.foreground,
-            lineHeight: 1.1,
+            color: OG_COLOURS.primary,
+            letterSpacing: 3,
+            textTransform: "uppercase",
           }}
         >
-          {title}
+          {eyebrow}
         </div>
         <div
           style={{
-            fontSize: 24,
-            fontWeight: 400,
-            color: OG_COLOURS.mutedForeground,
-            lineHeight: 1.4,
-            maxWidth: "90%",
+            fontSize: 38,
+            fontWeight: 700,
+            color: OG_COLOURS.foreground,
+            lineHeight: 1.15,
+            letterSpacing: -1,
+            maxWidth: "95%",
+            // The sentence carries model names of any length; cap it so the
+            // heatmap and figures below always fit in the fixed 1200x630.
+            display: "block",
+            lineClamp: 3,
           }}
         >
-          {description}
+          {headline}
         </div>
       </div>
 

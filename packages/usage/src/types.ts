@@ -1,3 +1,5 @@
+import type { PeriodComparisons } from "./period-comparison";
+
 /**
  * Shared types for the token-usage feature.
  *
@@ -127,6 +129,59 @@ export interface UsageBreakdownRow {
   messages: number;
   /** Daily token totals over the trailing sparkline window, oldest first. */
   sparkline: number[];
+  /** First and last day (YYYY-MM-DD) with usage in this rollup. */
+  firstUsed: string;
+  lastUsed: string;
+  /** Days with any usage in this rollup. */
+  activeDays: number;
+  /** Agents that produced this rollup's usage, sorted. */
+  agents: string[];
+  /** All-time tokens split by category, for per-row character ratios. */
+  tokenBreakdown: TokenBreakdown;
+}
+
+/**
+ * One priced daily row, flattened for the pure insight builders
+ * (`buildWeeklyShare`, `buildCacheTrend`). `model` is the canonical registry id
+ * (aliases folded), and `cost` / `cacheSavings` are `null` when unpriced.
+ */
+export interface UsageFact {
+  /** YYYY-MM-DD */
+  date: string;
+  agent: string;
+  provider: string;
+  model: string;
+  tokens: TokenBreakdown;
+  totalTokens: number;
+  messages: number;
+  cost: Cost;
+  /** Cache reads priced at the full input rate minus their cache-read cost. */
+  cacheSavings: Cost;
+}
+
+/** One stacked-area series: tokens per week, aligned to `WeeklyShare.weeks`. */
+export interface WeeklySeries {
+  /** Model or agent id, or `OTHER_SERIES_KEY` for the folded tail. */
+  key: string;
+  tokens: number[];
+}
+
+/** Weekly token share by model and by agent, for the "stack shift" chart. */
+export interface WeeklyShare {
+  /** ISO week starts (Monday, YYYY-MM-DD), dense and oldest first. */
+  weeks: string[];
+  models: WeeklySeries[];
+  agents: WeeklySeries[];
+}
+
+/** One ISO week of cache behaviour. */
+export interface CacheTrendPoint {
+  /** ISO week start (Monday, YYYY-MM-DD). */
+  week: string;
+  /** cacheRead / (input + cacheRead + cacheWrite); null for an idle week. */
+  hitRate: number | null;
+  /** Summed {@link UsageFact.cacheSavings}; null when nothing was priced. */
+  savings: Cost;
 }
 
 export interface UsageProfile {
@@ -138,6 +193,15 @@ export interface UsageProfile {
   byModel: UsageBreakdownRow[];
   /** All-time tokens split by category, for the token-mix bar. */
   tokenMix: TokenBreakdown;
+  /** Weekly token share by model (top N + other) and by agent. */
+  weeklyShare: WeeklyShare;
+  /** Weekly cache-hit rate and estimated savings. */
+  cacheTrend: CacheTrendPoint[];
+  /**
+   * "This period" comparisons for every offered window, with the top model
+   * taken from uncapped per-model totals.
+   */
+  periods: PeriodComparisons;
   /**
    * All-time session effort distribution, or `null` when no effort rows exist
    * or no sessions were classified.

@@ -59,6 +59,7 @@ const fixtureRegistry = [
   pricingRow("anthropic", "m1", "1"),
   pricingRow("xai", "grok-4.6", "1"),
   { ...pricingRow("xai", "grok-4.6-build", "0"), aliasTarget: "grok-4.6" },
+  { ...pricingRow("anthropic", "cached", "1"), cacheReadRate: "0.1" },
 ];
 
 const base = {
@@ -92,6 +93,9 @@ describe("getUsageProfile", () => {
     const profile = await getUsageProfile();
 
     expect(profile.contributions).toEqual([]);
+    expect(profile.weeklyShare).toEqual({ weeks: [], models: [], agents: [] });
+    expect(profile.cacheTrend).toEqual([]);
+    expect(profile.periods).toEqual({ 7: null, 30: null, 90: null });
     expect(profile.summary.bestDay).toBeNull();
     expect(profile.lastUpdated).toBeNull();
   });
@@ -181,6 +185,89 @@ describe("getUsageProfile", () => {
     expect(profile.summary.bestDay?.date).toBe("2026-01-01");
     expect(profile.effort?.classifiedSessionCount).toBe(2);
     expect(profile.lastUpdated).toBe("2026-01-09T00:00:00.000Z");
+  });
+
+  it("should expose rollup spans, weekly share and cache trend", async () => {
+    mocks.batchResult = [
+      [
+        {
+          ...base,
+          date: "2026-01-05",
+          model: "cached",
+          inputTokens: MILLION,
+          cacheReadTokens: 3 * MILLION,
+          outputTokens: 10,
+          totalTokens: 4 * MILLION + 10,
+          messages: 2,
+        },
+        {
+          ...base,
+          date: "2026-01-19",
+          agent: "codex",
+          provider: "openai",
+          model: "unknown",
+          cacheReadTokens: MILLION,
+          totalTokens: MILLION,
+        },
+        {
+          ...base,
+          date: "2026-01-20",
+          model: "cached",
+          inputTokens: 100,
+          totalTokens: 100,
+        },
+      ],
+      [],
+      fixtureRegistry,
+    ];
+
+    const profile = await getUsageProfile();
+
+    const cached = profile.byModel.find((row) => row.key === "cached");
+    expect(cached).toMatchObject({
+      firstUsed: "2026-01-05",
+      lastUsed: "2026-01-20",
+      activeDays: 2,
+      agents: ["claude"],
+      tokenBreakdown: {
+        input: MILLION + 100,
+        output: 10,
+        cacheRead: 3 * MILLION,
+        cacheWrite: 0,
+        reasoning: 0,
+      },
+    });
+    expect(
+      profile.byAgent.find((row) => row.key === "claude")?.activeDays,
+    ).toBe(2);
+
+    expect(profile.weeklyShare.weeks).toEqual([
+      "2026-01-05",
+      "2026-01-12",
+      "2026-01-19",
+    ]);
+    expect(profile.weeklyShare.models).toEqual([
+      { key: "cached", tokens: [4 * MILLION + 10, 0, 100] },
+      { key: "unknown", tokens: [0, 0, MILLION] },
+    ]);
+
+    // 3M cache reads at $1 input vs $0.10 cache read saves $2.70. The unpriced
+    // model contributes to the hit rate but not to savings.
+    expect(profile.cacheTrend).toHaveLength(3);
+    expect(profile.cacheTrend[0].week).toBe("2026-01-05");
+    expect(profile.cacheTrend[0].hitRate).toBe(0.75);
+    expect(profile.cacheTrend[0].savings).toBeCloseTo(2.7);
+    expect(profile.cacheTrend[1]).toEqual({
+      week: "2026-01-12",
+      hitRate: null,
+      savings: null,
+    });
+    expect(profile.cacheTrend[2].hitRate).toBeCloseTo(
+      MILLION / (MILLION + 100),
+    );
+    expect(profile.cacheTrend[2].savings).toBe(0);
+    // Period leaders come from uncapped totals across the whole window.
+    expect(profile.periods[30]?.current.topModel).toBe("cached");
   });
 
   it("should fold aliased model ids into one model row", async () => {

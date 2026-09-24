@@ -1,4 +1,4 @@
-import { Card, Typography } from "@heroui/react";
+import { cn, Typography } from "@heroui/react";
 import { formatNumber } from "@workspace/usage/format";
 import { type EffortSummary, effortLevelLabel } from "@workspace/usage/types";
 
@@ -33,50 +33,48 @@ export function UsageEffortLevels({
       : `${formatNumber(classifiedSessionCount)} of ${formatNumber(totalSessions)} sessions classified.`;
 
   return (
-    <Card className={className}>
-      <Card.Header>
-        <Card.Title>Effort levels</Card.Title>
-        <Card.Description>{caption}</Card.Description>
-      </Card.Header>
-      <Card.Content>
-        <ul className="flex flex-col gap-4">
-          {levels.map((row, index) => {
-            const pct =
-              classifiedSessionCount > 0
-                ? (row.sessionCount / classifiedSessionCount) * 100
-                : 0;
-            const { color, colorClass } =
-              CHART_COLORS[index % CHART_COLORS.length];
+    <div className={cn("flex flex-col gap-4", className)}>
+      <div className="flex flex-col gap-2">
+        <h3 className="font-semibold text-xl">Effort levels</h3>
+        <p className="text-muted text-sm">{caption}</p>
+      </div>
+      <ul className="flex flex-col gap-4">
+        {levels.map((row, index) => {
+          const pct =
+            classifiedSessionCount > 0
+              ? (row.sessionCount / classifiedSessionCount) * 100
+              : 0;
+          const { color, colorClass } =
+            CHART_COLORS[index % CHART_COLORS.length];
 
-            return (
-              <li className="flex flex-col gap-2" key={row.level}>
-                <div className="flex items-baseline justify-between gap-4">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`size-3 shrink-0 rounded-full ${colorClass}`}
-                    />
-                    <Typography type="body-sm">
-                      {effortLevelLabel(row.level)}
-                    </Typography>
-                  </div>
-                  <Typography color="muted" type="body-sm">
-                    {formatNumber(row.sessionCount)} ({Math.round(pct)}%)
+          return (
+            <li className="flex flex-col gap-2" key={row.level}>
+              <div className="flex items-baseline justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`size-3 shrink-0 rounded-full ${colorClass}`}
+                  />
+                  <Typography type="body-sm">
+                    {effortLevelLabel(row.level)}
                   </Typography>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-default">
-                  <div
-                    className="h-full rounded-full transition-[width]"
-                    style={{
-                      width: `${pct}%`,
-                      backgroundColor: color,
-                    }}
-                  />
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </Card.Content>
-    </Card>
+                <Typography color="muted" type="body-sm">
+                  {formatNumber(row.sessionCount)} ({Math.round(pct)}%)
+                </Typography>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-default">
+                <div
+                  className="h-full rounded-full transition-[width]"
+                  style={{
+                    width: `${pct}%`,
+                    backgroundColor: color,
+                  }}
+                />
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }

@@ -196,7 +196,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 - **Cache**: Upstash Redis for related posts, analytics, and post statistics
 - **UI**: HeroUI v3 — Pro (`@heroui-pro/react`) + OSS (`@heroui/react`)
 - **Styling**: Tailwind CSS v4
-- **Testing**: Vitest with React Testing Library
+- **Testing**: Vitest (Node for `*.test.ts`, headless Chromium Browser Mode with `vitest-browser-react` for `*.test.tsx`)
 - **Code Quality**: Biome for linting/formatting, TypeScript 7 (strict mode)
 
 ### Key Features
@@ -208,6 +208,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 - **OpenGraph Images**: Dynamic OG image generation via `opengraph-image.tsx` route files
 - **Series Support**: Organise posts into series with navigation and ordering
 - **Analytics**: PostHog-backed dashboard (Query API) with Vercel Analytics
+- **Usage Page**: Public `/usage` page built from the cached `getUsageProfile()` (`lib/queries/usage.ts`). An editorial top half (generated summary, heatmap, "This period", stack shift, model character, cost vs volume, cache & effort) sits over an Explorer (DataGrid on desktop, card list on phones). A `?model=` profile drawer opens from the "View profile" buttons in Model character. Pure aggregation and shaping live in `@workspace/usage` (`narrative`, `period-comparison`, `weekly-insights`, `model-character`). Identity charts use the validated `--series-*` tokens in `globals.css`; magnitude uses the coral `--chart-*` ramp
 - **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers
 - **RSS Feed**: Dynamic `/feed.xml` endpoint
 - **OAuth Provider**: The app is its own OAuth 2.1 / OIDC provider via `@better-auth/oauth-provider` (`oauthProvider`) with the `jwt()` plugin. Clients authenticate users with the Authorization Code flow (PKCE required) and use the issued JWT access token as a bearer; public clients self-register via dynamic client registration and approve access at `/consent`. Discovery at `/api/auth/.well-known/openid-configuration`. Protected routes verify OAuth bearers in `validateMcpAuth` (`lib/api/mcp-auth.ts`) via `verifyAccessToken` from `better-auth/oauth2` with an explicit JWKS URL (local JWKS)
@@ -282,7 +283,7 @@ See `apps/web/.env.example` for all required variables:
 
 - TypeScript strict mode with app-local path aliases (`@/*`) and private workspace packages (`@workspace/*`)
 - kebab-case for filenames
-- Tests in `__tests__/` directories
+- New tests are colocated with their source as `*.test.{ts,tsx}` (e.g. `usage-hero.tsx` + `usage-hero.test.tsx`); older tests still live in `__tests__/` directories
 - Named exports preferred
 
 ### Testing

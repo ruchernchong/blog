@@ -134,6 +134,17 @@
     --chart-3: var(--accent);
     --chart-4: oklch(from var(--accent) calc(l + 0.12) c h);
     --chart-5: oklch(from var(--accent) calc(l + 0.24) c h);
+
+    /* Categorical series (identity, not magnitude). Order validated for
+       adjacent-pair CVD separation on this surface; never cycle past 6, fold
+       the tail into --series-other. */
+    --series-1: #2a78d6;
+    --series-2: #eb6834;
+    --series-3: #1baf7a;
+    --series-4: #eda100;
+    --series-5: #e87ba4;
+    --series-6: #008300;
+    --series-other: #8c8a85;
   }
 
   .dark,
@@ -194,5 +205,13 @@
     --chart-3: var(--accent);
     --chart-4: oklch(from var(--accent) calc(l + 0.12) c h);
     --chart-5: oklch(from var(--accent) calc(l + 0.24) c h);
+
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #c98500;
+    --series-5: #d55181;
+    --series-6: #008300;
+    --series-other: #76746f;
   }
 }

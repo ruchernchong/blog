@@ -1,4 +1,8 @@
 import {
+  comparePeriodLengths,
+  type DailyModelTokens,
+} from "@workspace/usage/period-comparison";
+import {
   buildPricingFromRegistry,
   type Pricing,
 } from "@workspace/usage/pricing";
@@ -10,10 +14,15 @@ import {
   type ModelDayBreakdown,
   type TokenBreakdown,
   type UsageBreakdownRow,
+  type UsageFact,
   type UsageProfile,
   type UsageSummary,
   type YearSummary,
 } from "@workspace/usage/types";
+import {
+  buildCacheTrend,
+  buildWeeklyShare,
+} from "@workspace/usage/weekly-insights";
 import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns";
 import { and, asc, eq, isNull, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
@@ -258,6 +267,7 @@ export async function getUsageProfile(): Promise<UsageProfile> {
   const providerTotals = new Map<string, RollupAggregate>();
   const modelTotals = new Map<string, RollupAggregate>();
   const tokenMix = emptyTokenBreakdown();
+  const facts: UsageFact[] = [];
   let lastUpdated = rows[0].updatedAt;
 
   for (const row of rows) {
@@ -266,10 +276,23 @@ export async function getUsageProfile(): Promise<UsageProfile> {
     addTokens(tokenMix, row);
 
     const priceOpts = { agent: row.agent, provider: row.provider };
-    const cost = pricing.costOf(tokensOf(row), row.model, priceOpts);
+    const tokens = tokensOf(row);
+    const cost = pricing.costOf(tokens, row.model, priceOpts);
     // Alias ids (e.g. grok-4.6-build) fold into their target so one model is
     // one row; the stored id is untouched.
     const modelKey = pricing.canonicalModel(row.model, priceOpts);
+
+    facts.push({
+      date: row.date,
+      agent: row.agent,
+      provider: row.provider,
+      model: modelKey,
+      tokens,
+      totalTokens: row.totalTokens,
+      messages: row.messages,
+      cost,
+      cacheSavings: cacheSavingsOf(pricing, row, priceOpts),
+    });
 
     const day = getOrCreateDay(dayMap, row.date);
     day.tokens += row.totalTokens;
@@ -307,6 +330,12 @@ export async function getUsageProfile(): Promise<UsageProfile> {
   const byModel = rollupRows(modelTotals, trendDates);
   const years = buildYears(contributions);
   const summary = buildSummary(contributions, byAgent, byProvider, byModel);
+  const weeklyShare = buildWeeklyShare(facts);
+  const cacheTrend = buildCacheTrend(facts);
+  const periods = comparePeriodLengths(
+    contributions,
+    dailyModelTokensOf(facts),
+  );
 
   for (const row of effortRows) {
     if (row.updatedAt > lastUpdated) {
@@ -322,6 +351,9 @@ export async function getUsageProfile(): Promise<UsageProfile> {
     byProvider,
     byModel,
     tokenMix,
+    weeklyShare,
+    cacheTrend,
+    periods,
     effort: foldEffortSummary(effortRows),
     lastUpdated: lastUpdated.toISOString(),
   };
@@ -335,6 +367,8 @@ interface RollupAggregate {
   costValues: (number | null)[];
   dailyTokens: Map<string, number>;
   providers: Set<string>;
+  agents: Set<string>;
+  breakdown: TokenBreakdown;
 }
 
 interface DayAggregate {
@@ -383,6 +417,8 @@ function getOrCreateRollup(
       costValues: [],
       dailyTokens: new Map(),
       providers: new Set(),
+      agents: new Set(),
+      breakdown: emptyTokenBreakdown(),
     };
     map.set(key, rollup);
   }
@@ -398,6 +434,8 @@ function addToRollup(
   rollup.messages += row.messages;
   rollup.costValues.push(cost);
   rollup.providers.add(row.provider);
+  rollup.agents.add(row.agent);
+  addTokens(rollup.breakdown, row);
   rollup.dailyTokens.set(
     row.date,
     (rollup.dailyTokens.get(row.date) ?? 0) + row.totalTokens,
@@ -423,6 +461,47 @@ function tokensOf(row: typeof tokenUsage.$inferSelect): TokenBreakdown {
     cacheWrite: row.cacheWriteTokens,
     reasoning: row.reasoningTokens,
   };
+}
+
+/**
+ * What a row's cache reads would have cost at the full input rate, minus what
+ * they cost at the cache-read rate. `null` when the model is unpriced.
+ */
+function cacheSavingsOf(
+  pricing: Pricing,
+  row: typeof tokenUsage.$inferSelect,
+  priceOpts: { agent: string; provider: string },
+): Cost {
+  if (row.cacheReadTokens === 0) {
+    return pricing.priceFor(row.model, priceOpts) ? 0 : null;
+  }
+  const asInput = pricing.costOf(
+    { ...emptyTokenBreakdown(), input: row.cacheReadTokens },
+    row.model,
+    priceOpts,
+  );
+  const asCacheRead = pricing.costOf(
+    { ...emptyTokenBreakdown(), cacheRead: row.cacheReadTokens },
+    row.model,
+    priceOpts,
+  );
+  return asInput === null || asCacheRead === null
+    ? null
+    : asInput - asCacheRead;
+}
+
+/** Uncapped tokens per (alias-folded) model per day, for period leaders. */
+function dailyModelTokensOf(facts: UsageFact[]): DailyModelTokens {
+  const byDate = new Map<string, Map<string, number>>();
+  for (const fact of facts) {
+    let models = byDate.get(fact.date);
+    if (!models) {
+      models = new Map();
+      byDate.set(fact.date, models);
+    }
+    models.set(fact.model, (models.get(fact.model) ?? 0) + fact.totalTokens);
+  }
+  return byDate;
 }
 
 /** Sum priced values; `null` if every value is N.A. (none priced). */
@@ -560,6 +639,15 @@ function rollupRows(
     .map(([key, rollup]) => {
       const cost = sumCost(rollup.costValues);
       const providers = [...rollup.providers].sort();
+      const activeDates = [...rollup.dailyTokens.entries()]
+        .filter(([, tokens]) => tokens > 0)
+        .map(([date]) => date)
+        .sort((a, b) => a.localeCompare(b));
+      // A rollup of only zero-token rows still needs a date span.
+      const spanDates =
+        activeDates.length > 0
+          ? activeDates
+          : [...rollup.dailyTokens.keys()].sort((a, b) => a.localeCompare(b));
       return {
         key,
         provider: providers.length === 1 ? providers[0] : null,
@@ -572,6 +660,11 @@ function rollupRows(
             : null,
         messages: rollup.messages,
         sparkline: dates.map((date) => rollup.dailyTokens.get(date) ?? 0),
+        firstUsed: spanDates[0],
+        lastUsed: spanDates[spanDates.length - 1],
+        activeDays: activeDates.length,
+        agents: [...rollup.agents].sort((a, b) => a.localeCompare(b)),
+        tokenBreakdown: rollup.breakdown,
       };
     })
     .sort((a, b) => b.tokens - a.tokens);
@@ -675,6 +768,9 @@ function emptyProfile(): UsageProfile {
     byProvider: [],
     byModel: [],
     tokenMix: emptyTokenBreakdown(),
+    weeklyShare: { weeks: [], models: [], agents: [] },
+    cacheTrend: [],
+    periods: { 7: null, 30: null, 90: null },
     effort: null,
     lastUpdated: null,
   };

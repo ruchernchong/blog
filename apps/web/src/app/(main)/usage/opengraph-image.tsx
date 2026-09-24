@@ -1,8 +1,10 @@
 import { buildHeatmapLayout } from "@workspace/usage/heatmap-layout";
+import { buildUsageNarrative } from "@workspace/usage/narrative";
 import { ImageResponse } from "next/og";
 import { OG_HEADERS, OG_SIZE } from "@/lib/og/config";
 import { getOGFonts } from "@/lib/og/fonts";
 import { UsageHeatmap } from "@/lib/og/templates/usage-heatmap";
+import { getModelDisplayNames } from "@/lib/queries/models";
 import { getUsageProfile } from "@/lib/queries/usage";
 
 export const alt = "Usage - Ru Chern";
@@ -45,11 +47,27 @@ export default async function Image() {
 
   const layout = buildHeatmapLayout(contributions);
 
+  const { favouriteModel } = profile.summary;
+  const modelDisplayNames = favouriteModel
+    ? await getModelDisplayNames([favouriteModel])
+    : {};
+  const headline =
+    buildUsageNarrative({
+      summary: profile.summary,
+      firstActiveDate:
+        profile.contributions.find((day) => day.totals.tokens > 0)?.date ??
+        null,
+      topModel: favouriteModel
+        ? (modelDisplayNames[favouriteModel] ?? favouriteModel)
+        : null,
+      topAgent: profile.byAgent[0]?.key ?? null,
+    }) ?? "The API equivalent of my AI coding agents at provider list prices.";
+
   return new ImageResponse(
     <UsageHeatmap
       layout={layout}
-      title="Usage"
-      description="The API equivalent of my AI coding agents at provider list prices."
+      eyebrow="Usage"
+      headline={headline}
       stats={[
         {
           label: "API equivalent",
@@ -62,6 +80,10 @@ export default async function Image() {
         {
           label: "Active days",
           value: integerFormatter.format(profile.summary.activeDays),
+        },
+        {
+          label: "Models",
+          value: integerFormatter.format(profile.summary.models.length),
         },
       ]}
     />,

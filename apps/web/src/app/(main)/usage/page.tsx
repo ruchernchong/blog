@@ -1,8 +1,7 @@
+import { buildUsageNarrative } from "@workspace/usage/narrative";
 import type { UsageProfile } from "@workspace/usage/types";
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { PageHeader } from "@/app/components/page-header";
-import { SurfaceCard } from "@/app/components/surface-card";
 import globalMetadata from "@/app/metadata";
 import {
   getModelDisplayNames,
@@ -13,12 +12,15 @@ import {
   type BreakdownView,
   UsageBreakdown,
 } from "./components/usage-breakdown";
-import { UsageEffortLevels } from "./components/usage-effort-levels";
+import { UsageCacheEffort } from "./components/usage-cache-effort";
+import { UsageCostScatter } from "./components/usage-cost-scatter";
 import { UsageHeatmap } from "./components/usage-heatmap";
+import { UsageHero } from "./components/usage-hero";
 import { UsageLastUpdated } from "./components/usage-last-updated";
-import { UsageStats } from "./components/usage-stats";
-import { UsageTokenMix } from "./components/usage-token-mix";
-import { UsageTrend } from "./components/usage-trend";
+import { UsageModelCharacter } from "./components/usage-model-character";
+import { UsageModelDrawer } from "./components/usage-model-drawer";
+import { UsagePeriod } from "./components/usage-period";
+import { UsageStackShift } from "./components/usage-stack-shift";
 
 const title = "Usage";
 const description =
@@ -51,23 +53,34 @@ export default async function UsagePage() {
     getModelDisplayNames(getUsageModelIds(profile)),
   ]);
 
-  return (
-    <SurfaceCard width="wide" className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <PageHeader title="Usage" description={description} />
-        {profile.lastUpdated && <UsageLastUpdated date={profile.lastUpdated} />}
-      </div>
+  const narrative = buildUsageNarrative({
+    summary: profile.summary,
+    firstActiveDate:
+      profile.contributions.find((day) => day.totals.tokens > 0)?.date ?? null,
+    topModel: profile.summary.favouriteModel
+      ? (modelDisplayNames[profile.summary.favouriteModel] ??
+        profile.summary.favouriteModel)
+      : null,
+    topAgent: profile.byAgent[0]?.key ?? null,
+  });
 
-      <UsageStats
+  return (
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-12">
+      <UsageHero
+        description={description}
+        lastUpdated={
+          profile.lastUpdated ? (
+            <UsageLastUpdated date={profile.lastUpdated} />
+          ) : null
+        }
+        narrative={narrative}
         summary={profile.summary}
-        contributions={profile.contributions}
-        byModel={profile.byModel}
-        modelDisplayNames={modelDisplayNames}
       />
 
-      {/* The heatmap and breakdown read `?year=` / `?view=` via nuqs, which
-          uses useSearchParams; under Cache Components that must sit inside a
-          Suspense boundary so the rest of the page stays a static shell. */}
+      {/* The heatmap, period, stack-shift and breakdown sections read URL
+          state via nuqs, which uses useSearchParams; under Cache Components
+          that must sit inside a Suspense boundary so the rest of the page
+          stays a static shell. */}
       <Suspense>
         <UsageHeatmap
           contributions={profile.contributions}
@@ -75,22 +88,53 @@ export default async function UsagePage() {
         />
       </Suspense>
 
-      <div className="grid gap-4 lg:grid-cols-[5fr_7fr]">
-        <UsageTokenMix tokenMix={profile.tokenMix} />
-        <UsageTrend contributions={profile.contributions} />
-      </div>
+      <Suspense>
+        <UsagePeriod
+          comparisons={profile.periods}
+          modelDisplayNames={modelDisplayNames}
+        />
+      </Suspense>
 
-      {profile.effort ? <UsageEffortLevels effort={profile.effort} /> : null}
+      <Suspense>
+        <UsageStackShift
+          modelDisplayNames={modelDisplayNames}
+          weeklyShare={profile.weeklyShare}
+        />
+      </Suspense>
+
+      <UsageModelCharacter
+        byModel={profile.byModel}
+        modelDisplayNames={modelDisplayNames}
+      />
+
+      <UsageCostScatter
+        byModel={profile.byModel}
+        modelDisplayNames={modelDisplayNames}
+      />
+
+      <UsageCacheEffort
+        cacheTrend={profile.cacheTrend}
+        effort={profile.effort}
+        tokenMix={profile.tokenMix}
+      />
 
       <Suspense>
         <UsageBreakdown
           providerDisplayNames={providerDisplayNames}
           modelDisplayNames={modelDisplayNames}
-          title="Breakdown"
+          title="Explorer"
           views={getBreakdownViews(profile)}
         />
       </Suspense>
-    </SurfaceCard>
+
+      <Suspense>
+        <UsageModelDrawer
+          byModel={profile.byModel}
+          modelDisplayNames={modelDisplayNames}
+          providerDisplayNames={providerDisplayNames}
+        />
+      </Suspense>
+    </div>
   );
 }
 

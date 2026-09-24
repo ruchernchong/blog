@@ -29,6 +29,12 @@ export default defineConfig({
         extends: true,
         // next/link reads process.env at import time, which does not exist in the browser
         define: { "process.env": "{}" },
+        // Pre-bundle deps that only browser tests import. Discovering them
+        // mid-run makes Vite reload, which loads a second React and fails
+        // every hook with "Cannot read properties of null" on a cold cache.
+        optimizeDeps: {
+          include: ["nuqs", "nuqs/adapters/testing", "nuqs/server", "recharts"],
+        },
         test: {
           name: "browser",
           include: ["src/**/*.test.tsx"],

@@ -1,8 +1,8 @@
-import { Card } from "@heroui/react";
 import { buildHeatmapLayout } from "@workspace/usage/heatmap-layout";
 import type { DayContribution } from "@workspace/usage/types";
 import { eachDayOfInterval, format } from "date-fns";
 import { type HeatmapYear, UsageHeatmapClient } from "./usage-heatmap.client";
+import { UsageSection } from "./usage-section";
 
 interface UsageHeatmapProps {
   className?: string;
@@ -32,7 +32,7 @@ function emptyDay(date: string): DayContribution {
  * Expand a year's sparse days into every calendar day from 1 Jan to 31 Dec,
  * filling the gaps (before the data starts, and after the latest day) with
  * zero-activity cells. This keeps every year a full 52–53 week grid so it spans
- * the card's full width regardless of how much of the year is covered.
+ * the section's full width regardless of how much of the year is covered.
  */
 function fullYear(year: string, days: DayContribution[]): DayContribution[] {
   const byDate = new Map(days.map((day) => [day.date, day]));
@@ -47,7 +47,7 @@ function fullYear(year: string, days: DayContribution[]): DayContribution[] {
 }
 
 /**
- * Server component: the card shell plus the per-year layout for the contribution
+ * Server component: the section shell plus the per-year layout for the contribution
  * heatmap. Contributions are bucketed by calendar year, padded to the full year,
  * and each year gets its own pure, serializable `buildHeatmapLayout` result, so
  * the client only switches between ready-made grids. Years are newest-first.
@@ -76,21 +76,20 @@ export function UsageHeatmap({
     .sort((a, b) => b.year.localeCompare(a.year));
 
   return (
-    <Card className={className}>
-      <Card.Header>
-        <Card.Title>Activity</Card.Title>
-        <Card.Description>Daily token usage across all agents</Card.Description>
-      </Card.Header>
-      <Card.Content>
-        {years.length === 0 ? (
-          <p className="text-muted text-sm">No activity yet.</p>
-        ) : (
-          <UsageHeatmapClient
-            modelDisplayNames={modelDisplayNames}
-            years={years}
-          />
-        )}
-      </Card.Content>
-    </Card>
+    <UsageSection
+      className={className}
+      description="Daily token usage across all agents."
+      id="activity"
+      title="Activity"
+    >
+      {years.length === 0 ? (
+        <p className="text-muted text-sm">No activity yet.</p>
+      ) : (
+        <UsageHeatmapClient
+          modelDisplayNames={modelDisplayNames}
+          years={years}
+        />
+      )}
+    </UsageSection>
   );
 }
