@@ -1,3 +1,11 @@
+## [1.42.0](https://github.com/ruchernchong/blog/compare/v1.41.1...v1.42.0) (2026-09-24)
+
+### Features
+
+* add curl installer for usage collector ([b43706b](https://github.com/ruchernchong/blog/commit/b43706b988d2ee44c10bf698489099d62dbf9321))
+* bump workspace versions in lockstep ([2ab1163](https://github.com/ruchernchong/blog/commit/2ab11637917426bacad5b9384d71dbebfe8743aa))
+* keep package versions unchanged ([213d844](https://github.com/ruchernchong/blog/commit/213d8447722c25f16f814ed8111ba1d012ab38f7))
+
 ## [1.41.1](https://github.com/ruchernchong/blog/compare/v1.41.0...v1.41.1) (2026-09-19)
 
 ### Bug Fixes
