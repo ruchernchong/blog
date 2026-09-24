@@ -1,3 +1,9 @@
+## [1.44.0](https://github.com/ruchernchong/blog/compare/v1.43.0...v1.44.0) (2026-09-24)
+
+### Features
+
+* show every usage explorer column by default ([9d02913](https://github.com/ruchernchong/blog/commit/9d0291368b3362f6b1c27d011986ea39ece036a6))
+
 ## [1.43.0](https://github.com/ruchernchong/blog/compare/v1.42.0...v1.43.0) (2026-09-24)
 
 ### Features
