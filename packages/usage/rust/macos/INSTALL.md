@@ -72,9 +72,7 @@ curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/packages/usa
 
 ## Releasing
 
-Nothing to do by hand. The collector shares the monorepo version: whenever
-semantic-release publishes `vX.Y.Z` from `main`, `ci.yml` runs
-`usage-ingest-build.yml`, which stamps `X.Y.Z` into `Cargo.toml` (committed as
-`0.0.0`), builds both architectures, merges them with `lipo`, and attaches
+Nothing to do by hand. Whenever semantic-release publishes `vX.Y.Z` from
+`main`, `ci.yml` runs `usage-ingest-build.yml`, which builds both architectures, merges them with `lipo`, and attaches
 `usage-ingest-macos.tar.gz` plus its `.sha256` to that release. The files land a
 few minutes after the release appears, so an install in that window gets a 404.

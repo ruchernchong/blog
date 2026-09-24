@@ -1,15 +1,10 @@
 name: Usage Ingest Build
 
 # Builds the macOS universal usage-ingest package. ci.yml calls this after a
-# semantic-release with the release version and uploads the result to that
-# release; pull requests that touch packaging run it as a build check.
+# semantic-release and uploads the result to that release; pull requests that
+# touch packaging run it as a build check.
 on:
   workflow_call:
-    inputs:
-      version:
-        description: Monorepo release version stamped into Cargo.toml
-        required: true
-        type: string
   pull_request:
     branches: [ main ]
     paths:
@@ -32,15 +27,6 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-
-      - name: Stamp version
-        if: inputs.version != ''
-        env:
-          VERSION: ${{ inputs.version }}
-        run: |
-          perl -pi -e 's/^version = "[^"]*"$/version = "$ENV{VERSION}"/ if !$seen && /^version = / && ++$seen' Cargo.toml
-          perl -0pi -e 's/(name = "usage-ingest"\nversion = ")[^"]*/${1}$ENV{VERSION}/' Cargo.lock
-          grep -n '^version' Cargo.toml
 
       - name: Setup Rust
         run: |

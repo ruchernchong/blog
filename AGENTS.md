@@ -42,9 +42,7 @@ This file provides guidance to coding agents when working with code in this repo
 
 ### Release
 
-- `pnpm release` - Create semantic release. Versions are lockstep: every
-  `package.json` (root and workspaces) is bumped to the release version, and CI
-  stamps it into the Rust crate's `Cargo.toml` at build time (committed as `0.0.0`)
+- `pnpm release` - Create semantic release
 
 ### Usage Analytics Ingestion
 

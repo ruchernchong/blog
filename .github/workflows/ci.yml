@@ -99,8 +99,6 @@ jobs:
     permissions:
       contents: read
     uses: ./.github/workflows/usage-ingest-build.yml # zizmor: ignore[self-repository]
-    with:
-      version: ${{ needs.release.outputs.version }}
 
   usage-ingest-upload:
     name: Usage Ingest Upload
