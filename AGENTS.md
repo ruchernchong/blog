@@ -283,7 +283,7 @@ See `apps/web/.env.example` for all required variables:
 
 - TypeScript strict mode with app-local path aliases (`@/*`) and private workspace packages (`@workspace/*`)
 - kebab-case for filenames
-- New tests are colocated with their source as `*.test.{ts,tsx}` (e.g. `usage-hero.tsx` + `usage-hero.test.tsx`); older tests still live in `__tests__/` directories
+- New tests are colocated with their source as `*.test.{ts,tsx}` (e.g. `usage-hero.tsx` + `usage-hero.test.tsx`)
 - Named exports preferred
 
 ### Testing
