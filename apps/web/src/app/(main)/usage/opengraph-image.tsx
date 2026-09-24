@@ -1,5 +1,5 @@
 import { buildHeatmapLayout } from "@workspace/usage/heatmap-layout";
-import { buildUsageNarrative } from "@workspace/usage/narrative";
+import { buildUsageNarrativeParts } from "@workspace/usage/narrative";
 import { ImageResponse } from "next/og";
 import { OG_HEADERS, OG_SIZE } from "@/lib/og/config";
 import { getOGFonts } from "@/lib/og/fonts";
@@ -10,11 +10,6 @@ import { getUsageProfile } from "@/lib/queries/usage";
 export const alt = "Usage - Ru Chern";
 export const size = OG_SIZE;
 export const contentType = "image/png";
-
-const compactNumberFormatter = new Intl.NumberFormat("en-SG", {
-  maximumFractionDigits: 1,
-  notation: "compact",
-});
 
 const integerFormatter = new Intl.NumberFormat("en-SG", {
   maximumFractionDigits: 0,
@@ -51,38 +46,33 @@ export default async function Image() {
   const modelDisplayNames = favouriteModel
     ? await getModelDisplayNames([favouriteModel])
     : {};
-  const headline =
-    buildUsageNarrative({
-      summary: profile.summary,
-      firstActiveDate:
-        profile.contributions.find((day) => day.totals.tokens > 0)?.date ??
-        null,
-      topModel: favouriteModel
-        ? (modelDisplayNames[favouriteModel] ?? favouriteModel)
-        : null,
-      topAgent: profile.byAgent[0]?.key ?? null,
-    }) ?? "The API equivalent of my AI coding agents at provider list prices.";
+  const headline = buildUsageNarrativeParts({
+    summary: profile.summary,
+    firstActiveDate:
+      profile.contributions.find((day) => day.totals.tokens > 0)?.date ?? null,
+    topModel: favouriteModel
+      ? (modelDisplayNames[favouriteModel] ?? favouriteModel)
+      : null,
+    topAgent: profile.byAgent[0]?.key ?? null,
+  }) ?? [
+    {
+      text: "The API equivalent of my AI coding agents at provider list prices.",
+    },
+  ];
 
   return new ImageResponse(
     <UsageHeatmap
       layout={layout}
       eyebrow="Usage"
       headline={headline}
+      // Tokens and active days are already in the headline.
       stats={[
         {
           label: "API equivalent",
           value: usdFormatter.format(profile.summary.totalCost),
         },
         {
-          label: "Tokens",
-          value: compactNumberFormatter.format(profile.summary.totalTokens),
-        },
-        {
-          label: "Active days",
-          value: integerFormatter.format(profile.summary.activeDays),
-        },
-        {
-          label: "Models",
+          label: "models",
           value: integerFormatter.format(profile.summary.models.length),
         },
       ]}
