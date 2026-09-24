@@ -193,7 +193,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 - **Cache**: Upstash Redis for related posts, analytics, and post statistics
 - **UI**: HeroUI v3 — Pro (`@heroui-pro/react`) + OSS (`@heroui/react`)
 - **Styling**: Tailwind CSS v4
-- **Testing**: Vitest with React Testing Library
+- **Testing**: Vitest (Node for `*.test.ts`, headless Chromium Browser Mode with `vitest-browser-react` for `*.test.tsx`)
 - **Code Quality**: Biome for linting/formatting, TypeScript 7 (strict mode)
 
 ### Key Features
@@ -279,7 +279,7 @@ See `apps/web/.env.example` for all required variables:
 
 - TypeScript strict mode with app-local path aliases (`@/*`) and private workspace packages (`@workspace/*`)
 - kebab-case for filenames
-- Tests in `__tests__/` directories
+- New tests are colocated with their source as `*.test.{ts,tsx}` (e.g. `usage-hero.tsx` + `usage-hero.test.tsx`); older tests still live in `__tests__/` directories
 - Named exports preferred
 
 ### Testing

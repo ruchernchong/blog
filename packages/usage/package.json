@@ -15,6 +15,7 @@
     ".": "./src/index.ts",
     "./format": "./src/format.ts",
     "./heatmap-layout": "./src/heatmap-layout.ts",
+    "./narrative": "./src/narrative.ts",
     "./ingest": "./src/ingest.ts",
     "./parsers": "./src/parsers/index.ts",
     "./pricing": "./src/pricing.ts",
