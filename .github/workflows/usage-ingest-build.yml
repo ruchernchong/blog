@@ -1,0 +1,61 @@
+name: Usage Ingest Build
+
+# Builds the macOS universal usage-ingest package. ci.yml calls this after a
+# semantic-release and uploads the result to that release; pull requests that
+# touch packaging run it as a build check.
+on:
+  workflow_call:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "packages/usage/rust/**"
+      - ".github/workflows/usage-ingest-build.yml"
+
+permissions: { }
+
+jobs:
+  build:
+    name: Build
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/usage/rust
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Rust
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add aarch64-apple-darwin x86_64-apple-darwin
+
+      - name: Build
+        run: |
+          cargo build --locked --release --target aarch64-apple-darwin
+          cargo build --locked --release --target x86_64-apple-darwin
+
+      - name: Package
+        run: |
+          dist=dist/usage-ingest
+          mkdir -p "$dist/bin" "$dist/macos"
+          lipo -create -output "$dist/bin/usage-ingest" \
+            target/aarch64-apple-darwin/release/usage-ingest \
+            target/x86_64-apple-darwin/release/usage-ingest
+          lipo -info "$dist/bin/usage-ingest"
+          HOME=$(mktemp -d) "$dist/bin/usage-ingest" measure
+          cp macos/install.sh macos/uninstall.sh macos/usage-ingest-run.sh \
+            macos/dev.ruchern.usage-ingest.plist "$dist/macos/"
+          tar -czf dist/usage-ingest-macos.tar.gz -C dist usage-ingest
+          (cd dist && shasum -a 256 usage-ingest-macos.tar.gz > usage-ingest-macos.tar.gz.sha256)
+
+      - name: Upload package
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: usage-ingest-macos
+          path: packages/usage/rust/dist/usage-ingest-macos.tar.gz*
+          if-no-files-found: error

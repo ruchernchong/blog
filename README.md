@@ -103,11 +103,13 @@ A Rust binary parses local Claude, Codex, OpenCode, Cursor, and Grok logs and PO
 rows to `https://ruchern.dev/api/usage/ingest`. Auth is OAuth (admin account),
 not `BLOG_MCP_AUTH_TOKEN`. 15-minute LaunchAgent optional.
 
-Requires a **Rust toolchain** (`install.sh` runs `cargo build --release`). Install:
+Install the prebuilt universal binary from the latest release
+(no checkout or Rust toolchain needed), or build from a checkout with
+`zsh packages/usage/rust/macos/install.sh` (needs Rust). Details:
 [packages/usage/rust/macos/INSTALL.md](./packages/usage/rust/macos/INSTALL.md)
 
 ```zsh
-zsh packages/usage/rust/macos/install.sh
+curl --proto '=https' --tlsv1.2 -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/packages/usage/rust/macos/install-remote.sh | bash
 ~/.local/bin/usage-ingest login    # admin account
 ~/.local/bin/usage-ingest-run      # POST if there are rows; then check /usage
 ```

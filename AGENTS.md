@@ -67,7 +67,10 @@ See `packages/usage/src/registry.ts` (pure normalise/merge) and
   Parses Claude, Codex, OpenCode, Cursor, and Grok on this machine. `ingest:rust` POSTs
   daily rows with `costUsd: null` so the ingest route prices them. Auth is
   `usage-ingest login` (OAuth, admin account, Keychain). `USAGE_INGEST_DRY_RUN=1`
-  prints the payload without POSTing. Public install (Rust toolchain, LaunchAgent):
+  prints the payload without POSTing. Install (LaunchAgent): `curl | bash`
+  `packages/usage/rust/macos/install-remote.sh` pulls the prebuilt binary from the
+  latest monorepo release (`ci.yml` runs `usage-ingest-build.yml` after semantic-release
+  and attaches the package); `install.sh` builds from a checkout. See
   README.md “Usage collector (macOS)” and `packages/usage/rust/macos/INSTALL.md`.
 
 AgentUsage may also POST session-level `effortRows` into `token_effort_usage`
