@@ -125,7 +125,7 @@ describe("buildCacheTrend", () => {
 });
 
 describe("toWeeklyShareRows", () => {
-  it("should turn weekly tokens into per-week shares", () => {
+  it("should turn weekly tokens into per-week shares, with no series keys for idle weeks", () => {
     expect(
       toWeeklyShareRows(
         ["2026-01-05", "2026-01-12"],
@@ -136,7 +136,7 @@ describe("toWeeklyShareRows", () => {
       ),
     ).toEqual([
       { week: "2026-01-05", a: 0.75, b: 0.25 },
-      { week: "2026-01-12", a: 0, b: 0 },
+      { week: "2026-01-12" },
     ]);
   });
 });

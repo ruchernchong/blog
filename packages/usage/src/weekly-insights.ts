@@ -148,7 +148,8 @@ export type WeeklyShareRow = { week: string } & Record<string, number | string>;
 
 /**
  * Convert weekly token series into per-week shares (0–1) for a 100% stacked
- * chart. An idle week has every share at 0 rather than dividing by zero.
+ * chart. An idle week carries no series keys, so the chart leaves a gap
+ * rather than collapsing the stack to 0%.
  */
 export function toWeeklyShareRows(
   weeks: string[],
@@ -157,8 +158,9 @@ export function toWeeklyShareRows(
   return weeks.map((week, index) => {
     const total = series.reduce((sum, entry) => sum + entry.tokens[index], 0);
     const row: WeeklyShareRow = { week };
+    if (total === 0) return row;
     for (const entry of series) {
-      row[entry.key] = total > 0 ? entry.tokens[index] / total : 0;
+      row[entry.key] = entry.tokens[index] / total;
     }
     return row;
   });

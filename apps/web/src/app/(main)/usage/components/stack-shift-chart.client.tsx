@@ -1,8 +1,9 @@
 "use client";
 
-import { AreaChart } from "@heroui-pro/react";
+import { AreaChart, ChartTooltip } from "@heroui-pro/react";
 import type { WeeklyShareRow } from "@workspace/usage/weekly-insights";
 import { format, parseISO } from "date-fns";
+import type { TooltipContentProps } from "recharts";
 import type { SeriesMeta } from "./usage-series";
 
 interface StackShiftChartClientProps {
@@ -15,17 +16,77 @@ const sharePercent = new Intl.NumberFormat("en-SG", {
   style: "percent",
 });
 
+// A used-but-tiny share would round to "0%", which reads as unused.
+const formatShare = (share: number) =>
+  share < 0.005 ? "<1%" : sharePercent.format(share);
+
 const formatTick = (week: string) => format(parseISO(week), "MMM yy");
+
+type StackShiftTooltipProps = Partial<TooltipContentProps<number, string>> & {
+  colorByKey: Map<string, string>;
+};
+
+/**
+ * Only series used that week, largest share first; the stable sort keeps
+ * legend order on ties. The auto TooltipContent colours indicators from
+ * `stroke`, which here is the background separator, so colour them by series
+ * instead. Recharts injects `active`, `label` and `payload` when cloning.
+ */
+function StackShiftTooltip({
+  active,
+  label,
+  payload,
+  colorByKey,
+}: StackShiftTooltipProps) {
+  if (!active) return null;
+  const entries = (payload ?? [])
+    .filter((entry) => Number(entry.value) > 0)
+    .sort((a, b) => Number(b.value) - Number(a.value));
+
+  return (
+    <ChartTooltip>
+      <ChartTooltip.Header>
+        Week of {format(parseISO(String(label)), "d MMM yyyy")}
+      </ChartTooltip.Header>
+      {entries.length === 0 ? (
+        <ChartTooltip.Item>
+          <ChartTooltip.Label>No activity</ChartTooltip.Label>
+        </ChartTooltip.Item>
+      ) : null}
+      {entries.map((entry) => (
+        <ChartTooltip.Item key={String(entry.dataKey)}>
+          <ChartTooltip.Indicator
+            color={colorByKey.get(String(entry.dataKey))}
+          />
+          <ChartTooltip.Label>{entry.name}</ChartTooltip.Label>
+          <ChartTooltip.Value>
+            {formatShare(Number(entry.value))}
+          </ChartTooltip.Value>
+        </ChartTooltip.Item>
+      ))}
+    </ChartTooltip>
+  );
+}
 
 /**
  * Interactive client leaf: 100% stacked area of weekly token share. Rows are
  * already shares (0–1), so the stack tops out at 100% without relying on a
- * stack offset. A 2px background stroke separates adjacent fills.
+ * stack offset. Idle weeks have no series keys, leaving a gap. A 2px
+ * background stroke separates adjacent fills.
  */
 export function StackShiftChartClient({
   rows,
   series,
 }: StackShiftChartClientProps) {
+  const colorByKey = new Map(series.map((entry) => [entry.key, entry.color]));
+  // One tick per month (its first week), so a month label never repeats.
+  const monthTicks = rows
+    .map((row) => row.week)
+    .filter(
+      (week, index, weeks) =>
+        index === 0 || week.slice(0, 7) !== weeks[index - 1].slice(0, 7),
+    );
+
   return (
     <AreaChart data={rows} height={320}>
       <AreaChart.Grid vertical={false} />
@@ -34,6 +95,7 @@ export function StackShiftChartClient({
         minTickGap={48}
         tickFormatter={formatTick}
         tickMargin={8}
+        ticks={monthTicks}
       />
       <AreaChart.YAxis
         domain={[0, 1]}
@@ -55,15 +117,11 @@ export function StackShiftChartClient({
           type="monotone"
         />
       ))}
+      {/* Keep idle weeks' empty entries so Recharts still shows the tooltip
+          (it hides on an empty payload); StackShiftTooltip drops them. */}
       <AreaChart.Tooltip
-        content={
-          <AreaChart.TooltipContent
-            labelFormatter={(label) =>
-              `Week of ${format(parseISO(String(label)), "d MMM yyyy")}`
-            }
-            valueFormatter={(value) => sharePercent.format(Number(value))}
-          />
-        }
+        content={<StackShiftTooltip colorByKey={colorByKey} />}
+        filterNull={false}
       />
     </AreaChart>
   );
