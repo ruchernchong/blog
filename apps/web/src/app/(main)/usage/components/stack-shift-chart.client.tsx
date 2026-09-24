@@ -38,8 +38,8 @@ function StackShiftTooltip({
   payload,
   colorByKey,
 }: StackShiftTooltipProps) {
-  if (!active || !payload?.length) return null;
-  const entries = payload
+  if (!active) return null;
+  const entries = (payload ?? [])
     .filter((entry) => Number(entry.value) > 0)
     .sort((a, b) => Number(b.value) - Number(a.value));
 
@@ -117,8 +117,11 @@ export function StackShiftChartClient({
           type="monotone"
         />
       ))}
+      {/* Keep idle weeks' empty entries so Recharts still shows the tooltip
+          (it hides on an empty payload); StackShiftTooltip drops them. */}
       <AreaChart.Tooltip
         content={<StackShiftTooltip colorByKey={colorByKey} />}
+        filterNull={false}
       />
     </AreaChart>
   );
