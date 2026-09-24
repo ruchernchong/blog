@@ -1,3 +1,9 @@
+## [1.45.2](https://github.com/ruchernchong/blog/compare/v1.45.1...v1.45.2) (2026-09-24)
+
+### Bug Fixes
+
+* fill token mix bar to full width ([7f49cea](https://github.com/ruchernchong/blog/commit/7f49ceabaa6a7a70e64ef3316641f0a8d5fbce36))
+
 ## [1.45.1](https://github.com/ruchernchong/blog/compare/v1.45.0...v1.45.1) (2026-09-24)
 
 ### Bug Fixes
