@@ -1,3 +1,11 @@
+## [1.45.4](https://github.com/ruchernchong/blog/compare/v1.45.3...v1.45.4) (2026-09-24)
+
+### Bug Fixes
+
+* redesign usage og image to stop clipping ([d42ff08](https://github.com/ruchernchong/blog/commit/d42ff08a6b28cf4c2bb9d4af589fe2569a738fbd))
+* truncate long model names in usage og image ([6488bcb](https://github.com/ruchernchong/blog/commit/6488bcb02f96035f7ac41861e2e5cd188f0cc4d9))
+* truncate model names by code point ([b5bb039](https://github.com/ruchernchong/blog/commit/b5bb0395f9ac4e0958059203f5083d6e1221a7c2))
+
 ## [1.45.3](https://github.com/ruchernchong/blog/compare/v1.45.2...v1.45.3) (2026-09-24)
 
 ### Bug Fixes
