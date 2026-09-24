@@ -46,6 +46,7 @@ export function StackShiftChartClient({
           dot={false}
           fill={entry.color}
           fillOpacity={0.9}
+          isAnimationActive={false}
           key={entry.key}
           name={entry.label}
           stackId="share"

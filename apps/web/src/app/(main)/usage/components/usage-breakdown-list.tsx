@@ -50,6 +50,7 @@ export function UsageBreakdownList({
             <div className="flex flex-col">
               {viewId === "model" && onSelectModel ? (
                 <Button
+                  aria-label={`Open profile for ${name}`}
                   className="h-auto min-w-0 self-start p-0 text-left font-medium underline decoration-border underline-offset-4 hover:decoration-current"
                   onPress={() => onSelectModel(row.key)}
                   size="sm"

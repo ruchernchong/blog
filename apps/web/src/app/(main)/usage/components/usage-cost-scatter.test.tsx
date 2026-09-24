@@ -41,8 +41,25 @@ describe("UsageCostScatter", () => {
     await expect
       .element(screen.getByRole("heading", { name: "Where the money goes" }))
       .toBeInTheDocument();
-    await expect.element(screen.getByText("Claude Opus")).toBeInTheDocument();
-    await expect.element(screen.getByText("haiku")).toBeInTheDocument();
+    await expect
+      .element(screen.getByText("Claude Opus", { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(screen.getByText("haiku", { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(
+        screen.getByText(
+          /Biggest spenders: Claude Opus, US\$30\.00 at US\$15\.00 per million tokens; haiku/,
+        ),
+      )
+      .toBeInTheDocument();
+    // The chart is decorative next to the summary, so it must not take focus.
+    expect(
+      screen.container
+        .querySelector("svg.recharts-surface")
+        ?.hasAttribute("tabindex"),
+    ).toBe(false);
   });
 
   it("should render the empty state without priced usage", async () => {

@@ -105,7 +105,12 @@ export function CostScatterChartClient({
 
   return (
     <ResponsiveContainer height={360} width="100%">
-      <ScatterChart margin={{ top: 24, right: 48, bottom: 8, left: 0 }}>
+      {/* The section provides a text summary and the Explorer is the table
+          view, so the SVG stays out of the tab order and the a11y tree. */}
+      <ScatterChart
+        accessibilityLayer={false}
+        margin={{ top: 24, right: 48, bottom: 8, left: 0 }}
+      >
         <CartesianGrid stroke="var(--border)" vertical={false} />
         <XAxis
           axisLine={false}

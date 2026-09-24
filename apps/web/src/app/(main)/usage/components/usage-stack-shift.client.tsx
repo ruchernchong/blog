@@ -43,6 +43,10 @@ export function UsageStackShiftClient({ views }: UsageStackShiftClientProps) {
         ]}
         value={view}
       />
+      <p className="sr-only">
+        Weekly share chart. The legend below lists each series with its share of
+        all tokens; per-model figures are in the Explorer table.
+      </p>
       <StackShiftChartClient rows={active.rows} series={active.series} />
       <ul className="flex flex-wrap gap-4">
         {active.series.map((entry) => (

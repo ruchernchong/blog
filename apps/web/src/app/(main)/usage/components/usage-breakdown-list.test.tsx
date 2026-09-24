@@ -47,7 +47,9 @@ describe("UsageBreakdownList", () => {
     await expect.element(screen.getByText("US$30.00")).toBeInTheDocument();
     await expect.element(screen.getByText("1,200")).toBeInTheDocument();
 
-    await screen.getByRole("button", { name: "Claude Opus" }).click();
+    await screen
+      .getByRole("button", { name: "Open profile for Claude Opus" })
+      .click();
     expect(onSelectModel).toHaveBeenCalledWith("opus");
   });
 
