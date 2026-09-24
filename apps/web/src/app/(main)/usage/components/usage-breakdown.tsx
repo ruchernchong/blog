@@ -38,6 +38,7 @@ import { FreeModelChip } from "./free-model-chip";
 import { UsageBreakdownList } from "./usage-breakdown-list";
 import {
   type BreakdownNames,
+  columnPreferenceAfterChange,
   compareRows,
   filterRows,
   type ProviderOption,
@@ -621,7 +622,11 @@ export function UsageBreakdown({
           <ColumnsMenu
             columnOptions={columnOptions}
             lockedColumn={sort}
-            onVisibleColumnsChange={setVisibleColumns}
+            onVisibleColumnsChange={(keys) =>
+              setVisibleColumns((previous) =>
+                columnPreferenceAfterChange(keys, previous, sort),
+              )
+            }
             visibleColumns={shownColumns}
           />
         </div>

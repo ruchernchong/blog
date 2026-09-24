@@ -142,3 +142,25 @@ export function providerOptionsFor(
     .map((key) => ({ key, label: providerDisplayNames[key] ?? key }))
     .sort((a, b) => a.label.localeCompare(b.label));
 }
+
+/** A column visibility selection, as the DataGrid and menu report it. */
+export type ColumnSelection = "all" | Set<string | number>;
+
+/**
+ * The visibility preference to store after a Columns-menu change. The sorted
+ * column is shown (and locked) in the menu whatever the preference is, so it
+ * arrives in every selection; keep it only if the visitor had chosen to show
+ * it, so sorting by a hidden column never turns it on for good.
+ */
+export function columnPreferenceAfterChange(
+  next: ColumnSelection,
+  previous: ColumnSelection,
+  lockedColumn: string,
+): ColumnSelection {
+  if (next === "all" || previous === "all" || previous.has(lockedColumn)) {
+    return next;
+  }
+  const preference = new Set(next);
+  preference.delete(lockedColumn);
+  return preference;
+}

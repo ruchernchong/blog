@@ -1,6 +1,7 @@
 import type { UsageBreakdownRow } from "@workspace/usage/types";
 import { describe, expect, it } from "vitest";
 import {
+  columnPreferenceAfterChange,
   compareRows,
   filterRows,
   providerOptionsFor,
@@ -123,5 +124,30 @@ describe("providerOptionsFor", () => {
       { key: "opencode", label: "opencode" },
     ]);
     expect(providerOptionsFor(rows, "provider", {})).toEqual([]);
+  });
+});
+
+describe("columnPreferenceAfterChange", () => {
+  it("should not store a locked column the visitor never chose to show", () => {
+    expect(
+      columnPreferenceAfterChange(
+        new Set(["tokens", "cost", "costPerMillionTokens", "messages"]),
+        new Set(["tokens", "cost"]),
+        "costPerMillionTokens",
+      ),
+    ).toEqual(new Set(["tokens", "cost", "messages"]));
+  });
+
+  it("should keep a locked column the visitor had already shown", () => {
+    const next = new Set(["tokens", "costPerMillionTokens"]);
+
+    expect(
+      columnPreferenceAfterChange(
+        next,
+        new Set(["costPerMillionTokens"]),
+        "costPerMillionTokens",
+      ),
+    ).toBe(next);
+    expect(columnPreferenceAfterChange("all", new Set(), "cost")).toBe("all");
   });
 });
