@@ -41,7 +41,7 @@ export function TokenMixChartClient({
       layout="vertical"
       margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
     >
-      <BarChart.XAxis hide type="number" />
+      <BarChart.XAxis domain={[0, total]} hide type="number" />
       <BarChart.YAxis dataKey="label" hide type="category" />
       {segments.map((segment, index) => (
         <BarChart.Bar
