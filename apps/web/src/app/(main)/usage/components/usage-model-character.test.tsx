@@ -76,6 +76,26 @@ describe("UsageModelCharacter", () => {
     );
   });
 
+  it("should reveal models beyond the first few with Show all", async () => {
+    const byModel = Array.from({ length: 9 }, (_, index) =>
+      row(`m${index + 1}`, { tokens: 1000 - index }),
+    );
+    const screen = await render(
+      <UsageModelCharacter byModel={byModel} modelDisplayNames={{}} />,
+      { wrapper: withNuqsTestingAdapter() },
+    );
+
+    const ninth = screen.getByRole("button", { name: "View profile for m9" });
+    await expect.element(ninth).not.toBeInTheDocument();
+
+    await screen.getByRole("button", { name: "Show all 9 models" }).click();
+
+    await expect.element(ninth).toBeInTheDocument();
+    await expect
+      .element(screen.getByRole("button", { name: "Show fewer models" }))
+      .toHaveAttribute("aria-expanded", "true");
+  });
+
   it("should skip idle models and show the empty state", async () => {
     const screen = await render(
       <UsageModelCharacter

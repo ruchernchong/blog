@@ -5,6 +5,7 @@ import {
 } from "@workspace/usage/model-character";
 import type { UsageBreakdownRow } from "@workspace/usage/types";
 import { Suspense } from "react";
+import { UsageModelCharacterRows } from "./usage-model-character-rows.client";
 import {
   UsageModelProfileButton,
   UsageModelProfileButtonFallback,
@@ -14,7 +15,7 @@ import { UsageSection } from "./usage-section";
 interface UsageModelCharacterProps {
   byModel: UsageBreakdownRow[];
   modelDisplayNames: Record<string, string>;
-  /** How many of the biggest models to compare. */
+  /** How many of the biggest models show before "Show all". */
   limit?: number;
 }
 
@@ -65,7 +66,6 @@ export function UsageModelCharacter({
 }: UsageModelCharacterProps) {
   const rows = byModel
     .filter((row) => row.tokens > 0)
-    .slice(0, limit)
     .map((row) => ({
       key: row.key,
       label: modelDisplayNames[row.key] ?? row.key,
@@ -81,8 +81,8 @@ export function UsageModelCharacter({
       {rows.length === 0 ? (
         <p className="text-muted text-sm">No model usage yet.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-sm">
+        <UsageModelCharacterRows
+          head={
             <thead className="text-muted text-xs uppercase tracking-wider">
               <tr className="border-border border-b">
                 <th className="py-2 pr-4 font-medium" scope="col">
@@ -105,51 +105,47 @@ export function UsageModelCharacter({
                 </th>
               </tr>
             </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr
-                  className="border-border border-b last:border-0"
-                  key={row.key}
-                >
-                  <th className="max-w-56 py-3 pr-4" scope="row">
-                    <div className="flex flex-col gap-1">
-                      <span className="truncate font-medium" title={row.key}>
-                        {row.label}
-                      </span>
-                      {/* nuqs reads the URL, so the button needs a Suspense
+          }
+          initialCount={limit}
+          rows={rows.map((row) => (
+            <tr className="border-border border-b last:border-0" key={row.key}>
+              <th className="max-w-56 py-3 pr-4" scope="row">
+                <div className="flex flex-col gap-1">
+                  <span className="truncate font-medium" title={row.key}>
+                    {row.label}
+                  </span>
+                  {/* nuqs reads the URL, so the button needs a Suspense
                           boundary to keep the section in the static shell. */}
-                      <Suspense fallback={<UsageModelProfileButtonFallback />}>
-                        <UsageModelProfileButton
-                          label={row.label}
-                          model={row.key}
-                        />
-                      </Suspense>
-                    </div>
-                  </th>
-                  <td className="py-3 pr-4">
-                    <RateCell value={row.cacheHitRate} />
-                  </td>
-                  <td className="py-3 pr-4 tabular-nums">
-                    {row.outputInputRatio === null
-                      ? DASH
-                      : `${ratioFormat.format(row.outputInputRatio)}×`}
-                  </td>
-                  <td className="py-3 pr-4">
-                    <RateCell value={row.reasoningShare} />
-                  </td>
-                  <td className="py-3 pr-4 text-right tabular-nums">
-                    {row.tokensPerMessage === null
-                      ? DASH
-                      : formatTokens(row.tokensPerMessage)}
-                  </td>
-                  <td className="py-3 text-right tabular-nums">
-                    {costPerMessageLabel(row)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  <Suspense fallback={<UsageModelProfileButtonFallback />}>
+                    <UsageModelProfileButton
+                      label={row.label}
+                      model={row.key}
+                    />
+                  </Suspense>
+                </div>
+              </th>
+              <td className="py-3 pr-4">
+                <RateCell value={row.cacheHitRate} />
+              </td>
+              <td className="py-3 pr-4 tabular-nums">
+                {row.outputInputRatio === null
+                  ? DASH
+                  : `${ratioFormat.format(row.outputInputRatio)}×`}
+              </td>
+              <td className="py-3 pr-4">
+                <RateCell value={row.reasoningShare} />
+              </td>
+              <td className="py-3 pr-4 text-right tabular-nums">
+                {row.tokensPerMessage === null
+                  ? DASH
+                  : formatTokens(row.tokensPerMessage)}
+              </td>
+              <td className="py-3 text-right tabular-nums">
+                {costPerMessageLabel(row)}
+              </td>
+            </tr>
+          ))}
+        />
       )}
     </UsageSection>
   );
