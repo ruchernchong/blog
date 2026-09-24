@@ -1,3 +1,9 @@
+## [1.45.3](https://github.com/ruchernchong/blog/compare/v1.45.2...v1.45.3) (2026-09-24)
+
+### Bug Fixes
+
+* right-align numeric columns in usage explorer ([302c203](https://github.com/ruchernchong/blog/commit/302c203d1c3088288d38ee105770dab441aed21e))
+
 ## [1.45.2](https://github.com/ruchernchong/blog/compare/v1.45.1...v1.45.2) (2026-09-24)
 
 ### Bug Fixes
