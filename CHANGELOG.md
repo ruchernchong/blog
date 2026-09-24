@@ -1,3 +1,22 @@
+## [1.43.0](https://github.com/ruchernchong/blog/compare/v1.42.0...v1.43.0) (2026-09-24)
+
+### Features
+
+* add usage explorer phone list and model drawer ([8113cdb](https://github.com/ruchernchong/blog/commit/8113cdb15b126f04bdd31dbbe03d3f6bc096834d))
+* add usage insight aggregations for page redesign ([5461f19](https://github.com/ruchernchong/blog/commit/5461f198011b7dfd35886724a0ad90df7f6f50d5))
+* add usage story sections to the redesigned page ([e688590](https://github.com/ruchernchong/blog/commit/e6885906a0efbea5c4f729fd77a2837de006265c))
+* polish usage redesign with OG image, docs and a11y ([249f11b](https://github.com/ruchernchong/blog/commit/249f11baebc421328947cbf9ab2605cc99863c7e))
+* redesign usage page shell with editorial hero ([afa3e78](https://github.com/ruchernchong/blog/commit/afa3e7877b91a081370c01729fc0ffa78b78f5ac))
+* roomier usage explorer and profile buttons in model character ([38de1dd](https://github.com/ruchernchong/blog/commit/38de1dd48af3fe484199351a3ff014d4e50b7c54))
+
+### Bug Fixes
+
+* address usage review findings ([b19065f](https://github.com/ruchernchong/blog/commit/b19065fb527ee75896aca102bf39a812d1f5d905))
+* don't persist the locked sort column as a visibility choice ([785ddbf](https://github.com/ruchernchong/blog/commit/785ddbf3e7b1f033af92e67f6caabedbc4724b05))
+* pre-bundle browser test deps and sort usage dates explicitly ([6c6a008](https://github.com/ruchernchong/blog/commit/6c6a00843c132e681bab0318b94a29a9f045fbeb))
+* reach every model profile from Model character ([bc267fe](https://github.com/ruchernchong/blog/commit/bc267fe3fe5721c3fb4d79f8048bb151dccad7c1))
+* usage sort labels, locked sorted column, spacing scale ([81b46b7](https://github.com/ruchernchong/blog/commit/81b46b734b3385d264d214594b8c53a10a9b8e76))
+
 ## [1.42.0](https://github.com/ruchernchong/blog/compare/v1.41.1...v1.42.0) (2026-09-24)
 
 ### Features
