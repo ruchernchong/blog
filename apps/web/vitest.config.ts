@@ -33,7 +33,7 @@ export default defineConfig({
         // mid-run makes Vite reload, which loads a second React and fails
         // every hook with "Cannot read properties of null" on a cold cache.
         optimizeDeps: {
-          include: ["nuqs", "nuqs/adapters/testing", "recharts"],
+          include: ["nuqs", "nuqs/adapters/testing", "nuqs/server", "recharts"],
         },
         test: {
           name: "browser",

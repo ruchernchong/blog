@@ -1,4 +1,3 @@
-import { Button } from "@heroui/react";
 import {
   formatCost,
   formatNumber,
@@ -15,8 +14,6 @@ interface UsageBreakdownListProps {
   rows: UsageBreakdownRow[];
   viewId: string;
   names: BreakdownNames;
-  /** Opens the model drawer; only offered in the model view. */
-  onSelectModel?: (model: string) => void;
 }
 
 /**
@@ -27,7 +24,6 @@ export function UsageBreakdownList({
   rows,
   viewId,
   names,
-  onSelectModel,
 }: UsageBreakdownListProps) {
   if (rows.length === 0) {
     return (
@@ -48,19 +44,7 @@ export function UsageBreakdownList({
         return (
           <li className="flex flex-col gap-2 py-4" key={row.key}>
             <div className="flex flex-col">
-              {viewId === "model" && onSelectModel ? (
-                <Button
-                  aria-label={`Open profile for ${name}`}
-                  className="h-auto min-w-0 self-start p-0 text-left font-medium underline decoration-border underline-offset-4 hover:decoration-current"
-                  onPress={() => onSelectModel(row.key)}
-                  size="sm"
-                  variant="ghost"
-                >
-                  {name}
-                </Button>
-              ) : (
-                <span className="font-medium">{name}</span>
-              )}
+              <span className="font-medium">{name}</span>
               {viewId !== "provider" && providers ? (
                 <span className="text-muted text-xs">{providers}</span>
               ) : null}

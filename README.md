@@ -57,7 +57,7 @@ pnpm build           # Build for production
 ### Analytics & Stats
 - **Analytics**: PostHog and Vercel Analytics
 - **Dashboard**: PostHog-backed visitor analytics (Query API) at /dashboard
-- **AI Usage**: Public /usage page for my coding agents at API-equivalent list prices: generated summary, activity heatmap, period comparison, model and agent share over time, model character, cost vs volume, cache and effort, and a filterable Explorer with per-model profiles
+- **AI Usage**: Public /usage page for my coding agents at API-equivalent list prices: generated summary, activity heatmap, period comparison, model and agent share over time, model character, cost vs volume, cache and effort, per-model profiles, and a filterable Explorer
 - **Post Statistics**: Client-side views tracking (likes temporarily disabled)
 - **Popular Posts**: Top posts by view count
 - **Related Posts**: Tag-based recommendations with Jaccard similarity

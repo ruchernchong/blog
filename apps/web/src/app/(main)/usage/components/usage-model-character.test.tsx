@@ -1,5 +1,9 @@
 import type { UsageBreakdownRow } from "@workspace/usage/types";
-import { describe, expect, it } from "vitest";
+import {
+  type OnUrlUpdateFunction,
+  withNuqsTestingAdapter,
+} from "nuqs/adapters/testing";
+import { describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-react";
 import { UsageModelCharacter } from "./usage-model-character";
 
@@ -38,6 +42,7 @@ describe("UsageModelCharacter", () => {
         byModel={[row("opus"), row("mystery", { cost: null })]}
         modelDisplayNames={{ opus: "Claude Opus" }}
       />,
+      { wrapper: withNuqsTestingAdapter() },
     );
 
     const opus = screen.getByRole("row", { name: /Claude Opus/ });
@@ -51,12 +56,33 @@ describe("UsageModelCharacter", () => {
       .toBeInTheDocument();
   });
 
+  it("should open a model's profile from its row", async () => {
+    const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
+    const screen = await render(
+      <UsageModelCharacter
+        byModel={[row("opus")]}
+        modelDisplayNames={{ opus: "Claude Opus" }}
+      />,
+      { wrapper: withNuqsTestingAdapter({ onUrlUpdate }) },
+    );
+
+    await screen
+      .getByRole("button", { name: "View profile for Claude Opus" })
+      .click();
+
+    await expect.poll(() => onUrlUpdate.mock.calls.length).toBeGreaterThan(0);
+    expect(onUrlUpdate.mock.calls.at(-1)?.[0].searchParams.get("model")).toBe(
+      "opus",
+    );
+  });
+
   it("should skip idle models and show the empty state", async () => {
     const screen = await render(
       <UsageModelCharacter
         byModel={[row("idle", { tokens: 0 })]}
         modelDisplayNames={{}}
       />,
+      { wrapper: withNuqsTestingAdapter() },
     );
 
     await expect

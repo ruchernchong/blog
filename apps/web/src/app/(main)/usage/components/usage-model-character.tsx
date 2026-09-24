@@ -4,6 +4,11 @@ import {
   type ModelCharacter,
 } from "@workspace/usage/model-character";
 import type { UsageBreakdownRow } from "@workspace/usage/types";
+import { Suspense } from "react";
+import {
+  UsageModelProfileButton,
+  UsageModelProfileButtonFallback,
+} from "./usage-model-profile-button.client";
 import { UsageSection } from "./usage-section";
 
 interface UsageModelCharacterProps {
@@ -69,7 +74,7 @@ export function UsageModelCharacter({
 
   return (
     <UsageSection
-      description="Cache reuse, how much each model writes per token read, how much of that is reasoning, and message size."
+      description="Cache reuse, how much each model writes per token read, how much of that is reasoning, and message size. Open a model's profile for its full history."
       id="character"
       title="Model character"
     >
@@ -106,12 +111,20 @@ export function UsageModelCharacter({
                   className="border-border border-b last:border-0"
                   key={row.key}
                 >
-                  <th
-                    className="max-w-56 truncate py-3 pr-4 font-medium"
-                    scope="row"
-                    title={row.key}
-                  >
-                    {row.label}
+                  <th className="max-w-56 py-3 pr-4" scope="row">
+                    <div className="flex flex-col gap-1">
+                      <span className="truncate font-medium" title={row.key}>
+                        {row.label}
+                      </span>
+                      {/* nuqs reads the URL, so the button needs a Suspense
+                          boundary to keep the section in the static shell. */}
+                      <Suspense fallback={<UsageModelProfileButtonFallback />}>
+                        <UsageModelProfileButton
+                          label={row.label}
+                          model={row.key}
+                        />
+                      </Suspense>
+                    </div>
                   </th>
                   <td className="py-3 pr-4">
                     <RateCell value={row.cacheHitRate} />

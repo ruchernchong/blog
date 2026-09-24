@@ -1,5 +1,5 @@
 import type { UsageBreakdownRow } from "@workspace/usage/types";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-react";
 import { UsageBreakdownList } from "./usage-breakdown-list";
 
@@ -31,35 +31,25 @@ const names = {
 };
 
 describe("UsageBreakdownList", () => {
-  it("should render each row's figures and open the model on press", async () => {
-    const onSelectModel = vi.fn();
+  it("should render each row's name, provider and figures", async () => {
     const screen = await render(
-      <UsageBreakdownList
-        names={names}
-        onSelectModel={onSelectModel}
-        rows={[row]}
-        viewId="model"
-      />,
+      <UsageBreakdownList names={names} rows={[row]} viewId="model" />,
     );
 
+    await expect.element(screen.getByText("Claude Opus")).toBeInTheDocument();
     await expect.element(screen.getByText("Anthropic")).toBeInTheDocument();
     await expect.element(screen.getByText("2M")).toBeInTheDocument();
     await expect.element(screen.getByText("US$30.00")).toBeInTheDocument();
     await expect.element(screen.getByText("1,200")).toBeInTheDocument();
-
-    await screen
-      .getByRole("button", { name: "Open profile for Claude Opus" })
-      .click();
-    expect(onSelectModel).toHaveBeenCalledWith("opus");
+    await expect.element(screen.getByRole("button")).not.toBeInTheDocument();
   });
 
-  it("should render plain names outside the model view", async () => {
+  it("should use raw keys outside the model view", async () => {
     const screen = await render(
       <UsageBreakdownList names={names} rows={[row]} viewId="agent" />,
     );
 
     await expect.element(screen.getByText("opus")).toBeInTheDocument();
-    await expect.element(screen.getByRole("button")).not.toBeInTheDocument();
   });
 
   it("should render the empty state", async () => {

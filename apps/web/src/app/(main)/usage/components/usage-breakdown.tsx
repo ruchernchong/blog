@@ -26,7 +26,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { providerLogoUrl } from "@workspace/usage/providers";
 import type { Cost, UsageBreakdownRow } from "@workspace/usage/types";
 import Image from "next/image";
-import { useQueryState, useQueryStates } from "nuqs";
+import { useQueryStates } from "nuqs";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   USAGE_SORT_COLUMNS,
@@ -71,9 +71,13 @@ const HIDEABLE_COLUMNS = [
 ];
 
 /** Fixed metrics required by DataGrid `virtualized` (RAC TableLayout). */
-const GRID_ROW_HEIGHT = 52;
-const GRID_HEADING_HEIGHT = 36;
-const GRID_SCROLL_CLASS = "max-h-[400px] overflow-auto";
+const GRID_ROW_HEIGHT = 56;
+const GRID_HEADING_HEIGHT = 40;
+/** Roughly a dozen rows before the grid scrolls on its own. */
+const GRID_SCROLL_CLASS = "max-h-[720px] overflow-auto";
+
+/** Secondary columns start hidden to give the rest room; Columns re-adds them. */
+const DEFAULT_HIDDEN_COLUMNS = new Set(["trend", "costPerMillionTokens"]);
 
 /** Breakdown state that lives in the URL. Defaults are kept out of the query string. */
 const breakdownParsers = {
@@ -174,11 +178,9 @@ function RowVisual({
 
 function getColumns({
   names,
-  onSelectModel,
   viewId,
 }: {
   names: BreakdownNames;
-  onSelectModel: (model: string) => void;
   viewId: string;
 }): DataGridColumn<UsageBreakdownRow>[] {
   const { providerDisplayNames } = names;
@@ -192,23 +194,12 @@ function getColumns({
       cell: (row) => (
         <span className="inline-flex w-full min-w-0 items-center gap-2 pe-8 sm:pe-0">
           <RowVisual row={row} viewId={viewId} />
-          {viewId === "model" ? (
-            <Button
-              aria-label={`Open profile for ${rowDisplayName(row, viewId, names)}`}
-              className="h-auto min-w-0 truncate p-0 font-medium text-xs underline-offset-4 hover:underline"
-              onPress={() => onSelectModel(row.key)}
-              size="sm"
-              variant="ghost"
-            >
-              <span className="truncate" title={row.key}>
-                {rowDisplayName(row, viewId, names)}
-              </span>
-            </Button>
-          ) : (
-            <span className="truncate font-medium text-xs">
-              {rowDisplayName(row, viewId, names)}
-            </span>
-          )}
+          <span
+            className="truncate font-medium"
+            title={viewId === "model" ? row.key : undefined}
+          >
+            {rowDisplayName(row, viewId, names)}
+          </span>
           <FreeModelChip cost={row.cost} viewId={viewId} />
         </span>
       ),
@@ -333,34 +324,66 @@ function FilterChip({
   );
 }
 
-function BreakdownToolbar({
+function ColumnsMenu({
   columnOptions,
+  onVisibleColumnsChange,
+  visibleColumns,
+}: {
+  columnOptions: { id: string; label: string }[];
+  onVisibleColumnsChange: (keys: DataGridSelection) => void;
+  visibleColumns: DataGridSelection;
+}) {
+  return (
+    <Dropdown>
+      <Button size="sm" variant="outline">
+        <HugeiconsIcon icon={LayoutTable02Icon} size={16} strokeWidth={1.5} />
+        Columns
+      </Button>
+      <Dropdown.Popover>
+        <Dropdown.Menu
+          disallowEmptySelection
+          onSelectionChange={onVisibleColumnsChange}
+          selectedKeys={visibleColumns}
+          selectionMode="multiple"
+        >
+          {columnOptions.map((column) => (
+            <Dropdown.Item
+              id={column.id}
+              key={column.id}
+              textValue={column.label}
+            >
+              <Label>{column.label}</Label>
+              <Dropdown.ItemIndicator />
+            </Dropdown.Item>
+          ))}
+        </Dropdown.Menu>
+      </Dropdown.Popover>
+    </Dropdown>
+  );
+}
+
+function BreakdownToolbar({
   onFreeFilterChange,
   onProviderFilterChange,
   onSearchChange,
-  onVisibleColumnsChange,
   freeFilter,
   providerFilter,
   providerOptions,
   search,
-  visibleColumns,
 }: {
-  columnOptions: { id: string; label: string }[];
   onFreeFilterChange: (value: string) => void;
   onProviderFilterChange: (value: string) => void;
   onSearchChange: (value: string) => void;
-  onVisibleColumnsChange: (keys: DataGridSelection) => void;
   freeFilter: string;
   providerFilter: string;
   providerOptions: ProviderOption[];
   search: string;
-  visibleColumns: DataGridSelection;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center gap-4">
       <SearchField
         aria-label="Search breakdown rows"
-        className="w-full sm:max-w-60"
+        className="w-full sm:w-80"
         onChange={onSearchChange}
         value={search}
       >
@@ -419,37 +442,6 @@ function BreakdownToolbar({
           </Dropdown.Popover>
         </Dropdown>
       )}
-      <div className="ms-auto">
-        <Dropdown>
-          <Button size="sm" variant="outline">
-            <HugeiconsIcon
-              icon={LayoutTable02Icon}
-              size={16}
-              strokeWidth={1.5}
-            />
-            Columns
-          </Button>
-          <Dropdown.Popover>
-            <Dropdown.Menu
-              disallowEmptySelection
-              onSelectionChange={onVisibleColumnsChange}
-              selectedKeys={visibleColumns}
-              selectionMode="multiple"
-            >
-              {columnOptions.map((column) => (
-                <Dropdown.Item
-                  id={column.id}
-                  key={column.id}
-                  textValue={column.label}
-                >
-                  <Label>{column.label}</Label>
-                  <Dropdown.ItemIndicator />
-                </Dropdown.Item>
-              ))}
-            </Dropdown.Menu>
-          </Dropdown.Popover>
-        </Dropdown>
-      </div>
     </div>
   );
 }
@@ -464,8 +456,8 @@ function getTableScrollContainer(root: HTMLElement | null) {
 /**
  * The Explorer: one dataset at a time, toggled with a segmented control. Rows
  * can be searched, filtered by provider, and sorted; column visibility is
- * user-toggleable. Phones get a card list instead of the grid, and in the
- * model view a model's name opens its profile drawer (`?model=`).
+ * user-toggleable (Trend and $ / 1M start hidden). Phones get a card list
+ * instead of the grid.
  */
 export function UsageBreakdown({
   className,
@@ -487,11 +479,6 @@ export function UsageBreakdown({
     },
     setBreakdown,
   ] = useQueryStates(breakdownParsers, { history: "replace" });
-  // `?model=` opens the model drawer, which lives outside this component.
-  const [, setModel] = useQueryState(
-    "model",
-    usageParsers.model.withOptions({ history: "replace" }),
-  );
   const freeFilter = isFreeOnly ? "free" : "all";
   const sortDescriptor = useMemo<DataGridSortDescriptor>(
     () => ({
@@ -501,7 +488,11 @@ export function UsageBreakdown({
     [sort, dir],
   );
   const [visibleColumns, setVisibleColumns] = useState<DataGridSelection>(
-    new Set(HIDEABLE_COLUMNS.map((column) => column.id)),
+    new Set(
+      HIDEABLE_COLUMNS.map((column) => column.id).filter(
+        (id) => !DEFAULT_HIDDEN_COLUMNS.has(id),
+      ),
+    ),
   );
   const gridRef = useRef<HTMLDivElement>(null);
   const names = useMemo<BreakdownNames>(
@@ -523,9 +514,6 @@ export function UsageBreakdown({
       sort: descriptor.column,
       dir: descriptor.direction === "ascending" ? "asc" : "desc",
     });
-  };
-  const selectModel = (model: string) => {
-    void setModel(model);
   };
 
   const handleViewChange = (key: string | number) => {
@@ -569,12 +557,10 @@ export function UsageBreakdown({
     getTableScrollContainer(gridRef.current)?.scrollTo(0, 0);
   }, [sortedRows]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: selectModel only wraps the stable nuqs setter
   const columns = useMemo(
     () =>
       getColumns({
         names,
-        onSelectModel: selectModel,
         viewId: active.id,
       }).filter(
         (column) =>
@@ -613,22 +599,28 @@ export function UsageBreakdown({
             </Segment.Item>
           ))}
         </Segment>
+        <div className="hidden md:block">
+          <ColumnsMenu
+            columnOptions={columnOptions}
+            onVisibleColumnsChange={setVisibleColumns}
+            visibleColumns={visibleColumns}
+          />
+        </div>
+      </div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <BreakdownToolbar
+          onFreeFilterChange={setFreeFilter}
+          onProviderFilterChange={setProviderFilter}
+          onSearchChange={setSearch}
+          freeFilter={freeFilter}
+          providerFilter={providerFilter}
+          providerOptions={providerOptions}
+          search={search}
+        />
         <Chip color="accent" size="sm" variant="soft">
           {sortedRows.length} {sortedRows.length === 1 ? "row" : "rows"}
         </Chip>
       </div>
-      <BreakdownToolbar
-        columnOptions={columnOptions}
-        onFreeFilterChange={setFreeFilter}
-        onProviderFilterChange={setProviderFilter}
-        onSearchChange={setSearch}
-        onVisibleColumnsChange={setVisibleColumns}
-        freeFilter={freeFilter}
-        providerFilter={providerFilter}
-        providerOptions={providerOptions}
-        search={search}
-        visibleColumns={visibleColumns}
-      />
       {hasActiveFilters && (
         <div className="flex flex-wrap items-center gap-2">
           {search !== "" && (
@@ -661,7 +653,6 @@ export function UsageBreakdown({
       <div className="md:hidden">
         <UsageBreakdownList
           names={names}
-          onSelectModel={selectModel}
           rows={sortedRows}
           viewId={active.id}
         />
@@ -671,7 +662,7 @@ export function UsageBreakdown({
           allowsColumnResize
           virtualized
           aria-label="Usage breakdown"
-          className="[&_.table__cell]:overflow-hidden [&_.table__cell]:whitespace-nowrap [&_.table__cell]:py-1.5 [&_.table__cell]:text-xs [&_.table__column]:py-1.5 [&_.table__column]:text-[11px]"
+          className="[&_.table__cell]:overflow-hidden [&_.table__cell]:whitespace-nowrap [&_.table__cell]:py-2 [&_.table__cell]:text-sm [&_.table__column]:py-2 [&_.table__column]:text-xs"
           columns={columns}
           contentClassName="min-w-[760px] md:min-w-[1000px]"
           data={sortedRows}
