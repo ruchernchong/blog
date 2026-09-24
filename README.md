@@ -109,7 +109,7 @@ Install the prebuilt universal binary from the latest release
 [packages/usage/rust/macos/INSTALL.md](./packages/usage/rust/macos/INSTALL.md)
 
 ```zsh
-curl --proto '=https' --tlsv1.2 -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/packages/usage/rust/macos/install-remote.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/packages/usage/rust/macos/install-remote.sh | bash
 ~/.local/bin/usage-ingest login    # admin account
 ~/.local/bin/usage-ingest-run      # POST if there are rows; then check /usage
 ```

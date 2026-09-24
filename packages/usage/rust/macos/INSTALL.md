@@ -11,7 +11,7 @@ latest GitHub release of the monorepo. The script checks the SHA-256 before
 installing:
 
 ```zsh
-curl --proto '=https' --tlsv1.2 -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/packages/usage/rust/macos/install-remote.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/packages/usage/rust/macos/install-remote.sh | bash
 ```
 
 Pin a release with `USAGE_INGEST_VERSION=1.42.0` in front of `bash`. To read the

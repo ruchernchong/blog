@@ -2,7 +2,7 @@
 # Install the usage collector from the latest GitHub release of the monorepo,
 # without a checkout or a Rust toolchain:
 #
-#   curl --proto '=https' --tlsv1.2 -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/packages/usage/rust/macos/install-remote.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/packages/usage/rust/macos/install-remote.sh | bash
 #
 # USAGE_INGEST_VERSION=1.42.0 pins a release instead of the latest.
 set -euo pipefail
