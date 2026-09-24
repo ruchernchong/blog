@@ -15,6 +15,10 @@ const sharePercent = new Intl.NumberFormat("en-SG", {
   style: "percent",
 });
 
+// A used-but-tiny share would round to "0%", which reads as unused.
+const formatShare = (share: number) =>
+  share < 0.005 ? "<1%" : sharePercent.format(share);
+
 const formatTick = (week: string) => format(parseISO(week), "MMM yy");
 
 /**
@@ -69,9 +73,10 @@ export function StackShiftChartClient({
       <AreaChart.Tooltip
         content={({ active, label, payload }) => {
           if (!active || !payload?.length) return null;
-          // Largest share first; the stable sort keeps legend order on ties.
+          // Only series used that week, largest share first; the stable sort
+          // keeps legend order on ties.
           const entries = payload
-            .filter((entry) => entry.value != null)
+            .filter((entry) => Number(entry.value) > 0)
             .sort((a, b) => Number(b.value) - Number(a.value));
 
           // The auto TooltipContent colours indicators from `stroke`, which
@@ -94,7 +99,7 @@ export function StackShiftChartClient({
                   />
                   <ChartTooltip.Label>{entry.name}</ChartTooltip.Label>
                   <ChartTooltip.Value>
-                    {sharePercent.format(Number(entry.value))}
+                    {formatShare(Number(entry.value))}
                   </ChartTooltip.Value>
                 </ChartTooltip.Item>
               ))}
