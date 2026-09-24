@@ -3,6 +3,7 @@
 import { AreaChart, ChartTooltip } from "@heroui-pro/react";
 import type { WeeklyShareRow } from "@workspace/usage/weekly-insights";
 import { format, parseISO } from "date-fns";
+import type { TooltipContentProps } from "recharts";
 import type { SeriesMeta } from "./usage-series";
 
 interface StackShiftChartClientProps {
@@ -20,6 +21,52 @@ const formatShare = (share: number) =>
   share < 0.005 ? "<1%" : sharePercent.format(share);
 
 const formatTick = (week: string) => format(parseISO(week), "MMM yy");
+
+type StackShiftTooltipProps = Partial<TooltipContentProps<number, string>> & {
+  colorByKey: Map<string, string>;
+};
+
+/**
+ * Only series used that week, largest share first; the stable sort keeps
+ * legend order on ties. The auto TooltipContent colours indicators from
+ * `stroke`, which here is the background separator, so colour them by series
+ * instead. Recharts injects `active`, `label` and `payload` when cloning.
+ */
+function StackShiftTooltip({
+  active,
+  label,
+  payload,
+  colorByKey,
+}: StackShiftTooltipProps) {
+  if (!active || !payload?.length) return null;
+  const entries = payload
+    .filter((entry) => Number(entry.value) > 0)
+    .sort((a, b) => Number(b.value) - Number(a.value));
+
+  return (
+    <ChartTooltip>
+      <ChartTooltip.Header>
+        Week of {format(parseISO(String(label)), "d MMM yyyy")}
+      </ChartTooltip.Header>
+      {entries.length === 0 ? (
+        <ChartTooltip.Item>
+          <ChartTooltip.Label>No activity</ChartTooltip.Label>
+        </ChartTooltip.Item>
+      ) : null}
+      {entries.map((entry) => (
+        <ChartTooltip.Item key={String(entry.dataKey)}>
+          <ChartTooltip.Indicator
+            color={colorByKey.get(String(entry.dataKey))}
+          />
+          <ChartTooltip.Label>{entry.name}</ChartTooltip.Label>
+          <ChartTooltip.Value>
+            {formatShare(Number(entry.value))}
+          </ChartTooltip.Value>
+        </ChartTooltip.Item>
+      ))}
+    </ChartTooltip>
+  );
+}
 
 /**
  * Interactive client leaf: 100% stacked area of weekly token share. Rows are
@@ -71,41 +118,7 @@ export function StackShiftChartClient({
         />
       ))}
       <AreaChart.Tooltip
-        content={({ active, label, payload }) => {
-          if (!active || !payload?.length) return null;
-          // Only series used that week, largest share first; the stable sort
-          // keeps legend order on ties.
-          const entries = payload
-            .filter((entry) => Number(entry.value) > 0)
-            .sort((a, b) => Number(b.value) - Number(a.value));
-
-          // The auto TooltipContent colours indicators from `stroke`, which
-          // here is the background separator, so colour them by series
-          // instead.
-          return (
-            <ChartTooltip>
-              <ChartTooltip.Header>
-                Week of {format(parseISO(String(label)), "d MMM yyyy")}
-              </ChartTooltip.Header>
-              {entries.length === 0 ? (
-                <ChartTooltip.Item>
-                  <ChartTooltip.Label>No activity</ChartTooltip.Label>
-                </ChartTooltip.Item>
-              ) : null}
-              {entries.map((entry) => (
-                <ChartTooltip.Item key={String(entry.dataKey)}>
-                  <ChartTooltip.Indicator
-                    color={colorByKey.get(String(entry.dataKey))}
-                  />
-                  <ChartTooltip.Label>{entry.name}</ChartTooltip.Label>
-                  <ChartTooltip.Value>
-                    {formatShare(Number(entry.value))}
-                  </ChartTooltip.Value>
-                </ChartTooltip.Item>
-              ))}
-            </ChartTooltip>
-          );
-        }}
+        content={<StackShiftTooltip colorByKey={colorByKey} />}
       />
     </AreaChart>
   );
