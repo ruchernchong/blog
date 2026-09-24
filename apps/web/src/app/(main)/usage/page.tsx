@@ -1,4 +1,4 @@
-import { buildUsageNarrative } from "@workspace/usage/narrative";
+import { buildUsageNarrativeParts } from "@workspace/usage/narrative";
 import type { UsageProfile } from "@workspace/usage/types";
 import type { Metadata } from "next";
 import { Suspense } from "react";
@@ -53,7 +53,7 @@ export default async function UsagePage() {
     getModelDisplayNames(getUsageModelIds(profile)),
   ]);
 
-  const narrative = buildUsageNarrative({
+  const narrative = buildUsageNarrativeParts({
     summary: profile.summary,
     firstActiveDate:
       profile.contributions.find((day) => day.totals.tokens > 0)?.date ?? null,

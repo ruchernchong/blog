@@ -24,7 +24,11 @@ describe("UsageHero", () => {
     const screen = await render(
       <UsageHero
         description="Not what I paid."
-        narrative="Since March 2025: 4.2B tokens."
+        narrative={[
+          { text: "Since March 2025: " },
+          { text: "4.2B tokens", highlight: true },
+          { text: "." },
+        ]}
         summary={summary}
       />,
     );
@@ -35,6 +39,9 @@ describe("UsageHero", () => {
     await expect
       .element(screen.getByText("Since March 2025: 4.2B tokens."))
       .toBeInTheDocument();
+    await expect
+      .element(screen.getByText("4.2B tokens", { exact: true }))
+      .toHaveClass("text-accent");
     await expect.element(screen.getByText("US$12.4K")).toBeInTheDocument();
     await expect.element(screen.getByText("4.2B")).toBeInTheDocument();
     await expect.element(screen.getByText("212")).toBeInTheDocument();

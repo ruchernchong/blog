@@ -3,13 +3,14 @@ import {
   formatNumber,
   formatTokens,
 } from "@workspace/usage/format";
+import type { UsageNarrativePart } from "@workspace/usage/narrative";
 import type { UsageSummary } from "@workspace/usage/types";
 import type { ReactNode } from "react";
 
 interface UsageHeroProps {
   summary: UsageSummary;
-  /** Generated summary sentence, or null when there is no usage yet. */
-  narrative: string | null;
+  /** Generated summary sentence parts, or null when there is no usage yet. */
+  narrative: UsageNarrativePart[] | null;
   /** Page description, shown as the API-equivalent disclaimer. */
   description: string;
   /** Last-updated stamp, rendered next to the eyebrow. */
@@ -46,7 +47,18 @@ export function UsageHero({
           {lastUpdated}
         </div>
         <p className="max-w-5xl text-balance font-bold text-3xl tracking-tighter sm:text-5xl">
-          {narrative ?? "No usage recorded yet."}
+          {narrative
+            ? narrative.map((part, index) =>
+                part.highlight ? (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: parts are a fixed, ordered template
+                  <span className="text-accent" key={index}>
+                    {part.text}
+                  </span>
+                ) : (
+                  part.text
+                ),
+              )
+            : "No usage recorded yet."}
         </p>
       </div>
 
