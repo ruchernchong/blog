@@ -619,12 +619,12 @@ function rollupRows(
       const activeDates = [...rollup.dailyTokens.entries()]
         .filter(([, tokens]) => tokens > 0)
         .map(([date]) => date)
-        .sort();
+        .sort((a, b) => a.localeCompare(b));
       // A rollup of only zero-token rows still needs a date span.
       const spanDates =
         activeDates.length > 0
           ? activeDates
-          : [...rollup.dailyTokens.keys()].sort();
+          : [...rollup.dailyTokens.keys()].sort((a, b) => a.localeCompare(b));
       return {
         key,
         provider: providers.length === 1 ? providers[0] : null,
@@ -640,7 +640,7 @@ function rollupRows(
         firstUsed: spanDates[0],
         lastUsed: spanDates[spanDates.length - 1],
         activeDays: activeDates.length,
-        agents: [...rollup.agents].sort(),
+        agents: [...rollup.agents].sort((a, b) => a.localeCompare(b)),
         tokenBreakdown: rollup.breakdown,
       };
     })
