@@ -1,5 +1,6 @@
 {
   "name": "@workspace/mcp",
+  "version": "1.41.1",
   "type": "module",
   "private": true,
   "scripts": {

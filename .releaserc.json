@@ -23,14 +23,21 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "pnpm version ${nextRelease.version} --no-git-tag-version --no-git-checks",
+        "prepareCmd": "pnpm version ${nextRelease.version} --recursive --no-git-tag-version --no-git-checks",
         "successCmd": "echo \"version=${nextRelease.version}\" >> \"$GITHUB_OUTPUT\""
       }
     ],
     [
       "@semantic-release-extras/verified-git-commit",
       {
-        "assets": ["package.json", "CHANGELOG.md"]
+        "assets": [
+          "package.json",
+          "apps/docs/package.json",
+          "apps/web/package.json",
+          "packages/mcp/package.json",
+          "packages/usage/package.json",
+          "CHANGELOG.md"
+        ]
       }
     ],
     [

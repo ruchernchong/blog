@@ -1,6 +1,9 @@
 import type { Route } from "next";
+import packageJson from "../../package.json";
 
 import "dotenv/config";
+
+export const VERSION = packageJson.version;
 
 export interface NavLink {
   title: string;
