@@ -29,8 +29,13 @@ const usdFormatter = new Intl.NumberFormat("en-SG", {
 const MAX_MODEL_NAME_LENGTH = 32;
 
 function truncate(name: string): string {
-  return name.length > MAX_MODEL_NAME_LENGTH
-    ? `${name.slice(0, MAX_MODEL_NAME_LENGTH - 1).trimEnd()}…`
+  // Count code points, not UTF-16 units, so a cut never splits a surrogate pair.
+  const chars = Array.from(name);
+  return chars.length > MAX_MODEL_NAME_LENGTH
+    ? `${chars
+        .slice(0, MAX_MODEL_NAME_LENGTH - 1)
+        .join("")
+        .trimEnd()}…`
     : name;
 }
 
