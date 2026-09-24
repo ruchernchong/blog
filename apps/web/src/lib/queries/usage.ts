@@ -266,6 +266,7 @@ export async function getUsageProfile(): Promise<UsageProfile> {
   const agentTotals = new Map<string, RollupAggregate>();
   const providerTotals = new Map<string, RollupAggregate>();
   const modelTotals = new Map<string, RollupAggregate>();
+  const modelProviderTotals = new Map<string, Map<string, RollupAggregate>>();
   const tokenMix = emptyTokenBreakdown();
   const facts: UsageFact[] = [];
   let lastUpdated = rows[0].updatedAt;
@@ -305,6 +306,12 @@ export async function getUsageProfile(): Promise<UsageProfile> {
     addToRollup(getOrCreateRollup(agentTotals, row.agent), row, cost);
     addToRollup(getOrCreateRollup(providerTotals, row.provider), row, cost);
     addToRollup(getOrCreateRollup(modelTotals, modelKey), row, cost);
+    let modelProviders = modelProviderTotals.get(modelKey);
+    if (!modelProviders) {
+      modelProviders = new Map();
+      modelProviderTotals.set(modelKey, modelProviders);
+    }
+    addToRollup(getOrCreateRollup(modelProviders, row.provider), row, cost);
   }
 
   // --- Dense day array (fill gaps) + intensity scale ------------------------
@@ -327,7 +334,17 @@ export async function getUsageProfile(): Promise<UsageProfile> {
   const trendDates = sparklineDates(firstDate, lastDate);
   const byAgent = rollupRows(agentTotals, trendDates);
   const byProvider = rollupRows(providerTotals, trendDates);
-  const byModel = rollupRows(modelTotals, trendDates);
+  const byModel = rollupRows(modelTotals, trendDates).map((row) => {
+    const splitTotals = modelProviderTotals.get(row.key);
+    if (row.providers.length < 2 || !splitTotals) {
+      return row;
+    }
+    // Rollups are keyed by provider here; children keep the model as their key.
+    const providerRows = rollupRows(splitTotals, trendDates).map(
+      (providerRow) => ({ ...providerRow, key: row.key }),
+    );
+    return { ...row, providerRows };
+  });
   const years = buildYears(contributions);
   const summary = buildSummary(contributions, byAgent, byProvider, byModel);
   const weeklyShare = buildWeeklyShare(facts);

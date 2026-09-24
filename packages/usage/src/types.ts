@@ -138,6 +138,11 @@ export interface UsageBreakdownRow {
   agents: string[];
   /** All-time tokens split by category, for per-row character ratios. */
   tokenBreakdown: TokenBreakdown;
+  /**
+   * Per-provider split of a model row that spans several providers, sharing
+   * the parent's `key`. Absent on single-provider and non-model rows.
+   */
+  providerRows?: UsageBreakdownRow[];
 }
 
 /**

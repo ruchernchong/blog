@@ -69,6 +69,25 @@ export function UsageBreakdownList({
                 <dd className="tabular-nums">{formatNumber(row.messages)}</dd>
               </div>
             </dl>
+            {row.providerRows ? (
+              <ul className="flex flex-col gap-1 border-border border-s ps-4 text-xs">
+                {row.providerRows.map((providerRow) => (
+                  <li
+                    className="flex justify-between gap-2"
+                    key={providerRow.provider}
+                  >
+                    <span className="text-muted">
+                      {names.providerDisplayNames[providerRow.provider ?? ""] ??
+                        providerRow.provider}
+                    </span>
+                    <span className="tabular-nums">
+                      {formatTokens(providerRow.tokens)} ·{" "}
+                      {formatCost(providerRow.cost)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </li>
         );
       })}

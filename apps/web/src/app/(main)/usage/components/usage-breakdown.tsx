@@ -3,7 +3,6 @@
 import {
   Button,
   Chip,
-  cn,
   Dropdown,
   Label,
   SearchField,
@@ -119,18 +118,12 @@ function CostValue({ cost }: { cost: Cost }) {
   );
 }
 
-function ProviderLogo({
-  className,
-  provider,
-}: {
-  className?: string;
-  provider: string;
-}) {
+function ProviderLogo({ provider }: { provider: string }) {
   return (
     <Image
       alt=""
       aria-hidden
-      className={cn("size-6 shrink-0 opacity-80 dark:invert", className)}
+      className="size-6 shrink-0 opacity-80 dark:invert"
       height={24}
       src={providerLogoUrl(provider)}
       unoptimized
@@ -152,30 +145,18 @@ function ProviderValue({
     return "-";
   }
 
-  // Rows have a fixed height, so stacked providers shrink to fit two lines;
-  // beyond two, the second line collapses into a "+N more" summary.
-  const isStacked = providers.length > 1;
-  const names = providers.map(
-    (provider) => providerDisplayNames[provider] ?? provider,
-  );
-  const shown = providers.length > 2 ? providers.slice(0, 1) : providers;
-  const hiddenCount = providers.length - shown.length;
-
   return (
-    <span
-      className={cn("flex min-w-0 flex-col", isStacked && "gap-1 text-xs")}
-      title={isStacked ? names.join(", ") : undefined}
-    >
-      {shown.map((provider, index) => (
-        <span className="inline-flex min-w-0 items-center gap-2" key={provider}>
-          <ProviderLogo
-            className={cn(isStacked && "size-4")}
-            provider={provider}
-          />
-          <span className="truncate">{names[index]}</span>
-        </span>
-      ))}
-      {hiddenCount > 0 && <span className="ps-6">+{hiddenCount} more</span>}
+    <span className="inline-flex min-w-0 items-center gap-2">
+      <span className="flex shrink-0 items-center gap-1">
+        {providers.map((provider) => (
+          <ProviderLogo key={provider} provider={provider} />
+        ))}
+      </span>
+      <span className="truncate">
+        {providers
+          .map((provider) => providerDisplayNames[provider] ?? provider)
+          .join(", ")}
+      </span>
     </span>
   );
 }
@@ -571,7 +552,18 @@ export function UsageBreakdown({
           { search, providerFilter, freeOnly: isFreeOnly },
           names,
         ),
-      ].sort((a, b) => compareRows(a, b, sortDescriptor, active.id, names)),
+      ]
+        .sort((a, b) => compareRows(a, b, sortDescriptor, active.id, names))
+        .map((row) =>
+          row.providerRows
+            ? {
+                ...row,
+                providerRows: [...row.providerRows].sort((a, b) =>
+                  compareRows(a, b, sortDescriptor, active.id, names),
+                ),
+              }
+            : row,
+        ),
     [active, isFreeOnly, names, providerFilter, search, sortDescriptor],
   );
 
@@ -709,7 +701,9 @@ export function UsageBreakdown({
           columns={columns}
           contentClassName="min-w-[760px] md:min-w-[1000px]"
           data={sortedRows}
-          getRowId={(row) => row.key}
+          getChildren={(row) => row.providerRows}
+          // Provider splits share their model's key, so the provider tells them apart.
+          getRowId={(row) => `${row.key}::${row.provider ?? "*"}`}
           headingHeight={GRID_HEADING_HEIGHT}
           onSortChange={setSortDescriptor}
           renderEmptyState={() => (
