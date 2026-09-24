@@ -69,11 +69,14 @@ export function StackShiftChartClient({
       <AreaChart.Tooltip
         content={({ active, label, payload }) => {
           if (!active || !payload?.length) return null;
-          const entries = payload.filter((entry) => entry.value != null);
+          // Largest share first; the stable sort keeps legend order on ties.
+          const entries = payload
+            .filter((entry) => entry.value != null)
+            .sort((a, b) => Number(b.value) - Number(a.value));
 
           // The auto TooltipContent colours indicators from `stroke`, which
           // here is the background separator, so colour them by series
-          // instead. Reversed so rows read top-down like the stack.
+          // instead.
           return (
             <ChartTooltip>
               <ChartTooltip.Header>
@@ -84,7 +87,7 @@ export function StackShiftChartClient({
                   <ChartTooltip.Label>No activity</ChartTooltip.Label>
                 </ChartTooltip.Item>
               ) : null}
-              {entries.reverse().map((entry) => (
+              {entries.map((entry) => (
                 <ChartTooltip.Item key={String(entry.dataKey)}>
                   <ChartTooltip.Indicator
                     color={colorByKey.get(String(entry.dataKey))}
