@@ -1,6 +1,6 @@
 "use client";
 
-import { AreaChart } from "@heroui-pro/react";
+import { AreaChart, ChartTooltip } from "@heroui-pro/react";
 import type { WeeklyShareRow } from "@workspace/usage/weekly-insights";
 import { format, parseISO } from "date-fns";
 import type { SeriesMeta } from "./usage-series";
@@ -20,12 +20,22 @@ const formatTick = (week: string) => format(parseISO(week), "MMM yy");
 /**
  * Interactive client leaf: 100% stacked area of weekly token share. Rows are
  * already shares (0–1), so the stack tops out at 100% without relying on a
- * stack offset. A 2px background stroke separates adjacent fills.
+ * stack offset. Idle weeks have no series keys, leaving a gap. A 2px
+ * background stroke separates adjacent fills.
  */
 export function StackShiftChartClient({
   rows,
   series,
 }: StackShiftChartClientProps) {
+  const colorByKey = new Map(series.map((entry) => [entry.key, entry.color]));
+  // One tick per month (its first week), so a month label never repeats.
+  const monthTicks = rows
+    .map((row) => row.week)
+    .filter(
+      (week, index, weeks) =>
+        index === 0 || week.slice(0, 7) !== weeks[index - 1].slice(0, 7),
+    );
+
   return (
     <AreaChart data={rows} height={320}>
       <AreaChart.Grid vertical={false} />
@@ -34,6 +44,7 @@ export function StackShiftChartClient({
         minTickGap={48}
         tickFormatter={formatTick}
         tickMargin={8}
+        ticks={monthTicks}
       />
       <AreaChart.YAxis
         domain={[0, 1]}
@@ -56,14 +67,37 @@ export function StackShiftChartClient({
         />
       ))}
       <AreaChart.Tooltip
-        content={
-          <AreaChart.TooltipContent
-            labelFormatter={(label) =>
-              `Week of ${format(parseISO(String(label)), "d MMM yyyy")}`
-            }
-            valueFormatter={(value) => sharePercent.format(Number(value))}
-          />
-        }
+        content={({ active, label, payload }) => {
+          if (!active || !payload?.length) return null;
+          const entries = payload.filter((entry) => entry.value != null);
+
+          // The auto TooltipContent colours indicators from `stroke`, which
+          // here is the background separator, so colour them by series
+          // instead. Reversed so rows read top-down like the stack.
+          return (
+            <ChartTooltip>
+              <ChartTooltip.Header>
+                Week of {format(parseISO(String(label)), "d MMM yyyy")}
+              </ChartTooltip.Header>
+              {entries.length === 0 ? (
+                <ChartTooltip.Item>
+                  <ChartTooltip.Label>No activity</ChartTooltip.Label>
+                </ChartTooltip.Item>
+              ) : null}
+              {entries.reverse().map((entry) => (
+                <ChartTooltip.Item key={String(entry.dataKey)}>
+                  <ChartTooltip.Indicator
+                    color={colorByKey.get(String(entry.dataKey))}
+                  />
+                  <ChartTooltip.Label>{entry.name}</ChartTooltip.Label>
+                  <ChartTooltip.Value>
+                    {sharePercent.format(Number(entry.value))}
+                  </ChartTooltip.Value>
+                </ChartTooltip.Item>
+              ))}
+            </ChartTooltip>
+          );
+        }}
       />
     </AreaChart>
   );
