@@ -1,3 +1,9 @@
+## [1.45.0](https://github.com/ruchernchong/blog/compare/v1.44.0...v1.45.0) (2026-09-24)
+
+### Features
+
+* **usage:** highlight key figures in the hero narrative with the accent colour ([a171e01](https://github.com/ruchernchong/blog/commit/a171e014ea22bd91b4cdcf73ddf0b4a5ccd38894))
+
 ## [1.44.0](https://github.com/ruchernchong/blog/compare/v1.43.0...v1.44.0) (2026-09-24)
 
 ### Features
