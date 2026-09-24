@@ -1,3 +1,13 @@
+## [1.45.1](https://github.com/ruchernchong/blog/compare/v1.45.0...v1.45.1) (2026-09-24)
+
+### Bug Fixes
+
+* hide unused models in stack chart tooltip ([9af824f](https://github.com/ruchernchong/blog/commit/9af824f9c41b85c1b09b4724d275e71db39ca409))
+* hoist stack chart tooltip out of render ([8dff939](https://github.com/ruchernchong/blog/commit/8dff939c62a6dbe670ae45a9a000aed4ea5b0c11))
+* show stack chart tooltip on idle weeks ([d51fbd2](https://github.com/ruchernchong/blog/commit/d51fbd29f0101bdc0d548cb1c1bec502de6e45b2))
+* sort stack chart tooltip by share ([3e157e4](https://github.com/ruchernchong/blog/commit/3e157e4011ad2e9077606870fef86c9a0bd82138))
+* stack chart tooltip, idle gaps and ticks ([c40f4ce](https://github.com/ruchernchong/blog/commit/c40f4ce2d2dae1dbe76848e2be63e25078bd8c24))
+
 ## [1.45.0](https://github.com/ruchernchong/blog/compare/v1.44.0...v1.45.0) (2026-09-24)
 
 ### Features
