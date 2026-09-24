@@ -1,6 +1,5 @@
 {
   "name": "@workspace/docs",
-  "version": "1.32.0",
   "type": "module",
   "private": true,
   "scripts": {

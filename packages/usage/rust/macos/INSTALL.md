@@ -4,15 +4,30 @@ Every-15-minutes job: parse local Claude / Codex / OpenCode / Cursor logs and PO
 rows to `https://ruchern.dev/api/usage/ingest`. Auth is OAuth (admin account),
 not `BLOG_MCP_AUTH_TOKEN`.
 
-Requires a **Rust toolchain** on the PATH (`install.sh` runs `cargo build --release`).
-Install via [rustup](https://rustup.rs) or Homebrew (`brew install rust`).
+## 1. Install and sign in
 
-## 1. Build and sign in
+On any Mac, without a checkout or Rust, install the universal binary from the
+latest GitHub release of the monorepo. The script checks the SHA-256 before
+installing:
 
-Use the **installed** binary for login so Keychain access matches launchd.
+```zsh
+curl --proto '=https' --tlsv1.2 -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/packages/usage/rust/macos/install-remote.sh | bash
+```
+
+Pin a release with `USAGE_INGEST_VERSION=1.42.0` in front of `bash`. To read the
+script first, download it with `curl -o install-remote.sh …` and run
+`bash install-remote.sh`.
+
+From a checkout, build from source instead (needs a **Rust toolchain**, via
+[rustup](https://rustup.rs) or `brew install rust`):
 
 ```zsh
 zsh packages/usage/rust/macos/install.sh
+```
+
+Then sign in. Use the **installed** binary for login so Keychain access matches launchd.
+
+```zsh
 ~/.local/bin/usage-ingest login
 ```
 
@@ -43,7 +58,7 @@ tail -f ~/Library/Logs/ruchern-usage-ingest.log
 launchctl print "gui/$(id -u)/dev.ruchern.usage-ingest"
 ```
 
-After parser changes, run `install.sh` again, then `login` only if Keychain
+To update, run the `curl` line again (or `install.sh` from a checkout). After parser changes, run `install.sh` again, then `login` only if Keychain
 prompts (same machine, same binary path, usually not).
 
 ## 4. Uninstall
@@ -51,4 +66,15 @@ prompts (same machine, same binary path, usually not).
 ```zsh
 ~/.local/bin/usage-ingest logout
 zsh packages/usage/rust/macos/uninstall.sh
+# without a checkout:
+curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/packages/usage/rust/macos/uninstall.sh | zsh
 ```
+
+## Releasing
+
+Nothing to do by hand. The collector shares the monorepo version: whenever
+semantic-release publishes `vX.Y.Z` from `main`, `ci.yml` runs
+`usage-ingest-build.yml`, which stamps `X.Y.Z` into `Cargo.toml` (committed as
+`0.0.0`), builds both architectures, merges them with `lipo`, and attaches
+`usage-ingest-macos.tar.gz` plus its `.sha256` to that release. The files land a
+few minutes after the release appears, so an install in that window gets a 404.

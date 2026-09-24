@@ -1,6 +1,7 @@
 [package]
 name = "usage-ingest"
-version = "0.1.0"
+# Stamped with the monorepo release version by usage-ingest-build.yml.
+version = "0.0.0"
 edition = "2024"
 rust-version = "1.89"
 

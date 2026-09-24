@@ -15,9 +15,15 @@ DOMAIN="gui/${UID_NUM}"
 
 mkdir -p "$BIN_DIR" "$LAUNCH_AGENTS" "$LOGS"
 
-echo "Building $BIN"
-cargo build --release --manifest-path "$ROOT/Cargo.toml"
-install -m 755 "$ROOT/target/release/usage-ingest" "$BIN"
+# Release packages ship a prebuilt binary in bin/; a checkout builds from source.
+if [[ -x $ROOT/bin/usage-ingest ]]; then
+  echo "Installing prebuilt $BIN"
+  install -m 755 "$ROOT/bin/usage-ingest" "$BIN"
+else
+  echo "Building $BIN"
+  cargo build --release --manifest-path "$ROOT/Cargo.toml"
+  install -m 755 "$ROOT/target/release/usage-ingest" "$BIN"
+fi
 
 install -m 755 "$ROOT/macos/usage-ingest-run.sh" "$WRAPPER"
 
