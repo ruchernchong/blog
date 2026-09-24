@@ -70,7 +70,7 @@ export function UsageBreakdownList({
               </div>
             </dl>
             {row.providerRows ? (
-              <ul className="flex flex-col gap-1 border-border border-s ps-4 text-xs">
+              <ul className="flex flex-col gap-2 border-border border-s ps-4 text-xs">
                 {row.providerRows.map((providerRow) => (
                   <li
                     className="flex justify-between gap-2"

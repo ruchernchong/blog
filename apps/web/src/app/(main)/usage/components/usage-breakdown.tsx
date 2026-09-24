@@ -558,9 +558,17 @@ export function UsageBreakdown({
           row.providerRows
             ? {
                 ...row,
-                providerRows: [...row.providerRows].sort((a, b) =>
-                  compareRows(a, b, sortDescriptor, active.id, names),
-                ),
+                // The parent keeps its combined totals; a provider filter
+                // narrows only the splits beneath it.
+                providerRows: row.providerRows
+                  .filter(
+                    (split) =>
+                      providerFilter === "all" ||
+                      split.provider === providerFilter,
+                  )
+                  .sort((a, b) =>
+                    compareRows(a, b, sortDescriptor, active.id, names),
+                  ),
               }
             : row,
         ),
