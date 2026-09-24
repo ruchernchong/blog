@@ -78,9 +78,6 @@ const GRID_HEADING_HEIGHT = 40;
 /** Roughly a dozen rows before the grid scrolls on its own. */
 const GRID_SCROLL_CLASS = "max-h-[720px] overflow-auto";
 
-/** Secondary columns start hidden to give the rest room; Columns re-adds them. */
-const DEFAULT_HIDDEN_COLUMNS = new Set(["trend", "costPerMillionTokens"]);
-
 /** Breakdown state that lives in the URL. Defaults are kept out of the query string. */
 const breakdownParsers = {
   view: usageParsers.view,
@@ -462,7 +459,7 @@ function getTableScrollContainer(root: HTMLElement | null) {
 /**
  * The Explorer: one dataset at a time, toggled with a segmented control. Rows
  * can be searched, filtered by provider, and sorted; column visibility is
- * user-toggleable (Trend and $ / 1M start hidden). Phones get a card list
+ * user-toggleable. Phones get a card list
  * instead of the grid.
  */
 export function UsageBreakdown({
@@ -494,11 +491,7 @@ export function UsageBreakdown({
     [sort, dir],
   );
   const [visibleColumns, setVisibleColumns] = useState<DataGridSelection>(
-    new Set(
-      HIDEABLE_COLUMNS.map((column) => column.id).filter(
-        (id) => !DEFAULT_HIDDEN_COLUMNS.has(id),
-      ),
-    ),
+    new Set(HIDEABLE_COLUMNS.map((column) => column.id)),
   );
   const gridRef = useRef<HTMLDivElement>(null);
   const names = useMemo<BreakdownNames>(
@@ -569,7 +562,7 @@ export function UsageBreakdown({
   }, [sortedRows]);
 
   // The sorted column is always shown, so a shared `?sort=` link never orders
-  // rows by a column that starts hidden (Trend and $ / 1M do by default).
+  // rows by a column the visitor has hidden.
   const shownColumns = useMemo<DataGridSelection>(
     () =>
       visibleColumns === "all" ? "all" : new Set([...visibleColumns, sort]),
