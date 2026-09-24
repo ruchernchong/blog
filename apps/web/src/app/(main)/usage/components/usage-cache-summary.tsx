@@ -25,14 +25,12 @@ function weekLabel(point: CacheTrendPoint): string {
  */
 function CacheHitColumns({ points }: { points: CacheTrendPoint[] }) {
   return (
-    <ul
-      aria-label="Weekly cache-hit rate"
-      className="flex h-32 items-end gap-0.5"
-    >
+    <ul aria-label="Weekly cache-hit rate" className="flex h-32 items-end">
       {points.map((point) => (
         <li
           aria-label={weekLabel(point)}
-          className="flex h-full min-w-0 flex-1 items-end"
+          // 1px each side: a hairline between bars, not layout spacing
+          className="flex h-full min-w-0 flex-1 items-end px-px"
           key={point.week}
           title={weekLabel(point)}
         >

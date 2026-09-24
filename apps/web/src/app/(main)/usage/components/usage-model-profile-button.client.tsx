@@ -27,7 +27,7 @@ export function UsageModelProfileButton({
   return (
     <Button
       aria-label={`View profile for ${label}`}
-      className="h-auto min-w-0 gap-1 self-start px-0 text-accent"
+      className="h-auto min-w-0 gap-2 self-start px-0 text-accent"
       onPress={() => void setModel(model)}
       size="sm"
       variant="ghost"

@@ -16,6 +16,7 @@ const MOBILE_SORT_OPTIONS: { id: UsageSortColumn; label: string }[] = [
   { id: "costPerMillionTokens", label: "$ / 1M tokens" },
   { id: "messages", label: "Messages" },
   { id: "key", label: "Name" },
+  { id: "provider", label: "Provider" },
 ];
 
 /**

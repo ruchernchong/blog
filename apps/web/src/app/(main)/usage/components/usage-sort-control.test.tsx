@@ -17,6 +17,16 @@ describe("UsageSortControl", () => {
     expect(onChange).toHaveBeenCalledWith("cost", "asc");
   });
 
+  it("should label a provider sort instead of falling back to tokens", async () => {
+    const screen = await render(
+      <UsageSortControl dir="asc" onChange={() => {}} sort="provider" />,
+    );
+
+    await expect
+      .element(screen.getByRole("button", { name: "Sort: Provider" }))
+      .toBeInTheDocument();
+  });
+
   it("should pick a new sort column from the menu", async () => {
     const onChange = vi.fn();
     const screen = await render(

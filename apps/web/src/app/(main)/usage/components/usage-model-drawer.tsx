@@ -68,7 +68,7 @@ function Sparkline({ values }: { values: number[] }) {
 
 function Fact({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2">
       <dt className="font-medium text-muted text-xs uppercase tracking-wider">
         {label}
       </dt>
@@ -135,7 +135,7 @@ function ModelProfile({
   return (
     <>
       <Drawer.CloseTrigger />
-      <Drawer.Header className="flex flex-col gap-1">
+      <Drawer.Header className="flex flex-col gap-2">
         <Drawer.Heading>{modelDisplayNames[row.key] ?? row.key}</Drawer.Heading>
         <p className="font-mono text-muted text-xs">{row.key}</p>
       </Drawer.Header>

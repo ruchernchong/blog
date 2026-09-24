@@ -110,7 +110,7 @@ export function UsageModelCharacter({
           rows={rows.map((row) => (
             <tr className="border-border border-b last:border-0" key={row.key}>
               <th className="max-w-56 py-3 pr-4" scope="row">
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-2">
                   <span className="truncate font-medium" title={row.key}>
                     {row.label}
                   </span>

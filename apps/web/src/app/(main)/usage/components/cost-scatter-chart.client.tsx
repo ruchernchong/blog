@@ -45,7 +45,7 @@ function CostTooltip({
   return (
     <div className="flex flex-col gap-2 rounded-xl bg-overlay px-3 py-2 text-sm shadow-(--overlay-shadow)">
       <span className="font-medium">{point.label}</span>
-      <dl className="grid grid-cols-[auto_auto] gap-x-4 gap-y-1 text-muted">
+      <dl className="grid grid-cols-[auto_auto] gap-2 text-muted">
         <dt>Tokens</dt>
         <dd className="text-right text-foreground tabular-nums">
           {formatTokens(point.tokens)}

@@ -65,7 +65,7 @@ export default async function UsagePage() {
   });
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 sm:gap-16">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-12">
       <UsageHero
         description={description}
         lastUpdated={

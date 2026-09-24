@@ -327,10 +327,13 @@ function FilterChip({
 
 function ColumnsMenu({
   columnOptions,
+  lockedColumn,
   onVisibleColumnsChange,
   visibleColumns,
 }: {
   columnOptions: { id: string; label: string }[];
+  /** The sorted column: always shown, so its toggle is disabled. */
+  lockedColumn: string;
   onVisibleColumnsChange: (keys: DataGridSelection) => void;
   visibleColumns: DataGridSelection;
 }) {
@@ -342,6 +345,7 @@ function ColumnsMenu({
       </Button>
       <Dropdown.Popover>
         <Dropdown.Menu
+          disabledKeys={[lockedColumn]}
           disallowEmptySelection
           onSelectionChange={onVisibleColumnsChange}
           selectedKeys={visibleColumns}
@@ -616,6 +620,7 @@ export function UsageBreakdown({
         <div className="hidden md:block">
           <ColumnsMenu
             columnOptions={columnOptions}
+            lockedColumn={sort}
             onVisibleColumnsChange={setVisibleColumns}
             visibleColumns={shownColumns}
           />
