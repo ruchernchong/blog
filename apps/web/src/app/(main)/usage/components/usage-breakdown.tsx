@@ -152,22 +152,30 @@ function ProviderValue({
     return "-";
   }
 
-  // Rows have a fixed height, so stacked providers shrink to fit two lines.
+  // Rows have a fixed height, so stacked providers shrink to fit two lines;
+  // beyond two, the second line collapses into a "+N more" summary.
   const isStacked = providers.length > 1;
+  const names = providers.map(
+    (provider) => providerDisplayNames[provider] ?? provider,
+  );
+  const shown = providers.length > 2 ? providers.slice(0, 1) : providers;
+  const hiddenCount = providers.length - shown.length;
 
   return (
-    <span className={cn("flex min-w-0 flex-col", isStacked && "gap-1 text-xs")}>
-      {providers.map((provider) => (
+    <span
+      className={cn("flex min-w-0 flex-col", isStacked && "gap-1 text-xs")}
+      title={isStacked ? names.join(", ") : undefined}
+    >
+      {shown.map((provider, index) => (
         <span className="inline-flex min-w-0 items-center gap-2" key={provider}>
           <ProviderLogo
             className={cn(isStacked && "size-4")}
             provider={provider}
           />
-          <span className="truncate">
-            {providerDisplayNames[provider] ?? provider}
-          </span>
+          <span className="truncate">{names[index]}</span>
         </span>
       ))}
+      {hiddenCount > 0 && <span className="ps-6">+{hiddenCount} more</span>}
     </span>
   );
 }
