@@ -1,4 +1,8 @@
 import {
+  comparePeriodLengths,
+  type DailyModelTokens,
+} from "@workspace/usage/period-comparison";
+import {
   buildPricingFromRegistry,
   type Pricing,
 } from "@workspace/usage/pricing";
@@ -328,6 +332,10 @@ export async function getUsageProfile(): Promise<UsageProfile> {
   const summary = buildSummary(contributions, byAgent, byProvider, byModel);
   const weeklyShare = buildWeeklyShare(facts);
   const cacheTrend = buildCacheTrend(facts);
+  const periods = comparePeriodLengths(
+    contributions,
+    dailyModelTokensOf(facts),
+  );
 
   for (const row of effortRows) {
     if (row.updatedAt > lastUpdated) {
@@ -345,6 +353,7 @@ export async function getUsageProfile(): Promise<UsageProfile> {
     tokenMix,
     weeklyShare,
     cacheTrend,
+    periods,
     effort: foldEffortSummary(effortRows),
     lastUpdated: lastUpdated.toISOString(),
   };
@@ -479,6 +488,20 @@ function cacheSavingsOf(
   return asInput === null || asCacheRead === null
     ? null
     : asInput - asCacheRead;
+}
+
+/** Uncapped tokens per (alias-folded) model per day, for period leaders. */
+function dailyModelTokensOf(facts: UsageFact[]): DailyModelTokens {
+  const byDate = new Map<string, Map<string, number>>();
+  for (const fact of facts) {
+    let models = byDate.get(fact.date);
+    if (!models) {
+      models = new Map();
+      byDate.set(fact.date, models);
+    }
+    models.set(fact.model, (models.get(fact.model) ?? 0) + fact.totalTokens);
+  }
+  return byDate;
 }
 
 /** Sum priced values; `null` if every value is N.A. (none priced). */
@@ -747,6 +770,7 @@ function emptyProfile(): UsageProfile {
     tokenMix: emptyTokenBreakdown(),
     weeklyShare: { weeks: [], models: [], agents: [] },
     cacheTrend: [],
+    periods: { 7: null, 30: null, 90: null },
     effort: null,
     lastUpdated: null,
   };

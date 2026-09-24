@@ -58,6 +58,10 @@ export function UsageHeatmap({
             lineHeight: 1.15,
             letterSpacing: -1,
             maxWidth: "95%",
+            // The sentence carries model names of any length; cap it so the
+            // heatmap and figures below always fit in the fixed 1200x630.
+            display: "block",
+            lineClamp: 3,
           }}
         >
           {headline}

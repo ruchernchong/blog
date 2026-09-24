@@ -45,6 +45,7 @@ import {
   rowDisplayName,
 } from "./usage-breakdown-rows";
 import { UsageSection } from "./usage-section";
+import { UsageSortControl } from "./usage-sort-control";
 
 export interface BreakdownView {
   id: UsageBreakdownView;
@@ -543,12 +544,17 @@ export function UsageBreakdown({
 
   const sortedRows = useMemo(
     () =>
-      filterRows(
-        active.rows,
-        active.id,
-        { search, providerFilter, freeOnly: isFreeOnly },
-        names,
-      ).sort((a, b) => compareRows(a, b, sortDescriptor, active.id, names)),
+      // filterRows returns the prop array itself when nothing is filtered, so
+      // sort a copy: sorting in place would reorder the caller's rows and
+      // keep the same reference, which the scroll-reset effect relies on.
+      [
+        ...filterRows(
+          active.rows,
+          active.id,
+          { search, providerFilter, freeOnly: isFreeOnly },
+          names,
+        ),
+      ].sort((a, b) => compareRows(a, b, sortDescriptor, active.id, names)),
     [active, isFreeOnly, names, providerFilter, search, sortDescriptor],
   );
 
@@ -556,6 +562,14 @@ export function UsageBreakdown({
   useLayoutEffect(() => {
     getTableScrollContainer(gridRef.current)?.scrollTo(0, 0);
   }, [sortedRows]);
+
+  // The sorted column is always shown, so a shared `?sort=` link never orders
+  // rows by a column that starts hidden (Trend and $ / 1M do by default).
+  const shownColumns = useMemo<DataGridSelection>(
+    () =>
+      visibleColumns === "all" ? "all" : new Set([...visibleColumns, sort]),
+    [visibleColumns, sort],
+  );
 
   const columns = useMemo(
     () =>
@@ -565,10 +579,10 @@ export function UsageBreakdown({
       }).filter(
         (column) =>
           column.id === "key" ||
-          visibleColumns === "all" ||
-          visibleColumns.has(column.id),
+          shownColumns === "all" ||
+          shownColumns.has(column.id),
       ),
-    [active.id, names, visibleColumns],
+    [active.id, names, shownColumns],
   );
 
   const columnOptions =
@@ -603,7 +617,7 @@ export function UsageBreakdown({
           <ColumnsMenu
             columnOptions={columnOptions}
             onVisibleColumnsChange={setVisibleColumns}
-            visibleColumns={visibleColumns}
+            visibleColumns={shownColumns}
           />
         </div>
       </div>
@@ -650,7 +664,14 @@ export function UsageBreakdown({
         </div>
       )}
       {/* Phones get a card list; the grid needs ~760px before it scrolls. */}
-      <div className="md:hidden">
+      <div className="flex flex-col gap-4 md:hidden">
+        <UsageSortControl
+          dir={dir}
+          onChange={(nextSort, nextDir) =>
+            setBreakdown({ sort: nextSort, dir: nextDir })
+          }
+          sort={sort}
+        />
         <UsageBreakdownList
           names={names}
           rows={sortedRows}

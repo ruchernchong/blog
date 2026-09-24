@@ -95,6 +95,7 @@ describe("getUsageProfile", () => {
     expect(profile.contributions).toEqual([]);
     expect(profile.weeklyShare).toEqual({ weeks: [], models: [], agents: [] });
     expect(profile.cacheTrend).toEqual([]);
+    expect(profile.periods).toEqual({ 7: null, 30: null, 90: null });
     expect(profile.summary.bestDay).toBeNull();
     expect(profile.lastUpdated).toBeNull();
   });
@@ -265,6 +266,8 @@ describe("getUsageProfile", () => {
       MILLION / (MILLION + 100),
     );
     expect(profile.cacheTrend[2].savings).toBe(0);
+    // Period leaders come from uncapped totals across the whole window.
+    expect(profile.periods[30]?.current.topModel).toBe("cached");
   });
 
   it("should fold aliased model ids into one model row", async () => {

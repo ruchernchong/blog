@@ -1,3 +1,5 @@
+import type { PeriodComparisons } from "./period-comparison";
+
 /**
  * Shared types for the token-usage feature.
  *
@@ -195,6 +197,11 @@ export interface UsageProfile {
   weeklyShare: WeeklyShare;
   /** Weekly cache-hit rate and estimated savings. */
   cacheTrend: CacheTrendPoint[];
+  /**
+   * "This period" comparisons for every offered window, with the top model
+   * taken from uncapped per-model totals.
+   */
+  periods: PeriodComparisons;
   /**
    * All-time session effort distribution, or `null` when no effort rows exist
    * or no sessions were classified.

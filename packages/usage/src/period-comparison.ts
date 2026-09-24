@@ -31,7 +31,18 @@ export interface PeriodComparison {
   };
 }
 
-function totalsOf(days: DayContribution[]): PeriodTotals {
+/**
+ * Uncapped tokens per model per day (YYYY-MM-DD → model → tokens). Pass this
+ * when available: `DayContribution.models` keeps only each day's biggest few,
+ * so a model that places just outside that cap every day but leads the window
+ * overall would otherwise never be counted.
+ */
+export type DailyModelTokens = ReadonlyMap<string, ReadonlyMap<string, number>>;
+
+function totalsOf(
+  days: DayContribution[],
+  dailyModelTokens?: DailyModelTokens,
+): PeriodTotals {
   const modelTokens = new Map<string, number>();
   let tokens = 0;
   let cost = 0;
@@ -43,13 +54,11 @@ function totalsOf(days: DayContribution[]): PeriodTotals {
     cost += day.totals.cost ?? 0;
     messages += day.totals.messages;
     if (day.totals.tokens > 0) activeDays += 1;
-    // Per-day models are capped to the day's biggest few, so the window's
-    // leader is exact whenever it leads (or places) on the days it ran.
-    for (const model of day.models) {
-      modelTokens.set(
-        model.model,
-        (modelTokens.get(model.model) ?? 0) + model.tokens,
-      );
+    const dayModels: Iterable<[string, number]> = dailyModelTokens
+      ? (dailyModelTokens.get(day.date) ?? [])
+      : day.models.map((model) => [model.model, model.tokens]);
+    for (const [model, modelDayTokens] of dayModels) {
+      modelTokens.set(model, (modelTokens.get(model) ?? 0) + modelDayTokens);
     }
   }
 
@@ -86,6 +95,7 @@ function relativeChange(current: number, previous: number): number | null {
 export function comparePeriods(
   contributions: DayContribution[],
   days: number,
+  dailyModelTokens?: DailyModelTokens,
 ): PeriodComparison | null {
   if (contributions.length === 0 || days <= 0) {
     return null;
@@ -93,9 +103,12 @@ export function comparePeriods(
 
   const currentDays = contributions.slice(-days);
   const previousDays = contributions.slice(-2 * days, -days);
-  const current = totalsOf(currentDays);
+  const current = totalsOf(currentDays, dailyModelTokens);
   // A partial previous window would make every delta look like growth.
-  const previous = previousDays.length === days ? totalsOf(previousDays) : null;
+  const previous =
+    previousDays.length === days
+      ? totalsOf(previousDays, dailyModelTokens)
+      : null;
 
   return {
     days,
@@ -109,4 +122,19 @@ export function comparePeriods(
         : null,
     },
   };
+}
+
+/** Every offered window length, keyed by its length in days. */
+export type PeriodComparisons = Record<PeriodLength, PeriodComparison | null>;
+
+export function comparePeriodLengths(
+  contributions: DayContribution[],
+  dailyModelTokens?: DailyModelTokens,
+): PeriodComparisons {
+  return Object.fromEntries(
+    PERIOD_LENGTHS.map((length) => [
+      length,
+      comparePeriods(contributions, length, dailyModelTokens),
+    ]),
+  ) as PeriodComparisons;
 }

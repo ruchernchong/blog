@@ -7,8 +7,7 @@ import {
 } from "@workspace/usage/format";
 import {
   PERIOD_LENGTHS,
-  type PeriodComparison,
-  type PeriodLength,
+  type PeriodComparisons,
 } from "@workspace/usage/period-comparison";
 import { format, parseISO } from "date-fns";
 import { useQueryState } from "nuqs";
@@ -17,7 +16,7 @@ import { UsageToggle } from "./usage-toggle.client";
 
 interface UsagePeriodClientProps {
   /** One comparison per window length, precomputed on the server. */
-  comparisons: Record<PeriodLength, PeriodComparison | null>;
+  comparisons: PeriodComparisons;
   /** Registry slug → display name for the top-model figure. */
   modelDisplayNames: Record<string, string>;
 }

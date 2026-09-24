@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { comparePeriods } from "./period-comparison";
+import { comparePeriodLengths, comparePeriods } from "./period-comparison";
 import type { DayContribution } from "./types";
 
 function day(
@@ -89,5 +89,41 @@ describe("comparePeriods", () => {
   it("should return null without data", () => {
     expect(comparePeriods([], 7)).toBeNull();
     expect(comparePeriods(contributions, 0)).toBeNull();
+  });
+});
+
+describe("comparePeriods with uncapped model totals", () => {
+  it("should find a leader that never makes a day's capped model list", () => {
+    // "steady" places outside each day's capped list but leads the window.
+    const days = [
+      day("2026-01-01", 100, 1, [["spiky", 60]]),
+      day("2026-01-02", 100, 1, [["other", 60]]),
+    ];
+    const uncapped = new Map([
+      [
+        "2026-01-01",
+        new Map([
+          ["spiky", 60],
+          ["steady", 40],
+        ]),
+      ],
+      [
+        "2026-01-02",
+        new Map([
+          ["other", 60],
+          ["steady", 40],
+        ]),
+      ],
+    ]);
+
+    expect(comparePeriods(days, 2)?.current.topModel).toBe("spiky");
+    expect(comparePeriods(days, 2, uncapped)?.current.topModel).toBe("steady");
+  });
+
+  it("should compare every offered window length", () => {
+    const all = comparePeriodLengths(contributions);
+
+    expect(Object.keys(all)).toEqual(["7", "30", "90"]);
+    expect(all[7]?.current.start).toBe("2026-01-01");
   });
 });

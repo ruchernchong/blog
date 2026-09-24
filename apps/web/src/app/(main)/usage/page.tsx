@@ -90,7 +90,7 @@ export default async function UsagePage() {
 
       <Suspense>
         <UsagePeriod
-          contributions={profile.contributions}
+          comparisons={profile.periods}
           modelDisplayNames={modelDisplayNames}
         />
       </Suspense>
