@@ -261,7 +261,7 @@ function getColumns({
           value={row.tokens}
         />
       ),
-      cellClassName: "tabular-nums",
+      cellClassName: "justify-end tabular-nums",
       minWidth: 115,
     },
     {
@@ -270,7 +270,7 @@ function getColumns({
       align: "end",
       allowsSorting: true,
       cell: (row) => <CostValue cost={row.cost} />,
-      cellClassName: "tabular-nums",
+      cellClassName: "justify-end tabular-nums",
       minWidth: 150,
       pinned: "end",
     },
@@ -280,7 +280,7 @@ function getColumns({
       align: "end",
       allowsSorting: true,
       cell: (row) => <CostValue cost={row.costPerMillionTokens} />,
-      cellClassName: "text-muted tabular-nums",
+      cellClassName: "justify-end text-muted tabular-nums",
       minWidth: 135,
     },
     {
@@ -289,7 +289,7 @@ function getColumns({
       align: "end",
       allowsSorting: true,
       cell: (row) => <NumberValue locale="en-SG" value={row.messages} />,
-      cellClassName: "tabular-nums",
+      cellClassName: "justify-end tabular-nums",
       minWidth: 105,
     },
   ];
