@@ -15,13 +15,15 @@
     ".": "./src/index.ts",
     "./format": "./src/format.ts",
     "./heatmap-layout": "./src/heatmap-layout.ts",
+    "./model-character": "./src/model-character.ts",
     "./narrative": "./src/narrative.ts",
     "./ingest": "./src/ingest.ts",
     "./parsers": "./src/parsers/index.ts",
     "./pricing": "./src/pricing.ts",
     "./providers": "./src/providers.ts",
     "./registry": "./src/registry.ts",
-    "./types": "./src/types.ts"
+    "./types": "./src/types.ts",
+    "./weekly-insights": "./src/weekly-insights.ts"
   },
   "dependencies": {
     "date-fns": "^4.1.0",
