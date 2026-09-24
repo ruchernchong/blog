@@ -2,7 +2,6 @@
 
 import {
   Button,
-  Card,
   Chip,
   Dropdown,
   Label,
@@ -27,7 +26,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { providerLogoUrl } from "@workspace/usage/providers";
 import type { Cost, UsageBreakdownRow } from "@workspace/usage/types";
 import Image from "next/image";
-import { useQueryStates } from "nuqs";
+import { useQueryState, useQueryStates } from "nuqs";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   USAGE_SORT_COLUMNS,
@@ -36,6 +35,16 @@ import {
   usageParsers,
 } from "../searchParams";
 import { FreeModelChip } from "./free-model-chip";
+import { UsageBreakdownList } from "./usage-breakdown-list";
+import {
+  type BreakdownNames,
+  compareRows,
+  filterRows,
+  type ProviderOption,
+  providerOptionsFor,
+  rowDisplayName,
+} from "./usage-breakdown-rows";
+import { UsageSection } from "./usage-section";
 
 export interface BreakdownView {
   id: UsageBreakdownView;
@@ -82,9 +91,6 @@ function isSortColumn(column: unknown): column is UsageSortColumn {
   return USAGE_SORT_COLUMNS.includes(column as UsageSortColumn);
 }
 
-/** Sort N.A. costs below every priced value (when sorted descending). */
-const sortableCost = (cost: Cost): number => cost ?? Number.NEGATIVE_INFINITY;
-
 const COMPACT_NUMBER_FORMAT_OPTIONS = {
   maximumFractionDigits: 2,
   notation: "compact",
@@ -94,67 +100,6 @@ const CURRENCY_FORMAT_OPTIONS = {
   currency: "USD",
   style: "currency",
 } satisfies Intl.NumberFormatOptions;
-
-function rowProviders(row: UsageBreakdownRow): string[] {
-  return row.providers ?? (row.provider ? [row.provider] : []);
-}
-
-function rowDisplayName(
-  row: UsageBreakdownRow,
-  viewId: string,
-  providerDisplayNames: Record<string, string>,
-  modelDisplayNames: Record<string, string>,
-): string {
-  if (viewId === "provider") {
-    return providerDisplayNames[row.key] ?? row.key;
-  }
-  if (viewId === "model") {
-    return modelDisplayNames[row.key] ?? row.key;
-  }
-  return row.key;
-}
-
-function compareRows(
-  a: UsageBreakdownRow,
-  b: UsageBreakdownRow,
-  descriptor: DataGridSortDescriptor,
-  viewId: string,
-  providerDisplayNames: Record<string, string>,
-  modelDisplayNames: Record<string, string>,
-): number {
-  const result = (() => {
-    switch (descriptor.column) {
-      case "key":
-        return rowDisplayName(
-          a,
-          viewId,
-          providerDisplayNames,
-          modelDisplayNames,
-        ).localeCompare(
-          rowDisplayName(b, viewId, providerDisplayNames, modelDisplayNames),
-        );
-      case "provider":
-        return (a.provider ?? a.providers?.join(", ") ?? "").localeCompare(
-          b.provider ?? b.providers?.join(", ") ?? "",
-        );
-      case "tokens":
-        return a.tokens - b.tokens;
-      case "messages":
-        return a.messages - b.messages;
-      case "cost":
-        return sortableCost(a.cost) - sortableCost(b.cost);
-      case "costPerMillionTokens":
-        return (
-          sortableCost(a.costPerMillionTokens) -
-          sortableCost(b.costPerMillionTokens)
-        );
-      default:
-        return 0;
-    }
-  })();
-
-  return descriptor.direction === "descending" ? -result : result;
-}
 
 function CostValue({ cost }: { cost: Cost }) {
   if (cost === null) {
@@ -228,14 +173,15 @@ function RowVisual({
 }
 
 function getColumns({
-  modelDisplayNames,
-  providerDisplayNames,
+  names,
+  onSelectModel,
   viewId,
 }: {
-  modelDisplayNames: Record<string, string>;
-  providerDisplayNames: Record<string, string>;
+  names: BreakdownNames;
+  onSelectModel: (model: string) => void;
   viewId: string;
 }): DataGridColumn<UsageBreakdownRow>[] {
+  const { providerDisplayNames } = names;
   const columns: DataGridColumn<UsageBreakdownRow>[] = [
     {
       id: "key",
@@ -246,17 +192,23 @@ function getColumns({
       cell: (row) => (
         <span className="inline-flex w-full min-w-0 items-center gap-2 pe-8 sm:pe-0">
           <RowVisual row={row} viewId={viewId} />
-          <span
-            className="truncate font-medium text-xs"
-            title={viewId === "model" ? row.key : undefined}
-          >
-            {rowDisplayName(
-              row,
-              viewId,
-              providerDisplayNames,
-              modelDisplayNames,
-            )}
-          </span>
+          {viewId === "model" ? (
+            <Button
+              aria-label={`Open profile for ${rowDisplayName(row, viewId, names)}`}
+              className="h-auto min-w-0 truncate p-0 font-medium text-xs underline-offset-4 hover:underline"
+              onPress={() => onSelectModel(row.key)}
+              size="sm"
+              variant="ghost"
+            >
+              <span className="truncate" title={row.key}>
+                {rowDisplayName(row, viewId, names)}
+              </span>
+            </Button>
+          ) : (
+            <span className="truncate font-medium text-xs">
+              {rowDisplayName(row, viewId, names)}
+            </span>
+          )}
           <FreeModelChip cost={row.cost} viewId={viewId} />
         </span>
       ),
@@ -379,11 +331,6 @@ function FilterChip({
       </Button>
     </Chip>
   );
-}
-
-interface ProviderOption {
-  key: string;
-  label: string;
 }
 
 function BreakdownToolbar({
@@ -515,9 +462,10 @@ function getTableScrollContainer(root: HTMLElement | null) {
 }
 
 /**
- * A single breakdown card whose dataset is toggled with a segmented control.
- * Rows can be searched, filtered by provider, and sorted; column visibility is
- * user-toggleable. This component owns all of that state.
+ * The Explorer: one dataset at a time, toggled with a segmented control. Rows
+ * can be searched, filtered by provider, and sorted; column visibility is
+ * user-toggleable. Phones get a card list instead of the grid, and in the
+ * model view a model's name opens its profile drawer (`?model=`).
  */
 export function UsageBreakdown({
   className,
@@ -539,6 +487,11 @@ export function UsageBreakdown({
     },
     setBreakdown,
   ] = useQueryStates(breakdownParsers, { history: "replace" });
+  // `?model=` opens the model drawer, which lives outside this component.
+  const [, setModel] = useQueryState(
+    "model",
+    usageParsers.model.withOptions({ history: "replace" }),
+  );
   const freeFilter = isFreeOnly ? "free" : "all";
   const sortDescriptor = useMemo<DataGridSortDescriptor>(
     () => ({
@@ -551,6 +504,10 @@ export function UsageBreakdown({
     new Set(HIDEABLE_COLUMNS.map((column) => column.id)),
   );
   const gridRef = useRef<HTMLDivElement>(null);
+  const names = useMemo<BreakdownNames>(
+    () => ({ providerDisplayNames, modelDisplayNames }),
+    [providerDisplayNames, modelDisplayNames],
+  );
 
   const active = views.find((view) => view.id === selectedKey) ?? views[0];
 
@@ -566,6 +523,9 @@ export function UsageBreakdown({
       sort: descriptor.column,
       dir: descriptor.direction === "ascending" ? "asc" : "desc",
     });
+  };
+  const selectModel = (model: string) => {
+    void setModel(model);
   };
 
   const handleViewChange = (key: string | number) => {
@@ -588,92 +548,20 @@ export function UsageBreakdown({
     setBreakdown({ q: null, provider: null, free: null });
   };
 
-  const providerOptions = useMemo<ProviderOption[]>(() => {
-    if (active.id === "provider") {
-      return [];
-    }
-
-    const keys = new Set<string>();
-    for (const row of active.rows) {
-      for (const provider of rowProviders(row)) {
-        keys.add(provider);
-      }
-    }
-
-    return [...keys]
-      .map((key) => ({ key, label: providerDisplayNames[key] ?? key }))
-      .sort((a, b) => a.label.localeCompare(b.label));
-  }, [active, providerDisplayNames]);
-
-  const filteredRows = useMemo(() => {
-    let rows = active.rows;
-
-    if (search) {
-      const query = search.toLowerCase();
-      rows = rows.filter((row) => {
-        if (
-          rowDisplayName(
-            row,
-            active.id,
-            providerDisplayNames,
-            modelDisplayNames,
-          )
-            .toLowerCase()
-            .includes(query)
-        ) {
-          return true;
-        }
-
-        return rowProviders(row).some((provider) =>
-          (providerDisplayNames[provider] ?? provider)
-            .toLowerCase()
-            .includes(query),
-        );
-      });
-    }
-
-    if (providerFilter !== "all") {
-      rows = rows.filter((row) => rowProviders(row).includes(providerFilter));
-    }
-
-    if (freeFilter !== "all") {
-      rows = rows.filter((row) => {
-        if (freeFilter === "free") {
-          return row.cost === 0 || row.cost === null;
-        }
-        return row.cost !== 0 && row.cost !== null;
-      });
-    }
-
-    return rows;
-  }, [
-    active,
-    modelDisplayNames,
-    providerDisplayNames,
-    providerFilter,
-    search,
-    freeFilter,
-  ]);
+  const providerOptions = useMemo<ProviderOption[]>(
+    () => providerOptionsFor(active.rows, active.id, providerDisplayNames),
+    [active, providerDisplayNames],
+  );
 
   const sortedRows = useMemo(
     () =>
-      [...filteredRows].sort((a, b) =>
-        compareRows(
-          a,
-          b,
-          sortDescriptor,
-          active.id,
-          providerDisplayNames,
-          modelDisplayNames,
-        ),
-      ),
-    [
-      active.id,
-      filteredRows,
-      modelDisplayNames,
-      providerDisplayNames,
-      sortDescriptor,
-    ],
+      filterRows(
+        active.rows,
+        active.id,
+        { search, providerFilter, freeOnly: isFreeOnly },
+        names,
+      ).sort((a, b) => compareRows(a, b, sortDescriptor, active.id, names)),
+    [active, isFreeOnly, names, providerFilter, search, sortDescriptor],
   );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: reset scroll when the visible row set changes; the array is the trigger, not a value we read
@@ -681,11 +569,12 @@ export function UsageBreakdown({
     getTableScrollContainer(gridRef.current)?.scrollTo(0, 0);
   }, [sortedRows]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: selectModel only wraps the stable nuqs setter
   const columns = useMemo(
     () =>
       getColumns({
-        modelDisplayNames,
-        providerDisplayNames,
+        names,
+        onSelectModel: selectModel,
         viewId: active.id,
       }).filter(
         (column) =>
@@ -693,7 +582,7 @@ export function UsageBreakdown({
           visibleColumns === "all" ||
           visibleColumns.has(column.id),
       ),
-    [active.id, modelDisplayNames, providerDisplayNames, visibleColumns],
+    [active.id, names, visibleColumns],
   );
 
   const columnOptions =
@@ -705,17 +594,13 @@ export function UsageBreakdown({
     search !== "" || providerFilter !== "all" || freeFilter !== "all";
 
   return (
-    <Card className={className}>
-      <Card.Header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <Card.Title>{title}</Card.Title>
-            <Chip color="accent" size="sm" variant="soft">
-              {sortedRows.length}
-            </Chip>
-          </div>
-          <Card.Description>{active.description}</Card.Description>
-        </div>
+    <UsageSection
+      className={className}
+      description={active.description}
+      id="explorer"
+      title={title}
+    >
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <Segment
           selectedKey={selectedKey}
           onSelectionChange={handleViewChange}
@@ -728,75 +613,85 @@ export function UsageBreakdown({
             </Segment.Item>
           ))}
         </Segment>
-      </Card.Header>
-      <Card.Content className="flex flex-col gap-4">
-        <BreakdownToolbar
-          columnOptions={columnOptions}
-          onFreeFilterChange={setFreeFilter}
-          onProviderFilterChange={setProviderFilter}
-          onSearchChange={setSearch}
-          onVisibleColumnsChange={setVisibleColumns}
-          freeFilter={freeFilter}
-          providerFilter={providerFilter}
-          providerOptions={providerOptions}
-          search={search}
-          visibleColumns={visibleColumns}
-        />
-        {hasActiveFilters && (
-          <div className="flex flex-wrap items-center gap-2">
-            {search !== "" && (
-              <FilterChip
-                clearLabel="Clear search"
-                label={`Search: ${search}`}
-                onClear={() => setSearch("")}
-              />
-            )}
-            {freeFilter !== "all" && (
-              <FilterChip
-                clearLabel="Clear free filter"
-                label="Free"
-                onClear={() => setFreeFilter("all")}
-              />
-            )}
-            {providerFilter !== "all" && (
-              <FilterChip
-                clearLabel="Clear provider filter"
-                label={`Provider: ${providerDisplayNames[providerFilter] ?? providerFilter}`}
-                onClear={() => setProviderFilter("all")}
-              />
-            )}
-            <Button onPress={handleClearFilters} size="sm" variant="ghost">
-              Clear all
-            </Button>
-          </div>
-        )}
-        <div ref={gridRef}>
-          <DataGrid
-            allowsColumnResize
-            virtualized
-            aria-label="Usage breakdown"
-            className="[&_.table__cell]:overflow-hidden [&_.table__cell]:whitespace-nowrap [&_.table__cell]:py-1.5 [&_.table__cell]:text-xs [&_.table__column]:py-1.5 [&_.table__column]:text-[11px]"
-            columns={columns}
-            contentClassName="min-w-[760px] md:min-w-[1000px]"
-            data={sortedRows}
-            getRowId={(row) => row.key}
-            headingHeight={GRID_HEADING_HEIGHT}
-            onSortChange={setSortDescriptor}
-            renderEmptyState={() => (
-              <div className="py-8 text-center text-muted text-sm">
-                No results match your filters.
-              </div>
-            )}
-            rowHeight={GRID_ROW_HEIGHT}
-            scrollContainerClassName={GRID_SCROLL_CLASS}
-            sortDescriptor={sortDescriptor}
-            variant="primary"
-          />
+        <Chip color="accent" size="sm" variant="soft">
+          {sortedRows.length} {sortedRows.length === 1 ? "row" : "rows"}
+        </Chip>
+      </div>
+      <BreakdownToolbar
+        columnOptions={columnOptions}
+        onFreeFilterChange={setFreeFilter}
+        onProviderFilterChange={setProviderFilter}
+        onSearchChange={setSearch}
+        onVisibleColumnsChange={setVisibleColumns}
+        freeFilter={freeFilter}
+        providerFilter={providerFilter}
+        providerOptions={providerOptions}
+        search={search}
+        visibleColumns={visibleColumns}
+      />
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-2">
+          {search !== "" && (
+            <FilterChip
+              clearLabel="Clear search"
+              label={`Search: ${search}`}
+              onClear={() => setSearch("")}
+            />
+          )}
+          {freeFilter !== "all" && (
+            <FilterChip
+              clearLabel="Clear free filter"
+              label="Free"
+              onClear={() => setFreeFilter("all")}
+            />
+          )}
+          {providerFilter !== "all" && (
+            <FilterChip
+              clearLabel="Clear provider filter"
+              label={`Provider: ${providerDisplayNames[providerFilter] ?? providerFilter}`}
+              onClear={() => setProviderFilter("all")}
+            />
+          )}
+          <Button onPress={handleClearFilters} size="sm" variant="ghost">
+            Clear all
+          </Button>
         </div>
-        <Typography.Paragraph color="muted" size="xs">
-          Token usage from Anthropic excludes Claude Design at this moment.
-        </Typography.Paragraph>
-      </Card.Content>
-    </Card>
+      )}
+      {/* Phones get a card list; the grid needs ~760px before it scrolls. */}
+      <div className="md:hidden">
+        <UsageBreakdownList
+          names={names}
+          onSelectModel={selectModel}
+          rows={sortedRows}
+          viewId={active.id}
+        />
+      </div>
+      <div className="hidden md:block" ref={gridRef}>
+        <DataGrid
+          allowsColumnResize
+          virtualized
+          aria-label="Usage breakdown"
+          className="[&_.table__cell]:overflow-hidden [&_.table__cell]:whitespace-nowrap [&_.table__cell]:py-1.5 [&_.table__cell]:text-xs [&_.table__column]:py-1.5 [&_.table__column]:text-[11px]"
+          columns={columns}
+          contentClassName="min-w-[760px] md:min-w-[1000px]"
+          data={sortedRows}
+          getRowId={(row) => row.key}
+          headingHeight={GRID_HEADING_HEIGHT}
+          onSortChange={setSortDescriptor}
+          renderEmptyState={() => (
+            <div className="py-8 text-center text-muted text-sm">
+              No results match your filters.
+            </div>
+          )}
+          rowHeight={GRID_ROW_HEIGHT}
+          scrollContainerClassName={GRID_SCROLL_CLASS}
+          sortDescriptor={sortDescriptor}
+          variant="primary"
+        />
+      </div>
+      <Typography.Paragraph color="muted" size="xs">
+        Token usage from Anthropic excludes Claude Design at this moment.
+      </Typography.Paragraph>
+    </UsageSection>
   );
 }

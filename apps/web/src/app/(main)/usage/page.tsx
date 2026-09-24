@@ -18,6 +18,7 @@ import { UsageHeatmap } from "./components/usage-heatmap";
 import { UsageHero } from "./components/usage-hero";
 import { UsageLastUpdated } from "./components/usage-last-updated";
 import { UsageModelCharacter } from "./components/usage-model-character";
+import { UsageModelDrawer } from "./components/usage-model-drawer";
 import { UsagePeriod } from "./components/usage-period";
 import { UsageStackShift } from "./components/usage-stack-shift";
 
@@ -121,8 +122,16 @@ export default async function UsagePage() {
         <UsageBreakdown
           providerDisplayNames={providerDisplayNames}
           modelDisplayNames={modelDisplayNames}
-          title="Breakdown"
+          title="Explorer"
           views={getBreakdownViews(profile)}
+        />
+      </Suspense>
+
+      <Suspense>
+        <UsageModelDrawer
+          byModel={profile.byModel}
+          modelDisplayNames={modelDisplayNames}
+          providerDisplayNames={providerDisplayNames}
         />
       </Suspense>
     </div>

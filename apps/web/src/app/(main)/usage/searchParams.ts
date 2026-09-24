@@ -37,6 +37,8 @@ export const usageParsers = {
   period: parseAsNumberLiteral(PERIOD_LENGTHS).withDefault(30),
   /** Whether the stack-shift chart splits by model or by agent. */
   stack: parseAsStringLiteral(USAGE_STACK_VIEWS).withDefault("model"),
+  /** Model id whose profile drawer is open; absent when closed. */
+  model: parseAsString,
   /** Active breakdown dataset. */
   view: parseAsStringLiteral(USAGE_BREAKDOWN_VIEWS).withDefault("model"),
   /** Free-text filter over the breakdown rows. */
