@@ -23,6 +23,17 @@ const usdFormatter = new Intl.NumberFormat("en-SG", {
   style: "currency",
 });
 
+// The headline wraps word by word with no line cap (Satori has no lineClamp
+// for mixed-colour text), so bound the only unbounded input: a long model
+// name could otherwise push the heatmap out of the fixed 1200x630 frame.
+const MAX_MODEL_NAME_LENGTH = 32;
+
+function truncate(name: string): string {
+  return name.length > MAX_MODEL_NAME_LENGTH
+    ? `${name.slice(0, MAX_MODEL_NAME_LENGTH - 1).trimEnd()}…`
+    : name;
+}
+
 export default async function Image() {
   const [fonts, profile] = await Promise.all([getOGFonts(), getUsageProfile()]);
 
@@ -51,7 +62,7 @@ export default async function Image() {
     firstActiveDate:
       profile.contributions.find((day) => day.totals.tokens > 0)?.date ?? null,
     topModel: favouriteModel
-      ? (modelDisplayNames[favouriteModel] ?? favouriteModel)
+      ? truncate(modelDisplayNames[favouriteModel] ?? favouriteModel)
       : null,
     topAgent: profile.byAgent[0]?.key ?? null,
   }) ?? [
