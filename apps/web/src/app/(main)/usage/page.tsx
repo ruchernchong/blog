@@ -12,12 +12,14 @@ import {
   type BreakdownView,
   UsageBreakdown,
 } from "./components/usage-breakdown";
-import { UsageEffortLevels } from "./components/usage-effort-levels";
+import { UsageCacheEffort } from "./components/usage-cache-effort";
+import { UsageCostScatter } from "./components/usage-cost-scatter";
 import { UsageHeatmap } from "./components/usage-heatmap";
 import { UsageHero } from "./components/usage-hero";
 import { UsageLastUpdated } from "./components/usage-last-updated";
-import { UsageTokenMix } from "./components/usage-token-mix";
-import { UsageTrend } from "./components/usage-trend";
+import { UsageModelCharacter } from "./components/usage-model-character";
+import { UsagePeriod } from "./components/usage-period";
+import { UsageStackShift } from "./components/usage-stack-shift";
 
 const title = "Usage";
 const description =
@@ -74,9 +76,10 @@ export default async function UsagePage() {
         summary={profile.summary}
       />
 
-      {/* The heatmap and breakdown read `?year=` / `?view=` via nuqs, which
-          uses useSearchParams; under Cache Components that must sit inside a
-          Suspense boundary so the rest of the page stays a static shell. */}
+      {/* The heatmap, period, stack-shift and breakdown sections read URL
+          state via nuqs, which uses useSearchParams; under Cache Components
+          that must sit inside a Suspense boundary so the rest of the page
+          stays a static shell. */}
       <Suspense>
         <UsageHeatmap
           contributions={profile.contributions}
@@ -84,12 +87,35 @@ export default async function UsagePage() {
         />
       </Suspense>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <UsageTokenMix tokenMix={profile.tokenMix} />
-        {profile.effort ? <UsageEffortLevels effort={profile.effort} /> : null}
-      </div>
+      <Suspense>
+        <UsagePeriod
+          contributions={profile.contributions}
+          modelDisplayNames={modelDisplayNames}
+        />
+      </Suspense>
 
-      <UsageTrend contributions={profile.contributions} />
+      <Suspense>
+        <UsageStackShift
+          modelDisplayNames={modelDisplayNames}
+          weeklyShare={profile.weeklyShare}
+        />
+      </Suspense>
+
+      <UsageModelCharacter
+        byModel={profile.byModel}
+        modelDisplayNames={modelDisplayNames}
+      />
+
+      <UsageCostScatter
+        byModel={profile.byModel}
+        modelDisplayNames={modelDisplayNames}
+      />
+
+      <UsageCacheEffort
+        cacheTrend={profile.cacheTrend}
+        effort={profile.effort}
+        tokenMix={profile.tokenMix}
+      />
 
       <Suspense>
         <UsageBreakdown

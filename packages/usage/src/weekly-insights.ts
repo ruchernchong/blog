@@ -142,3 +142,24 @@ export function buildCacheTrend(facts: UsageFact[]): CacheTrendPoint[] {
     };
   });
 }
+
+/** One stacked-chart row: the week plus each series' share of that week. */
+export type WeeklyShareRow = { week: string } & Record<string, number | string>;
+
+/**
+ * Convert weekly token series into per-week shares (0–1) for a 100% stacked
+ * chart. An idle week has every share at 0 rather than dividing by zero.
+ */
+export function toWeeklyShareRows(
+  weeks: string[],
+  series: WeeklySeries[],
+): WeeklyShareRow[] {
+  return weeks.map((week, index) => {
+    const total = series.reduce((sum, entry) => sum + entry.tokens[index], 0);
+    const row: WeeklyShareRow = { week };
+    for (const entry of series) {
+      row[entry.key] = total > 0 ? entry.tokens[index] / total : 0;
+    }
+    return row;
+  });
+}

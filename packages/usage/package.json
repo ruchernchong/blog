@@ -17,6 +17,7 @@
     "./heatmap-layout": "./src/heatmap-layout.ts",
     "./model-character": "./src/model-character.ts",
     "./narrative": "./src/narrative.ts",
+    "./period-comparison": "./src/period-comparison.ts",
     "./ingest": "./src/ingest.ts",
     "./parsers": "./src/parsers/index.ts",
     "./pricing": "./src/pricing.ts",

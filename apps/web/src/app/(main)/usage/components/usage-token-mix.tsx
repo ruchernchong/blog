@@ -1,4 +1,4 @@
-import { Card, Typography } from "@heroui/react";
+import { cn, Typography } from "@heroui/react";
 import { formatTokens } from "@workspace/usage/format";
 import type { TokenBreakdown } from "@workspace/usage/types";
 import { type MixSegment, TokenMixChartClient } from "./token-mix-chart.client";
@@ -54,7 +54,7 @@ const CATEGORIES: {
 
 /**
  * Server component: shapes the all-time token mix into coloured segments and
- * renders the card shell + legend. Only the stacked bar is a client leaf.
+ * renders the heading + legend. Only the stacked bar is a client leaf.
  */
 export function UsageTokenMix({ className, tokenMix }: UsageTokenMixProps) {
   const total = CATEGORIES.reduce((sum, c) => sum + tokenMix[c.key], 0);
@@ -71,31 +71,27 @@ export function UsageTokenMix({ className, tokenMix }: UsageTokenMixProps) {
   );
 
   return (
-    <Card className={className}>
-      <Card.Header>
-        <Card.Title>Token mix</Card.Title>
-        <Card.Description>
+    <div className={cn("flex flex-col gap-4", className)}>
+      <div className="flex flex-col gap-2">
+        <h3 className="font-semibold text-xl">Token mix</h3>
+        <p className="text-muted text-sm">
           All {formatTokens(total)} tokens by category
-        </Card.Description>
-      </Card.Header>
-      <Card.Content>
-        <div className="flex flex-col gap-4">
-          <TokenMixChartClient segments={segments} total={total} />
-          <ul className="flex flex-wrap gap-x-6 gap-y-2">
-            {ordered.map((segment) => (
-              <li className="flex items-center gap-2" key={segment.key}>
-                <span
-                  className={`size-3 shrink-0 rounded-full ${segment.colorClass}`}
-                />
-                <Typography type="body-sm">{segment.label}</Typography>
-                <Typography color="muted" type="body-sm">
-                  {formatTokens(segment.value)} ({Math.round(segment.pct)}%)
-                </Typography>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </Card.Content>
-    </Card>
+        </p>
+      </div>
+      <TokenMixChartClient segments={segments} total={total} />
+      <ul className="flex flex-wrap gap-4">
+        {ordered.map((segment) => (
+          <li className="flex items-center gap-2" key={segment.key}>
+            <span
+              className={`size-3 shrink-0 rounded-full ${segment.colorClass}`}
+            />
+            <Typography type="body-sm">{segment.label}</Typography>
+            <Typography color="muted" type="body-sm">
+              {formatTokens(segment.value)} ({Math.round(segment.pct)}%)
+            </Typography>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

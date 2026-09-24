@@ -1,5 +1,7 @@
+import { PERIOD_LENGTHS } from "@workspace/usage/period-comparison";
 import {
   parseAsBoolean,
+  parseAsNumberLiteral,
   parseAsString,
   parseAsStringLiteral,
 } from "nuqs/server";
@@ -7,6 +9,10 @@ import {
 export const USAGE_BREAKDOWN_VIEWS = ["model", "provider", "agent"] as const;
 
 export type UsageBreakdownView = (typeof USAGE_BREAKDOWN_VIEWS)[number];
+
+export const USAGE_STACK_VIEWS = ["model", "agent"] as const;
+
+export type UsageStackView = (typeof USAGE_STACK_VIEWS)[number];
 
 export const USAGE_SORT_COLUMNS = [
   "key",
@@ -27,6 +33,10 @@ export const usageParsers = {
    * when the requested one has none.
    */
   year: parseAsString.withDefault(String(new Date().getFullYear())),
+  /** "This period" window length in days. */
+  period: parseAsNumberLiteral(PERIOD_LENGTHS).withDefault(30),
+  /** Whether the stack-shift chart splits by model or by agent. */
+  stack: parseAsStringLiteral(USAGE_STACK_VIEWS).withDefault("model"),
   /** Active breakdown dataset. */
   view: parseAsStringLiteral(USAGE_BREAKDOWN_VIEWS).withDefault("model"),
   /** Free-text filter over the breakdown rows. */

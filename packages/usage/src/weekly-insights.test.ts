@@ -5,6 +5,7 @@ import {
   buildWeeklyShare,
   isoWeekStart,
   OTHER_SERIES_KEY,
+  toWeeklyShareRows,
 } from "./weekly-insights";
 
 function fact(
@@ -119,6 +120,23 @@ describe("buildCacheTrend", () => {
       { week: "2026-01-05", hitRate: 60 / 200, savings: 1.5 },
       { week: "2026-01-12", hitRate: null, savings: null },
       { week: "2026-01-19", hitRate: 0, savings: null },
+    ]);
+  });
+});
+
+describe("toWeeklyShareRows", () => {
+  it("should turn weekly tokens into per-week shares", () => {
+    expect(
+      toWeeklyShareRows(
+        ["2026-01-05", "2026-01-12"],
+        [
+          { key: "a", tokens: [30, 0] },
+          { key: "b", tokens: [10, 0] },
+        ],
+      ),
+    ).toEqual([
+      { week: "2026-01-05", a: 0.75, b: 0.25 },
+      { week: "2026-01-12", a: 0, b: 0 },
     ]);
   });
 });
