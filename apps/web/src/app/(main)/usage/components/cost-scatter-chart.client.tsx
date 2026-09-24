@@ -17,6 +17,7 @@ import {
   YAxis,
   ZAxis,
 } from "recharts";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { type CostPoint, logAxis } from "./usage-cost-points";
 
 interface CostScatterChartClientProps {
@@ -30,6 +31,9 @@ const rateFormat = new Intl.NumberFormat("en-SG", {
 });
 
 const AXIS_TICK = { fill: "var(--muted)", fontSize: 12 };
+
+/** Direct labels kept on phones, where five collide in the narrow plot. */
+const MOBILE_LABEL_COUNT = 3;
 
 function CostTooltip({
   active,
@@ -97,6 +101,8 @@ function DirectLabel({ x, y, width, value }: LabelProps) {
 export function CostScatterChartClient({
   points,
 }: Readonly<CostScatterChartClientProps>) {
+  const isMobile = useIsMobile();
+  const data = isMobile ? keepTopLabels(points, MOBILE_LABEL_COUNT) : points;
   const xAxis = logAxis(points.map((point) => point.tokens));
   const yAxis = logAxis(
     points.map((point) => point.rate),
@@ -109,7 +115,7 @@ export function CostScatterChartClient({
           view, so the SVG stays out of the tab order and the a11y tree. */}
       <ScatterChart
         accessibilityLayer={false}
-        margin={{ top: 24, right: 48, bottom: 8, left: 0 }}
+        margin={{ top: 24, right: isMobile ? 16 : 48, bottom: 8, left: 0 }}
       >
         <CartesianGrid stroke="var(--border)" vertical={false} />
         <XAxis
@@ -141,7 +147,7 @@ export function CostScatterChartClient({
         <ZAxis dataKey="messages" range={[64, 480]} type="number" />
         <Tooltip content={CostTooltip} cursor={{ strokeDasharray: "3 3" }} />
         <Scatter
-          data={points}
+          data={data}
           fill="var(--chart-3)"
           fillOpacity={0.8}
           isAnimationActive={false}
@@ -152,5 +158,19 @@ export function CostScatterChartClient({
         </Scatter>
       </ScatterChart>
     </ResponsiveContainer>
+  );
+}
+
+/** Clears every direct label except the `count` biggest spenders'. */
+function keepTopLabels(points: CostPoint[], count: number): CostPoint[] {
+  const kept = new Set(
+    points
+      .filter((point) => point.directLabel)
+      .sort((a, b) => b.cost - a.cost)
+      .slice(0, count)
+      .map((point) => point.key),
+  );
+  return points.map((point) =>
+    kept.has(point.key) ? point : { ...point, directLabel: "" },
   );
 }

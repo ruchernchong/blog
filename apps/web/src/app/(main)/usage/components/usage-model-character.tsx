@@ -42,6 +42,19 @@ function RateCell({ value }: Readonly<{ value: number | null }>) {
   );
 }
 
+/** One label/value pair in a phone card. */
+function CardStat({
+  label,
+  value,
+}: Readonly<{ label: string; value: string }>) {
+  return (
+    <div className="flex flex-col">
+      <dt className="text-muted text-xs">{label}</dt>
+      <dd className="tabular-nums">{value}</dd>
+    </div>
+  );
+}
+
 /**
  * "Model character": how each of the biggest models behaves, not just how
  * much it ran. Doubles as the table view for the charts above it.
@@ -72,6 +85,45 @@ export function UsageModelCharacter({
         <p className="text-muted text-sm">No model usage yet.</p>
       ) : (
         <UsageModelCharacterRows
+          cards={rows.map((row) => (
+            <li className="flex flex-col gap-2 py-4" key={row.key}>
+              <div className="flex items-center justify-between gap-4">
+                <span className="min-w-0 truncate font-medium" title={row.key}>
+                  {row.label}
+                </span>
+                <div className="shrink-0">
+                  <Suspense fallback={<UsageModelProfileButtonFallback />}>
+                    <UsageModelProfileButton
+                      label={row.label}
+                      model={row.key}
+                    />
+                  </Suspense>
+                </div>
+              </div>
+              <dl className="grid grid-cols-2 gap-4 text-sm">
+                <CardStat
+                  label="Cache hit"
+                  value={
+                    row.cacheHitRate === null
+                      ? DASH
+                      : percent.format(row.cacheHitRate)
+                  }
+                />
+                <CardStat
+                  label="$ / 1M tokens"
+                  value={formatCost(row.costPerMillionTokens)}
+                />
+                <CardStat
+                  label="Active days"
+                  value={formatNumber(row.activeDays)}
+                />
+                <CardStat
+                  label="Last used"
+                  value={format(parseISO(row.lastUsed), "dd/MM/yyyy")}
+                />
+              </dl>
+            </li>
+          ))}
           head={
             <thead className="text-muted text-xs uppercase tracking-wider">
               <tr className="border-border border-b">
