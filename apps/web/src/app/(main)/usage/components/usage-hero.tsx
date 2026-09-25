@@ -47,18 +47,7 @@ export function UsageHero({
           {lastUpdated}
         </div>
         <p className="max-w-5xl text-balance font-bold text-3xl tracking-tighter sm:text-5xl">
-          {narrative
-            ? narrative.map((part, index) =>
-                part.highlight ? (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: parts are a fixed, ordered template
-                  <span className="text-accent" key={index}>
-                    {part.text}
-                  </span>
-                ) : (
-                  part.text
-                ),
-              )
-            : "No usage recorded yet."}
+          {narrative ? streamNarrative(narrative) : "No usage recorded yet."}
         </p>
       </div>
 
@@ -80,4 +69,47 @@ export function UsageHero({
       </p>
     </header>
   );
+}
+
+/** Total time for the narrative to finish streaming in, in milliseconds. */
+const STREAM_DURATION_MS = 1200;
+
+/**
+ * Splits the narrative into words that blur in one after another, like a model
+ * streaming its reply. Pure CSS, so the full sentence is still in the HTML and
+ * reduced-motion users see it straight away.
+ */
+function streamNarrative(parts: UsageNarrativePart[]) {
+  const words = parts.map((part) => part.text.split(/(\s+)/));
+  const stagger =
+    STREAM_DURATION_MS /
+    Math.max(1, words.flat().filter((word) => word.trim()).length);
+  let wordIndex = 0;
+
+  return parts.map((part, partIndex) => {
+    const content = words[partIndex].map((word, index) => {
+      if (!word.trim()) return word;
+      const delay = wordIndex++ * stagger;
+      return (
+        <span
+          className="motion-safe:animate-stream-in"
+          // biome-ignore lint/suspicious/noArrayIndexKey: words are a fixed, ordered split
+          key={index}
+          style={{ animationDelay: `${Math.round(delay)}ms` }}
+        >
+          {word}
+        </span>
+      );
+    });
+
+    return (
+      <span
+        className={part.highlight ? "text-accent" : undefined}
+        // biome-ignore lint/suspicious/noArrayIndexKey: parts are a fixed, ordered template
+        key={partIndex}
+      >
+        {content}
+      </span>
+    );
+  });
 }

@@ -11,6 +11,18 @@
 @theme {
   --animate-status-pulse: status-pulse 2s ease-out infinite;
   --animate-dangle-sway: dangle-sway 3.2s ease-in-out infinite;
+  --animate-stream-in: stream-in 400ms ease-out both;
+
+  @keyframes stream-in {
+    from {
+      opacity: 0;
+      filter: blur(4px);
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+    }
+  }
 
   @keyframes status-pulse {
     0% {
