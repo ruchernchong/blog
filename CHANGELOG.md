@@ -1,3 +1,16 @@
+## [1.47.0](https://github.com/ruchernchong/blog/compare/v1.46.0...v1.47.0) (2026-09-25)
+
+### Features
+
+* split multi-provider models into expandable rows ([ad532ee](https://github.com/ruchernchong/blog/commit/ad532ee372f42dbce3ceb23d6f53a54de16f8cfa))
+
+### Bug Fixes
+
+* apply provider filter to model splits ([1b6d52d](https://github.com/ruchernchong/blog/commit/1b6d52da6166bf98f0ad1d5365e4b292015173bb))
+* collapse extra providers into a summary line ([7e83cad](https://github.com/ruchernchong/blog/commit/7e83cadfbfaeac20f722f2baaa915abc58dac60d))
+* show provider count on expandable model rows ([7ff2d98](https://github.com/ruchernchong/blog/commit/7ff2d982eea903daa72b5b41e9253df6cbb11fd2))
+* stack multiple providers in explorer grid ([ac09a6f](https://github.com/ruchernchong/blog/commit/ac09a6ffe36b54872b0fa3bd171b97416f5a8305))
+
 ## [1.46.0](https://github.com/ruchernchong/blog/compare/v1.45.4...v1.46.0) (2026-09-25)
 
 ### Features
