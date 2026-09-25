@@ -1,9 +1,7 @@
-import { formatCost, formatTokens } from "@workspace/usage/format";
-import {
-  deriveModelCharacter,
-  type ModelCharacter,
-} from "@workspace/usage/model-character";
+import { formatCost, formatNumber } from "@workspace/usage/format";
+import { deriveModelCharacter } from "@workspace/usage/model-character";
 import type { UsageBreakdownRow } from "@workspace/usage/types";
+import { format, parseISO } from "date-fns";
 import { Suspense } from "react";
 import { UsageModelCharacterRows } from "./usage-model-character-rows.client";
 import {
@@ -22,11 +20,6 @@ interface UsageModelCharacterProps {
 const percent = new Intl.NumberFormat("en-SG", {
   maximumFractionDigits: 0,
   style: "percent",
-});
-
-const ratioFormat = new Intl.NumberFormat("en-SG", {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 2,
 });
 
 const DASH = "–";
@@ -49,12 +42,6 @@ function RateCell({ value }: { value: number | null }) {
   );
 }
 
-/** Dash when there were no messages; N.A. when the model is unpriced. */
-function costPerMessageLabel(row: ModelCharacter): string {
-  if (row.tokensPerMessage === null) return DASH;
-  return formatCost(row.costPerMessage);
-}
-
 /**
  * "Model character": how each of the biggest models behaves, not just how
  * much it ran. Doubles as the table view for the charts above it.
@@ -69,12 +56,15 @@ export function UsageModelCharacter({
     .map((row) => ({
       key: row.key,
       label: modelDisplayNames[row.key] ?? row.key,
+      costPerMillionTokens: row.costPerMillionTokens,
+      activeDays: row.activeDays,
+      lastUsed: row.lastUsed,
       ...deriveModelCharacter(row),
     }));
 
   return (
     <UsageSection
-      description="Cache reuse, how much each model writes per token read, how much of that is reasoning, and message size. Open a model's profile for its full history."
+      description="Cache reuse, blended price, how often each model runs, and when it last ran. Open a model's profile for its full history."
       id="character"
       title="Model character"
     >
@@ -91,17 +81,14 @@ export function UsageModelCharacter({
                 <th className="py-2 pr-4 font-medium" scope="col">
                   Cache hit
                 </th>
-                <th className="py-2 pr-4 font-medium" scope="col">
-                  Output per input
-                </th>
-                <th className="py-2 pr-4 font-medium" scope="col">
-                  Reasoning
+                <th className="py-2 pr-4 text-right font-medium" scope="col">
+                  $ / 1M tokens
                 </th>
                 <th className="py-2 pr-4 text-right font-medium" scope="col">
-                  Tokens / msg
+                  Active days
                 </th>
                 <th className="py-2 text-right font-medium" scope="col">
-                  Cost / msg
+                  Last used
                 </th>
               </tr>
             </thead>
@@ -127,21 +114,14 @@ export function UsageModelCharacter({
               <td className="py-3 pr-4">
                 <RateCell value={row.cacheHitRate} />
               </td>
-              <td className="py-3 pr-4 tabular-nums">
-                {row.outputInputRatio === null
-                  ? DASH
-                  : `${ratioFormat.format(row.outputInputRatio)}×`}
-              </td>
-              <td className="py-3 pr-4">
-                <RateCell value={row.reasoningShare} />
+              <td className="py-3 pr-4 text-right tabular-nums">
+                {formatCost(row.costPerMillionTokens)}
               </td>
               <td className="py-3 pr-4 text-right tabular-nums">
-                {row.tokensPerMessage === null
-                  ? DASH
-                  : formatTokens(row.tokensPerMessage)}
+                {formatNumber(row.activeDays)}
               </td>
               <td className="py-3 text-right tabular-nums">
-                {costPerMessageLabel(row)}
+                {format(parseISO(row.lastUsed), "d MMM yyyy")}
               </td>
             </tr>
           ))}
