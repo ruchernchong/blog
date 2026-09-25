@@ -1,3 +1,12 @@
+## [1.47.4](https://github.com/ruchernchong/blog/compare/v1.47.3...v1.47.4) (2026-09-25)
+
+### Bug Fixes
+
+* log failed series loads with the error id ([b8898c1](https://github.com/ruchernchong/blog/commit/b8898c11ea4f4a1134aa58bfba1d45ad1f2950c0))
+* resolve sonar issues on new code ([1b25325](https://github.com/ruchernchong/blog/commit/1b253257dd36fae90467b40d5c6f053ef018ed92))
+* show an error when series fail to load ([0db7673](https://github.com/ruchernchong/blog/commit/0db76739fff8c6cf7a746d5c9b09fdfdade71002))
+* stop nesting flow content inside output ([8ec18ba](https://github.com/ruchernchong/blog/commit/8ec18ba2cf04aa03bef20c242a4e3882c7285316))
+
 ## [1.47.3](https://github.com/ruchernchong/blog/compare/v1.47.2...v1.47.3) (2026-09-25)
 
 ### Bug Fixes
