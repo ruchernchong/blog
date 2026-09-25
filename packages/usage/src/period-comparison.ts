@@ -73,7 +73,7 @@ function totalsOf(
 
   return {
     start: days[0].date,
-    end: days[days.length - 1].date,
+    end: (days.at(-1) ?? days[0]).date,
     tokens,
     cost,
     activeDays,

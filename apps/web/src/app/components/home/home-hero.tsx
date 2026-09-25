@@ -24,7 +24,7 @@ export function HomeHero() {
           Read the Blog
         </Link>
         <span className="inline-flex items-center gap-2 rounded-full bg-success/10 px-5 py-3 font-medium text-[color-mix(in_oklab,var(--success)_60%,var(--foreground))] text-sm">
-          <span className="size-2 rounded-full bg-success motion-safe:animate-status-pulse" />
+          <span className="size-2 rounded-full bg-success motion-safe:animate-status-pulse" />{" "}
           Currently prompting
         </span>
       </div>

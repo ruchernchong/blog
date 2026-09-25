@@ -45,6 +45,42 @@ export function ImagePickerDialog({
     }
   }
 
+  let mediaContent: ReactElement;
+  if (isPending && media.length === 0) {
+    mediaContent = <p className="py-8 text-center text-muted">Loading...</p>;
+  } else if (media.length === 0) {
+    mediaContent = (
+      <p className="py-8 text-center text-muted">
+        No media found. Upload images in the Media Library first.
+      </p>
+    );
+  } else {
+    mediaContent = (
+      <div className="grid max-h-96 grid-cols-4 gap-2 overflow-y-auto">
+        {media.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => setSelected(item)}
+            className={`relative aspect-square overflow-hidden rounded-md border-2 transition-colors ${
+              selected?.id === item.id
+                ? "border-accent"
+                : "border-transparent hover:border-muted-foreground/50"
+            }`}
+          >
+            <Image
+              src={item.url}
+              alt={item.alt || item.filename}
+              fill
+              className="object-cover"
+              sizes="150px"
+            />
+          </button>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <Modal>
       {trigger ?? (
@@ -73,36 +109,7 @@ export function ImagePickerDialog({
                 <Input placeholder="Search by filename or alt text..." />
               </TextField>
 
-              {isPending && media.length === 0 ? (
-                <p className="py-8 text-center text-muted">Loading...</p>
-              ) : media.length === 0 ? (
-                <p className="py-8 text-center text-muted">
-                  No media found. Upload images in the Media Library first.
-                </p>
-              ) : (
-                <div className="grid max-h-96 grid-cols-4 gap-2 overflow-y-auto">
-                  {media.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setSelected(item)}
-                      className={`relative aspect-square overflow-hidden rounded-md border-2 transition-colors ${
-                        selected?.id === item.id
-                          ? "border-accent"
-                          : "border-transparent hover:border-muted-foreground/50"
-                      }`}
-                    >
-                      <Image
-                        src={item.url}
-                        alt={item.alt || item.filename}
-                        fill
-                        className="object-cover"
-                        sizes="150px"
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
+              {mediaContent}
             </Modal.Body>
             <Modal.Footer>
               <Button slot="close" type="button" variant="outline">

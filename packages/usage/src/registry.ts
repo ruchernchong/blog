@@ -175,7 +175,7 @@ export function normaliseModelsDev(api: ModelsDevApi): ModelEntry[] {
         id: modelId,
         displayName: model.name,
         rate:
-          cost && cost.input != null && cost.output != null
+          cost?.input != null && cost.output != null
             ? {
                 input: cost.input,
                 output: cost.output,
@@ -420,15 +420,7 @@ export function mergeRegistry(sources: {
 
     // Rates: override > Gateway > OpenRouter > models.dev, taken whole from the
     // first layer that fully defines them.
-    const rateLayer = hasFullRate(o)
-      ? o
-      : hasFullRate(g)
-        ? g
-        : hasFullRate(r)
-          ? r
-          : hasFullRate(m)
-            ? m
-            : undefined;
+    const rateLayer = [o, g, r, m].find((layer) => hasFullRate(layer));
 
     return {
       provider: base.provider,

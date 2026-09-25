@@ -14,4 +14,8 @@ async function main() {
   await server.connect(transport);
 }
 
-main().catch(console.error);
+try {
+  await main();
+} catch (error) {
+  console.error(error);
+}

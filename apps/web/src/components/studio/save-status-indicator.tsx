@@ -14,7 +14,7 @@ export function SaveStatusIndicator({
   lastSavedAt,
   onRetry,
 }: SaveStatusIndicatorProps) {
-  const [, setTick] = useState(0);
+  const [_tick, setTick] = useState(0);
 
   useEffect(() => {
     if (status !== "saved" || !lastSavedAt) return;

@@ -14,7 +14,7 @@ interface StudioFormFallbackProps {
 
 export function StudioFormFallback({ label }: StudioFormFallbackProps) {
   return (
-    <div role="status" aria-label={label} className="flex flex-col gap-6">
+    <output aria-label={label} className="flex flex-col gap-6">
       <div aria-hidden="true" className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Skeleton className="h-9 w-56 rounded-lg" />
@@ -31,6 +31,6 @@ export function StudioFormFallback({ label }: StudioFormFallbackProps) {
           </Card.Content>
         </Card>
       </div>
-    </div>
+    </output>
   );
 }

@@ -19,7 +19,76 @@ import {
   invalidateRelatedByTags,
 } from "@/lib/services/cache-invalidation";
 import { db, posts } from "@/schema";
-import { postIdSchema, updatePostSchema } from "@/types/api";
+import {
+  postIdSchema,
+  type UpdatePostInput,
+  updatePostSchema,
+} from "@/types/api";
+
+type Post = typeof posts.$inferSelect;
+
+// Preserve original publish date when re-publishing, but set new date for first-time publishes
+function resolvePublishedAt(
+  updatedStatus: Post["status"],
+  existingPublishedAt: Post["publishedAt"],
+) {
+  if (updatedStatus === "published" && !existingPublishedAt) {
+    return new Date();
+  }
+  if (updatedStatus === "draft") {
+    return null;
+  }
+  return existingPublishedAt;
+}
+
+function resolveTags(tags: UpdatePostInput["tags"], existingTags: string[]) {
+  if (tags === undefined) return existingTags;
+  return Array.isArray(tags) ? tags : [];
+}
+
+function haveTagsChanged(
+  tags: UpdatePostInput["tags"],
+  existingTags: string[],
+) {
+  return (
+    tags !== undefined &&
+    JSON.stringify([...tags].sort((a, b) => a.localeCompare(b))) !==
+      JSON.stringify([...existingTags].sort((a, b) => a.localeCompare(b)))
+  );
+}
+
+function handleUpdatePostError(
+  error: unknown,
+  postId: string,
+  slug: UpdatePostInput["slug"],
+) {
+  if (isUniqueConstraintError(error)) {
+    logError(ERROR_IDS.POST_DUPLICATE_SLUG, error, {
+      postId,
+      slug,
+    });
+    return NextResponse.json(
+      {
+        message: `A post with slug "${slug}" already exists. Please use a different slug.`,
+      },
+      { status: 409 },
+    );
+  }
+
+  if (isDatabaseError(error)) {
+    logError(ERROR_IDS.DB_CONNECTION_FAILED, error, {
+      operation: "update_post",
+      postId,
+    });
+    return databaseErrorResponse();
+  }
+
+  logError(ERROR_IDS.POST_UPDATE_FAILED, error, { postId });
+  return NextResponse.json(
+    { message: "Failed to update post" },
+    { status: 500 },
+  );
+}
 
 export const GET = async (
   _request: Request,
@@ -117,13 +186,10 @@ export const PATCH = async (
       summary !== undefined ? summary : existingPost.summary;
     const updatedStatus = status ?? existingPost.status;
 
-    // Preserve original publish date when re-publishing, but set new date for first-time publishes
-    let publishedAt = existingPost.publishedAt;
-    if (updatedStatus === "published" && !existingPost.publishedAt) {
-      publishedAt = new Date();
-    } else if (updatedStatus === "draft") {
-      publishedAt = null;
-    }
+    const publishedAt = resolvePublishedAt(
+      updatedStatus,
+      existingPost.publishedAt,
+    );
 
     const metadata = generatePostMetadata(
       updatedTitle,
@@ -141,12 +207,7 @@ export const PATCH = async (
         summary: updatedSummary,
         content: updatedContent,
         status: updatedStatus,
-        tags:
-          tags !== undefined
-            ? Array.isArray(tags)
-              ? tags
-              : []
-            : existingPost.tags,
+        tags: resolveTags(tags, existingPost.tags),
         coverImage: coverImage ?? existingPost.coverImage,
         featured: featured ?? existingPost.featured,
         seriesId: seriesId ?? existingPost.seriesId,
@@ -160,14 +221,7 @@ export const PATCH = async (
 
     await invalidatePost(updatedSlug);
 
-    const tagsChanged =
-      tags !== undefined &&
-      JSON.stringify([...tags].sort((a, b) => a.localeCompare(b))) !==
-        JSON.stringify(
-          [...existingPost.tags].sort((a, b) => a.localeCompare(b)),
-        );
-
-    if (tagsChanged) {
+    if (haveTagsChanged(tags, existingPost.tags)) {
       const allAffectedTags = [
         ...new Set([...existingPost.tags, ...(tags || [])]),
       ];
@@ -176,32 +230,7 @@ export const PATCH = async (
 
     return NextResponse.json(updatedPost);
   } catch (error) {
-    if (isUniqueConstraintError(error)) {
-      logError(ERROR_IDS.POST_DUPLICATE_SLUG, error, {
-        postId,
-        slug: bodyResult.data.slug,
-      });
-      return NextResponse.json(
-        {
-          message: `A post with slug "${bodyResult.data.slug}" already exists. Please use a different slug.`,
-        },
-        { status: 409 },
-      );
-    }
-
-    if (isDatabaseError(error)) {
-      logError(ERROR_IDS.DB_CONNECTION_FAILED, error, {
-        operation: "update_post",
-        postId,
-      });
-      return databaseErrorResponse();
-    }
-
-    logError(ERROR_IDS.POST_UPDATE_FAILED, error, { postId });
-    return NextResponse.json(
-      { message: "Failed to update post" },
-      { status: 500 },
-    );
+    return handleUpdatePostError(error, postId, bodyResult.data.slug);
   }
 };
 
