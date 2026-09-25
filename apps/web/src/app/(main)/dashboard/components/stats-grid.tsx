@@ -21,10 +21,14 @@ export function StatsGrid() {
 
 export function StatsGridFallback() {
   return (
-    <output
-      aria-label="Loading dashboard statistics"
-      className="grid grid-cols-2 gap-4 lg:grid-cols-4"
-    >
+    <div className="relative grid grid-cols-2 gap-4 lg:grid-cols-4">
+      {/* output only allows phrasing content, so it cannot wrap this layout */}
+      <output
+        aria-label="Loading dashboard statistics"
+        className="pointer-events-none absolute inset-0"
+      >
+        <span className="sr-only">Loading dashboard statistics</span>
+      </output>
       {STAT_FALLBACKS.map((stat) => (
         <div
           key={stat}
@@ -36,7 +40,7 @@ export function StatsGridFallback() {
           <Skeleton className="h-3 w-16 rounded-lg" />
         </div>
       ))}
-    </output>
+    </div>
   );
 }
 
