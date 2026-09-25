@@ -3,7 +3,8 @@ import {
   type OnUrlUpdateFunction,
   withNuqsTestingAdapter,
 } from "nuqs/adapters/testing";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { page } from "vitest/browser";
 import { render } from "vitest-browser-react";
 import { UsageModelCharacter } from "./usage-model-character";
 
@@ -36,6 +37,11 @@ function row(
 }
 
 describe("UsageModelCharacter", () => {
+  // The table only shows from `md`; phones get the card list.
+  beforeEach(async () => {
+    await page.viewport(1024, 768);
+  });
+
   it("should render each model's character stats", async () => {
     const screen = await render(
       <UsageModelCharacter
@@ -111,6 +117,29 @@ describe("UsageModelCharacter", () => {
 
     await expect
       .element(screen.getByText("No model usage yet."))
+      .toBeInTheDocument();
+  });
+
+  it("should show a card per model on phones instead of the table", async () => {
+    await page.viewport(390, 844);
+    const screen = await render(
+      <UsageModelCharacter
+        byModel={[row("opus")]}
+        modelDisplayNames={{ opus: "Claude Opus" }}
+      />,
+      { wrapper: withNuqsTestingAdapter() },
+    );
+
+    await expect.element(screen.getByRole("table")).not.toBeInTheDocument();
+    const card = screen.getByRole("listitem");
+    await expect.element(card.getByText("Claude Opus")).toBeInTheDocument();
+    await expect.element(card.getByText("60%")).toBeInTheDocument();
+    await expect.element(card.getByText("US$1.00")).toBeInTheDocument();
+    await expect.element(card.getByText("02/01/2026")).toBeInTheDocument();
+    await expect
+      .element(
+        card.getByRole("button", { name: "View profile for Claude Opus" }),
+      )
       .toBeInTheDocument();
   });
 });

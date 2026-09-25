@@ -61,20 +61,21 @@ export function UsageCacheSummary({
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Each figure is a size container so its value scales to the column. */}
       <dl className="grid grid-cols-2 gap-6">
-        <div className="flex flex-col-reverse gap-2">
+        <div className="@container flex min-w-0 flex-col-reverse gap-2">
           <dt className="font-medium text-muted text-xs uppercase tracking-wider">
             Cache hit rate
           </dt>
-          <dd className="font-bold text-4xl tabular-nums tracking-tighter">
+          <dd className="whitespace-nowrap font-bold text-[clamp(1.5rem,17cqi,2.25rem)] tabular-nums tracking-tighter">
             {hitRate === null ? "–" : percent.format(hitRate)}
           </dd>
         </div>
-        <div className="flex flex-col-reverse gap-2">
+        <div className="@container flex min-w-0 flex-col-reverse gap-2">
           <dt className="font-medium text-muted text-xs uppercase tracking-wider">
             Saved by caching
           </dt>
-          <dd className="font-bold text-4xl tabular-nums tracking-tighter">
+          <dd className="whitespace-nowrap font-bold text-[clamp(1.5rem,17cqi,2.25rem)] tabular-nums tracking-tighter">
             {savings === null ? "N.A." : formatCurrencyCompact(savings)}
           </dd>
         </div>
