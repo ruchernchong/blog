@@ -17,6 +17,8 @@ import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
+import { ERROR_IDS } from "@/constants/error-ids";
+import { logError } from "@/lib/logger";
 import type { SelectSeries } from "@/schema";
 
 export function SeriesTable() {
@@ -46,15 +48,16 @@ export function SeriesTable() {
         response.status === 401
           ? "Please sign in to manage series."
           : "Something went wrong while loading series.";
-      console.error(
+      logError(
+        ERROR_IDS.SERIES_FETCH_FAILED,
         response.status === 401
           ? "Unauthorised: Please sign in"
-          : "Failed to fetch series:",
-        response.status,
+          : "Failed to fetch series",
+        { status: response.status },
       );
       setLoadError(message);
     } catch (error) {
-      console.error("Failed to fetch series:", error);
+      logError(ERROR_IDS.SERIES_FETCH_FAILED, error);
       setLoadError("Something went wrong while loading series.");
     }
   }, []);
