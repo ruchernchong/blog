@@ -1,3 +1,13 @@
+## [1.47.3](https://github.com/ruchernchong/blog/compare/v1.47.2...v1.47.3) (2026-09-25)
+
+### Bug Fixes
+
+* **usage:** tidy the Usage page on phones ([871da0e](https://github.com/ruchernchong/blog/commit/871da0e135f97a21d73be1efaac87fb002c81f0d))
+
+### Reverts
+
+* keep fumadocs scaffold page untouched ([d0fae54](https://github.com/ruchernchong/blog/commit/d0fae542643470491c0bd8647afc5818ddd904d8))
+
 ## [1.47.2](https://github.com/ruchernchong/blog/compare/v1.47.1...v1.47.2) (2026-09-25)
 
 ### Bug Fixes
