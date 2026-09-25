@@ -57,7 +57,7 @@ export function UsageCacheSummary({
       ? priced.reduce((sum, point) => sum + (point.savings ?? 0), 0)
       : null;
   const first = cacheTrend[0];
-  const last = cacheTrend[cacheTrend.length - 1];
+  const last = cacheTrend.at(-1);
 
   return (
     <div className="flex flex-col gap-6">

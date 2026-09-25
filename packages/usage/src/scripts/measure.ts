@@ -21,7 +21,9 @@ async function main() {
   );
 }
 
-main().catch((error: unknown) => {
+try {
+  await main();
+} catch (error: unknown) {
   console.error(error);
   process.exitCode = 1;
-});
+}

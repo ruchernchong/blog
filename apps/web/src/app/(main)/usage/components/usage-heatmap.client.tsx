@@ -85,11 +85,10 @@ export function UsageHeatmapClient({
 
       <div className="flex items-center gap-2 text-muted text-xs">
         <span>Less</span>
-        {INTENSITY_CLASSES.map((className, intensity) => (
+        {INTENSITY_CLASSES.map((className) => (
           <span
             className={cn("size-3 rounded-sm", className)}
-            // biome-ignore lint/suspicious/noArrayIndexKey: legend swatches are positional
-            key={intensity}
+            key={className}
           />
         ))}
         <span>More</span>

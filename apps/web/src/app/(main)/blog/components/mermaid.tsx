@@ -46,7 +46,7 @@ export function Mermaid({ chart }: MermaidProps) {
           },
         });
 
-        return mermaid.render(`mermaid-${id.replace(/:/g, "")}`, chart);
+        return mermaid.render(`mermaid-${id.replaceAll(":", "")}`, chart);
       })
       .then((result) => {
         if (!cancelled && result) {

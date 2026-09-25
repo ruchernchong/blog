@@ -12,6 +12,7 @@ import {
   TextField,
 } from "@heroui/react";
 import { EmptyState } from "@heroui-pro/react";
+import type { ReactNode } from "react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import type {
   OAuthClientDetail,
@@ -176,13 +177,14 @@ export function OAuthClientsTable() {
         </Select>
       </div>
 
-      {isLoading ? (
+      {isLoading && (
         <Card>
           <Card.Content className="py-12">
             <p className="text-center text-muted">Loading OAuth clients...</p>
           </Card.Content>
         </Card>
-      ) : filteredClients.length === 0 ? (
+      )}
+      {!isLoading && filteredClients.length === 0 && (
         <Card>
           <Card.Content className="py-12">
             <EmptyState>
@@ -210,7 +212,8 @@ export function OAuthClientsTable() {
             </EmptyState>
           </Card.Content>
         </Card>
-      ) : (
+      )}
+      {!isLoading && filteredClients.length > 0 && (
         <Card>
           <Card.Header>
             <Card.Title>
@@ -407,6 +410,19 @@ function OAuthClientDetailModal({
     };
   }, [clientId]);
 
+  let body: ReactNode;
+  if (isLoading) {
+    body = <p className="py-8 text-center text-muted">Loading...</p>;
+  } else if (detail) {
+    body = <OAuthClientDetailBody detail={detail} />;
+  } else {
+    body = (
+      <p className="py-8 text-center text-muted">
+        Unable to load client details.
+      </p>
+    );
+  }
+
   return (
     <Modal>
       <Modal.Backdrop
@@ -423,151 +439,7 @@ function OAuthClientDetailModal({
                 {detail?.client.name || "OAuth client"}
               </Modal.Heading>
             </Modal.Header>
-            <Modal.Body className="flex flex-col gap-6">
-              {isLoading ? (
-                <p className="py-8 text-center text-muted">Loading...</p>
-              ) : !detail ? (
-                <p className="py-8 text-center text-muted">
-                  Unable to load client details.
-                </p>
-              ) : (
-                <>
-                  <section className="flex flex-col gap-2">
-                    <h3 className="font-medium text-sm">Client</h3>
-                    <dl className="flex flex-col gap-1 text-sm">
-                      <div className="flex gap-2">
-                        <dt className="text-muted">Client ID:</dt>
-                        <dd className="break-all font-mono">
-                          {detail.client.clientId}
-                        </dd>
-                      </div>
-                      <div className="flex gap-2">
-                        <dt className="text-muted">Auth:</dt>
-                        <dd>
-                          {detail.client.tokenEndpointAuthMethod === "none"
-                            ? "Public"
-                            : "Confidential"}
-                        </dd>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <dt className="text-muted">Scopes:</dt>
-                        <dd className="flex flex-wrap gap-1">
-                          {detail.client.scopes?.length ? (
-                            detail.client.scopes.map((scope) => (
-                              <Chip key={scope} size="sm" variant="soft">
-                                {scope}
-                              </Chip>
-                            ))
-                          ) : (
-                            <span className="text-muted">None</span>
-                          )}
-                        </dd>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <dt className="text-muted">Redirect URIs:</dt>
-                        <dd className="flex flex-col gap-1 font-mono text-xs">
-                          {detail.client.redirectUris.length ? (
-                            detail.client.redirectUris.map((uri) => (
-                              <span key={uri} className="break-all">
-                                {uri}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="text-muted">None</span>
-                          )}
-                        </dd>
-                      </div>
-                    </dl>
-                  </section>
-
-                  <section className="flex flex-col gap-2">
-                    <h3 className="font-medium text-sm">
-                      Active tokens ({detail.activeTokens.length})
-                    </h3>
-                    {detail.activeTokens.length === 0 ? (
-                      <p className="text-muted text-sm">No active tokens.</p>
-                    ) : (
-                      <ul className="flex flex-col gap-2">
-                        {detail.activeTokens.map((token) => (
-                          <li
-                            key={token.id}
-                            className="flex flex-col gap-1 rounded-lg border p-3 text-sm"
-                          >
-                            <span className="font-medium">
-                              {token.userName ||
-                                token.userEmail ||
-                                "Unknown user"}
-                            </span>
-                            <span className="text-muted text-xs">
-                              Expires{" "}
-                              {dateTimeFormatter.format(
-                                new Date(token.expiresAt),
-                              )}
-                            </span>
-                            <div className="flex flex-wrap gap-1">
-                              {token.scopes.map((scope) => (
-                                <Chip
-                                  key={scope}
-                                  size="sm"
-                                  variant="soft"
-                                  color="default"
-                                >
-                                  {scope}
-                                </Chip>
-                              ))}
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </section>
-
-                  <section className="flex flex-col gap-2">
-                    <h3 className="font-medium text-sm">
-                      Consents ({detail.consents.length})
-                    </h3>
-                    {detail.consents.length === 0 ? (
-                      <p className="text-muted text-sm">
-                        No consents recorded.
-                      </p>
-                    ) : (
-                      <ul className="flex flex-col gap-2">
-                        {detail.consents.map((consent) => (
-                          <li
-                            key={consent.id}
-                            className="flex flex-col gap-1 rounded-lg border p-3 text-sm"
-                          >
-                            <span className="font-medium">
-                              {consent.userName ||
-                                consent.userEmail ||
-                                "Unknown user"}
-                            </span>
-                            <span className="text-muted text-xs">
-                              Consented{" "}
-                              {dateTimeFormatter.format(
-                                new Date(consent.createdAt),
-                              )}
-                            </span>
-                            <div className="flex flex-wrap gap-1">
-                              {consent.scopes.map((scope) => (
-                                <Chip
-                                  key={scope}
-                                  size="sm"
-                                  variant="soft"
-                                  color="default"
-                                >
-                                  {scope}
-                                </Chip>
-                              ))}
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </section>
-                </>
-              )}
-            </Modal.Body>
+            <Modal.Body className="flex flex-col gap-6">{body}</Modal.Body>
             <Modal.Footer>
               <Button slot="close" variant="outline">
                 Close
@@ -577,5 +449,122 @@ function OAuthClientDetailModal({
         </Modal.Container>
       </Modal.Backdrop>
     </Modal>
+  );
+}
+
+function OAuthClientDetailBody({ detail }: { detail: OAuthClientDetail }) {
+  return (
+    <>
+      <section className="flex flex-col gap-2">
+        <h3 className="font-medium text-sm">Client</h3>
+        <dl className="flex flex-col gap-1 text-sm">
+          <div className="flex gap-2">
+            <dt className="text-muted">Client ID:</dt>
+            <dd className="break-all font-mono">{detail.client.clientId}</dd>
+          </div>
+          <div className="flex gap-2">
+            <dt className="text-muted">Auth:</dt>
+            <dd>
+              {detail.client.tokenEndpointAuthMethod === "none"
+                ? "Public"
+                : "Confidential"}
+            </dd>
+          </div>
+          <div className="flex flex-col gap-1">
+            <dt className="text-muted">Scopes:</dt>
+            <dd className="flex flex-wrap gap-1">
+              {detail.client.scopes?.length ? (
+                detail.client.scopes.map((scope) => (
+                  <Chip key={scope} size="sm" variant="soft">
+                    {scope}
+                  </Chip>
+                ))
+              ) : (
+                <span className="text-muted">None</span>
+              )}
+            </dd>
+          </div>
+          <div className="flex flex-col gap-1">
+            <dt className="text-muted">Redirect URIs:</dt>
+            <dd className="flex flex-col gap-1 font-mono text-xs">
+              {detail.client.redirectUris.length ? (
+                detail.client.redirectUris.map((uri) => (
+                  <span key={uri} className="break-all">
+                    {uri}
+                  </span>
+                ))
+              ) : (
+                <span className="text-muted">None</span>
+              )}
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <h3 className="font-medium text-sm">
+          Active tokens ({detail.activeTokens.length})
+        </h3>
+        {detail.activeTokens.length === 0 ? (
+          <p className="text-muted text-sm">No active tokens.</p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {detail.activeTokens.map((token) => (
+              <li
+                key={token.id}
+                className="flex flex-col gap-1 rounded-lg border p-3 text-sm"
+              >
+                <span className="font-medium">
+                  {token.userName || token.userEmail || "Unknown user"}
+                </span>
+                <span className="text-muted text-xs">
+                  Expires {dateTimeFormatter.format(new Date(token.expiresAt))}
+                </span>
+                <div className="flex flex-wrap gap-1">
+                  {token.scopes.map((scope) => (
+                    <Chip key={scope} size="sm" variant="soft" color="default">
+                      {scope}
+                    </Chip>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <h3 className="font-medium text-sm">
+          Consents ({detail.consents.length})
+        </h3>
+        {detail.consents.length === 0 ? (
+          <p className="text-muted text-sm">No consents recorded.</p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {detail.consents.map((consent) => (
+              <li
+                key={consent.id}
+                className="flex flex-col gap-1 rounded-lg border p-3 text-sm"
+              >
+                <span className="font-medium">
+                  {consent.userName || consent.userEmail || "Unknown user"}
+                </span>
+                <span className="text-muted text-xs">
+                  Consented{" "}
+                  {dateTimeFormatter.format(new Date(consent.createdAt))}
+                </span>
+                <div className="flex flex-wrap gap-1">
+                  {consent.scopes.map((scope) => (
+                    <Chip key={scope} size="sm" variant="soft" color="default">
+                      {scope}
+                    </Chip>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </>
   );
 }

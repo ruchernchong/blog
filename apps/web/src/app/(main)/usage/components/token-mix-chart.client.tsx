@@ -2,6 +2,7 @@
 
 import { BarChart, ChartTooltip } from "@heroui-pro/react";
 import { formatTokens } from "@workspace/usage/format";
+import type { TooltipContentProps } from "recharts";
 
 /** One category slice of the token mix, pre-computed and coloured by the shell. */
 export interface MixSegment {
@@ -19,6 +20,42 @@ interface TokenMixChartClientProps {
 
 /** A single chart row holding every category as its own numeric key. */
 type ChartRow = Record<string, string | number>;
+
+type TokenMixTooltipProps = Partial<TooltipContentProps<number, string>> & {
+  total: number;
+};
+
+/** Recharts injects `active` and `payload` when cloning the tooltip content. */
+function TokenMixTooltip({ active, payload, total }: TokenMixTooltipProps) {
+  if (!active || !payload?.length) return null;
+  return (
+    <ChartTooltip>
+      {payload.map((entry) => {
+        const value = Number(entry.value);
+        const pct = total > 0 ? Math.round((value / total) * 100) : 0;
+        return (
+          <ChartTooltip.Item key={String(entry.dataKey)}>
+            <ChartTooltip.Indicator color={String(entry.color ?? entry.fill)} />
+            <ChartTooltip.Label>{entry.name}</ChartTooltip.Label>
+            <ChartTooltip.Value>
+              {formatTokens(value)} ({pct}%)
+            </ChartTooltip.Value>
+          </ChartTooltip.Item>
+        );
+      })}
+    </ChartTooltip>
+  );
+}
+
+/** Rounds the outer ends of the stack: first segment left, last segment right. */
+function segmentRadius(
+  index: number,
+  lastIndex: number,
+): [number, number, number, number] | undefined {
+  if (index === 0) return [8, 0, 0, 8];
+  if (index === lastIndex) return [0, 8, 8, 0];
+  return undefined;
+}
 
 /**
  * Interactive client leaf: a single horizontal stacked bar of the all-time
@@ -50,40 +87,11 @@ export function TokenMixChartClient({
           fill={segment.color}
           key={segment.key}
           name={segment.label}
-          radius={
-            index === 0
-              ? [8, 0, 0, 8]
-              : index === lastIndex
-                ? [0, 8, 8, 0]
-                : undefined
-          }
+          radius={segmentRadius(index, lastIndex)}
           stackId="mix"
         />
       ))}
-      <BarChart.Tooltip
-        content={({ active, payload }) => {
-          if (!active || !payload?.length) return null;
-          return (
-            <ChartTooltip>
-              {payload.map((entry) => {
-                const value = Number(entry.value);
-                const pct = total > 0 ? Math.round((value / total) * 100) : 0;
-                return (
-                  <ChartTooltip.Item key={String(entry.dataKey)}>
-                    <ChartTooltip.Indicator
-                      color={String(entry.color ?? entry.fill)}
-                    />
-                    <ChartTooltip.Label>{entry.name}</ChartTooltip.Label>
-                    <ChartTooltip.Value>
-                      {formatTokens(value)} ({pct}%)
-                    </ChartTooltip.Value>
-                  </ChartTooltip.Item>
-                );
-              })}
-            </ChartTooltip>
-          );
-        }}
-      />
+      <BarChart.Tooltip content={<TokenMixTooltip total={total} />} />
     </BarChart>
   );
 }

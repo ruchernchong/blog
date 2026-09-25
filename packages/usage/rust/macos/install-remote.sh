@@ -16,13 +16,13 @@ fetch() {
 }
 
 main() {
-  if [ "$(uname -s)" != Darwin ]; then
+  if [[ "$(uname -s)" != Darwin ]]; then
     echo "usage-ingest: macOS only" >&2
     exit 1
   fi
 
   local base="https://github.com/$REPO/releases/latest/download"
-  if [ -n "${USAGE_INGEST_VERSION:-}" ]; then
+  if [[ -n "${USAGE_INGEST_VERSION:-}" ]]; then
     base="https://github.com/$REPO/releases/download/v$USAGE_INGEST_VERSION"
   fi
 

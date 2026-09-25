@@ -62,6 +62,13 @@ function toRate(rate: Partial<ModelRate>): ModelRate | null {
   };
 }
 
+function providerOf(opts?: PriceOpts): string | undefined {
+  // Prefer an explicit provider (multi-provider agents), else derive from agent.
+  return (
+    opts?.provider ?? (opts?.agent ? AGENT_PROVIDERS[opts.agent] : undefined)
+  );
+}
+
 /**
  * Build a {@link Pricing} from the merged model registry. Pure (no network, no
  * DB) so it can be unit-tested with fixture entries.
@@ -98,13 +105,6 @@ export function buildPricingFromRegistry(entries: ModelEntry[]): Pricing {
   }
 
   const warned = new Set<string>();
-
-  function providerOf(opts?: PriceOpts): string | undefined {
-    // Prefer an explicit provider (multi-provider agents), else derive from agent.
-    return (
-      opts?.provider ?? (opts?.agent ? AGENT_PROVIDERS[opts.agent] : undefined)
-    );
-  }
 
   /** The registry id `model` resolves to under its provider, or `null`. */
   function resolve(model: string, opts?: PriceOpts): string | null {

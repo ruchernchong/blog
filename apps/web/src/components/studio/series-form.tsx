@@ -41,6 +41,13 @@ export function SeriesForm({ series }: SeriesFormProps) {
 
   const titleValue = form.watch("title");
 
+  let submitLabel: string;
+  if (isPending) {
+    submitLabel = isEditing ? "Saving..." : "Creating...";
+  } else {
+    submitLabel = isEditing ? "Save Changes" : "Create Series";
+  }
+
   useEffect(() => {
     if (isEditing) return;
 
@@ -78,10 +85,9 @@ export function SeriesForm({ series }: SeriesFormProps) {
         router.push("/studio/series" as Route);
         router.refresh();
       } catch (err) {
+        const action = isEditing ? "update" : "create";
         setError(
-          err instanceof Error
-            ? err.message
-            : `Failed to ${isEditing ? "update" : "create"} series`,
+          err instanceof Error ? err.message : `Failed to ${action} series`,
         );
       }
     });
@@ -135,13 +141,7 @@ export function SeriesForm({ series }: SeriesFormProps) {
               Cancel
             </Link>
             <Button type="submit" isDisabled={isPending}>
-              {isPending
-                ? isEditing
-                  ? "Saving..."
-                  : "Creating..."
-                : isEditing
-                  ? "Save Changes"
-                  : "Create Series"}
+              {submitLabel}
             </Button>
           </div>
         </form>

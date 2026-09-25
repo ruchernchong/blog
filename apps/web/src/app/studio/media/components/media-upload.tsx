@@ -9,6 +9,23 @@ interface MediaUploadProps {
   onUploadComplete: () => void;
 }
 
+function getImageDimensions(
+  file: File,
+): Promise<{ width: number; height: number }> {
+  return new Promise((resolve) => {
+    const img = new window.Image();
+    img.onload = () => {
+      resolve({ width: img.width, height: img.height });
+      URL.revokeObjectURL(img.src);
+    };
+    img.onerror = () => {
+      resolve({ width: 0, height: 0 });
+      URL.revokeObjectURL(img.src);
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
 export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -132,23 +149,6 @@ export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
 
       setOpen(false);
       onUploadComplete();
-    });
-  }
-
-  function getImageDimensions(
-    file: File,
-  ): Promise<{ width: number; height: number }> {
-    return new Promise((resolve) => {
-      const img = new window.Image();
-      img.onload = () => {
-        resolve({ width: img.width, height: img.height });
-        URL.revokeObjectURL(img.src);
-      };
-      img.onerror = () => {
-        resolve({ width: 0, height: 0 });
-        URL.revokeObjectURL(img.src);
-      };
-      img.src = URL.createObjectURL(file);
     });
   }
 

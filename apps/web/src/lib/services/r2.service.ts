@@ -28,9 +28,9 @@ export interface DirectUploadResult {
 }
 
 export class R2Service {
-  private client: S3Client;
-  private bucketName: string;
-  private publicUrl: string;
+  private readonly client: S3Client;
+  private readonly bucketName: string;
+  private readonly publicUrl: string;
 
   constructor() {
     this.client = new S3Client({

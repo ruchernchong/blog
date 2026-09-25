@@ -48,12 +48,14 @@ export const protectedResourceMetadata = {
 export function bearerChallenge(error?: "insufficient_scope"): string {
   const parts: string[] = [];
   if (error) {
-    parts.push(`error="${error}"`);
     parts.push(
+      `error="${error}"`,
       `error_description="The '${MCP_SCOPE}' scope is required to access this resource"`,
     );
   }
-  parts.push(`scope="${MCP_SCOPE}"`);
-  parts.push(`resource_metadata="${protectedResourceMetadataUrl}"`);
+  parts.push(
+    `scope="${MCP_SCOPE}"`,
+    `resource_metadata="${protectedResourceMetadataUrl}"`,
+  );
   return `Bearer ${parts.join(", ")}`;
 }

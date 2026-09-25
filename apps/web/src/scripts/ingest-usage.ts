@@ -180,7 +180,7 @@ function printSummary(rows: InsertTokenUsage[]) {
   console.log("\nDone.");
   console.log(`  rows:    ${rows.length.toLocaleString()}`);
   console.log(`  days:    ${new Set(dates).size.toLocaleString()}`);
-  console.log(`  range:   ${dates[0]} → ${dates[dates.length - 1]}`);
+  console.log(`  range:   ${dates[0]} → ${dates.at(-1)}`);
   console.log(`  tokens:  ${totalTokens.toLocaleString()}`);
   console.log(`  cost:    $${totalCost.toFixed(2)}`);
   if (naRows > 0) {
@@ -235,7 +235,9 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((error) => {
+try {
+  await main();
+} catch (error) {
   console.error("Ingest failed:", error);
   process.exit(1);
-});
+}

@@ -681,7 +681,7 @@ function rollupRows(
         messages: rollup.messages,
         sparkline: dates.map((date) => rollup.dailyTokens.get(date) ?? 0),
         firstUsed: spanDates[0],
-        lastUsed: spanDates[spanDates.length - 1],
+        lastUsed: spanDates.at(-1) ?? spanDates[0],
         activeDays: activeDates.length,
         agents: [...rollup.agents].sort((a, b) => a.localeCompare(b)),
         tokenBreakdown: rollup.breakdown,

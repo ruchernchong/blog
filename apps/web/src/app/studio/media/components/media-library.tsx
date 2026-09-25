@@ -15,6 +15,10 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import type { SelectMedia } from "@/schema";
 import { MediaUpload } from "./media-upload";
 
+function copyToClipboard(url: string) {
+  navigator.clipboard.writeText(url);
+}
+
 export function MediaLibrary() {
   const router = useRouter();
   const [media, setMedia] = useState<SelectMedia[]>([]);
@@ -118,10 +122,6 @@ export function MediaLibrary() {
       await fetchMedia();
       router.refresh();
     });
-  }
-
-  function copyToClipboard(url: string) {
-    navigator.clipboard.writeText(url);
   }
 
   if (isPending && media.length === 0) {

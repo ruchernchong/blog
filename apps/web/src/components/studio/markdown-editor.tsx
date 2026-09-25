@@ -97,6 +97,24 @@ async function imageUploadHandler(file: File): Promise<string> {
   return publicUrl;
 }
 
+function MarkdownEditorToolbar() {
+  return (
+    <DiffSourceToggleWrapper>
+      <BoldItalicUnderlineToggles />
+      <CodeToggle />
+      <Separator />
+      <ListsToggle />
+      <Separator />
+      <BlockTypeSelect />
+      <Separator />
+      <CreateLink />
+      <InsertImage />
+      <InsertThematicBreak />
+      <InsertCodeBlock />
+    </DiffSourceToggleWrapper>
+  );
+}
+
 export const MarkdownEditor = forwardRef<
   MarkdownEditorMethods,
   MarkdownEditorProps
@@ -127,21 +145,7 @@ export const MarkdownEditor = forwardRef<
         codeBlockPlugin(),
         diffSourcePlugin({ viewMode: "source" }),
         toolbarPlugin({
-          toolbarContents: () => (
-            <DiffSourceToggleWrapper>
-              <BoldItalicUnderlineToggles />
-              <CodeToggle />
-              <Separator />
-              <ListsToggle />
-              <Separator />
-              <BlockTypeSelect />
-              <Separator />
-              <CreateLink />
-              <InsertImage />
-              <InsertThematicBreak />
-              <InsertCodeBlock />
-            </DiffSourceToggleWrapper>
-          ),
+          toolbarContents: MarkdownEditorToolbar,
         }),
       ]}
     />

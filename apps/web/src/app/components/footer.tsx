@@ -4,11 +4,15 @@ import ExternalLink from "@/components/external-link";
 import socials from "@/data/socials";
 
 const footerLinks = [
-  ...socials.map(({ name, link }) => ({
-    name:
-      name === "Github" ? "GitHub" : name === "Linkedin" ? "LinkedIn" : name,
-    link,
-  })),
+  ...socials.map(({ name, link }) => {
+    let displayName: string = name;
+    if (name === "Github") {
+      displayName = "GitHub";
+    } else if (name === "Linkedin") {
+      displayName = "LinkedIn";
+    }
+    return { name: displayName, link };
+  }),
 ];
 
 export async function Footer() {

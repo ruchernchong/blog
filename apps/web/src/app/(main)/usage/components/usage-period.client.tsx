@@ -36,7 +36,12 @@ function Change({ value, days }: { value: number | null; days: number }) {
   if (value === null) {
     return <span className="text-muted text-sm">No prior {days} days</span>;
   }
-  const arrow = value > 0 ? "▲" : value < 0 ? "▼" : "▬";
+  let arrow = "▬";
+  if (value > 0) {
+    arrow = "▲";
+  } else if (value < 0) {
+    arrow = "▼";
+  }
   return (
     <span className="text-muted text-sm tabular-nums">
       <span aria-hidden="true">{arrow} </span>

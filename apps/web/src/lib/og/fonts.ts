@@ -21,9 +21,8 @@ async function loadGoogleFont(
   const url = `https://fonts.googleapis.com/css2?${params.toString()}`;
   const css = await (await fetch(url)).text();
 
-  const resource = css.match(
-    /src: url\((.+)\) format\('(opentype|truetype|woff2)'\)/,
-  );
+  const resource =
+    /src: url\((.+)\) format\('(opentype|truetype|woff2)'\)/.exec(css);
 
   if (resource) {
     const response = await fetch(resource[1]);
