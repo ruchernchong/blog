@@ -153,9 +153,12 @@ function ProviderValue({
         ))}
       </span>
       <span className="truncate">
-        {providers
-          .map((provider) => providerDisplayNames[provider] ?? provider)
-          .join(", ")}
+        {/* Expandable rows name each provider in their children. */}
+        {row.providerRows
+          ? `${providers.length} providers`
+          : providers
+              .map((provider) => providerDisplayNames[provider] ?? provider)
+              .join(", ")}
       </span>
     </span>
   );
@@ -552,7 +555,26 @@ export function UsageBreakdown({
           { search, providerFilter, freeOnly: isFreeOnly },
           names,
         ),
-      ].sort((a, b) => compareRows(a, b, sortDescriptor, active.id, names)),
+      ]
+        .sort((a, b) => compareRows(a, b, sortDescriptor, active.id, names))
+        .map((row) =>
+          row.providerRows
+            ? {
+                ...row,
+                // The parent keeps its combined totals; a provider filter
+                // narrows only the splits beneath it.
+                providerRows: row.providerRows
+                  .filter(
+                    (split) =>
+                      providerFilter === "all" ||
+                      split.provider === providerFilter,
+                  )
+                  .sort((a, b) =>
+                    compareRows(a, b, sortDescriptor, active.id, names),
+                  ),
+              }
+            : row,
+        ),
     [active, isFreeOnly, names, providerFilter, search, sortDescriptor],
   );
 
@@ -690,7 +712,9 @@ export function UsageBreakdown({
           columns={columns}
           contentClassName="min-w-[760px] md:min-w-[1000px]"
           data={sortedRows}
-          getRowId={(row) => row.key}
+          getChildren={(row) => row.providerRows}
+          // Provider splits share their model's key, so the provider tells them apart.
+          getRowId={(row) => `${row.key}::${row.provider ?? "*"}`}
           headingHeight={GRID_HEADING_HEIGHT}
           onSortChange={setSortDescriptor}
           renderEmptyState={() => (

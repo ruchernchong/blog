@@ -170,6 +170,21 @@ describe("getUsageProfile", () => {
     expect(opus?.provider).toBeNull();
     // $1 + $2 (anthropic) + $0.50 (openrouter) from 1M-token input buckets.
     expect(opus?.cost).toBe(3.5);
+    // Multi-provider models carry a per-provider split keyed by the model.
+    expect(
+      opus?.providerRows?.map((row) => [
+        row.key,
+        row.provider,
+        row.tokens,
+        row.cost,
+      ]),
+    ).toEqual([
+      ["claude-opus", "anthropic", 500, 3],
+      ["claude-opus", "openrouter", 10, 0.5],
+    ]);
+    expect(
+      profile.byModel.find((row) => row.key === "m1")?.providerRows,
+    ).toBeUndefined();
     expect(
       profile.byModel.find((row) => row.key === "unknown")?.cost,
     ).toBeNull();
