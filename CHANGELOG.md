@@ -1,3 +1,10 @@
+## [1.46.0](https://github.com/ruchernchong/blog/compare/v1.45.4...v1.46.0) (2026-09-25)
+
+### Features
+
+* finish usage narrative stream at 1.2s ([fd9fcac](https://github.com/ruchernchong/blog/commit/fd9fcacc7236481ce7e73adf9efae90289d1fa92))
+* stream usage narrative word by word ([9a15dad](https://github.com/ruchernchong/blog/commit/9a15dad7e8ebc50ff6d3f36dda4a09b173b0d259))
+
 ## [1.45.4](https://github.com/ruchernchong/blog/compare/v1.45.3...v1.45.4) (2026-09-24)
 
 ### Bug Fixes
