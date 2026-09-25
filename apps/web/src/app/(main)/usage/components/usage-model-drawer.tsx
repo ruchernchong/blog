@@ -24,11 +24,6 @@ const percent = new Intl.NumberFormat("en-SG", {
   style: "percent",
 });
 
-const ratioFormat = new Intl.NumberFormat("en-SG", {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 2,
-});
-
 const formatDate = (date: string) => format(parseISO(date), "d MMM yyyy");
 
 function orDash<T>(value: T | null, formatValue: (value: T) => string) {
@@ -156,31 +151,10 @@ function ModelProfile({
             value={formatCost(row.costPerMillionTokens)}
           />
           <Fact
-            label="Tokens / msg"
-            value={orDash(character.tokensPerMessage, formatTokens)}
+            label="Cache hit"
+            value={orDash(character.cacheHitRate, percent.format)}
           />
         </dl>
-
-        <section className="flex flex-col gap-4" aria-label="Character">
-          <h3 className="font-semibold text-base text-foreground">Character</h3>
-          <dl className="grid grid-cols-3 gap-6">
-            <Fact
-              label="Cache hit"
-              value={orDash(character.cacheHitRate, percent.format)}
-            />
-            <Fact
-              label="Out / in"
-              value={orDash(
-                character.outputInputRatio,
-                (value) => `${ratioFormat.format(value)}×`,
-              )}
-            />
-            <Fact
-              label="Reasoning"
-              value={orDash(character.reasoningShare, percent.format)}
-            />
-          </dl>
-        </section>
 
         {row.sparkline.some((value) => value > 0) ? (
           <section className="flex flex-col gap-2" aria-label="Recent activity">

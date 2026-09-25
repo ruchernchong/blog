@@ -38,12 +38,16 @@ pub fn parse_claude(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
             let Some(ts) = parse_timestamp(&line.timestamp) else {
                 return;
             };
+            // `output` still includes thinking here; it is split out after
+            // dedupe so repeated lines merge on the raw totals.
             let tokens = Tokens {
                 input: usage.input_tokens as i64,
                 output: usage.output_tokens as i64,
                 cache_read: usage.cache_read_input_tokens as i64,
                 cache_write: usage.cache_creation_input_tokens as i64,
-                reasoning: 0,
+                reasoning: usage
+                    .output_tokens_details
+                    .map_or(0, |details| details.thinking_tokens as i64),
             };
             let key = [&message.id, &line.request_id, &line.uuid]
                 .into_iter()
@@ -70,7 +74,8 @@ pub fn parse_claude(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
     }
     let mut buckets = Tokens::default();
     let events = pending.len();
-    for event in pending {
+    for mut event in pending {
+        event.tokens.output = (event.tokens.output - event.tokens.reasoning).max(0);
         buckets.add(event.tokens);
         emit(event);
     }
@@ -311,6 +316,14 @@ struct ClaudeUsage {
     cache_creation_input_tokens: f64,
     #[serde(default, deserialize_with = "null_f64")]
     cache_read_input_tokens: f64,
+    #[serde(default)]
+    output_tokens_details: Option<ClaudeOutputDetails>,
+}
+
+#[derive(Deserialize, Clone, Copy)]
+struct ClaudeOutputDetails {
+    #[serde(default, deserialize_with = "null_f64")]
+    thinking_tokens: f64,
 }
 
 #[derive(Deserialize)]
@@ -591,10 +604,10 @@ pub(crate) mod tests {
                     model: "claude-sonnet-4-5".to_string(),
                     tokens: Tokens {
                         input: 100,
-                        output: 50,
+                        output: 30,
                         cache_read: 1000,
                         cache_write: 200,
-                        reasoning: 0
+                        reasoning: 20
                     },
                 },
                 UsageEvent {
@@ -642,10 +655,10 @@ pub(crate) mod tests {
                 bytes,
                 events: 3,
                 input_tokens: 111,
-                output_tokens: 57,
+                output_tokens: 37,
                 cache_read_tokens: 1003,
                 cache_write_tokens: 204,
-                reasoning_tokens: 0,
+                reasoning_tokens: 20,
             }
         );
     }

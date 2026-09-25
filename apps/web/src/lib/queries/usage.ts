@@ -24,7 +24,7 @@ import {
   buildWeeklyShare,
 } from "@workspace/usage/weekly-insights";
 import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns";
-import { and, asc, eq, isNull, sql } from "drizzle-orm";
+import { and, asc, eq, gt, isNull, or, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import {
   MODEL_PRICING_COLUMNS,
@@ -94,7 +94,10 @@ const EFFORT_UPDATE_COLUMNS = [
  * total and ratchet the stored lifetime value down (observed as Opus 4.7 tokens
  * "getting lesser and lesser"). So a day is overwritten only when the incoming
  * snapshot has a larger `totalTokens`, i.e. it is a more complete parse; smaller
- * snapshots are ignored. The whole incoming row wins together (not per-column),
+ * snapshots are ignored. At an equal total, a snapshot with more
+ * `reasoningTokens` also wins, so a parser that newly splits reasoning out of
+ * output (same total) can correct the stored breakdown on re-ingest. The
+ * whole incoming row wins together (not per-column),
  * which preserves the `input+output+cache = total` invariant and keeps `costUsd`
  * consistent with its tokens. Trade-off: a day that was genuinely over-counted
  * once can no longer be corrected downward via ingest — acceptable for a
@@ -103,10 +106,7 @@ const EFFORT_UPDATE_COLUMNS = [
 export async function upsertTokenUsage(
   rows: InsertTokenUsage[],
 ): Promise<number> {
-  const set = {
-    ...excludedColumns(tokenUsage, UPDATE_COLUMNS),
-    updatedAt: sql`now()`,
-  };
+  const excluded = excludedColumns(tokenUsage, UPDATE_COLUMNS);
   for (let i = 0; i < rows.length; i += UPSERT_CHUNK_SIZE) {
     const chunk = rows.slice(i, i + UPSERT_CHUNK_SIZE);
     await db
@@ -114,8 +114,14 @@ export async function upsertTokenUsage(
       .values(chunk)
       .onConflictDoUpdate({
         target: [...CONFLICT_TARGET],
-        set,
-        setWhere: sql`excluded.total_tokens > ${tokenUsage.totalTokens}`,
+        set: excluded,
+        setWhere: or(
+          gt(excluded.totalTokens, tokenUsage.totalTokens),
+          and(
+            eq(excluded.totalTokens, tokenUsage.totalTokens),
+            gt(excluded.reasoningTokens, tokenUsage.reasoningTokens),
+          ),
+        ),
       });
   }
   return rows.length;
@@ -138,10 +144,7 @@ export async function upsertTokenEffortUsage(
     return 0;
   }
 
-  const set = {
-    ...excludedColumns(tokenEffortUsage, EFFORT_UPDATE_COLUMNS),
-    updatedAt: sql`now()`,
-  };
+  const set = excludedColumns(tokenEffortUsage, EFFORT_UPDATE_COLUMNS);
   for (let i = 0; i < rows.length; i += UPSERT_CHUNK_SIZE) {
     const chunk = rows.slice(i, i + UPSERT_CHUNK_SIZE);
     await db
@@ -203,7 +206,7 @@ export async function repriceUnpricedTokenUsage(
     // in that race instead of a silent overwrite.
     const updated = await db
       .update(tokenUsage)
-      .set({ costUsd: cost.toFixed(6), updatedAt: sql`now()` })
+      .set({ costUsd: cost.toFixed(6) })
       .where(
         and(
           eq(tokenUsage.date, row.date),

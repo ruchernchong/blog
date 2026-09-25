@@ -33,7 +33,10 @@ export const tokenEffortUsage = pgTable(
     levels: jsonb().$type<EffortLevelCount[]>().notNull(),
     classifiedSessionCount: integer().notNull().default(0),
     unclassifiedSessionCount: integer().notNull().default(0),
-    updatedAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp({ withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
   },
   (table) => [
     primaryKey({

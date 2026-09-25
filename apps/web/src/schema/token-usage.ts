@@ -51,7 +51,10 @@ export const tokenUsage = pgTable(
     totalTokens: bigint({ mode: "number" }).notNull().default(0),
     costUsd: numeric({ precision: 14, scale: 6 }),
     messages: integer().notNull().default(0),
-    updatedAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp({ withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
   },
   (table) => [
     primaryKey({

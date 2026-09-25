@@ -29,6 +29,7 @@ vi.mock("@/schema", async () => {
   return { ...actual, db };
 });
 
+import { tokenEffortUsage, tokenUsage } from "@/schema";
 import { upsertTokenEffortUsage, upsertTokenUsage } from "./usage";
 
 // Mirror the production `db` casing (see schema/index.ts) so embedded columns
@@ -58,12 +59,24 @@ const baseEffortRow = {
   unclassifiedSessionCount: 1,
 };
 
+describe("updatedAt", () => {
+  // The upserts no longer set `updatedAt` themselves; `$onUpdate` adds it to
+  // every update set Drizzle builds, including `onConflictDoUpdate`.
+  it.each([
+    ["token_usage", tokenUsage],
+    ["token_effort_usage", tokenEffortUsage],
+  ])("should be stamped on every %s update", (_, table) => {
+    const { sql } = dialect.sqlToQuery(dialect.buildUpdateSet(table, {}));
+    expect(sql).toBe('"updated_at" = $1');
+  });
+});
+
 describe("upsertTokenUsage", () => {
   beforeEach(() => {
     onConflictConfigs.length = 0;
   });
 
-  it("should only overwrite a day when the incoming snapshot has more tokens", async () => {
+  it("should only overwrite a day when the incoming snapshot has more tokens or more reasoning", async () => {
     await upsertTokenUsage([baseRow]);
 
     expect(onConflictConfigs).toHaveLength(1);
@@ -71,9 +84,12 @@ describe("upsertTokenUsage", () => {
     expect(setWhere).toBeDefined();
 
     // The guard makes the stored lifetime total non-decreasing: a pruned-log
-    // re-parse with a smaller total is ignored; a larger (more complete) parse wins.
+    // re-parse with a smaller total is ignored; a larger (more complete) parse wins,
+    // and at an equal total a finer reasoning split wins (row comparison).
     const { sql } = dialect.sqlToQuery(setWhere as never);
-    expect(sql).toBe('excluded.total_tokens > "token_usage"."total_tokens"');
+    expect(sql).toBe(
+      '(excluded.total_tokens > "token_usage"."total_tokens" or (excluded.total_tokens = "token_usage"."total_tokens" and excluded.reasoning_tokens > "token_usage"."reasoning_tokens"))',
+    );
   });
 
   it("should point every token column at the incoming (excluded) value", async () => {
