@@ -8,8 +8,6 @@ interface UsageModelCharacterRowsProps {
   head: ReactNode;
   /** Server-rendered `<tr>` rows, biggest model first. */
   rows: ReactNode[];
-  /** Server-rendered `<li>` phone cards, in the same order as `rows`. */
-  cards: ReactNode[];
   /** Rows shown before "Show all". */
   initialCount: number;
 }
@@ -22,7 +20,6 @@ interface UsageModelCharacterRowsProps {
 export function UsageModelCharacterRows({
   head,
   rows,
-  cards,
   initialCount,
 }: Readonly<UsageModelCharacterRowsProps>) {
   const [expanded, setExpanded] = useState(false);
@@ -30,11 +27,7 @@ export function UsageModelCharacterRows({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Phones get a card list; the table needs ~640px before it scrolls. */}
-      <ul className="flex flex-col divide-y divide-border md:hidden">
-        {expanded ? cards : cards.slice(0, initialCount)}
-      </ul>
-      <div className="hidden overflow-x-auto md:block">
+      <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] text-left text-sm">
           {head}
           <tbody>{expanded ? rows : rows.slice(0, initialCount)}</tbody>

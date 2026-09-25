@@ -53,16 +53,11 @@ export function UsageHero({
 
       <dl className="grid grid-cols-2 gap-6 border-border border-t pt-6 lg:grid-cols-4">
         {figures.map((figure) => (
-          // Each figure is a size container, so a long value such as
-          // "US$148.9K" scales down to its column instead of overflowing it.
-          <div
-            className="@container flex min-w-0 flex-col-reverse gap-2"
-            key={figure.label}
-          >
+          <div className="flex flex-col-reverse gap-2" key={figure.label}>
             <dt className="font-medium text-muted text-xs uppercase tracking-wider">
               {figure.label}
             </dt>
-            <dd className="whitespace-nowrap font-bold text-[clamp(1.5rem,17cqi,3.75rem)] tabular-nums tracking-tighter">
+            <dd className="font-bold text-4xl tabular-nums tracking-tighter sm:text-6xl">
               {figure.value}
             </dd>
           </div>
