@@ -1,3 +1,13 @@
+## [1.47.1](https://github.com/ruchernchong/blog/compare/v1.47.0...v1.47.1) (2026-09-25)
+
+### Bug Fixes
+
+* align model character tests and date ([1edaee3](https://github.com/ruchernchong/blog/commit/1edaee3bfe1e8004642e432da9ad7bb076cbd72d))
+* let equal-total ingest update reasoning ([8247bd2](https://github.com/ruchernchong/blog/commit/8247bd2d5809c6eef18064339f9cd34a3a647ca0))
+* replace broken model character columns ([e4b7ac7](https://github.com/ruchernchong/blog/commit/e4b7ac770c7a29427687f3cb2ad6a891a6de6a4f))
+* split claude thinking after merging repeats ([e01c633](https://github.com/ruchernchong/blog/commit/e01c633447ab3a0cdad54863a1dd8d7db5d4fa0b))
+* split claude thinking tokens from output ([b75e33b](https://github.com/ruchernchong/blog/commit/b75e33b638a64b1dd16a467afd13af21f0c3fc8f))
+
 ## [1.47.0](https://github.com/ruchernchong/blog/compare/v1.46.0...v1.47.0) (2026-09-25)
 
 ### Features
