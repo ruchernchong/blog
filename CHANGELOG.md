@@ -1,3 +1,9 @@
+## [1.47.2](https://github.com/ruchernchong/blog/compare/v1.47.1...v1.47.2) (2026-09-25)
+
+### Bug Fixes
+
+* freeze usage breakdown header and model column ([ba3ed21](https://github.com/ruchernchong/blog/commit/ba3ed2170047bc0325273f6b584c2f6adcfa9520))
+
 ## [1.47.1](https://github.com/ruchernchong/blog/compare/v1.47.0...v1.47.1) (2026-09-25)
 
 ### Bug Fixes
