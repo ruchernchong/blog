@@ -121,7 +121,7 @@ export function UsageModelCharacter({
                 {formatNumber(row.activeDays)}
               </td>
               <td className="py-3 text-right tabular-nums">
-                {format(parseISO(row.lastUsed), "d MMM yyyy")}
+                {format(parseISO(row.lastUsed), "dd/MM/yyyy")}
               </td>
             </tr>
           ))}

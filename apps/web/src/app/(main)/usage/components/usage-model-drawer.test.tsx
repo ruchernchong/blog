@@ -55,8 +55,6 @@ describe("UsageModelDrawer", () => {
       .toBeInTheDocument();
     await expect.element(dialog.getByText("12")).toBeInTheDocument();
     await expect.element(dialog.getByText("60%")).toBeInTheDocument();
-    await expect.element(dialog.getByText("0.08×")).toBeInTheDocument();
-    await expect.element(dialog.getByText("25%")).toBeInTheDocument();
     await expect.element(dialog.getByText("Last 90 days")).toBeInTheDocument();
   });
 

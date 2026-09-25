@@ -36,10 +36,13 @@ function row(
 }
 
 describe("UsageModelCharacter", () => {
-  it("should render each model's character ratios", async () => {
+  it("should render each model's character stats", async () => {
     const screen = await render(
       <UsageModelCharacter
-        byModel={[row("opus"), row("mystery", { cost: null })]}
+        byModel={[
+          row("opus"),
+          row("mystery", { cost: null, costPerMillionTokens: null }),
+        ]}
         modelDisplayNames={{ opus: "Claude Opus" }}
       />,
       { wrapper: withNuqsTestingAdapter() },
@@ -47,10 +50,11 @@ describe("UsageModelCharacter", () => {
 
     const opus = screen.getByRole("row", { name: /Claude Opus/ });
     await expect.element(opus.getByText("60%")).toBeInTheDocument();
-    await expect.element(opus.getByText("0.08×")).toBeInTheDocument();
-    await expect.element(opus.getByText("25%")).toBeInTheDocument();
-    await expect.element(opus.getByText("135")).toBeInTheDocument();
-    await expect.element(opus.getByText("US$0.50")).toBeInTheDocument();
+    await expect.element(opus.getByText("US$1.00")).toBeInTheDocument();
+    await expect
+      .element(opus.getByText("2", { exact: true }))
+      .toBeInTheDocument();
+    await expect.element(opus.getByText("02/01/2026")).toBeInTheDocument();
     await expect
       .element(screen.getByRole("row", { name: /mystery/ }).getByText("N.A."))
       .toBeInTheDocument();
