@@ -273,7 +273,9 @@ export async function getProviderDisplayNames(
   cacheLife("days");
   cacheTag("models:providers");
 
-  const providers = [...new Set(providerIds)].sort();
+  const providers = [...new Set(providerIds)].sort((a, b) =>
+    a.localeCompare(b),
+  );
   if (providers.length === 0) {
     return {};
   }
@@ -310,7 +312,7 @@ export async function getModelDisplayNames(
   cacheLife("days");
   cacheTag("models:providers");
 
-  const ids = [...new Set(modelIds)].sort();
+  const ids = [...new Set(modelIds)].sort((a, b) => a.localeCompare(b));
   if (ids.length === 0) {
     return {};
   }

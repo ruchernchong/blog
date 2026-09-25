@@ -1,5 +1,3 @@
-import type { Provider } from "./types";
-
 /**
  * Maps a single-provider coding agent to the inference provider that bills its
  * tokens. Used as a fallback for agents that do NOT record a provider per event.
@@ -13,7 +11,7 @@ import type { Provider } from "./types";
  * resolve a model under its provider on models.dev). Add a single-provider
  * agent's provider here when registering its parser.
  */
-export const AGENT_PROVIDERS: Record<string, Provider> = {
+export const AGENT_PROVIDERS: Record<string, string> = {
   claude: "anthropic",
   codex: "openai",
   grok: "xai",

@@ -121,13 +121,12 @@ export function HeatmapGridClient({
           className="grid gap-1 text-muted text-xs"
           style={{ gridTemplateColumns: columns }}
         >
-          {weeks.map((_, weekIndex) => {
+          {weeks.map((week, weekIndex) => {
             const month = monthLabels.find((m) => m.weekIndex === weekIndex);
             return (
               <div
                 className="h-4"
-                // biome-ignore lint/suspicious/noArrayIndexKey: week columns are positional
-                key={weekIndex}
+                key={week.map((cell) => cell.date ?? "").join("|")}
               >
                 {month?.label}
               </div>

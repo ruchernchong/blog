@@ -17,11 +17,14 @@ import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
+import { ERROR_IDS } from "@/constants/error-ids";
+import { logError } from "@/lib/logger";
 import type { SelectSeries } from "@/schema";
 
 export function SeriesTable() {
   const router = useRouter();
-  const [allSeries, setAllSeries] = useState<SelectSeries[]>([]);
+  const [allSeries, setAllSeries] = useState<SelectSeries[] | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<
@@ -30,6 +33,7 @@ export function SeriesTable() {
   const [selectedSeries, setSelectedSeries] = useState<Set<string>>(new Set());
 
   const fetchSeries = useCallback(async () => {
+    setLoadError(null);
     try {
       const response = await fetch("/api/studio/series");
       if (response.ok) {
@@ -37,11 +41,24 @@ export function SeriesTable() {
         startTransition(() => {
           setAllSeries(series);
         });
-      } else if (response.status === 401) {
-        console.error("Unauthorised: Please sign in");
+        return;
       }
+
+      const message =
+        response.status === 401
+          ? "Please sign in to manage series."
+          : "Something went wrong while loading series.";
+      logError(
+        ERROR_IDS.SERIES_FETCH_FAILED,
+        response.status === 401
+          ? "Unauthorised: Please sign in"
+          : "Failed to fetch series",
+        { status: response.status },
+      );
+      setLoadError(message);
     } catch (error) {
-      console.error("Failed to fetch series:", error);
+      logError(ERROR_IDS.SERIES_FETCH_FAILED, error);
+      setLoadError("Something went wrong while loading series.");
     }
   }, []);
 
@@ -149,23 +166,44 @@ export function SeriesTable() {
     });
   };
 
-  const filteredSeries = allSeries.filter((series) => {
-    const matchesSearch =
-      searchQuery === "" ||
-      series.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      series.slug.toLowerCase().includes(searchQuery.toLowerCase());
+  if (allSeries === null) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="font-bold text-3xl">Series</h1>
+            <p className="mb-2 text-muted">Manage your blog series</p>
+          </div>
+          <Link
+            className={buttonVariants()}
+            href={"/studio/series/new" as Route}
+          >
+            Create Series
+          </Link>
+        </div>
+        <Card>
+          <Card.Content className="py-12">
+            {loadError ? (
+              <EmptyState>
+                <EmptyState.Header>
+                  <EmptyState.Title>Could not load series</EmptyState.Title>
+                  <EmptyState.Description>{loadError}</EmptyState.Description>
+                </EmptyState.Header>
+                <EmptyState.Content>
+                  <Button variant="outline" onPress={() => void fetchSeries()}>
+                    Try again
+                  </Button>
+                </EmptyState.Content>
+              </EmptyState>
+            ) : (
+              <p className="text-center text-muted">Loading series...</p>
+            )}
+          </Card.Content>
+        </Card>
+      </div>
+    );
+  }
 
-    const matchesStatus =
-      statusFilter === "all" ||
-      (statusFilter === "deleted" && series.deletedAt) ||
-      (statusFilter !== "deleted" &&
-        !series.deletedAt &&
-        series.status === statusFilter);
-
-    return matchesSearch && matchesStatus;
-  });
-
-  // TODO: To be fixed. This should be an empty state
   if (allSeries.length === 0) {
     return (
       <div className="flex flex-col gap-6">
@@ -183,12 +221,43 @@ export function SeriesTable() {
         </div>
         <Card>
           <Card.Content className="py-12">
-            <p className="text-center text-muted">Loading series...</p>
+            <EmptyState>
+              <EmptyState.Header>
+                <EmptyState.Title>No series yet</EmptyState.Title>
+                <EmptyState.Description>
+                  Get started by creating your first series
+                </EmptyState.Description>
+              </EmptyState.Header>
+              <EmptyState.Content>
+                <Link
+                  className={buttonVariants()}
+                  href={"/studio/series/new" as Route}
+                >
+                  Create Series
+                </Link>
+              </EmptyState.Content>
+            </EmptyState>
           </Card.Content>
         </Card>
       </div>
     );
   }
+
+  const filteredSeries = allSeries.filter((series) => {
+    const matchesSearch =
+      searchQuery === "" ||
+      series.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      series.slug.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "deleted" && series.deletedAt) ||
+      (statusFilter !== "deleted" &&
+        !series.deletedAt &&
+        series.status === statusFilter);
+
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="flex flex-col gap-6">

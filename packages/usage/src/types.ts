@@ -11,13 +11,6 @@ import type { PeriodComparisons } from "./period-comparison";
 /** Known agents. Parsers self-register; this is just for nicer typing/labels. */
 export type Agent = "claude" | "codex" | "cursor" | "opencode";
 
-/**
- * Inference provider that bills the tokens. Usually derived from the agent, but
- * some agents are multi-provider and carry it per-event (e.g. OpenCode routes to
- * openai, fireworks-ai, ollama, opencode, opencode-go), so this is open-ended.
- */
-export type Provider = string;
-
 export interface TokenBreakdown {
   input: number;
   output: number;

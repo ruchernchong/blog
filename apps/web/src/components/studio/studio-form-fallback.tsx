@@ -16,7 +16,14 @@ export function StudioFormFallback({
   label,
 }: Readonly<StudioFormFallbackProps>) {
   return (
-    <div role="status" aria-label={label} className="flex flex-col gap-6">
+    <div className="relative flex flex-col gap-6">
+      {/* output only allows phrasing content, so it cannot wrap this layout */}
+      <output
+        aria-label={label}
+        className="pointer-events-none absolute inset-0"
+      >
+        <span className="sr-only">{label}</span>
+      </output>
       <div aria-hidden="true" className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Skeleton className="h-9 w-56 rounded-lg" />

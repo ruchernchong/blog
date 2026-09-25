@@ -88,28 +88,32 @@ function streamNarrative(parts: UsageNarrativePart[]) {
     STREAM_SPREAD_MS /
     Math.max(1, words.flat().filter((word) => word.trim()).length - 1);
   let wordIndex = 0;
+  // Offset into the sentence. Unique among siblings for a fixed narrative.
+  let offset = 0;
 
   return parts.map((part, partIndex) => {
-    const content = words[partIndex].map((word, index) => {
+    const partKey = offset;
+    const content = words[partIndex].map((word) => {
+      const tokenKey = offset;
+      offset += word.length;
       if (!word.trim()) return word;
       const delay = wordIndex++ * stagger;
       return (
         <span
           className="motion-safe:animate-stream-in"
-          // biome-ignore lint/suspicious/noArrayIndexKey: words are a fixed, ordered split
-          key={index}
+          key={tokenKey}
           style={{ animationDelay: `${Math.round(delay)}ms` }}
         >
           {word}
         </span>
       );
     });
+    if (part.text.length === 0) offset += 1;
 
     return (
       <span
         className={part.highlight ? "text-accent" : undefined}
-        // biome-ignore lint/suspicious/noArrayIndexKey: parts are a fixed, ordered template
-        key={partIndex}
+        key={partKey}
       >
         {content}
       </span>
