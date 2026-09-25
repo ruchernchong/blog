@@ -24,7 +24,7 @@ import {
   buildWeeklyShare,
 } from "@workspace/usage/weekly-insights";
 import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns";
-import { and, asc, eq, isNull, sql } from "drizzle-orm";
+import { and, asc, eq, gt, isNull, or, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import {
   MODEL_PRICING_COLUMNS,
@@ -106,10 +106,7 @@ const EFFORT_UPDATE_COLUMNS = [
 export async function upsertTokenUsage(
   rows: InsertTokenUsage[],
 ): Promise<number> {
-  const set = {
-    ...excludedColumns(tokenUsage, UPDATE_COLUMNS),
-    updatedAt: sql`now()`,
-  };
+  const excluded = excludedColumns(tokenUsage, UPDATE_COLUMNS);
   for (let i = 0; i < rows.length; i += UPSERT_CHUNK_SIZE) {
     const chunk = rows.slice(i, i + UPSERT_CHUNK_SIZE);
     await db
@@ -117,8 +114,14 @@ export async function upsertTokenUsage(
       .values(chunk)
       .onConflictDoUpdate({
         target: [...CONFLICT_TARGET],
-        set,
-        setWhere: sql`(excluded.total_tokens, excluded.reasoning_tokens) > (${tokenUsage.totalTokens}, ${tokenUsage.reasoningTokens})`,
+        set: excluded,
+        setWhere: or(
+          gt(excluded.totalTokens, tokenUsage.totalTokens),
+          and(
+            eq(excluded.totalTokens, tokenUsage.totalTokens),
+            gt(excluded.reasoningTokens, tokenUsage.reasoningTokens),
+          ),
+        ),
       });
   }
   return rows.length;
@@ -141,10 +144,7 @@ export async function upsertTokenEffortUsage(
     return 0;
   }
 
-  const set = {
-    ...excludedColumns(tokenEffortUsage, EFFORT_UPDATE_COLUMNS),
-    updatedAt: sql`now()`,
-  };
+  const set = excludedColumns(tokenEffortUsage, EFFORT_UPDATE_COLUMNS);
   for (let i = 0; i < rows.length; i += UPSERT_CHUNK_SIZE) {
     const chunk = rows.slice(i, i + UPSERT_CHUNK_SIZE);
     await db
@@ -206,7 +206,7 @@ export async function repriceUnpricedTokenUsage(
     // in that race instead of a silent overwrite.
     const updated = await db
       .update(tokenUsage)
-      .set({ costUsd: cost.toFixed(6), updatedAt: sql`now()` })
+      .set({ costUsd: cost.toFixed(6) })
       .where(
         and(
           eq(tokenUsage.date, row.date),
