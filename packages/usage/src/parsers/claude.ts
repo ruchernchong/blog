@@ -52,14 +52,14 @@ export async function parse(): Promise<AgentParseResult> {
       const model = line.message?.model;
       if (!usage || !model || model === "<synthetic>") return;
 
-      const output = usage.output_tokens ?? 0;
-      const reasoning = usage.output_tokens_details?.thinking_tokens ?? 0;
+      // `output` still includes thinking here; it is split out after
+      // dedupe so repeated lines merge on the raw totals.
       const tokens = {
         input: usage.input_tokens ?? 0,
-        output: Math.max(0, output - reasoning),
+        output: usage.output_tokens ?? 0,
         cacheRead: usage.cache_read_input_tokens ?? 0,
         cacheWrite: usage.cache_creation_input_tokens ?? 0,
-        reasoning,
+        reasoning: usage.output_tokens_details?.thinking_tokens ?? 0,
       };
 
       // Streaming repeats the message.id per content block and usage grows
@@ -82,6 +82,13 @@ export async function parse(): Promise<AgentParseResult> {
       events.push(event);
       if (dedupeKey) seen.set(dedupeKey, event);
     });
+  }
+
+  for (const event of events) {
+    event.tokens.output = Math.max(
+      0,
+      event.tokens.output - event.tokens.reasoning,
+    );
   }
 
   return {

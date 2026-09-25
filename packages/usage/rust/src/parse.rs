@@ -38,16 +38,16 @@ pub fn parse_claude(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
             let Some(ts) = parse_timestamp(&line.timestamp) else {
                 return;
             };
-            // `output_tokens` includes thinking; split it into its own bucket.
-            let reasoning = usage
-                .output_tokens_details
-                .map_or(0, |details| details.thinking_tokens as i64);
+            // `output` still includes thinking here; it is split out after
+            // dedupe so repeated lines merge on the raw totals.
             let tokens = Tokens {
                 input: usage.input_tokens as i64,
-                output: (usage.output_tokens as i64 - reasoning).max(0),
+                output: usage.output_tokens as i64,
                 cache_read: usage.cache_read_input_tokens as i64,
                 cache_write: usage.cache_creation_input_tokens as i64,
-                reasoning,
+                reasoning: usage
+                    .output_tokens_details
+                    .map_or(0, |details| details.thinking_tokens as i64),
             };
             let key = [&message.id, &line.request_id, &line.uuid]
                 .into_iter()
@@ -74,7 +74,8 @@ pub fn parse_claude(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
     }
     let mut buckets = Tokens::default();
     let events = pending.len();
-    for event in pending {
+    for mut event in pending {
+        event.tokens.output = (event.tokens.output - event.tokens.reasoning).max(0);
         buckets.add(event.tokens);
         emit(event);
     }
