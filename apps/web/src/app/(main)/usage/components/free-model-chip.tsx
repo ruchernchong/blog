@@ -6,7 +6,7 @@ interface FreeModelChipProps {
   viewId: string;
 }
 
-export function FreeModelChip({ cost, viewId }: FreeModelChipProps) {
+export function FreeModelChip({ cost, viewId }: Readonly<FreeModelChipProps>) {
   if (viewId !== "model" || cost !== 0) {
     return null;
   }

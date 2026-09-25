@@ -4,7 +4,10 @@ import { getTotalVisits } from "@/lib/queries/posthog";
 import { getUsageProfile } from "@/lib/queries/usage";
 import { AnimatedCounter } from "./animated-counter";
 
-function StatItem({ value, label }: { value: number; label: string }) {
+function StatItem({
+  value,
+  label,
+}: Readonly<{ value: number; label: string }>) {
   return (
     <div className="flex flex-col gap-1">
       <span className="font-bold font-mono text-2xl tracking-tight">
@@ -15,7 +18,7 @@ function StatItem({ value, label }: { value: number; label: string }) {
   );
 }
 
-function StatSkeleton({ label }: { label: string }) {
+function StatSkeleton({ label }: Readonly<{ label: string }>) {
   return (
     <div className="flex flex-col gap-1">
       <div className="h-8 w-16 animate-pulse rounded bg-default" />

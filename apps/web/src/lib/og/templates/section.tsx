@@ -11,7 +11,7 @@ interface SectionProps {
  *
  * Features page title, optional description, and site branding
  */
-export function Section({ title, description }: SectionProps) {
+export function Section({ title, description }: Readonly<SectionProps>) {
   return (
     <Layout>
       <div

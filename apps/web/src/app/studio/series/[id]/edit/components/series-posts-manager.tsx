@@ -22,7 +22,9 @@ interface SeriesPostsManagerProps {
   seriesId: string;
 }
 
-export function SeriesPostsManager({ seriesId }: SeriesPostsManagerProps) {
+export function SeriesPostsManager({
+  seriesId,
+}: Readonly<SeriesPostsManagerProps>) {
   const router = useRouter();
   const [posts, setPosts] = useState<SeriesPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -132,7 +134,7 @@ export function SeriesPostsManager({ seriesId }: SeriesPostsManagerProps) {
   );
 }
 
-function ReorderItem({ post }: { post: SeriesPost }) {
+function ReorderItem({ post }: Readonly<{ post: SeriesPost }>) {
   const controls = useDragControls();
 
   return (

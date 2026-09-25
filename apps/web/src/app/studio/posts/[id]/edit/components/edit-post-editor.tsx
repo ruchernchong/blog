@@ -8,7 +8,7 @@ interface EditPostEditorProps {
   params: Promise<{ id: string }>;
 }
 
-export function EditPostEditor({ params }: EditPostEditorProps) {
+export function EditPostEditor({ params }: Readonly<EditPostEditorProps>) {
   return (
     <Suspense fallback={<EditPostEditorFallback />}>
       <EditPostEditorContent params={params} />
@@ -20,7 +20,9 @@ export function EditPostEditorFallback() {
   return <StudioFormFallback label="Loading post editor" />;
 }
 
-async function EditPostEditorContent({ params }: EditPostEditorProps) {
+async function EditPostEditorContent({
+  params,
+}: Readonly<EditPostEditorProps>) {
   await connection();
   const { id } = await params;
   const seriesOptions = await getSeriesForSelector();

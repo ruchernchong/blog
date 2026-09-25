@@ -26,7 +26,7 @@ export function UsageHero({
   narrative,
   description,
   lastUpdated,
-}: UsageHeroProps) {
+}: Readonly<UsageHeroProps>) {
   const figures = [
     {
       label: "API equivalent",

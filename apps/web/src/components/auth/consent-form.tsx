@@ -19,7 +19,10 @@ interface ConsentFormProps {
   scopes: string[];
 }
 
-export function ConsentForm({ clientName, scopes }: ConsentFormProps) {
+export function ConsentForm({
+  clientName,
+  scopes,
+}: Readonly<ConsentFormProps>) {
   const [error, setError] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<"accept" | "deny" | null>(
     null,

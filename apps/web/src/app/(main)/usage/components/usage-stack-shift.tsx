@@ -14,7 +14,7 @@ interface UsageStackShiftProps {
 export function UsageStackShift({
   weeklyShare,
   modelDisplayNames,
-}: UsageStackShiftProps) {
+}: Readonly<UsageStackShiftProps>) {
   const { weeks, models, agents } = weeklyShare;
 
   return (

@@ -13,7 +13,9 @@ const formatPeriod = ({
   dateEnd?: string;
 }) => `${dateStart} — ${dateEnd ?? "Present"}`;
 
-export function EmploymentTimeline({ companies }: EmploymentTimelineProps) {
+export function EmploymentTimeline({
+  companies,
+}: Readonly<EmploymentTimelineProps>) {
   return (
     <section className="flex flex-col gap-6">
       <h2 className="font-semibold text-xl tracking-tight">Employment</h2>

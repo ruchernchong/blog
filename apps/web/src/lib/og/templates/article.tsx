@@ -17,7 +17,7 @@ export function Article({
   title,
   date,
   author = OG_CONFIG.author,
-}: ArticleProps) {
+}: Readonly<ArticleProps>) {
   return (
     <Layout>
       <div

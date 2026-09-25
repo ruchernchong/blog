@@ -6,7 +6,7 @@ interface UsageLastUpdatedProps {
   date: string;
 }
 
-export function UsageLastUpdated({ date }: UsageLastUpdatedProps) {
+export function UsageLastUpdated({ date }: Readonly<UsageLastUpdatedProps>) {
   return (
     <span className="shrink-0 font-mono text-muted text-sm">
       Last updated{" "}

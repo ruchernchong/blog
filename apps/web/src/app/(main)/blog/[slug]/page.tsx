@@ -54,7 +54,7 @@ export async function generateStaticParams() {
   return publishedPosts.map(({ slug }) => ({ slug }));
 }
 
-export default async function PostPage({ params }: PageProps) {
+export default async function PostPage({ params }: Readonly<PageProps>) {
   const { slug } = await params;
 
   // Existence check outside any `use cache` scope so notFound() (a thrown

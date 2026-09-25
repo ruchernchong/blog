@@ -9,7 +9,7 @@ const liveNow = projects.filter((project) =>
   project.links.some((link) => !isGitHubLink(link)),
 ).length;
 
-function StatRow({ children }: { children: React.ReactNode }) {
+function StatRow({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <div className="flex flex-wrap gap-9 border-separator border-y py-6">
       {children}

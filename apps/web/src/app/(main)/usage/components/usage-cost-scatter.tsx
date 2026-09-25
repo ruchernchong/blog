@@ -13,7 +13,7 @@ interface UsageCostScatterProps {
 export function UsageCostScatter({
   byModel,
   modelDisplayNames,
-}: UsageCostScatterProps) {
+}: Readonly<UsageCostScatterProps>) {
   const points = toCostPoints(byModel, modelDisplayNames);
   const labelled = points
     .filter((point) => point.directLabel)

@@ -11,7 +11,7 @@ interface AboutHeroProps {
   intro: string;
 }
 
-export function AboutHero({ intro }: AboutHeroProps) {
+export function AboutHero({ intro }: Readonly<AboutHeroProps>) {
   return (
     <div className="grid grid-cols-1 items-start gap-9 sm:grid-cols-[1fr_148px]">
       <div className="flex flex-col gap-4">

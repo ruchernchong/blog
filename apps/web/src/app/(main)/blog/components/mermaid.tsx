@@ -6,7 +6,7 @@ interface MermaidProps {
   chart: string;
 }
 
-export function Mermaid({ chart }: MermaidProps) {
+export function Mermaid({ chart }: Readonly<MermaidProps>) {
   const id = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const [svg, setSvg] = useState<string | null>(null);

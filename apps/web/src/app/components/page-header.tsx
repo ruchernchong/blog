@@ -4,7 +4,11 @@ interface PageHeaderProps {
   description?: string;
 }
 
-export function PageHeader({ eyebrow, title, description }: PageHeaderProps) {
+export function PageHeader({
+  eyebrow,
+  title,
+  description,
+}: Readonly<PageHeaderProps>) {
   return (
     <div className="flex flex-col gap-3">
       {eyebrow && (

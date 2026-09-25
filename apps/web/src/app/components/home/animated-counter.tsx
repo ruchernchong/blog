@@ -15,7 +15,7 @@ const defaultFormat = (value: number) => Math.round(value).toLocaleString();
 export function AnimatedCounter({
   value,
   compact = false,
-}: AnimatedCounterProps) {
+}: Readonly<AnimatedCounterProps>) {
   const format = compact ? formatStat : defaultFormat;
   const ref = useRef<HTMLSpanElement>(null);
   const motionValue = useMotionValue(0);

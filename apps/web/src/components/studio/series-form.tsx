@@ -21,7 +21,7 @@ interface SeriesFormProps {
   series?: SelectSeries;
 }
 
-export function SeriesForm({ series }: SeriesFormProps) {
+export function SeriesForm({ series }: Readonly<SeriesFormProps>) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();

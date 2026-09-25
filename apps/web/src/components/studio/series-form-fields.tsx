@@ -29,7 +29,7 @@ interface SeriesFormFieldsProps {
 
 export function SeriesFormFields({
   slugReadOnly = false,
-}: SeriesFormFieldsProps) {
+}: Readonly<SeriesFormFieldsProps>) {
   const form = useFormContext<SeriesFormValues>();
 
   return (

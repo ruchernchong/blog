@@ -30,7 +30,10 @@ interface PostGridListProps {
  * default view hides the featured post (shown separately above), while a tag
  * filter shows every matching post.
  */
-export function PostGridList({ posts, activeTag }: PostGridListProps) {
+export function PostGridList({
+  posts,
+  activeTag,
+}: Readonly<PostGridListProps>) {
   const visible = activeTag
     ? posts.filter((post) => post.tags.includes(activeTag))
     : posts.filter((post) => !post.featured);
@@ -80,7 +83,7 @@ export function PostGridList({ posts, activeTag }: PostGridListProps) {
  */
 export function ActivePostGrid({
   posts,
-}: Omit<PostGridListProps, "activeTag">) {
+}: Readonly<Omit<PostGridListProps, "activeTag">>) {
   const activeTag = useSearchParams().get("tag") ?? undefined;
 
   return <PostGridList posts={posts} activeTag={activeTag} />;

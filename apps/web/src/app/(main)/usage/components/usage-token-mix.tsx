@@ -56,7 +56,10 @@ const CATEGORIES: {
  * Server component: shapes the all-time token mix into coloured segments and
  * renders the heading + legend. Only the stacked bar is a client leaf.
  */
-export function UsageTokenMix({ className, tokenMix }: UsageTokenMixProps) {
+export function UsageTokenMix({
+  className,
+  tokenMix,
+}: Readonly<UsageTokenMixProps>) {
   const total = CATEGORIES.reduce((sum, c) => sum + tokenMix[c.key], 0);
   const ordered = CATEGORIES.map((category) => ({
     ...category,

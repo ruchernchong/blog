@@ -17,7 +17,7 @@ interface EditSeriesEditorProps {
   params: Promise<{ id: string }>;
 }
 
-export function EditSeriesEditor({ params }: EditSeriesEditorProps) {
+export function EditSeriesEditor({ params }: Readonly<EditSeriesEditorProps>) {
   return (
     <Suspense fallback={<EditSeriesEditorFallback />}>
       <EditSeriesEditorContent params={params} />
@@ -41,7 +41,9 @@ export function EditSeriesEditorFallback() {
   );
 }
 
-async function EditSeriesEditorContent({ params }: EditSeriesEditorProps) {
+async function EditSeriesEditorContent({
+  params,
+}: Readonly<EditSeriesEditorProps>) {
   await connection();
   const { id } = await params;
   const series = await getSeriesById(id);

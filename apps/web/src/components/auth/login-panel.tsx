@@ -8,7 +8,7 @@ interface LoginPanelProps {
   searchParams: Promise<SearchParams>;
 }
 
-export function LoginPanel({ searchParams }: LoginPanelProps) {
+export function LoginPanel({ searchParams }: Readonly<LoginPanelProps>) {
   return (
     <Suspense fallback={<LoginPanelFallback />}>
       <LoginPanelContent searchParams={searchParams} />
@@ -20,7 +20,7 @@ export function LoginPanelFallback() {
   return <AuthPanelFallback label="Loading sign-in options" />;
 }
 
-async function LoginPanelContent({ searchParams }: LoginPanelProps) {
+async function LoginPanelContent({ searchParams }: Readonly<LoginPanelProps>) {
   const { clientId, error, errorDescription } =
     await oauthSearchParamsCache.parse(searchParams);
 

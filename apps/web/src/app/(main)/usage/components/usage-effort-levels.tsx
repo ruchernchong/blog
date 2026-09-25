@@ -24,7 +24,7 @@ const CHART_COLORS = [
 export function UsageEffortLevels({
   className,
   effort,
-}: UsageEffortLevelsProps) {
+}: Readonly<UsageEffortLevelsProps>) {
   const { levels, classifiedSessionCount, unclassifiedSessionCount } = effort;
   const totalSessions = classifiedSessionCount + unclassifiedSessionCount;
   const caption =

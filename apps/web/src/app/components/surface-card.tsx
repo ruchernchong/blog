@@ -11,7 +11,7 @@ export function SurfaceCard({
   children,
   width = "default",
   className,
-}: SurfaceCardProps) {
+}: Readonly<SurfaceCardProps>) {
   return (
     <div
       className={cn(

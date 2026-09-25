@@ -13,7 +13,7 @@ interface ConsentPanelProps {
   searchParams: Promise<SearchParams>;
 }
 
-export function ConsentPanel({ searchParams }: ConsentPanelProps) {
+export function ConsentPanel({ searchParams }: Readonly<ConsentPanelProps>) {
   return (
     <Suspense fallback={<ConsentPanelFallback />}>
       <ConsentPanelContent searchParams={searchParams} />
@@ -25,7 +25,9 @@ export function ConsentPanelFallback() {
   return <AuthPanelFallback label="Loading authorisation request" />;
 }
 
-async function ConsentPanelContent({ searchParams }: ConsentPanelProps) {
+async function ConsentPanelContent({
+  searchParams,
+}: Readonly<ConsentPanelProps>) {
   const [{ clientId, scope }, session] = await Promise.all([
     oauthSearchParamsCache.parse(searchParams),
     auth.api.getSession({ headers: await headers() }),

@@ -21,7 +21,7 @@ export function UsageSection({
   description,
   className,
   children,
-}: UsageSectionProps) {
+}: Readonly<UsageSectionProps>) {
   const headingId = `${id}-heading`;
 
   return (

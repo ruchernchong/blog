@@ -24,7 +24,7 @@ export function UsageToggle<T extends string | number>({
   options,
   value,
   onChange,
-}: UsageToggleProps<T>) {
+}: Readonly<UsageToggleProps<T>>) {
   return (
     <fieldset className="flex min-w-0 flex-wrap gap-2">
       <legend className="sr-only">{label}</legend>

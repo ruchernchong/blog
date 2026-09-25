@@ -16,7 +16,7 @@ interface UsagePeriodProps {
 export function UsagePeriod({
   comparisons,
   modelDisplayNames,
-}: UsagePeriodProps) {
+}: Readonly<UsagePeriodProps>) {
   return (
     <UsageSection
       description="The latest stretch of data against the one before it."

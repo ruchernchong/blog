@@ -7,7 +7,7 @@ interface MarkdownPreviewProps {
   markdown: string;
 }
 
-export function MarkdownPreview({ markdown }: MarkdownPreviewProps) {
+export function MarkdownPreview({ markdown }: Readonly<MarkdownPreviewProps>) {
   if (!markdown.trim()) {
     return (
       <div className="flex h-full items-center justify-center">

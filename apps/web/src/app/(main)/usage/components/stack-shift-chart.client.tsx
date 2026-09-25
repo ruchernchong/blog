@@ -77,7 +77,7 @@ function StackShiftTooltip({
 export function StackShiftChartClient({
   rows,
   series,
-}: StackShiftChartClientProps) {
+}: Readonly<StackShiftChartClientProps>) {
   const colorByKey = new Map(series.map((entry) => [entry.key, entry.color]));
   // One tick per month (its first week), so a month label never repeats.
   const monthTicks = rows

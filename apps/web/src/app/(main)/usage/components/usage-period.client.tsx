@@ -32,7 +32,10 @@ function formatRange(start: string, end: string): string {
 }
 
 /** Arrow plus signed percentage; direction is never carried by colour alone. */
-function Change({ value, days }: { value: number | null; days: number }) {
+function Change({
+  value,
+  days,
+}: Readonly<{ value: number | null; days: number }>) {
   if (value === null) {
     return <span className="text-muted text-sm">No prior {days} days</span>;
   }
@@ -57,7 +60,7 @@ function Change({ value, days }: { value: number | null; days: number }) {
 export function UsagePeriodClient({
   comparisons,
   modelDisplayNames,
-}: UsagePeriodClientProps) {
+}: Readonly<UsagePeriodClientProps>) {
   const [period, setPeriod] = useQueryState(
     "period",
     usageParsers.period.withOptions({ history: "replace" }),

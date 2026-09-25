@@ -18,7 +18,7 @@ interface CustomLinkProps
   href?: string;
 }
 
-function CustomLink({ href, children, ...props }: CustomLinkProps) {
+function CustomLink({ href, children, ...props }: Readonly<CustomLinkProps>) {
   const isInternalLink = href && (href.startsWith("/") || href.startsWith("#"));
 
   if (isInternalLink) {
@@ -59,7 +59,7 @@ interface ImageComponentProps
   alt: string;
 }
 
-function ImageComponent({ alt = "", ...props }: ImageComponentProps) {
+function ImageComponent({ alt = "", ...props }: Readonly<ImageComponentProps>) {
   return (
     <figure>
       <Image
@@ -95,7 +95,7 @@ const components: MDXComponents = {
   img: ImageComponent,
 };
 
-export async function Mdx({ content }: { content: string }) {
+export async function Mdx({ content }: Readonly<{ content: string }>) {
   const { content: mdxContent } = await compileMDX({
     source: content,
     components,

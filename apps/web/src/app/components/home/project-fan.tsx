@@ -17,7 +17,7 @@ function TrafficLights() {
   );
 }
 
-function FanCard({ label, title, className }: FanCardProps) {
+function FanCard({ label, title, className }: Readonly<FanCardProps>) {
   return (
     <Link
       href="/projects"

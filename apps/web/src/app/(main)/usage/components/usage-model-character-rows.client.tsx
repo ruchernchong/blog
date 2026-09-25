@@ -21,7 +21,7 @@ export function UsageModelCharacterRows({
   head,
   rows,
   initialCount,
-}: UsageModelCharacterRowsProps) {
+}: Readonly<UsageModelCharacterRowsProps>) {
   const [expanded, setExpanded] = useState(false);
   const hidden = rows.length - initialCount;
 

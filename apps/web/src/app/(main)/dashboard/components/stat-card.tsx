@@ -27,7 +27,7 @@ export function StatCard({
   note,
   animate,
   compact,
-}: StatCardProps) {
+}: Readonly<StatCardProps>) {
   return (
     <div className="flex flex-col gap-2 rounded-2xl border border-border bg-default/50 p-5">
       <span className="font-medium text-muted text-sm">{label}</span>

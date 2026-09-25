@@ -12,7 +12,9 @@ interface StudioFormFallbackProps {
   label: string;
 }
 
-export function StudioFormFallback({ label }: StudioFormFallbackProps) {
+export function StudioFormFallback({
+  label,
+}: Readonly<StudioFormFallbackProps>) {
   return (
     <div role="status" aria-label={label} className="flex flex-col gap-6">
       <div aria-hidden="true" className="flex flex-col gap-6">

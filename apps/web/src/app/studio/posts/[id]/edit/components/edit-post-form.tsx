@@ -93,7 +93,10 @@ function buildPatchData(formData: FormData) {
   };
 }
 
-export function EditPostForm({ postId, seriesOptions }: EditPostFormProps) {
+export function EditPostForm({
+  postId,
+  seriesOptions,
+}: Readonly<EditPostFormProps>) {
   const router = useRouter();
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);

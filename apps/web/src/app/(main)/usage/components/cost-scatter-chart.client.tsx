@@ -34,10 +34,10 @@ const AXIS_TICK = { fill: "var(--muted)", fontSize: 12 };
 function CostTooltip({
   active,
   payload,
-}: {
+}: Readonly<{
   active?: boolean;
   payload?: readonly { payload?: CostPoint }[];
-}) {
+}>) {
   const point = payload?.[0]?.payload;
   if (!active || !point) {
     return null;
@@ -96,7 +96,7 @@ function DirectLabel({ x, y, width, value }: LabelProps) {
  */
 export function CostScatterChartClient({
   points,
-}: CostScatterChartClientProps) {
+}: Readonly<CostScatterChartClientProps>) {
   const xAxis = logAxis(points.map((point) => point.tokens));
   const yAxis = logAxis(
     points.map((point) => point.rate),
