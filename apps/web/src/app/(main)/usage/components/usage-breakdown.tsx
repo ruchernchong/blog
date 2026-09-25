@@ -153,9 +153,12 @@ function ProviderValue({
         ))}
       </span>
       <span className="truncate">
-        {providers
-          .map((provider) => providerDisplayNames[provider] ?? provider)
-          .join(", ")}
+        {/* Expandable rows name each provider in their children. */}
+        {row.providerRows
+          ? `${providers.length} providers`
+          : providers
+              .map((provider) => providerDisplayNames[provider] ?? provider)
+              .join(", ")}
       </span>
     </span>
   );
