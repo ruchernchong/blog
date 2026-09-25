@@ -22,6 +22,7 @@ import type { SelectSeries } from "@/schema";
 export function SeriesTable() {
   const router = useRouter();
   const [allSeries, setAllSeries] = useState<SelectSeries[] | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<
@@ -30,6 +31,7 @@ export function SeriesTable() {
   const [selectedSeries, setSelectedSeries] = useState<Set<string>>(new Set());
 
   const fetchSeries = useCallback(async () => {
+    setLoadError(null);
     try {
       const response = await fetch("/api/studio/series");
       if (response.ok) {
@@ -40,13 +42,20 @@ export function SeriesTable() {
         return;
       }
 
-      if (response.status === 401) {
-        console.error("Unauthorised: Please sign in");
-      }
-      setAllSeries((current) => current ?? []);
+      const message =
+        response.status === 401
+          ? "Please sign in to manage series."
+          : "Something went wrong while loading series.";
+      console.error(
+        response.status === 401
+          ? "Unauthorised: Please sign in"
+          : "Failed to fetch series:",
+        response.status,
+      );
+      setLoadError(message);
     } catch (error) {
       console.error("Failed to fetch series:", error);
-      setAllSeries((current) => current ?? []);
+      setLoadError("Something went wrong while loading series.");
     }
   }, []);
 
@@ -171,7 +180,21 @@ export function SeriesTable() {
         </div>
         <Card>
           <Card.Content className="py-12">
-            <p className="text-center text-muted">Loading series...</p>
+            {loadError ? (
+              <EmptyState>
+                <EmptyState.Header>
+                  <EmptyState.Title>Could not load series</EmptyState.Title>
+                  <EmptyState.Description>{loadError}</EmptyState.Description>
+                </EmptyState.Header>
+                <EmptyState.Content>
+                  <Button variant="outline" onPress={() => void fetchSeries()}>
+                    Try again
+                  </Button>
+                </EmptyState.Content>
+              </EmptyState>
+            ) : (
+              <p className="text-center text-muted">Loading series...</p>
+            )}
           </Card.Content>
         </Card>
       </div>
