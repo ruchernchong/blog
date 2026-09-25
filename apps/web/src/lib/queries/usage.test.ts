@@ -63,7 +63,7 @@ describe("upsertTokenUsage", () => {
     onConflictConfigs.length = 0;
   });
 
-  it("should only overwrite a day when the incoming snapshot has more tokens", async () => {
+  it("should only overwrite a day when the incoming snapshot has more tokens or more reasoning", async () => {
     await upsertTokenUsage([baseRow]);
 
     expect(onConflictConfigs).toHaveLength(1);
@@ -71,9 +71,12 @@ describe("upsertTokenUsage", () => {
     expect(setWhere).toBeDefined();
 
     // The guard makes the stored lifetime total non-decreasing: a pruned-log
-    // re-parse with a smaller total is ignored; a larger (more complete) parse wins.
+    // re-parse with a smaller total is ignored; a larger (more complete) parse wins,
+    // and at an equal total a finer reasoning split wins (row comparison).
     const { sql } = dialect.sqlToQuery(setWhere as never);
-    expect(sql).toBe('excluded.total_tokens > "token_usage"."total_tokens"');
+    expect(sql).toBe(
+      '(excluded.total_tokens, excluded.reasoning_tokens) > ("token_usage"."total_tokens", "token_usage"."reasoning_tokens")',
+    );
   });
 
   it("should point every token column at the incoming (excluded) value", async () => {

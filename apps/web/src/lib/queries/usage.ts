@@ -94,7 +94,10 @@ const EFFORT_UPDATE_COLUMNS = [
  * total and ratchet the stored lifetime value down (observed as Opus 4.7 tokens
  * "getting lesser and lesser"). So a day is overwritten only when the incoming
  * snapshot has a larger `totalTokens`, i.e. it is a more complete parse; smaller
- * snapshots are ignored. The whole incoming row wins together (not per-column),
+ * snapshots are ignored. At an equal total, a snapshot with more
+ * `reasoningTokens` also wins, so a parser that newly splits reasoning out of
+ * output (same total) can correct the stored breakdown on re-ingest. The
+ * whole incoming row wins together (not per-column),
  * which preserves the `input+output+cache = total` invariant and keeps `costUsd`
  * consistent with its tokens. Trade-off: a day that was genuinely over-counted
  * once can no longer be corrected downward via ingest — acceptable for a
@@ -115,7 +118,7 @@ export async function upsertTokenUsage(
       .onConflictDoUpdate({
         target: [...CONFLICT_TARGET],
         set,
-        setWhere: sql`excluded.total_tokens > ${tokenUsage.totalTokens}`,
+        setWhere: sql`(excluded.total_tokens, excluded.reasoning_tokens) > (${tokenUsage.totalTokens}, ${tokenUsage.reasoningTokens})`,
       });
   }
   return rows.length;
