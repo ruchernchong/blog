@@ -14,12 +14,12 @@ export function SaveStatusIndicator({
   lastSavedAt,
   onRetry,
 }: Readonly<SaveStatusIndicatorProps>) {
-  const [_tick, setTick] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     if (status !== "saved" || !lastSavedAt) return;
 
-    const interval = setInterval(() => setTick((t) => t + 1), 10_000);
+    const interval = setInterval(() => setNow(Date.now()), 10_000);
     return () => clearInterval(interval);
   }, [status, lastSavedAt]);
 
@@ -32,7 +32,7 @@ export function SaveStatusIndicator({
       {status === "saving" && "Saving..."}
       {status === "saved" &&
         lastSavedAt &&
-        `Saved ${formatRelativeTime(lastSavedAt)}`}
+        `Saved ${formatRelativeTime(lastSavedAt, now)}`}
       {status === "error" && (
         <>
           Failed to save

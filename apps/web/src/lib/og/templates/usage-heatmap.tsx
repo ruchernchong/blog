@@ -128,13 +128,11 @@ export function UsageHeatmap({
             maxWidth: "95%",
           }}
         >
-          {toWords(headline).map((word, wordIndex) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: words are a fixed, ordered template
-            <div key={wordIndex} style={{ display: "flex" }}>
-              {word.map((run, runIndex) => (
+          {toWords(headline).map((word) => (
+            <div key={word.key} style={{ display: "flex" }}>
+              {word.runs.map((run) => (
                 <span
-                  // biome-ignore lint/suspicious/noArrayIndexKey: runs are a fixed, ordered template
-                  key={runIndex}
+                  key={run.key}
                   style={run.highlight ? { color: OG_COLOURS.primary } : {}}
                 >
                   {run.text}
@@ -222,8 +220,11 @@ export function UsageHeatmap({
   );
 }
 
-/** Splits narrative parts into words, each a list of runs sharing one accent. */
-function toWords(parts: UsageNarrativePart[]): UsageNarrativePart[][] {
+/**
+ * Splits narrative parts into words, each a list of runs sharing one accent.
+ * Keys are character offsets, so repeated words stay distinct.
+ */
+function toWords(parts: UsageNarrativePart[]) {
   const words: UsageNarrativePart[][] = [];
   let word: UsageNarrativePart[] = [];
 
@@ -243,5 +244,14 @@ function toWords(parts: UsageNarrativePart[]): UsageNarrativePart[][] {
     words.push(word);
   }
 
-  return words;
+  let offset = 0;
+  return words.map((runs) => {
+    const key = offset;
+    const keyedRuns = runs.map((run) => {
+      const runKey = offset;
+      offset += run.text.length;
+      return { ...run, key: runKey };
+    });
+    return { key, runs: keyedRuns };
+  });
 }

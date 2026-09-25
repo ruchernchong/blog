@@ -176,7 +176,7 @@ function printSummary(rows: InsertTokenUsage[]) {
     0,
   );
   const naRows = rows.filter((row) => row.costUsd === null).length;
-  const dates = rows.map((row) => row.date).sort();
+  const dates = rows.map((row) => row.date).sort((a, b) => a.localeCompare(b));
   console.log("\nDone.");
   console.log(`  rows:    ${rows.length.toLocaleString()}`);
   console.log(`  days:    ${new Set(dates).size.toLocaleString()}`);

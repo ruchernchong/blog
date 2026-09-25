@@ -33,8 +33,8 @@ function serialise(data: unknown): string {
   }
 }
 
-function formatRelativeTime(date: Date): string {
-  const diffMs = Date.now() - date.getTime();
+function formatRelativeTime(date: Date, now = Date.now()): string {
+  const diffMs = now - date.getTime();
   const diffSeconds = Math.floor(diffMs / 1000);
 
   if (diffSeconds < 5) return "just now";

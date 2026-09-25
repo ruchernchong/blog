@@ -658,7 +658,9 @@ function rollupRows(
   return [...map.entries()]
     .map(([key, rollup]) => {
       const cost = sumCost(rollup.costValues);
-      const providers = [...rollup.providers].sort();
+      const providers = [...rollup.providers].sort((a, b) =>
+        a.localeCompare(b),
+      );
       const activeDates = [...rollup.dailyTokens.entries()]
         .filter(([, tokens]) => tokens > 0)
         .map(([date]) => date)

@@ -21,7 +21,7 @@ import type { SelectSeries } from "@/schema";
 
 export function SeriesTable() {
   const router = useRouter();
-  const [allSeries, setAllSeries] = useState<SelectSeries[]>([]);
+  const [allSeries, setAllSeries] = useState<SelectSeries[] | null>(null);
   const [isPending, startTransition] = useTransition();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<
@@ -37,11 +37,16 @@ export function SeriesTable() {
         startTransition(() => {
           setAllSeries(series);
         });
-      } else if (response.status === 401) {
+        return;
+      }
+
+      if (response.status === 401) {
         console.error("Unauthorised: Please sign in");
       }
+      setAllSeries((current) => current ?? []);
     } catch (error) {
       console.error("Failed to fetch series:", error);
+      setAllSeries((current) => current ?? []);
     }
   }, []);
 
@@ -149,24 +154,7 @@ export function SeriesTable() {
     });
   };
 
-  const filteredSeries = allSeries.filter((series) => {
-    const matchesSearch =
-      searchQuery === "" ||
-      series.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      series.slug.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesStatus =
-      statusFilter === "all" ||
-      (statusFilter === "deleted" && series.deletedAt) ||
-      (statusFilter !== "deleted" &&
-        !series.deletedAt &&
-        series.status === statusFilter);
-
-    return matchesSearch && matchesStatus;
-  });
-
-  // TODO: To be fixed. This should be an empty state
-  if (allSeries.length === 0) {
+  if (allSeries === null) {
     return (
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
@@ -189,6 +177,61 @@ export function SeriesTable() {
       </div>
     );
   }
+
+  if (allSeries.length === 0) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="font-bold text-3xl">Series</h1>
+            <p className="mb-2 text-muted">Manage your blog series</p>
+          </div>
+          <Link
+            className={buttonVariants()}
+            href={"/studio/series/new" as Route}
+          >
+            Create Series
+          </Link>
+        </div>
+        <Card>
+          <Card.Content className="py-12">
+            <EmptyState>
+              <EmptyState.Header>
+                <EmptyState.Title>No series yet</EmptyState.Title>
+                <EmptyState.Description>
+                  Get started by creating your first series
+                </EmptyState.Description>
+              </EmptyState.Header>
+              <EmptyState.Content>
+                <Link
+                  className={buttonVariants()}
+                  href={"/studio/series/new" as Route}
+                >
+                  Create Series
+                </Link>
+              </EmptyState.Content>
+            </EmptyState>
+          </Card.Content>
+        </Card>
+      </div>
+    );
+  }
+
+  const filteredSeries = allSeries.filter((series) => {
+    const matchesSearch =
+      searchQuery === "" ||
+      series.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      series.slug.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "deleted" && series.deletedAt) ||
+      (statusFilter !== "deleted" &&
+        !series.deletedAt &&
+        series.status === statusFilter);
+
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="flex flex-col gap-6">

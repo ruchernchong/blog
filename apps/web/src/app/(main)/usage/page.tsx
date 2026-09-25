@@ -171,7 +171,7 @@ function getUsageProviderIds(profile: UsageProfile) {
         ...row.providers,
       ]),
     ]),
-  ].sort();
+  ].sort((a, b) => a.localeCompare(b));
 }
 
 function getUsageModelIds(profile: UsageProfile) {
@@ -180,5 +180,5 @@ function getUsageModelIds(profile: UsageProfile) {
       ...profile.summary.models,
       ...profile.byModel.map((row) => row.key),
     ]),
-  ].sort();
+  ].sort((a, b) => a.localeCompare(b));
 }
