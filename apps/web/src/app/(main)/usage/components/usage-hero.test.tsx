@@ -43,7 +43,9 @@ describe("UsageHero", () => {
       .element(screen.getByText("4.2B tokens", { exact: true }))
       .toHaveClass("text-accent");
     await expect.element(screen.getByText("US$12.4K")).toBeInTheDocument();
-    await expect.element(screen.getByText("4.2B")).toBeInTheDocument();
+    await expect
+      .element(screen.getByRole("definition").filter({ hasText: /^4\.2B$/ }))
+      .toBeInTheDocument();
     await expect.element(screen.getByText("212")).toBeInTheDocument();
     await expect.element(screen.getByText("3")).toBeInTheDocument();
     await expect
