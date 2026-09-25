@@ -10,6 +10,10 @@ const CLAUDE_DIR = "~/.claude/projects";
  * Each assistant message carries `message.usage` with input/output and the two
  * cache token kinds. Lines are deduped by `message.id` because sidechains and
  * resumed sessions repeat the same assistant message across files.
+ *
+ * `output_tokens` includes thinking, reported in
+ * `output_tokens_details.thinking_tokens`; we split it into its own bucket so
+ * the five buckets stay exclusive.
  */
 
 interface ClaudeUsage {
@@ -17,6 +21,7 @@ interface ClaudeUsage {
   output_tokens?: number;
   cache_creation_input_tokens?: number;
   cache_read_input_tokens?: number;
+  output_tokens_details?: { thinking_tokens?: number };
 }
 
 interface ClaudeLine {
@@ -47,12 +52,14 @@ export async function parse(): Promise<AgentParseResult> {
       const model = line.message?.model;
       if (!usage || !model || model === "<synthetic>") return;
 
+      const output = usage.output_tokens ?? 0;
+      const reasoning = usage.output_tokens_details?.thinking_tokens ?? 0;
       const tokens = {
         input: usage.input_tokens ?? 0,
-        output: usage.output_tokens ?? 0,
+        output: Math.max(0, output - reasoning),
         cacheRead: usage.cache_read_input_tokens ?? 0,
         cacheWrite: usage.cache_creation_input_tokens ?? 0,
-        reasoning: 0,
+        reasoning,
       };
 
       // Streaming repeats the message.id per content block and usage grows
