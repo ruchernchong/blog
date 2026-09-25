@@ -71,8 +71,11 @@ export function UsageHero({
   );
 }
 
-/** Total time for the narrative to finish streaming in, in milliseconds. */
-const STREAM_DURATION_MS = 1200;
+/**
+ * When the last word starts blurring in, in milliseconds. Its 400ms
+ * `animate-stream-in` fade (see `globals.css`) lands the narrative at ~1.2s.
+ */
+const STREAM_SPREAD_MS = 800;
 
 /**
  * Splits the narrative into words that blur in one after another, like a model
@@ -82,8 +85,8 @@ const STREAM_DURATION_MS = 1200;
 function streamNarrative(parts: UsageNarrativePart[]) {
   const words = parts.map((part) => part.text.split(/(\s+)/));
   const stagger =
-    STREAM_DURATION_MS /
-    Math.max(1, words.flat().filter((word) => word.trim()).length);
+    STREAM_SPREAD_MS /
+    Math.max(1, words.flat().filter((word) => word.trim()).length - 1);
   let wordIndex = 0;
 
   return parts.map((part, partIndex) => {
