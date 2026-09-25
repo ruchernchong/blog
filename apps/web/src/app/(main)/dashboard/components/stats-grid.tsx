@@ -21,7 +21,8 @@ export function StatsGrid() {
 
 export function StatsGridFallback() {
   return (
-    <output
+    <div
+      role="status"
       aria-label="Loading dashboard statistics"
       className="grid grid-cols-2 gap-4 lg:grid-cols-4"
     >
@@ -36,7 +37,7 @@ export function StatsGridFallback() {
           <Skeleton className="h-3 w-16 rounded-lg" />
         </div>
       ))}
-    </output>
+    </div>
   );
 }
 

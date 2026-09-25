@@ -10,7 +10,8 @@ const STUDIO_NAVIGATION_ITEMS = [
 
 export function StudioAccessFallback() {
   return (
-    <output
+    <div
+      role="status"
       aria-label="Loading Content Studio"
       className="flex min-h-svh bg-background"
     >
@@ -33,6 +34,6 @@ export function StudioAccessFallback() {
         <Skeleton className="h-5 w-80 max-w-full rounded-lg" />
         <Skeleton className="h-72 w-full rounded-2xl" />
       </main>
-    </output>
+    </div>
   );
 }
