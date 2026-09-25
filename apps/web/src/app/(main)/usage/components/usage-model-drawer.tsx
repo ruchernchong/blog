@@ -31,7 +31,7 @@ function orDash<T>(value: T | null, formatValue: (value: T) => string) {
 }
 
 /** Daily tokens over the trailing window as a thin one-hue line. */
-function Sparkline({ values }: { values: number[] }) {
+function Sparkline({ values }: Readonly<{ values: number[] }>) {
   const max = Math.max(...values, 0);
   if (values.length < 2 || max === 0) {
     return null;
@@ -61,7 +61,7 @@ function Sparkline({ values }: { values: number[] }) {
   );
 }
 
-function Fact({ label, value }: { label: string; value: string }) {
+function Fact({ label, value }: Readonly<{ label: string; value: string }>) {
   return (
     <div className="flex flex-col gap-2">
       <dt className="font-medium text-muted text-xs uppercase tracking-wider">
@@ -82,7 +82,7 @@ export function UsageModelDrawer({
   byModel,
   modelDisplayNames,
   providerDisplayNames,
-}: UsageModelDrawerProps) {
+}: Readonly<UsageModelDrawerProps>) {
   const [model, setModel] = useQueryState(
     "model",
     usageParsers.model.withOptions({ history: "replace" }),
@@ -117,11 +117,11 @@ function ModelProfile({
   row,
   modelDisplayNames,
   providerDisplayNames,
-}: {
+}: Readonly<{
   row: UsageBreakdownRow;
   modelDisplayNames: Record<string, string>;
   providerDisplayNames: Record<string, string>;
-}) {
+}>) {
   const character = deriveModelCharacter(row);
   const providers = row.providers
     .map((provider) => providerDisplayNames[provider] ?? provider)

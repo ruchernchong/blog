@@ -26,7 +26,11 @@ type TokenMixTooltipProps = Partial<TooltipContentProps<number, string>> & {
 };
 
 /** Recharts injects `active` and `payload` when cloning the tooltip content. */
-function TokenMixTooltip({ active, payload, total }: TokenMixTooltipProps) {
+function TokenMixTooltip({
+  active,
+  payload,
+  total,
+}: Readonly<TokenMixTooltipProps>) {
   if (!active || !payload?.length) return null;
   return (
     <ChartTooltip>
@@ -65,7 +69,7 @@ function segmentRadius(
 export function TokenMixChartClient({
   segments,
   total,
-}: TokenMixChartClientProps) {
+}: Readonly<TokenMixChartClientProps>) {
   const row: ChartRow = { label: "Tokens" };
   for (const segment of segments) row[segment.key] = segment.value;
   const data: ChartRow[] = [row];

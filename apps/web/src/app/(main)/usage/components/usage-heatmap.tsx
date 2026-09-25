@@ -56,7 +56,7 @@ export function UsageHeatmap({
   className,
   contributions,
   modelDisplayNames,
-}: UsageHeatmapProps) {
+}: Readonly<UsageHeatmapProps>) {
   const byYear = new Map<string, DayContribution[]>();
   for (const day of contributions) {
     const year = day.date.slice(0, 4);

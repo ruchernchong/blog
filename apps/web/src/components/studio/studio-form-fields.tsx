@@ -35,7 +35,7 @@ export function StudioTextFieldController<TValues extends FieldValues>({
   description,
   isRequired = false,
   isReadOnly = false,
-}: StudioTextFieldControllerProps<TValues>) {
+}: Readonly<StudioTextFieldControllerProps<TValues>>) {
   return (
     <Controller
       control={control}
@@ -75,7 +75,7 @@ export function StudioTextAreaController<TValues extends FieldValues>({
   placeholder,
   rows,
   description,
-}: StudioTextAreaControllerProps<TValues>) {
+}: Readonly<StudioTextAreaControllerProps<TValues>>) {
   return (
     <Controller
       control={control}
@@ -106,7 +106,7 @@ interface StudioStatusSelectControllerProps<TValues extends FieldValues> {
 export function StudioStatusSelectController<TValues extends FieldValues>({
   control,
   name,
-}: StudioStatusSelectControllerProps<TValues>) {
+}: Readonly<StudioStatusSelectControllerProps<TValues>>) {
   return (
     <Controller
       control={control}

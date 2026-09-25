@@ -7,7 +7,7 @@ interface RelatedPostsProps {
   slug: string;
 }
 
-export async function RelatedPosts({ slug }: RelatedPostsProps) {
+export async function RelatedPosts({ slug }: Readonly<RelatedPostsProps>) {
   const relatedPosts = await getRelatedPosts(slug, 4);
 
   if (!relatedPosts.length) return null;

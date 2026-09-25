@@ -25,7 +25,7 @@ export function ContentEditor({
   markdown,
   onChange,
   editorRef,
-}: ContentEditorProps) {
+}: Readonly<ContentEditorProps>) {
   const innerRef = useRef<MarkdownEditorMethods>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("split");
 

@@ -12,7 +12,10 @@ interface LayoutProps {
  *
  * Provides coral gradient background, white content card, and site branding
  */
-export function Layout({ children, showBranding = true }: LayoutProps) {
+export function Layout({
+  children,
+  showBranding = true,
+}: Readonly<LayoutProps>) {
   return (
     <div
       style={{

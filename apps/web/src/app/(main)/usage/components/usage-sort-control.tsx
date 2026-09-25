@@ -27,11 +27,11 @@ export function UsageSortControl({
   sort,
   dir,
   onChange,
-}: {
+}: Readonly<{
   sort: UsageSortColumn;
   dir: "asc" | "desc";
   onChange: (sort: UsageSortColumn, dir: "asc" | "desc") => void;
-}) {
+}>) {
   const current =
     MOBILE_SORT_OPTIONS.find((option) => option.id === sort) ??
     MOBILE_SORT_OPTIONS[0];

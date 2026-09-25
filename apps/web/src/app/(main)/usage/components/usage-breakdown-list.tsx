@@ -24,7 +24,7 @@ export function UsageBreakdownList({
   rows,
   viewId,
   names,
-}: UsageBreakdownListProps) {
+}: Readonly<UsageBreakdownListProps>) {
   if (rows.length === 0) {
     return (
       <p className="py-8 text-center text-muted text-sm">

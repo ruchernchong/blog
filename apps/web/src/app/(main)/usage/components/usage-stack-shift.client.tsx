@@ -25,7 +25,9 @@ const sharePercent = new Intl.NumberFormat("en-SG", {
  * Model/agent switch plus a legend that doubles as the chart's labels: every
  * series is named with its all-time share, so identity never rests on colour.
  */
-export function UsageStackShiftClient({ views }: UsageStackShiftClientProps) {
+export function UsageStackShiftClient({
+  views,
+}: Readonly<UsageStackShiftClientProps>) {
   const [view, setView] = useQueryState(
     "stack",
     usageParsers.stack.withOptions({ history: "replace" }),

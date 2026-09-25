@@ -26,7 +26,11 @@ function sizeForRatio(ratio: number): string {
  * shell (as the Suspense fallback, with the default highlight) and inside the
  * client component below once the active tag is known.
  */
-export function TopicPills({ tags, maxCount, activeTag }: TopicPillsProps) {
+export function TopicPills({
+  tags,
+  maxCount,
+  activeTag,
+}: Readonly<TopicPillsProps>) {
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5">
       {tags.map(([tag, tagCount], index) => {
@@ -70,7 +74,7 @@ export function TopicPills({ tags, maxCount, activeTag }: TopicPillsProps) {
 export function ActiveTopicPills({
   tags,
   maxCount,
-}: Omit<TopicPillsProps, "activeTag">) {
+}: Readonly<Omit<TopicPillsProps, "activeTag">>) {
   const activeTag = useSearchParams().get("tag") ?? undefined;
 
   return <TopicPills tags={tags} maxCount={maxCount} activeTag={activeTag} />;

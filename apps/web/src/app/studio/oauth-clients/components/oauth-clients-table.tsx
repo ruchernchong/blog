@@ -377,10 +377,10 @@ export function OAuthClientsTable() {
 function OAuthClientDetailModal({
   clientId,
   onClose,
-}: {
+}: Readonly<{
   clientId: string | null;
   onClose: () => void;
-}) {
+}>) {
   const [detail, setDetail] = useState<OAuthClientDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -452,7 +452,9 @@ function OAuthClientDetailModal({
   );
 }
 
-function OAuthClientDetailBody({ detail }: { detail: OAuthClientDetail }) {
+function OAuthClientDetailBody({
+  detail,
+}: Readonly<{ detail: OAuthClientDetail }>) {
   return (
     <>
       <section className="flex flex-col gap-2">

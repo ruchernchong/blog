@@ -47,7 +47,7 @@ function getTodayDateKey(date: Date) {
 export function UsageHeatmapClient({
   modelDisplayNames,
   years,
-}: UsageHeatmapClientProps) {
+}: Readonly<UsageHeatmapClientProps>) {
   // `?year=` is the source of truth; an unknown year falls back to the newest.
   const [selectedYear, setSelectedYear] = useQueryState(
     "year",

@@ -36,7 +36,7 @@ const navItems = [
   },
 ];
 
-export function StudioShell({ children }: { children: ReactNode }) {
+export function StudioShell({ children }: Readonly<{ children: ReactNode }>) {
   const router = useRouter();
   const pathname = usePathname();
 

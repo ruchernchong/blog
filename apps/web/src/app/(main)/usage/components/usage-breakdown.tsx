@@ -119,7 +119,7 @@ const CURRENCY_FORMAT_OPTIONS = {
   style: "currency",
 } satisfies Intl.NumberFormatOptions;
 
-function CostValue({ cost }: { cost: Cost }) {
+function CostValue({ cost }: Readonly<{ cost: Cost }>) {
   if (cost === null) {
     return "N.A.";
   }
@@ -133,7 +133,7 @@ function CostValue({ cost }: { cost: Cost }) {
   );
 }
 
-function ProviderLogo({ provider }: { provider: string }) {
+function ProviderLogo({ provider }: Readonly<{ provider: string }>) {
   return (
     <Image
       alt=""
@@ -150,10 +150,10 @@ function ProviderLogo({ provider }: { provider: string }) {
 function ProviderValue({
   providerDisplayNames,
   row,
-}: {
+}: Readonly<{
   providerDisplayNames: Record<string, string>;
   row: UsageBreakdownRow;
-}) {
+}>) {
   const providers = row.provider ? [row.provider] : row.providers;
 
   if (!providers?.length) {
@@ -182,10 +182,10 @@ function ProviderValue({
 function RowVisual({
   row,
   viewId,
-}: {
+}: Readonly<{
   row: UsageBreakdownRow;
   viewId: string;
-}) {
+}>) {
   if (viewId === "provider") {
     return <ProviderLogo provider={row.key} />;
   }
@@ -319,11 +319,11 @@ function FilterChip({
   clearLabel,
   label,
   onClear,
-}: {
+}: Readonly<{
   clearLabel: string;
   label: string;
   onClear: () => void;
-}) {
+}>) {
   return (
     <Chip className="gap-1 pe-1" size="sm" variant="soft">
       <Chip.Label>{label}</Chip.Label>
@@ -346,13 +346,13 @@ function ColumnsMenu({
   lockedColumn,
   onVisibleColumnsChange,
   visibleColumns,
-}: {
+}: Readonly<{
   columnOptions: { id: string; label: string }[];
   /** The sorted column: always shown, so its toggle is disabled. */
   lockedColumn: string;
   onVisibleColumnsChange: (keys: DataGridSelection) => void;
   visibleColumns: DataGridSelection;
-}) {
+}>) {
   return (
     <Dropdown>
       <Button size="sm" variant="outline">
@@ -391,7 +391,7 @@ function BreakdownToolbar({
   providerFilter,
   providerOptions,
   search,
-}: {
+}: Readonly<{
   onFreeFilterChange: (value: string) => void;
   onProviderFilterChange: (value: string) => void;
   onSearchChange: (value: string) => void;
@@ -399,7 +399,7 @@ function BreakdownToolbar({
   providerFilter: string;
   providerOptions: ProviderOption[];
   search: string;
-}) {
+}>) {
   return (
     <div className="flex flex-wrap items-center gap-4">
       <SearchField
@@ -487,7 +487,7 @@ export function UsageBreakdown({
   modelDisplayNames,
   title,
   views,
-}: UsageBreakdownProps) {
+}: Readonly<UsageBreakdownProps>) {
   // The URL is the source of truth for view, filters, and sort, so a filtered
   // breakdown is shareable. Column visibility is a display preference and stays local.
   const [

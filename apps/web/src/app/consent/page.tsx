@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 
 export default function ConsentPage({
   searchParams,
-}: {
+}: Readonly<{
   searchParams: Promise<SearchParams>;
-}) {
+}>) {
   return (
     <main className="grid min-h-svh place-items-center p-6">
       <div className="w-full max-w-sm">

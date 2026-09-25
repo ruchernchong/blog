@@ -11,7 +11,7 @@ interface StudioAccessProps {
   children: ReactNode;
 }
 
-export function StudioAccess({ children }: StudioAccessProps) {
+export function StudioAccess({ children }: Readonly<StudioAccessProps>) {
   return (
     <Suspense fallback={<StudioAccessFallback />}>
       <StudioAccessContent>{children}</StudioAccessContent>
@@ -19,7 +19,7 @@ export function StudioAccess({ children }: StudioAccessProps) {
   );
 }
 
-async function StudioAccessContent({ children }: StudioAccessProps) {
+async function StudioAccessContent({ children }: Readonly<StudioAccessProps>) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });

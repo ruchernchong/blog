@@ -25,7 +25,7 @@ const percent = new Intl.NumberFormat("en-SG", {
 const DASH = "–";
 
 /** Percentage with an inline bar; a magnitude, so one hue (the accent). */
-function RateCell({ value }: { value: number | null }) {
+function RateCell({ value }: Readonly<{ value: number | null }>) {
   if (value === null) {
     return <span className="text-muted">{DASH}</span>;
   }
@@ -50,7 +50,7 @@ export function UsageModelCharacter({
   byModel,
   modelDisplayNames,
   limit = 8,
-}: UsageModelCharacterProps) {
+}: Readonly<UsageModelCharacterProps>) {
   const rows = byModel
     .filter((row) => row.tokens > 0)
     .map((row) => ({

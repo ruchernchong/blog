@@ -40,7 +40,7 @@ export function UsageHeatmap({
   eyebrow,
   headline,
   stats,
-}: UsageHeatmapProps) {
+}: Readonly<UsageHeatmapProps>) {
   // Size cells so the heatmap spans the content width: a partial year gets
   // larger cells, a full 53-week year shrinks to fit.
   const GAP = 3;

@@ -4,7 +4,7 @@ interface AuthPanelFallbackProps {
   label: string;
 }
 
-export function AuthPanelFallback({ label }: AuthPanelFallbackProps) {
+export function AuthPanelFallback({ label }: Readonly<AuthPanelFallbackProps>) {
   return (
     <Card role="status" aria-label={label}>
       <div aria-hidden="true" className="flex flex-col gap-6">

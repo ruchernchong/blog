@@ -14,7 +14,7 @@ interface ImagePickerDialogProps {
 export function ImagePickerDialog({
   onSelect,
   trigger,
-}: ImagePickerDialogProps) {
+}: Readonly<ImagePickerDialogProps>) {
   const [open, setOpen] = useState(false);
   const [media, setMedia] = useState<SelectMedia[]>([]);
   const [isPending, startTransition] = useTransition();

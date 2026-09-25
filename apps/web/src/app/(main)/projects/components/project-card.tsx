@@ -46,10 +46,10 @@ const PREVIEW_BARS = [
 function PreviewPanel({
   project,
   featured,
-}: {
+}: Readonly<{
   project: Project;
   featured: boolean;
-}) {
+}>) {
   return (
     <div className={cn("bg-default/50", featured ? "h-52" : "h-32")}>
       {project.coverImage ? (
@@ -79,10 +79,10 @@ function PreviewPanel({
 export function ProjectCard({
   project,
   featured = false,
-}: {
+}: Readonly<{
   project: Project;
   featured?: boolean;
-}) {
+}>) {
   const displayedSkills = project.skills.slice(0, 4);
   const remainingCount = project.skills.length - 4;
   const url = displayUrl(project.links);

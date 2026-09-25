@@ -13,7 +13,7 @@ interface PostTocProps {
   containerId?: string;
 }
 
-export function PostToc({ containerId = "post-body" }: PostTocProps) {
+export function PostToc({ containerId = "post-body" }: Readonly<PostTocProps>) {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState<string>("");
 

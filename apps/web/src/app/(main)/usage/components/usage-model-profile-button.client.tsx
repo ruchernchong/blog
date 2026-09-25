@@ -18,7 +18,7 @@ interface UsageModelProfileButtonProps {
 export function UsageModelProfileButton({
   model,
   label,
-}: UsageModelProfileButtonProps) {
+}: Readonly<UsageModelProfileButtonProps>) {
   const [, setModel] = useQueryState(
     "model",
     usageParsers.model.withOptions({ history: "replace" }),

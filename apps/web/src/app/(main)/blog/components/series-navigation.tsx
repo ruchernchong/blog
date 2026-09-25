@@ -30,11 +30,11 @@ function SeriesPostsList({
   posts,
   currentSlug,
   seriesSlug,
-}: {
+}: Readonly<{
   posts: SeriesPost[];
   currentSlug: string;
   seriesSlug: string;
-}) {
+}>) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-4 border-border border-b pb-2">
@@ -96,7 +96,7 @@ export function SeriesNavigation({
   previousPost,
   nextPost,
   className,
-}: SeriesNavigationProps) {
+}: Readonly<SeriesNavigationProps>) {
   return (
     <div
       className={cn(

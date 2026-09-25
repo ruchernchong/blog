@@ -43,7 +43,7 @@ function VisitsTooltip({ active, label, payload }: any) {
   );
 }
 
-export function VisitsChartClient({ data }: VisitsChartClientProps) {
+export function VisitsChartClient({ data }: Readonly<VisitsChartClientProps>) {
   return (
     <Card>
       <Card.Header className="flex items-center justify-between">

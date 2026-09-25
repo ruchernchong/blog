@@ -31,7 +31,7 @@ export function StatFigure({
   value,
   animate,
   compact,
-}: StatFigureProps) {
+}: Readonly<StatFigureProps>) {
   return (
     <div className="flex flex-col gap-1">
       <span className="font-bold font-mono text-2xl tracking-tight">

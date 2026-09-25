@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 
 export default function LoginPage({
   searchParams,
-}: {
+}: Readonly<{
   searchParams: Promise<SearchParams>;
-}) {
+}>) {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-default p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">

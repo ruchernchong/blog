@@ -13,7 +13,7 @@ export function SaveStatusIndicator({
   status,
   lastSavedAt,
   onRetry,
-}: SaveStatusIndicatorProps) {
+}: Readonly<SaveStatusIndicatorProps>) {
   const [_tick, setTick] = useState(0);
 
   useEffect(() => {

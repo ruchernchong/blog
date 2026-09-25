@@ -22,7 +22,7 @@ export function UsageCacheEffort({
   tokenMix,
   cacheTrend,
   effort,
-}: UsageCacheEffortProps) {
+}: Readonly<UsageCacheEffortProps>) {
   return (
     <UsageSection
       description="Prompt tokens served from cache, what that saved against the full input price, and how hard I pushed the models."

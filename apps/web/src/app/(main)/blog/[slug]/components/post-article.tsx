@@ -19,7 +19,7 @@ import { PostToc } from "./post-toc.client";
  * it on publish/update. Rendered directly (no Suspense) — for slugs in
  * generateStaticParams this fills at build time; unknown slugs render on demand.
  */
-export async function PostArticle({ slug }: { slug: string }) {
+export async function PostArticle({ slug }: Readonly<{ slug: string }>) {
   "use cache";
   cacheLife("max");
   cacheTag(`post:${slug}`);

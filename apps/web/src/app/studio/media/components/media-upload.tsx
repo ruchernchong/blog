@@ -26,7 +26,7 @@ function getImageDimensions(
   });
 }
 
-export function MediaUpload({ onUploadComplete }: MediaUploadProps) {
+export function MediaUpload({ onUploadComplete }: Readonly<MediaUploadProps>) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [dragActive, setDragActive] = useState(false);

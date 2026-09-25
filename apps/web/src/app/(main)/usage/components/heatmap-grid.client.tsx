@@ -50,7 +50,7 @@ export function HeatmapGridClient({
   layout,
   modelDisplayNames,
   today,
-}: HeatmapGridClientProps) {
+}: Readonly<HeatmapGridClientProps>) {
   const { weeks, monthLabels } = layout;
   const [preview, setPreview] = useState<DayContribution | null>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -181,12 +181,12 @@ function Cell({
   modelDisplayNames,
   onPreview,
   today,
-}: {
+}: Readonly<{
   cell: HeatmapCell;
   modelDisplayNames: Record<string, string>;
   onPreview: (day: DayContribution | null) => void;
   today: string | null;
-}) {
+}>) {
   const day = cell.contribution;
 
   // Padding slot outside the calendar year: render a plain square so only real
@@ -267,11 +267,11 @@ function Stat({
   icon,
   label,
   value,
-}: {
+}: Readonly<{
   icon: IconSvgElement;
   label: string;
   value: string;
-}) {
+}>) {
   return (
     <div className="flex items-center gap-1.5">
       <HugeiconsIcon
@@ -294,11 +294,11 @@ function ModelRows({
   displayNames,
   models,
   total,
-}: {
+}: Readonly<{
   displayNames: Record<string, string>;
   models: ModelDayBreakdown[];
   total: number;
-}) {
+}>) {
   if (models.length === 0) {
     return null;
   }

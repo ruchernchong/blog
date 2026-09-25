@@ -23,7 +23,7 @@ function weekLabel(point: CacheTrendPoint): string {
  * Weekly cache-hit rate as plain columns: one hue, since it is a magnitude.
  * Each column carries its own label for hover and assistive tech.
  */
-function CacheHitColumns({ points }: { points: CacheTrendPoint[] }) {
+function CacheHitColumns({ points }: Readonly<{ points: CacheTrendPoint[] }>) {
   return (
     <ul aria-label="Weekly cache-hit rate" className="flex h-32 items-end">
       {points.map((point) => (
@@ -48,7 +48,7 @@ function CacheHitColumns({ points }: { points: CacheTrendPoint[] }) {
 export function UsageCacheSummary({
   tokenMix,
   cacheTrend,
-}: UsageCacheSummaryProps) {
+}: Readonly<UsageCacheSummaryProps>) {
   const prompt = tokenMix.input + tokenMix.cacheRead + tokenMix.cacheWrite;
   const hitRate = prompt > 0 ? tokenMix.cacheRead / prompt : null;
   const priced = cacheTrend.filter((point) => point.savings !== null);
