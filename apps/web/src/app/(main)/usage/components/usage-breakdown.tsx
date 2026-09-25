@@ -3,6 +3,7 @@
 import {
   Button,
   Chip,
+  cn,
   Dropdown,
   Label,
   SearchField,
@@ -75,8 +76,22 @@ const HIDEABLE_COLUMNS = [
 /** Fixed metrics required by DataGrid `virtualized` (RAC TableLayout). */
 const GRID_ROW_HEIGHT = 56;
 const GRID_HEADING_HEIGHT = 40;
-/** Roughly a dozen rows before the grid scrolls on its own. */
-const GRID_SCROLL_CLASS = "max-h-[720px] overflow-auto";
+/**
+ * `allowsColumnResize` wraps the grid in an `overflow: auto` resizable
+ * container, so that is the element the sticky header and pinned column stick
+ * to. Capping its height (roughly a dozen rows) makes it the one scroller.
+ */
+const GRID_SCROLL_CLASS =
+  "[&_[data-slot=table-resizable-container]]:max-h-[720px]";
+/**
+ * Virtualized cells sit in absolutely positioned wrappers, which traps the
+ * cell's own `position: sticky`. Make the start-pinned wrapper sticky instead;
+ * as the row's first child it stays in flow at `left: 0`. The header and body
+ * wrappers' `overflow: hidden` would capture the sticky, so switch them to
+ * `clip`, which clips the same without becoming a scroll container.
+ */
+const GRID_PINNED_START_CLASS =
+  "[&_[role=presentation]:has(>[data-pinned=start])]:sticky! [&_[role=presentation]:has(>[data-pinned=start])]:z-10! [&_[role=presentation]:has(>[data-slot=table-header],>[data-slot=table-body])]:overflow-clip!";
 
 /** Breakdown state that lives in the URL. Defaults are kept out of the query string. */
 const breakdownParsers = {
@@ -451,8 +466,9 @@ function BreakdownToolbar({
 
 function getTableScrollContainer(root: HTMLElement | null) {
   return (
-    root?.querySelector<HTMLElement>('[data-slot="table-scroll-container"]') ??
-    null
+    root?.querySelector<HTMLElement>(
+      '[data-slot="table-resizable-container"]',
+    ) ?? null
   );
 }
 
@@ -686,7 +702,11 @@ export function UsageBreakdown({
           allowsColumnResize
           virtualized
           aria-label="Usage breakdown"
-          className="[&_.table__cell]:overflow-hidden [&_.table__cell]:whitespace-nowrap [&_.table__cell]:py-2 [&_.table__cell]:text-sm [&_.table__column]:py-2 [&_.table__column]:text-xs"
+          className={cn(
+            GRID_SCROLL_CLASS,
+            GRID_PINNED_START_CLASS,
+            "[&_.table__cell]:overflow-hidden [&_.table__cell]:whitespace-nowrap [&_.table__cell]:py-2 [&_.table__cell]:text-sm [&_.table__column]:py-2 [&_.table__column]:text-xs",
+          )}
           columns={columns}
           contentClassName="min-w-[760px] md:min-w-[1000px]"
           data={sortedRows}
@@ -699,7 +719,6 @@ export function UsageBreakdown({
             </div>
           )}
           rowHeight={GRID_ROW_HEIGHT}
-          scrollContainerClassName={GRID_SCROLL_CLASS}
           sortDescriptor={sortDescriptor}
           variant="primary"
         />
