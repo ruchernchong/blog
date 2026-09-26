@@ -18,13 +18,15 @@ DOMAIN="gui/${UID_NUM}"
 mkdir -p "$BIN_DIR" "$LAUNCH_AGENTS" "$LOGS"
 
 # Release packages ship a prebuilt binary in bin/; a checkout builds from source.
+# -S swaps the binary in through a temp file, so a running agent-usage (e.g.
+# `agent-usage update`) never sees it half-written.
 if [[ -x $ROOT/bin/agent-usage ]]; then
   echo "Installing prebuilt $BIN"
-  install -m 755 "$ROOT/bin/agent-usage" "$BIN"
+  install -S -m 755 "$ROOT/bin/agent-usage" "$BIN"
 else
   echo "Building $BIN"
   cargo build --release --manifest-path "$ROOT/Cargo.toml"
-  install -m 755 "$ROOT/target/release/agent-usage" "$BIN"
+  install -S -m 755 "$ROOT/target/release/agent-usage" "$BIN"
 fi
 
 # Remove an install from before the rename to agent-usage, once the new binary

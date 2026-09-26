@@ -66,17 +66,20 @@ See `packages/usage/src/registry.ts` (pure normalise/merge) and
   local and production logins never mix. `AGENT_USAGE_DRY_RUN=1` prints the payload
   without POSTing. Commands (clap): `measure [--json]`, `ingest [--dry-run] [--url <URL>]`
   (flags win over `AGENT_USAGE_DRY_RUN` / `AGENT_USAGE_URL`), `auth login|logout|status`
-  (hidden `login`/`logout` aliases), and `completions <zsh|bash|fish>`; no subcommand
+  (hidden `login`/`logout` aliases), `update [--check]` (self-update from the latest release),
+  and `completions <zsh|bash|fish>`; no subcommand
   prints help. The installed binary is production only. semantic-release keeps
-  its `Cargo.toml` version in sync with the monorepo release, and it prints a once-a-day update notice
-  in interactive terminals (`AGENT_USAGE_NO_UPDATE_CHECK=1` disables it). The CLI was
+  its `Cargo.toml` version in sync with the monorepo release, and it prints a once-a-day notice to run
+  `agent-usage update` in interactive terminals (`AGENT_USAGE_NO_UPDATE_CHECK=1` disables it). The CLI was
   renamed from `usage-ingest`: each `AGENT_USAGE_*` variable falls back to its legacy
   `USAGE_INGEST_*` name when unset, and the Keychain item, client id file, and
   LaunchAgent migrate on their own, so nobody signs in again. Install
-  (LaunchAgent): `curl | bash`
-  `apps/cli/macos/install-remote.sh` pulls the prebuilt binary from the
+  (LaunchAgent): `curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install-remote.sh | bash`
+  runs `apps/cli/macos/install-remote.sh`, which pulls the prebuilt binary from the
   latest monorepo release (`ci.yml` runs `agent-usage-build.yml` after semantic-release
-  and attaches the package); `install.sh` builds from a checkout. See
+  and attaches the package and `install-remote.sh`); `install.sh` builds from a checkout.
+  `agent-usage update` verifies the release package's SHA-256, swaps the binary in by
+  rename, and reruns the package's own `install.sh` to refresh the LaunchAgent. See
   README.md “Usage collector (macOS)” and `apps/cli/macos/INSTALL.md`.
 
 The AgentUsage app (a separate client, not the `agent-usage` CLI) may also POST

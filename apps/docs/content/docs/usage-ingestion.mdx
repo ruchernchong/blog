@@ -138,6 +138,14 @@ Optional environment variables:
 
 `agent-usage auth status` shows the stored sign-in for the current server without a network call.
 
+To install the prebuilt collector and its LaunchAgent on a Mac without a checkout:
+
+```bash
+curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install-remote.sh | bash
+```
+
+`agent-usage update` installs the latest release in place after checking its SHA-256 (`--check` only reports the versions).
+
 The CLI was renamed from `usage-ingest`. Each `AGENT_USAGE_*` variable falls back to its legacy `USAGE_INGEST_*` name when unset, so existing shells and `.envrc` files keep working.
 
 The production database connection string stays inside the deployment environment. The local machine only sends the OAuth bearer and JSON rows.

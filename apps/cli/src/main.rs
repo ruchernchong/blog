@@ -4,6 +4,7 @@
 //	agent-usage measure [--json]              # stats table, or JSON only
 //	agent-usage ingest [--dry-run] [--url]    # POST rows (OAuth bearer; server prices)
 //	agent-usage auth login | logout | status  # OAuth (browser + Keychain)
+//	agent-usage update [--check]              # install the latest release
 //	agent-usage completions <zsh|bash|fish>
 mod collect;
 mod cursor;
@@ -45,6 +46,12 @@ enum Command {
     Auth {
         #[command(subcommand)]
         command: AuthCommand,
+    },
+    /// Update to the latest release
+    Update {
+        /// Only report the current and latest versions
+        #[arg(long)]
+        check: bool,
     },
     /// Print a shell completion script
     Completions {
@@ -98,11 +105,12 @@ impl From<CompletionShell> for Shell {
 
 impl Command {
     /// Whether the update notice may run after this command. Output meant for
-    /// another program (a completion script, JSON stats) must stay clean.
+    /// another program (a completion script, JSON stats) must stay clean, and
+    /// `update` reports versions itself.
     fn notifies_update(&self) -> bool {
         !matches!(
             self,
-            Command::Completions { .. } | Command::Measure { json: true }
+            Command::Completions { .. } | Command::Measure { json: true } | Command::Update { .. }
         )
     }
 }
@@ -156,6 +164,7 @@ fn run(command: Command) -> Result<()> {
         Command::Auth {
             command: AuthCommand::Status,
         } => oauth::status(),
+        Command::Update { check } => update::run(check).context("update"),
         Command::Completions { shell } => {
             clap_complete::generate(
                 Shell::from(shell),
@@ -255,6 +264,8 @@ mod tests {
             &["completions"],
             &["completions", "powershell"],
             &["login", "--json"],
+            &["update", "--force"],
+            &["update", "latest"],
         ] {
             assert!(parse(args).is_err(), "{args:?} should be rejected");
         }
@@ -325,6 +336,18 @@ mod tests {
     }
 
     #[test]
+    fn parses_update() {
+        assert!(matches!(
+            parse(&["update"]).unwrap(),
+            Command::Update { check: false }
+        ));
+        assert!(matches!(
+            parse(&["update", "--check"]).unwrap(),
+            Command::Update { check: true }
+        ));
+    }
+
+    #[test]
     fn parses_completions_shells() {
         for (name, want) in [
             ("zsh", CompletionShell::Zsh),
@@ -352,6 +375,8 @@ mod tests {
     fn update_notice_is_off_for_machine_readable_output() {
         assert!(!parse(&["completions", "zsh"]).unwrap().notifies_update());
         assert!(!parse(&["measure", "--json"]).unwrap().notifies_update());
+        assert!(!parse(&["update"]).unwrap().notifies_update());
+        assert!(!parse(&["update", "--check"]).unwrap().notifies_update());
         assert!(parse(&["measure"]).unwrap().notifies_update());
         assert!(parse(&["ingest"]).unwrap().notifies_update());
         assert!(parse(&["auth", "status"]).unwrap().notifies_update());

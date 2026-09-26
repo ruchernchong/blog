@@ -11,14 +11,23 @@ latest GitHub release of the monorepo. The script checks the SHA-256 before
 installing:
 
 ```zsh
-curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/apps/cli/macos/install-remote.sh | bash
+curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install-remote.sh | bash
 ```
 
 Pin a release with `AGENT_USAGE_VERSION=X.Y.Z` in front of `bash`. A release
 cut before the rename only ships the `usage-ingest` package, so the script falls
 back to it and installs `usage-ingest`, which the next upgrade migrates. To read the
-script first, download it with `curl -o install-remote.sh …` and run
-`bash install-remote.sh`.
+script first, download it (the release URL redirects, so keep `-L`):
+
+```zsh
+curl -fsSLo install-remote.sh https://github.com/ruchernchong/blog/releases/latest/download/install-remote.sh
+bash install-remote.sh
+```
+
+`packages/usage/rust/macos/install-remote.sh` only forwards to
+`apps/cli/macos/install-remote.sh`, for installs from v1.50.0 and earlier whose
+update notice still prints its raw GitHub URL. Delete it once no v1.50.0
+installs remain.
 
 From a checkout, build from source instead (needs a **Rust toolchain**, via
 [rustup](https://rustup.rs) or `brew install rust`):
@@ -65,13 +74,18 @@ tail -f ~/Library/Logs/agent-usage.log
 launchctl print "gui/$(id -u)/dev.ruchern.agent-usage"
 ```
 
-To update, run the `curl` line again (or `install.sh` from a checkout). After parser changes, run `install.sh` again, then `auth login` only if Keychain
-prompts (same machine, same binary path, usually not).
+To update, run `agent-usage update` (`--check` only reports the current and
+latest versions). It downloads the latest release package and its `.sha256`,
+aborts on a checksum mismatch, swaps the new binary in by rename, and then runs
+the package's own `install.sh` to refresh the wrapper, plist and LaunchAgent.
+Running the `curl` line again works too. From a checkout, after parser changes,
+run `install.sh` again, then `auth login` only if Keychain prompts (same
+machine, same binary path, usually not).
 
-The collector checks GitHub for a newer release at most once a day and print the
-update command when one exists. The check only runs in an interactive terminal
-(never from the LaunchAgent), never after `completions` or `measure --json`; set
-`AGENT_USAGE_NO_UPDATE_CHECK=1` to turn it off.
+The collector checks GitHub for a newer release at most once a day and prints
+`Run: agent-usage update` when one exists. The check only runs in an interactive
+terminal (never from the LaunchAgent), never after `completions`, `measure --json`
+or `update`; set `AGENT_USAGE_NO_UPDATE_CHECK=1` to turn it off.
 
 ## Commands
 
@@ -79,6 +93,7 @@ update command when one exists. The check only runs in an interactive terminal
 agent-usage measure [--json]                  # stats table, or JSON only
 agent-usage ingest [--dry-run] [--url <URL>]  # what the LaunchAgent runs
 agent-usage auth login | logout | status
+agent-usage update [--check]                  # install the latest release
 agent-usage completions zsh > "${fpath[1]}/_agent-usage"   # or bash, fish
 ```
 
@@ -123,5 +138,6 @@ clears both the new and the legacy Keychain items.
 
 Nothing to do by hand. Whenever semantic-release publishes `vX.Y.Z` from
 `main`, `ci.yml` runs `agent-usage-build.yml`, which builds both architectures, merges them with `lipo`, and attaches
-`agent-usage-macos.tar.gz` plus its `.sha256` to that release. The files land a
-few minutes after the release appears, so an install in that window gets a 404.
+`agent-usage-macos.tar.gz` plus its `.sha256` to that release, along with
+`install-remote.sh`. The files land a few minutes after the release appears, so
+an install or `agent-usage update` in that window gets a 404.

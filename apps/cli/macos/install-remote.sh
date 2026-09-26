@@ -1,8 +1,9 @@
 #!/bin/bash
 # Install the usage collector from the latest GitHub release of the monorepo,
-# without a checkout or a Rust toolchain:
+# without a checkout or a Rust toolchain. ci.yml attaches this script to each
+# release, so the latest one is always at:
 #
-#   curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/apps/cli/macos/install-remote.sh | bash
+#   curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install-remote.sh | bash
 #
 # AGENT_USAGE_VERSION=X.Y.Z pins a release instead of the latest (the legacy
 # USAGE_INGEST_VERSION is read when it is unset).
