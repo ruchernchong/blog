@@ -15,6 +15,7 @@ const UPDATE_COLUMNS = [
   "cacheWriteRate",
   "contextLimit",
   "releaseDate",
+  "openWeights",
   "source",
   "isOverride",
   "aliasTarget",
@@ -43,6 +44,7 @@ export function entryToRow(entry: ModelEntry): InsertModel {
     cacheWriteRate: rate(entry.rate?.cacheWrite),
     contextLimit: entry.contextLimit ?? null,
     releaseDate: validDate(entry.releaseDate),
+    openWeights: entry.openWeights ?? null,
     source: entry.source,
     isOverride: entry.isOverride ?? false,
     aliasTarget: entry.aliasTarget ?? null,
@@ -104,6 +106,7 @@ export function rowToEntry(row: SelectModel): ModelEntry {
     displayName: row.displayName ?? undefined,
     contextLimit: row.contextLimit ?? undefined,
     releaseDate: row.releaseDate ?? undefined,
+    openWeights: row.openWeights ?? undefined,
     source: row.source,
     isOverride: row.isOverride,
   };

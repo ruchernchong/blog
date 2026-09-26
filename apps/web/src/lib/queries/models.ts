@@ -14,7 +14,7 @@ import {
   type RegistrySource,
   SEED_OVERRIDES,
 } from "@workspace/usage/registry";
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { cacheLife, cacheTag, revalidateTag } from "next/cache";
 import redis from "@/config/redis";
 import { logWarning } from "@/lib/logger";
@@ -332,6 +332,35 @@ export async function getModelDisplayNames(
     return names;
   } catch {
     return {};
+  }
+}
+
+/**
+ * Model ids with open weights, per the persisted registry. Keyed by bare id
+ * like {@link getModelDisplayNames}; an id counts when any provider's row for
+ * it is flagged, since resellers list the same open model under their own slug.
+ */
+export async function getOpenWeightModelIds(
+  modelIds: string[],
+): Promise<string[]> {
+  "use cache";
+  cacheLife("days");
+  cacheTag("models:providers");
+
+  const ids = [...new Set(modelIds)].sort((a, b) => a.localeCompare(b));
+  if (ids.length === 0) {
+    return [];
+  }
+
+  try {
+    const rows = await db
+      .selectDistinct({ id: model.id })
+      .from(model)
+      .where(and(inArray(model.id, ids), eq(model.openWeights, true)));
+
+    return rows.map((row) => row.id).sort((a, b) => a.localeCompare(b));
+  } catch {
+    return [];
   }
 }
 

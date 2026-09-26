@@ -133,6 +133,8 @@ export interface ModelEntry {
   contextLimit?: number;
   /** YYYY-MM-DD. */
   releaseDate?: string;
+  /** Whether the weights are publicly released (models.dev `open_weights`). */
+  openWeights?: boolean;
   source: ModelSource;
   isOverride?: boolean;
   /** When set, price/label resolve from `(provider, aliasTarget)` instead. */
@@ -155,6 +157,7 @@ interface ModelsDevModel {
   id?: string;
   name?: string;
   release_date?: string;
+  open_weights?: boolean;
   limit?: ModelsDevLimit;
   cost?: ModelsDevCost;
 }
@@ -185,6 +188,7 @@ export function normaliseModelsDev(api: ModelsDevApi): ModelEntry[] {
             : undefined,
         contextLimit: model.limit?.context,
         releaseDate: model.release_date,
+        openWeights: model.open_weights,
         source: "models.dev",
       });
     }
@@ -445,6 +449,7 @@ export function mergeRegistry(sources: {
         m?.releaseDate,
         r?.releaseDate,
       ),
+      openWeights: pick(o?.openWeights, m?.openWeights),
       aliasTarget: pick(
         o?.aliasTarget,
         g?.aliasTarget,

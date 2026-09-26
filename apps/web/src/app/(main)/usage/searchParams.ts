@@ -47,6 +47,8 @@ export const usageParsers = {
   provider: parseAsString.withDefault("all"),
   /** Only show free (zero or unpriced) rows. */
   free: parseAsBoolean.withDefault(false),
+  /** Only show open-weight models (model view). */
+  open: parseAsBoolean.withDefault(false),
   /** Breakdown sort column and direction. */
   sort: parseAsStringLiteral(USAGE_SORT_COLUMNS).withDefault("tokens"),
   dir: parseAsStringLiteral(["asc", "desc"]).withDefault("desc"),

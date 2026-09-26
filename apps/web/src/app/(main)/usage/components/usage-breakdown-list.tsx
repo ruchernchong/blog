@@ -1,3 +1,4 @@
+import { Chip } from "@heroui/react";
 import {
   formatCost,
   formatNumber,
@@ -14,6 +15,7 @@ interface UsageBreakdownListProps {
   rows: UsageBreakdownRow[];
   viewId: string;
   names: BreakdownNames;
+  openWeightModelIds?: ReadonlySet<string>;
 }
 
 /**
@@ -24,6 +26,7 @@ export function UsageBreakdownList({
   rows,
   viewId,
   names,
+  openWeightModelIds,
 }: Readonly<UsageBreakdownListProps>) {
   if (rows.length === 0) {
     return (
@@ -44,7 +47,14 @@ export function UsageBreakdownList({
         return (
           <li className="flex flex-col gap-2 py-4" key={row.key}>
             <div className="flex flex-col">
-              <span className="font-medium">{name}</span>
+              <span className="flex items-center gap-2">
+                <span className="font-medium">{name}</span>
+                {viewId === "model" && openWeightModelIds?.has(row.key) ? (
+                  <Chip size="sm" variant="soft">
+                    Open Weights
+                  </Chip>
+                ) : null}
+              </span>
               {viewId !== "provider" && providers ? (
                 <span className="text-muted text-xs">{providers}</span>
               ) : null}

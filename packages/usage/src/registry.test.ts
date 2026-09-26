@@ -15,6 +15,7 @@ describe("normaliseModelsDev", () => {
           "claude-sonnet-5": {
             name: "Claude Sonnet 5",
             release_date: "2026-06-30",
+            open_weights: false,
             limit: { context: 1_000_000, output: 64_000 },
             cost: { input: 3, output: 15, cache_read: 0.3, cache_write: 3.75 },
           },
@@ -27,6 +28,7 @@ describe("normaliseModelsDev", () => {
       displayName: "Claude Sonnet 5",
       releaseDate: "2026-06-30",
       contextLimit: 1_000_000,
+      openWeights: false,
       rate: { input: 3, output: 15, cacheRead: 0.3, cacheWrite: 3.75 },
       source: "models.dev",
     });
@@ -380,5 +382,37 @@ describe("mergeRegistry", () => {
       isOverride: true,
     });
     expect(merged[0].rate).toBeUndefined();
+  });
+
+  it("should take open weights from models.dev unless an override sets it", () => {
+    const openModel: ModelEntry = {
+      provider: "deepseek",
+      id: "deepseek-v4",
+      openWeights: true,
+      source: "models.dev",
+    };
+    const fromModelsDev = mergeRegistry({
+      overrides: [],
+      gateway: [{ provider: "deepseek", id: "deepseek-v4", source: "gateway" }],
+      openrouter: [],
+      modelsDev: [openModel],
+    });
+    expect(fromModelsDev[0].openWeights).toBe(true);
+
+    const overridden = mergeRegistry({
+      overrides: [
+        {
+          provider: "deepseek",
+          id: "deepseek-v4",
+          openWeights: false,
+          source: "override",
+          isOverride: true,
+        },
+      ],
+      gateway: [],
+      openrouter: [],
+      modelsDev: [openModel],
+    });
+    expect(overridden[0].openWeights).toBe(false);
   });
 });
