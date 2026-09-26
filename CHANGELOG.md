@@ -1,3 +1,12 @@
+## [1.51.0](https://github.com/ruchernchong/blog/compare/v1.50.0...v1.51.0) (2026-09-26)
+
+### Features
+
+* add a proper command tree to agent-usage ([93412eb](https://github.com/ruchernchong/blog/commit/93412eb1acde143db761a97ff3e365b713a607bc))
+* keep agent-usage config in its own directory ([411df0e](https://github.com/ruchernchong/blog/commit/411df0e8004b3ed380cd06c74dbd09e7dab9e5e0))
+* let agent-usage update itself ([1486279](https://github.com/ruchernchong/blog/commit/1486279598029739d29633da5ecaa5e4cc186efb))
+* rename the usage collector to agent-usage ([81dbf57](https://github.com/ruchernchong/blog/commit/81dbf57c783b911df45078bd57db67efd263284b))
+
 ## [1.50.0](https://github.com/ruchernchong/blog/compare/v1.49.1...v1.50.0) (2026-09-26)
 
 ### Features

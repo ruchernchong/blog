@@ -21,7 +21,7 @@ dependencies = [
 
 [[package]]
 name = "agent-usage"
-version = "1.50.0"
+version = "1.51.0"
 dependencies = [
  "anyhow",
  "base64",
