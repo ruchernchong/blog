@@ -96,7 +96,7 @@ export async function loadPricing(): Promise<Pricing> {
  * dates), OpenRouter (a small tail of vendor-internal slugs), and models.dev
  * (the only source covering reseller-routed providers such as OpenCode, which
  * bill at the reseller's rate) alongside the curated DB overrides. Merges by
- * precedence — override > Gateway > OpenRouter > models.dev for rates —
+ * precedence — override > Gateway > models.dev > OpenRouter for rates —
  * upserts the merged rows, and returns pricing built from them. A source that
  * fails to fetch is skipped, not fatal: the merge omits that layer and the
  * existing table rows survive as the last-good snapshot. Runs at the top of

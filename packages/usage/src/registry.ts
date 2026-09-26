@@ -9,7 +9,7 @@ import type { ModelRate } from "./pricing";
  * pricing.
  *
  * Precedence, applied field-by-field:
- *   - rates:                override > Gateway > OpenRouter > models.dev
+ *   - rates:                override > Gateway > models.dev > OpenRouter
  *   - names / metadata:     override > Gateway > models.dev > OpenRouter
  *
  * The layers are complements, not competitors. Gateway is documented zero-markup
@@ -18,7 +18,9 @@ import type { ModelRate } from "./pricing";
  * providers such as OpenCode and Ollama Cloud, which bill at the reseller's rate
  * rather than the vendor's — so it can never be replaced by a vendor source.
  * OpenRouter fills a small tail of vendor-internal slugs neither of the others
- * lists. A curated override always wins. All of this is pure so it can be
+ * lists, and ranks last for rates too: it quotes the cheapest host it routes
+ * to (or a discounted tier) rather than the vendor list price. A curated
+ * override always wins. All of this is pure so it can be
  * unit-tested with fixtures — fetching + DB I/O live in `apps/web/src/lib/queries`.
  */
 
@@ -32,8 +34,8 @@ import type { ModelRate } from "./pricing";
  */
 export const REGISTRY_SOURCES = [
   "gateway",
-  "openrouter",
   "models.dev",
+  "openrouter",
 ] as const;
 export type RegistrySource = (typeof REGISTRY_SOURCES)[number];
 
@@ -52,8 +54,8 @@ export type ModelSource =
  * self-seed on first ingest and each row becomes MCP-editable data afterward.
  *
  * These are slugs that appear in no public pricing source, or newly-released
- * frontier models whose live rates we pin until the sources settle (GPT-5.6,
- * Grok 4.6). Rates are USD per 1,000,000 tokens.
+ * frontier models whose live rates we pin until the sources settle (Grok 4.6).
+ * Rates are USD per 1,000,000 tokens.
  */
 export const SEED_OVERRIDES: ModelEntry[] = [
   {
@@ -69,34 +71,6 @@ export const SEED_OVERRIDES: ModelEntry[] = [
     source: "override",
     isOverride: true,
     rate: { input: 12.5, output: 75, cacheRead: 1.25, cacheWrite: 0 },
-  },
-  {
-    provider: "openai",
-    id: "gpt-5.6",
-    source: "override",
-    isOverride: true,
-    rate: { input: 5, output: 30, cacheRead: 0.5, cacheWrite: 6.25 },
-  },
-  {
-    provider: "openai",
-    id: "gpt-5.6-sol",
-    source: "override",
-    isOverride: true,
-    rate: { input: 5, output: 30, cacheRead: 0.5, cacheWrite: 6.25 },
-  },
-  {
-    provider: "openai",
-    id: "gpt-5.6-terra",
-    source: "override",
-    isOverride: true,
-    rate: { input: 2.5, output: 15, cacheRead: 0.25, cacheWrite: 3.125 },
-  },
-  {
-    provider: "openai",
-    id: "gpt-5.6-luna",
-    source: "override",
-    isOverride: true,
-    rate: { input: 1, output: 6, cacheRead: 0.1, cacheWrite: 1.25 },
   },
   {
     provider: "openai",
@@ -420,11 +394,11 @@ export function mergeRegistry(sources: {
     const g = gateway.get(key);
     const r = openrouter.get(key);
     const m = modelsDev.get(key);
-    const base = (o ?? g ?? r ?? m) as ModelEntry;
+    const base = (o ?? g ?? m ?? r) as ModelEntry;
 
-    // Rates: override > Gateway > OpenRouter > models.dev, taken whole from the
+    // Rates: override > Gateway > models.dev > OpenRouter, taken whole from the
     // first layer that fully defines them.
-    const rateLayer = [o, g, r, m].find((layer) => hasFullRate(layer));
+    const rateLayer = [o, g, m, r].find((layer) => hasFullRate(layer));
 
     return {
       provider: base.provider,
@@ -453,8 +427,8 @@ export function mergeRegistry(sources: {
       aliasTarget: pick(
         o?.aliasTarget,
         g?.aliasTarget,
-        r?.aliasTarget,
         m?.aliasTarget,
+        r?.aliasTarget,
       ),
       source: rateLayer?.source ?? o?.source ?? base.source,
       isOverride: o != null,

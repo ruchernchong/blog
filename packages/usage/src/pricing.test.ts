@@ -8,9 +8,10 @@ import {
 
 /**
  * Fixture mirroring the models.dev payload shape. `gpt-5.5` is priced under both
- * `openai` and `fireworks-ai` to prove provider selection. The GPT-5.6 and
- * Grok 4.6 entries deliberately carry incorrect rates so the tests prove the
- * seeded overrides take precedence. `gpt-5.5-fast`, `claude-sonnet-5`, and
+ * `openai` and `fireworks-ai` to prove provider selection. The GPT-5.6 entries
+ * carry OpenAI's list rates, which resolve with no override. The Grok 4.6 entry
+ * deliberately carries an incorrect rate so the tests prove the seeded override
+ * takes precedence. `gpt-5.5-fast`, `claude-sonnet-5`, and
  * `grok-4.6-fast` are absent from models.dev, so they resolve only via the
  * seeded override entries — exactly as they do in production once merged from
  * `SEED_OVERRIDES`.
@@ -27,16 +28,23 @@ const api: ModelsDevApi = {
     models: {
       "gpt-5.5": { cost: { input: 1, output: 2 } },
       "gpt-5-codex": { cost: { input: 1.25, output: 10 } },
-      "gpt-5.6": { cost: { input: 91, output: 91 } },
-      "gpt-5.6-sol": { cost: { input: 92, output: 92 } },
-      "gpt-5.6-terra": { cost: { input: 93, output: 93 } },
-      "gpt-5.6-luna": { cost: { input: 94, output: 94 } },
+      "gpt-5.6": {
+        cost: { input: 4, output: 20, cache_read: 0.4, cache_write: 5 },
+      },
+      "gpt-5.6-sol": {
+        cost: { input: 4, output: 20, cache_read: 0.4, cache_write: 5 },
+      },
+      "gpt-5.6-terra": {
+        cost: { input: 2, output: 12, cache_read: 0.2, cache_write: 2.5 },
+      },
+      "gpt-5.6-luna": {
+        cost: { input: 0.2, output: 1.2, cache_read: 0.02, cache_write: 0.25 },
+      },
     },
   },
   "fireworks-ai": {
     models: {
       "gpt-5.5": { cost: { input: 99, output: 99 } },
-      "gpt-5.6-sol": { cost: { input: 98, output: 98 } },
     },
   },
   xai: {
@@ -46,7 +54,7 @@ const api: ModelsDevApi = {
   },
 };
 
-// Mirrors production: overrides > Gateway > OpenRouter > models.dev.
+// Mirrors production: overrides > Gateway > models.dev > OpenRouter.
 const registry = mergeRegistry({
   overrides: SEED_OVERRIDES,
   gateway: [],
@@ -115,30 +123,24 @@ describe("buildPricingFromRegistry", () => {
     ).toBeNull();
   });
 
-  it("should pin exact GPT-5.6 rates ahead of models.dev", () => {
-    expect(pricing.priceFor("gpt-5.6", { provider: "openai" })).toEqual({
-      input: 5,
-      output: 30,
-      cacheRead: 0.5,
-      cacheWrite: 6.25,
-    });
+  it("should price GPT-5.6 from the live source with no override", () => {
     expect(pricing.priceFor("gpt-5.6-sol", { provider: "openai" })).toEqual({
-      input: 5,
-      output: 30,
-      cacheRead: 0.5,
-      cacheWrite: 6.25,
+      input: 4,
+      output: 20,
+      cacheRead: 0.4,
+      cacheWrite: 5,
     });
     expect(pricing.priceFor("gpt-5.6-terra", { provider: "openai" })).toEqual({
-      input: 2.5,
-      output: 15,
-      cacheRead: 0.25,
-      cacheWrite: 3.125,
+      input: 2,
+      output: 12,
+      cacheRead: 0.2,
+      cacheWrite: 2.5,
     });
     expect(pricing.priceFor("gpt-5.6-luna", { provider: "openai" })).toEqual({
-      input: 1,
-      output: 6,
-      cacheRead: 0.1,
-      cacheWrite: 1.25,
+      input: 0.2,
+      output: 1.2,
+      cacheRead: 0.02,
+      cacheWrite: 0.25,
     });
   });
 
@@ -146,12 +148,6 @@ describe("buildPricingFromRegistry", () => {
     expect(pricing.priceFor("gpt-5.6", { provider: "openai" })).toEqual(
       pricing.priceFor("gpt-5.6-sol", { provider: "openai" }),
     );
-  });
-
-  it("should scope GPT-5.6 overrides to the OpenAI provider", () => {
-    expect(
-      pricing.priceFor("gpt-5.6-sol", { provider: "fireworks-ai" }),
-    ).toEqual({ input: 98, output: 98, cacheRead: 0, cacheWrite: 0 });
   });
 
   it("should override claude-sonnet-5 with the priority rate (anthropic-scoped)", () => {
@@ -275,7 +271,7 @@ describe("buildPricingFromRegistry", () => {
     expect(cost).toBeCloseTo(14.5, 6);
   });
 
-  it("should price every GPT-5.6 token bucket at its pinned rate", () => {
+  it("should price every GPT-5.6 token bucket at its list rate", () => {
     const cost = pricing.costOf(
       {
         input: 1_000_000,
@@ -288,8 +284,8 @@ describe("buildPricingFromRegistry", () => {
       { provider: "openai" },
     );
 
-    // $2.50 input + $15 output + $0.25 cache read + $3.125 cache write
-    // + $15 reasoning (billed as output) = $35.875.
-    expect(cost).toBeCloseTo(35.875, 6);
+    // $2 input + $12 output + $0.20 cache read + $2.50 cache write
+    // + $12 reasoning (billed as output) = $28.70.
+    expect(cost).toBeCloseTo(28.7, 6);
   });
 });
