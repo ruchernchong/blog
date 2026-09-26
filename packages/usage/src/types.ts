@@ -159,9 +159,11 @@ export interface UsageFact {
 
 /** One stacked-area series: tokens per week, aligned to `WeeklyShare.weeks`. */
 export interface WeeklySeries {
-  /** Model or agent id, or `OTHER_SERIES_KEY` for the folded tail. */
+  /** Model family or agent id, or `OTHER_SERIES_KEY` for the folded tail. */
   key: string;
   tokens: number[];
+  /** Model or agent ids folded into this series, largest first. */
+  members?: WeeklySeries[];
 }
 
 /** Weekly token share by model and by agent, for the "stack shift" chart. */

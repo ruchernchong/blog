@@ -262,8 +262,16 @@ describe("getUsageProfile", () => {
       "2026-01-19",
     ]);
     expect(profile.weeklyShare.models).toEqual([
-      { key: "cached", tokens: [4 * MILLION + 10, 0, 100] },
-      { key: "unknown", tokens: [0, 0, MILLION] },
+      {
+        key: "cached",
+        tokens: [4 * MILLION + 10, 0, 100],
+        members: [{ key: "cached", tokens: [4 * MILLION + 10, 0, 100] }],
+      },
+      {
+        key: "unknown",
+        tokens: [0, 0, MILLION],
+        members: [{ key: "unknown", tokens: [0, 0, MILLION] }],
+      },
     ]);
 
     // 3M cache reads at $1 input vs $0.10 cache read saves $2.70. The unpriced

@@ -47,52 +47,121 @@ function denseWeeks(facts: UsageFact[]): string[] {
 }
 
 /**
- * Tokens per week for each distinct `keyOf(fact)`. The `topN` largest keys by
- * all-time tokens keep their own series (largest first); the rest fold into a
- * single trailing {@link OTHER_SERIES_KEY} series.
+ * Model family rules, checked in order against the model slug. A family groups
+ * successive versions into one stack band so each era of the stack keeps a
+ * colour; the tooltip still breaks the band down by model.
+ */
+const MODEL_FAMILIES: [RegExp, string][] = [
+  [/claude-opus/, "Claude Opus"],
+  [/claude-fable/, "Claude Fable"],
+  [/claude-sonnet/, "Claude Sonnet"],
+  [/claude-haiku/, "Claude Haiku"],
+  [/codex/, "GPT Codex"],
+  [/^gpt-/, "GPT"],
+  [/gemini/, "Gemini"],
+  [/grok/, "Grok"],
+  [/kimi/, "Kimi"],
+  [/glm/, "GLM"],
+  [/minimax/, "MiniMax"],
+];
+
+/** Family label for a model slug; an unrecognised slug is its own family. */
+export function modelFamily(model: string): string {
+  return MODEL_FAMILIES.find(([pattern]) => pattern.test(model))?.[1] ?? model;
+}
+
+/**
+ * Tokens per week for each distinct `keyOf(fact)`, grouped by `groupOf(key)`.
+ * The `topN` groups with the largest summed weekly share keep their own series
+ * (largest first); the rest fold into a single trailing
+ * {@link OTHER_SERIES_KEY} series. Ranking by weekly share rather than raw
+ * tokens gives a quieter era its own colour instead of losing it to "Other".
+ * Each series lists its member keys, largest first.
  */
 function weeklySeries(
   facts: UsageFact[],
   weeks: string[],
   keyOf: (fact: UsageFact) => string,
   topN: number,
+  groupOf: (key: string) => string = (key) => key,
 ): WeeklySeries[] {
   const weekIndex = new Map(weeks.map((week, index) => [week, index]));
-  const totals = new Map<string, number>();
+  const byKey = new Map<string, number[]>();
   for (const fact of facts) {
-    const key = keyOf(fact);
-    totals.set(key, (totals.get(key) ?? 0) + fact.totalTokens);
-  }
-
-  const ranked = [...totals.entries()]
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .map(([key]) => key);
-  const named = new Set(ranked.slice(0, topN));
-  const hasOther = ranked.length > named.size;
-
-  const series = new Map<string, number[]>();
-  for (const key of [...named, ...(hasOther ? [OTHER_SERIES_KEY] : [])]) {
-    series.set(
-      key,
-      weeks.map(() => 0),
-    );
-  }
-
-  for (const fact of facts) {
-    const key = keyOf(fact);
-    const target = series.get(named.has(key) ? key : OTHER_SERIES_KEY);
     const index = weekIndex.get(isoWeekStart(fact.date));
-    if (target && index !== undefined) {
-      target[index] += fact.totalTokens;
+    if (index === undefined) continue;
+    const key = keyOf(fact);
+    let tokens = byKey.get(key);
+    if (!tokens) {
+      tokens = weeks.map(() => 0);
+      byKey.set(key, tokens);
     }
+    tokens[index] += fact.totalTokens;
   }
 
-  return [...series.entries()].map(([key, tokens]) => ({ key, tokens }));
+  const sum = (values: number[]) => values.reduce((a, b) => a + b, 0);
+  const members = [...byKey.entries()]
+    .map(([key, tokens]) => ({ key, tokens }))
+    .sort(
+      (a, b) => sum(b.tokens) - sum(a.tokens) || a.key.localeCompare(b.key),
+    );
+
+  const groups = new Map<string, WeeklySeries>();
+  for (const member of members) {
+    const group = groupOf(member.key);
+    const entry = groups.get(group) ?? {
+      key: group,
+      tokens: weeks.map(() => 0),
+      members: [],
+    };
+    member.tokens.forEach((tokens, index) => {
+      entry.tokens[index] += tokens;
+    });
+    entry.members?.push(member);
+    groups.set(group, entry);
+  }
+
+  const weekTotals = weeks.map((_, index) =>
+    members.reduce((total, member) => total + member.tokens[index], 0),
+  );
+  const shareScore = (tokens: number[]) =>
+    tokens.reduce(
+      (score, value, index) =>
+        weekTotals[index] > 0 ? score + value / weekTotals[index] : score,
+      0,
+    );
+  const ranked = [...groups.values()].sort(
+    (a, b) =>
+      shareScore(b.tokens) - shareScore(a.tokens) ||
+      sum(b.tokens) - sum(a.tokens) ||
+      a.key.localeCompare(b.key),
+  );
+
+  const named = ranked.slice(0, topN);
+  const tail = ranked.slice(topN);
+  if (tail.length === 0) return named;
+
+  const other: WeeklySeries = {
+    key: OTHER_SERIES_KEY,
+    tokens: weeks.map(() => 0),
+    members: tail
+      .flatMap((group) => group.members ?? [])
+      .sort(
+        (a, b) => sum(b.tokens) - sum(a.tokens) || a.key.localeCompare(b.key),
+      ),
+  };
+  for (const group of tail) {
+    group.tokens.forEach((tokens, index) => {
+      other.tokens[index] += tokens;
+    });
+  }
+  return [...named, other];
 }
 
 /**
- * Weekly token volume by model and by agent, for the stacked "how my stack
- * shifted" chart. Weeks are dense (idle weeks are zero) so the x-axis is even.
+ * Weekly token volume by model family and by agent, for the stacked "how my
+ * stack shifted" chart. Weeks are dense (idle weeks are zero) so the x-axis is
+ * even.
  */
 export function buildWeeklyShare(
   facts: UsageFact[],
@@ -101,7 +170,7 @@ export function buildWeeklyShare(
   const weeks = denseWeeks(facts);
   return {
     weeks,
-    models: weeklySeries(facts, weeks, (fact) => fact.model, topN),
+    models: weeklySeries(facts, weeks, (fact) => fact.model, topN, modelFamily),
     agents: weeklySeries(facts, weeks, (fact) => fact.agent, topN),
   };
 }
@@ -146,10 +215,16 @@ export function buildCacheTrend(facts: UsageFact[]): CacheTrendPoint[] {
 /** One stacked-chart row: the week plus each series' share of that week. */
 export type WeeklyShareRow = { week: string } & Record<string, number | string>;
 
+/** Row key holding one member's share of the week inside its series. */
+export function memberShareKey(seriesKey: string, memberKey: string): string {
+  return `${seriesKey}\u0000${memberKey}`;
+}
+
 /**
  * Convert weekly token series into per-week shares (0–1) for a 100% stacked
- * chart. An idle week carries no series keys, so the chart leaves a gap
- * rather than collapsing the stack to 0%.
+ * chart, plus each member's share under {@link memberShareKey}. An idle week
+ * carries no series keys, so the chart leaves a gap rather than collapsing the
+ * stack to 0%.
  */
 export function toWeeklyShareRows(
   weeks: string[],
@@ -161,6 +236,10 @@ export function toWeeklyShareRows(
     if (total === 0) return row;
     for (const entry of series) {
       row[entry.key] = entry.tokens[index] / total;
+      for (const member of entry.members ?? []) {
+        row[memberShareKey(entry.key, member.key)] =
+          member.tokens[index] / total;
+      }
     }
     return row;
   });
