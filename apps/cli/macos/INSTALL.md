@@ -1,7 +1,7 @@
-# Install the usage collector (macOS LaunchAgent)
+# Install the agent-usage CLI (macOS LaunchAgent)
 
-Every-15-minutes job: parse local Claude / Codex / OpenCode / Cursor logs and POST daily
-rows to `https://ruchern.dev/api/usage/ingest`. Auth is OAuth (admin account),
+`agent-usage` (formerly `usage-ingest`) runs an every-15-minutes job: parse
+local Claude / Codex / OpenCode / Cursor logs and POST daily rows to `https://ruchern.dev/api/usage/ingest`. Auth is OAuth (admin account),
 not `BLOG_MCP_AUTH_TOKEN`.
 
 ## 1. Install and sign in
@@ -14,7 +14,9 @@ installing:
 curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/apps/cli/macos/install-remote.sh | bash
 ```
 
-Pin a release with `USAGE_INGEST_VERSION=1.42.0` in front of `bash`. To read the
+Pin a release with `AGENT_USAGE_VERSION=X.Y.Z` in front of `bash`. A release
+cut before the rename only ships the `usage-ingest` package, so the script falls
+back to it and installs `usage-ingest`, which the next upgrade migrates. To read the
 script first, download it with `curl -o install-remote.sh …` and run
 `bash install-remote.sh`.
 
@@ -28,17 +30,17 @@ zsh apps/cli/macos/install.sh
 Then sign in. Use the **installed** binary for login so Keychain access matches launchd.
 
 ```zsh
-~/.local/bin/usage-ingest login
+~/.local/bin/agent-usage login
 ```
 
 The browser opens ruchern.dev. Sign in with the **admin** account (ingest
 rejects non-admin OAuth). Tokens go in the login Keychain
-(`dev.ruchern.usage-ingest`).
+(`dev.ruchern.agent-usage`).
 
 ## 2. Prove one POST
 
 ```zsh
-~/.local/bin/usage-ingest-run
+~/.local/bin/agent-usage-run
 ```
 
 If there are no local log rows it prints `Nothing to ingest.` and does not POST.
@@ -46,16 +48,17 @@ Otherwise check `/usage`. Costs may show N.A. until the server model-registry
 workflow finishes. Then:
 
 ```zsh
-launchctl kickstart -k "gui/$(id -u)/dev.ruchern.usage-ingest"
+launchctl kickstart -k "gui/$(id -u)/dev.ruchern.agent-usage"
 ```
 
-Turn **off** AgentUsage → Settings → Blog Usage Sync.
+Turn **off** Blog Usage Sync in the AgentUsage app (Settings), a separate client
+from this CLI.
 
 ## 3. Logs
 
 ```zsh
-tail -f ~/Library/Logs/ruchern-usage-ingest.log
-launchctl print "gui/$(id -u)/dev.ruchern.usage-ingest"
+tail -f ~/Library/Logs/agent-usage.log
+launchctl print "gui/$(id -u)/dev.ruchern.agent-usage"
 ```
 
 To update, run the `curl` line again (or `install.sh` from a checkout). After parser changes, run `install.sh` again, then `login` only if Keychain
@@ -63,20 +66,39 @@ prompts (same machine, same binary path, usually not).
 
 The collector checks GitHub for a newer release at most once a day and print the
 update command when one exists. The check only runs in an interactive terminal
-(never from the LaunchAgent); set `USAGE_INGEST_NO_UPDATE_CHECK=1` to turn it off.
+(never from the LaunchAgent); set `AGENT_USAGE_NO_UPDATE_CHECK=1` to turn it off.
+
+## Upgrading from usage-ingest
+
+Run the install again. It boots out the old `dev.ruchern.usage-ingest`
+LaunchAgent and deletes its plist, `~/.local/bin/usage-ingest`, and
+`~/.local/bin/usage-ingest-run` before loading `dev.ruchern.agent-usage`. On
+its first run the new binary moves the Keychain tokens from
+`dev.ruchern.usage-ingest` to `dev.ruchern.agent-usage` and renames the cached
+client id file, so there is no need to sign in again. macOS may ask once to let
+`agent-usage` read the old Keychain item. The old
+`~/Library/Logs/ruchern-usage-ingest.log` is left in place.
+
+Environment variables moved to `AGENT_USAGE_*` (`AGENT_USAGE_URL`,
+`AGENT_USAGE_DRY_RUN`, `AGENT_USAGE_NO_UPDATE_CHECK`, `AGENT_USAGE_VERSION`,
+`AGENT_USAGE_BIN`). Each falls back to its legacy `USAGE_INGEST_*` name when
+unset.
 
 ## 4. Uninstall
 
 ```zsh
-~/.local/bin/usage-ingest logout
+~/.local/bin/agent-usage logout
 zsh apps/cli/macos/uninstall.sh
 # without a checkout:
 curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/apps/cli/macos/uninstall.sh | zsh
 ```
 
+`uninstall.sh` removes a leftover `usage-ingest` install too, and `logout`
+clears both the new and the legacy Keychain items.
+
 ## Releasing
 
 Nothing to do by hand. Whenever semantic-release publishes `vX.Y.Z` from
-`main`, `ci.yml` runs `usage-ingest-build.yml`, which builds both architectures, merges them with `lipo`, and attaches
-`usage-ingest-macos.tar.gz` plus its `.sha256` to that release. The files land a
+`main`, `ci.yml` runs `agent-usage-build.yml`, which builds both architectures, merges them with `lipo`, and attaches
+`agent-usage-macos.tar.gz` plus its `.sha256` to that release. The files land a
 few minutes after the release appears, so an install in that window gets a 404.

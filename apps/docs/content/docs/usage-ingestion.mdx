@@ -122,19 +122,21 @@ After a successful upsert, the route revalidates the `usage` cache tag so the pu
 
 ## Ingesting From This Machine
 
-The Rust collector in `apps/cli` parses local agent logs and POSTs daily rows to the ingest endpoint.
+The `agent-usage` CLI (a Rust collector in `apps/cli`) parses local agent logs and POSTs daily rows to the ingest endpoint.
 
 ```bash
 pnpm usage:login   # once per server
 pnpm usage:ingest
 ```
 
-Sign in once per server (OAuth, admin account; the token is stored in the Keychain). Login follows `USAGE_INGEST_URL`, so a local dev server and production keep separate logins. The installed collector is production only. Rows are sent with `costUsd: null`, and the route prices them after the model registry sync. The collector emits token rows only; effort rows come from AgentUsage.
+Sign in once per server (OAuth, admin account; the token is stored in the Keychain). Login follows `AGENT_USAGE_URL`, so a local dev server and production keep separate logins. The installed collector is production only. Rows are sent with `costUsd: null`, and the route prices them after the model registry sync. The CLI emits token rows only; effort rows come from the AgentUsage app, a separate client.
 
 Optional environment variables:
 
-- `USAGE_INGEST_URL` overrides the endpoint, e.g. `https://blog.localhost/api/usage/ingest` for the local dev server (defaults to `VERCEL_PROJECT_PRODUCTION_URL`, `VERCEL_URL`, then `https://ruchern.dev`)
-- `USAGE_INGEST_DRY_RUN=1` prints the payload without POSTing
+- `AGENT_USAGE_URL` overrides the endpoint, e.g. `https://blog.localhost/api/usage/ingest` for the local dev server (defaults to `VERCEL_PROJECT_PRODUCTION_URL`, `VERCEL_URL`, then `https://ruchern.dev`)
+- `AGENT_USAGE_DRY_RUN=1` prints the payload without POSTing
+
+The CLI was renamed from `usage-ingest`. Each `AGENT_USAGE_*` variable falls back to its legacy `USAGE_INGEST_*` name when unset, so existing shells and `.envrc` files keep working.
 
 The production database connection string stays inside the deployment environment. The local machine only sends the OAuth bearer and JSON rows.
 

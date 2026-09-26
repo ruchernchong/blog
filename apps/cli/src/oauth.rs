@@ -16,12 +16,12 @@ use ureq::tls::{RootCerts, TlsConfig};
 use url::Url;
 
 /// The installed (curl | bash) collector always talks to production; the repo
-/// can point `USAGE_INGEST_URL` at a local dev server instead.
+/// can point `AGENT_USAGE_URL` at a local dev server instead.
 pub const PRODUCTION_ISSUER: &str = "https://ruchern.dev";
 pub const OAUTH_SCOPES: &str = "openid profile email offline_access mcp";
 pub const OAUTH_REDIRECT_URI: &str = "http://127.0.0.1:8741/callback";
 pub const OAUTH_LISTEN_ADDR: &str = "127.0.0.1:8741";
-pub const OAUTH_CLIENT_NAME: &str = "usage-ingest";
+pub const OAUTH_CLIENT_NAME: &str = "agent-usage";
 
 /// Origin of the ingest endpoint, so login and ingest always hit the same server.
 #[cfg(not(test))]
@@ -135,7 +135,7 @@ pub fn bearer_token() -> Result<String> {
     }
     let config = discover_oidc();
     let refreshed = refresh_tokens(&config.token_endpoint, &tokens)
-        .map_err(|error| anyhow!("token refresh failed ({error:#}) — run: usage-ingest login"))?;
+        .map_err(|error| anyhow!("token refresh failed ({error:#}) — run: agent-usage login"))?;
     store::save_tokens(&refreshed)?;
     Ok(refreshed.access_token)
 }
@@ -767,7 +767,7 @@ mod tests {
 
         // Corrupt store entry: deviation from Go, whose "invalid character" wording
         // is specific to encoding/json; we just assert the load fails.
-        crate::store::backend::set("not json").unwrap();
+        crate::store::backend::set(store::KEYRING_SERVICE, "not json").unwrap();
         assert!(bearer_token().is_err());
     }
 

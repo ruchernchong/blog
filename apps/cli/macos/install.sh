@@ -1,34 +1,46 @@
 #!/bin/zsh
 set -euo pipefail
 
-LABEL=dev.ruchern.usage-ingest
+LABEL=dev.ruchern.agent-usage
+LEGACY_LABEL=dev.ruchern.usage-ingest
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 HOME_DIR=${HOME:?}
 BIN_DIR="$HOME_DIR/.local/bin"
 LAUNCH_AGENTS="$HOME_DIR/Library/LaunchAgents"
 LOGS="$HOME_DIR/Library/Logs"
-BIN="$BIN_DIR/usage-ingest"
-WRAPPER="$BIN_DIR/usage-ingest-run"
+BIN="$BIN_DIR/agent-usage"
+WRAPPER="$BIN_DIR/agent-usage-run"
 PLIST="$LAUNCH_AGENTS/${LABEL}.plist"
+LEGACY_PLIST="$LAUNCH_AGENTS/${LEGACY_LABEL}.plist"
 UID_NUM=$(id -u)
 DOMAIN="gui/${UID_NUM}"
 
 mkdir -p "$BIN_DIR" "$LAUNCH_AGENTS" "$LOGS"
 
 # Release packages ship a prebuilt binary in bin/; a checkout builds from source.
-if [[ -x $ROOT/bin/usage-ingest ]]; then
+if [[ -x $ROOT/bin/agent-usage ]]; then
   echo "Installing prebuilt $BIN"
-  install -m 755 "$ROOT/bin/usage-ingest" "$BIN"
+  install -m 755 "$ROOT/bin/agent-usage" "$BIN"
 else
   echo "Building $BIN"
   cargo build --release --manifest-path "$ROOT/Cargo.toml"
-  install -m 755 "$ROOT/target/release/usage-ingest" "$BIN"
+  install -m 755 "$ROOT/target/release/agent-usage" "$BIN"
 fi
 
-install -m 755 "$ROOT/macos/usage-ingest-run.sh" "$WRAPPER"
+# Remove an install from before the rename to agent-usage, once the new binary
+# is in place, so the two agents never both run. Its Keychain tokens and
+# client id move over on the first run of the new binary.
+if [[ -e $LEGACY_PLIST ]] || launchctl print "$DOMAIN/$LEGACY_LABEL" >/dev/null 2>&1; then
+  echo "Removing legacy $LEGACY_LABEL"
+  launchctl bootout "$DOMAIN" "$LEGACY_PLIST" 2>/dev/null ||
+    launchctl bootout "$DOMAIN/$LEGACY_LABEL" 2>/dev/null || true
+fi
+rm -f "$LEGACY_PLIST" "$BIN_DIR/usage-ingest" "$BIN_DIR/usage-ingest-run"
+
+install -m 755 "$ROOT/macos/agent-usage-run.sh" "$WRAPPER"
 
 sed -e "s|__HOME__|$HOME_DIR|g" -e "s|__WRAPPER__|$WRAPPER|g" \
-  "$ROOT/macos/dev.ruchern.usage-ingest.plist" >"$PLIST"
+  "$ROOT/macos/dev.ruchern.agent-usage.plist" >"$PLIST"
 
 if launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1; then
   launchctl bootout "$DOMAIN" "$PLIST" || true
@@ -39,7 +51,7 @@ launchctl enable "$DOMAIN/$LABEL"
 echo
 echo "Installed $LABEL"
 echo "  binary  $BIN"
-echo "  log     $LOGS/ruchern-usage-ingest.log"
+echo "  log     $LOGS/agent-usage.log"
 echo
 echo "1. Sign in (admin account):  $BIN login"
 echo "2. Prove one run:            $WRAPPER"

@@ -55,27 +55,31 @@ override is the no-deploy fix for internal/routed slugs no public source carries
 See `packages/usage/src/registry.ts` (pure normalise/merge) and
 `apps/web/src/lib/queries/models.ts` (`syncModelRegistry`).
 
-- `pnpm usage:login` / `pnpm usage:measure` / `pnpm usage:ingest` - Rust collector
-  (`apps/cli`), run via `turbo run @workspace/cli#…`. Parses Claude, Codex,
+- `pnpm usage:login` / `pnpm usage:measure` / `pnpm usage:ingest` - the `agent-usage`
+  CLI, a Rust collector (`apps/cli`), run via `turbo run @workspace/cli#…`. Parses Claude, Codex,
   OpenCode, Cursor, and Grok on this machine. `ingest` POSTs daily rows with
   `costUsd: null` to `POST /api/usage/ingest`, which upserts them with that server's
   own `DATABASE_URL`, prices them, and syncs the model registry. The target is
-  `USAGE_INGEST_URL` (set to `https://blog.localhost/api/usage/ingest` in the local
+  `AGENT_USAGE_URL` (set to `https://blog.localhost/api/usage/ingest` in the local
   `.envrc`), defaulting to production. Login (OAuth, admin account, Keychain) follows
   the same server, and each non-production server gets its own Keychain entry, so
-  local and production logins never mix. `USAGE_INGEST_DRY_RUN=1` prints the payload
+  local and production logins never mix. `AGENT_USAGE_DRY_RUN=1` prints the payload
   without POSTing. The installed binary is production only. semantic-release keeps
   its `Cargo.toml` version in sync with the monorepo release, and it prints a once-a-day update notice
-  in interactive terminals (`USAGE_INGEST_NO_UPDATE_CHECK=1` disables it). Install
+  in interactive terminals (`AGENT_USAGE_NO_UPDATE_CHECK=1` disables it). The CLI was
+  renamed from `usage-ingest`: each `AGENT_USAGE_*` variable falls back to its legacy
+  `USAGE_INGEST_*` name when unset, and the Keychain item, client id file, and
+  LaunchAgent migrate on their own, so nobody signs in again. Install
   (LaunchAgent): `curl | bash`
   `apps/cli/macos/install-remote.sh` pulls the prebuilt binary from the
-  latest monorepo release (`ci.yml` runs `usage-ingest-build.yml` after semantic-release
+  latest monorepo release (`ci.yml` runs `agent-usage-build.yml` after semantic-release
   and attaches the package); `install.sh` builds from a checkout. See
   README.md “Usage collector (macOS)” and `apps/cli/macos/INSTALL.md`.
 
-AgentUsage may also POST session-level `effortRows` into `token_effort_usage`
-(alongside token rows); the `/usage` page folds these into an all-time effort
-distribution. Local CLI parsers do not emit effort.
+The AgentUsage app (a separate client, not the `agent-usage` CLI) may also POST
+session-level `effortRows` into `token_effort_usage` (alongside token rows); the
+`/usage` page folds these into an all-time effort distribution. The `agent-usage`
+CLI parsers do not emit effort.
 
 ### MCP Server
 
@@ -231,7 +235,7 @@ apps/
 │   ├── public/
 │   └── migrations/
 ├── docs/             # @workspace/docs Fumadocs documentation site
-└── cli/              # @workspace/cli Rust usage collector CLI (macOS)
+└── cli/              # @workspace/cli agent-usage Rust usage collector CLI (macOS)
 packages/
 ├── mcp/              # @workspace/mcp private MCP server package
 └── usage/            # @workspace/usage usage types, ingest schema, pricing, and aggregation helpers

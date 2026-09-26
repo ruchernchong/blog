@@ -23,7 +23,11 @@ struct UpdateCheck {
 pub fn notify() {
     let current = CURRENT_VERSION;
     if !std::io::stderr().is_terminal()
-        || std::env::var_os("USAGE_INGEST_NO_UPDATE_CHECK").is_some()
+        || crate::env_var(
+            "AGENT_USAGE_NO_UPDATE_CHECK",
+            "USAGE_INGEST_NO_UPDATE_CHECK",
+        )
+        .is_some()
     {
         return;
     }
@@ -31,13 +35,13 @@ pub fn notify() {
         return;
     };
     if is_newer(&latest, current) {
-        eprintln!("\nA new version of usage-ingest is available: {current} → {latest}");
+        eprintln!("\nA new version of agent-usage is available: {current} → {latest}");
         eprintln!("Update: {INSTALL_COMMAND}");
     }
 }
 
 fn latest_version() -> Option<String> {
-    let path = store::config_dir().join("usage-ingest-update-check.json");
+    let path = store::config_dir().join("agent-usage-update-check.json");
     let cached: UpdateCheck = std::fs::read_to_string(&path)
         .ok()
         .and_then(|raw| serde_json::from_str(&raw).ok())
@@ -70,7 +74,7 @@ fn fetch_latest() -> Option<String> {
     let mut response = oauth::http()
         .get(LATEST_RELEASE_URL)
         .header("accept", "application/vnd.github+json")
-        .header("user-agent", "usage-ingest")
+        .header("user-agent", "agent-usage")
         .config()
         .timeout_global(Some(REQUEST_TIMEOUT))
         .build()

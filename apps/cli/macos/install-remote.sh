@@ -4,11 +4,16 @@
 #
 #   curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/apps/cli/macos/install-remote.sh | bash
 #
-# USAGE_INGEST_VERSION=1.42.0 pins a release instead of the latest.
+# AGENT_USAGE_VERSION=X.Y.Z pins a release instead of the latest (the legacy
+# USAGE_INGEST_VERSION is read when it is unset).
 set -euo pipefail
 
 REPO=ruchernchong/blog
-ASSET=usage-ingest-macos.tar.gz
+ASSET=agent-usage-macos.tar.gz
+# Releases cut before the rename (v1.50.0 and earlier, and latest until the
+# first agent-usage release) only carry the usage-ingest package.
+LEGACY_ASSET=usage-ingest-macos.tar.gz
+VERSION=${AGENT_USAGE_VERSION:-${USAGE_INGEST_VERSION:-}}
 TMP_DIR=
 
 fetch() {
@@ -17,25 +22,32 @@ fetch() {
 
 main() {
   if [[ "$(uname -s)" != Darwin ]]; then
-    echo "usage-ingest: macOS only" >&2
+    echo "agent-usage: macOS only" >&2
     exit 1
   fi
 
   local base="https://github.com/$REPO/releases/latest/download"
-  if [[ -n "${USAGE_INGEST_VERSION:-}" ]]; then
-    base="https://github.com/$REPO/releases/download/v$USAGE_INGEST_VERSION"
+  if [[ -n "$VERSION" ]]; then
+    base="https://github.com/$REPO/releases/download/v$VERSION"
   fi
 
   TMP_DIR=$(mktemp -d)
   trap 'rm -rf "$TMP_DIR"' EXIT
 
-  echo "Downloading ${USAGE_INGEST_VERSION:-latest release}"
-  fetch -o "$TMP_DIR/$ASSET" "$base/$ASSET"
-  fetch -o "$TMP_DIR/$ASSET.sha256" "$base/$ASSET.sha256"
-  (cd "$TMP_DIR" && shasum -a 256 -c "$ASSET.sha256")
+  local asset=$ASSET dir=agent-usage
+  echo "Downloading ${VERSION:-latest release}"
+  if ! fetch -o "$TMP_DIR/$asset" "$base/$asset"; then
+    echo "No $ASSET in this release, falling back to $LEGACY_ASSET"
+    asset=$LEGACY_ASSET dir=usage-ingest
+    fetch -o "$TMP_DIR/$asset" "$base/$asset"
+  fi
+  fetch -o "$TMP_DIR/$asset.sha256" "$base/$asset.sha256"
+  (cd "$TMP_DIR" && shasum -a 256 -c "$asset.sha256")
 
-  tar -xzf "$TMP_DIR/$ASSET" -C "$TMP_DIR"
-  zsh "$TMP_DIR/usage-ingest/macos/install.sh"
+  tar -xzf "$TMP_DIR/$asset" -C "$TMP_DIR"
+  # The agent-usage install.sh also removes a legacy usage-ingest install; a
+  # legacy package installs usage-ingest, which the next upgrade migrates.
+  zsh "$TMP_DIR/$dir/macos/install.sh"
 }
 
 # Called last so a partial download never runs half a script.

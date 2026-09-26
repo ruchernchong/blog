@@ -1,5 +1,5 @@
 [package]
-name = "usage-ingest"
+name = "agent-usage"
 version = "1.50.0"
 edition = "2024"
 rust-version = "1.89"

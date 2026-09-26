@@ -19,9 +19,8 @@ struct Payload<'a> {
 pub fn ingest(result: &CollectResult) -> Result<()> {
     let endpoint = endpoint();
     // Go checks the raw env var for emptiness (no trimming) here.
-    let dry_run = !std::env::var("USAGE_INGEST_DRY_RUN")
-        .unwrap_or_default()
-        .is_empty();
+    let dry_run = crate::env_var("AGENT_USAGE_DRY_RUN", "USAGE_INGEST_DRY_RUN")
+        .is_some_and(|value| !value.is_empty());
 
     let mut out = io::stdout().lock();
     ingest_inner(result, &endpoint, dry_run, &mut out)
@@ -104,7 +103,9 @@ fn ingest_inner(
 /// Ingest endpoint from the environment; defaults to production.
 pub fn endpoint() -> String {
     resolve_endpoint(
-        &std::env::var("USAGE_INGEST_URL").unwrap_or_default(),
+        &crate::env_var("AGENT_USAGE_URL", "USAGE_INGEST_URL")
+            .and_then(|value| value.into_string().ok())
+            .unwrap_or_default(),
         &std::env::var("VERCEL_PROJECT_PRODUCTION_URL").unwrap_or_default(),
         &std::env::var("VERCEL_URL").unwrap_or_default(),
     )

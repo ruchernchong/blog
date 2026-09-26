@@ -1,10 +1,10 @@
 // Local usage collector: parse agent logs on this machine, optionally POST
 // daily aggregates to POST /api/usage/ingest.
 //
-//	usage-ingest              # measure (table + JSON stats)
-//	usage-ingest login        # OAuth (browser + Keychain)
-//	usage-ingest logout
-//	usage-ingest ingest       # POST rows (OAuth bearer; server prices)
+//	agent-usage               # measure (table + JSON stats)
+//	agent-usage login         # OAuth (browser + Keychain)
+//	agent-usage logout
+//	agent-usage ingest        # POST rows (OAuth bearer; server prices)
 mod collect;
 mod cursor;
 mod grok;
@@ -17,6 +17,7 @@ mod update;
 use anyhow::{Context, Result, bail};
 use collect::ParserStats;
 use serde::Serialize;
+use std::ffi::OsString;
 use std::io::{self, Write};
 use std::path::PathBuf;
 
@@ -26,6 +27,12 @@ struct MeasureResult<'a> {
     agents: &'a [String],
     event_count: usize,
     stats: &'a [ParserStats],
+}
+
+/// Reads `name`, falling back to the pre-rename `USAGE_INGEST_*` variable
+/// `legacy` when `name` is unset, so existing shells and scripts keep working.
+fn env_var(name: &str, legacy: &str) -> Option<OsString> {
+    std::env::var_os(name).or_else(|| std::env::var_os(legacy))
 }
 
 fn main() {

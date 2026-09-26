@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>dev.ruchern.usage-ingest</string>
+  <string>dev.ruchern.agent-usage</string>
   <key>ProgramArguments</key>
   <array>
     <string>__WRAPPER__</string>
@@ -15,9 +15,9 @@
   <key>RunAtLoad</key>
   <true/>
   <key>StandardOutPath</key>
-  <string>__HOME__/Library/Logs/ruchern-usage-ingest.log</string>
+  <string>__HOME__/Library/Logs/agent-usage.log</string>
   <key>StandardErrorPath</key>
-  <string>__HOME__/Library/Logs/ruchern-usage-ingest.log</string>
+  <string>__HOME__/Library/Logs/agent-usage.log</string>
   <key>ProcessType</key>
   <string>Background</string>
 </dict>

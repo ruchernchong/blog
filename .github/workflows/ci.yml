@@ -92,19 +92,19 @@ jobs:
 
   # Tags pushed with GITHUB_TOKEN don't trigger other workflows, so the usage
   # collector is built and attached to the release from here.
-  usage-ingest-build:
-    name: Usage Ingest Build
+  agent-usage-build:
+    name: Agent Usage Build
     needs: release
     if: needs.release.outputs.version != ''
     permissions:
       contents: read
-    uses: ./.github/workflows/usage-ingest-build.yml # zizmor: ignore[self-repository]
+    uses: ./.github/workflows/agent-usage-build.yml # zizmor: ignore[self-repository]
     with:
       version: ${{ needs.release.outputs.version }}
 
-  usage-ingest-upload:
-    name: Usage Ingest Upload
-    needs: [ release, usage-ingest-build ]
+  agent-usage-upload:
+    name: Agent Usage Upload
+    needs: [ release, agent-usage-build ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -112,7 +112,7 @@ jobs:
       - name: Download package
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: usage-ingest-macos
+          name: agent-usage-macos
           path: dist
 
       - name: Upload to release
@@ -122,6 +122,6 @@ jobs:
           VERSION: ${{ needs.release.outputs.version }}
         run: |
           gh release upload "v$VERSION" \
-            dist/usage-ingest-macos.tar.gz \
-            dist/usage-ingest-macos.tar.gz.sha256 \
+            dist/agent-usage-macos.tar.gz \
+            dist/agent-usage-macos.tar.gz.sha256 \
             --repo "$REPO"
