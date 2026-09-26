@@ -23,11 +23,6 @@ curl -fsSLo install.sh https://github.com/ruchernchong/blog/releases/latest/down
 bash install.sh
 ```
 
-`packages/usage/rust/macos/install-remote.sh` only forwards to
-`apps/cli/macos/install.sh`, for installs from v1.50.0 and earlier whose
-update notice still prints its raw GitHub URL. Delete it once no v1.50.0
-installs remain.
-
 From a checkout, the same script builds from source instead (needs a **Rust
 toolchain**, via [rustup](https://rustup.rs) or `brew install rust`):
 
