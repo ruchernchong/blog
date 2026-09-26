@@ -24,6 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      CARGO_INCREMENTAL: 0
     defaults:
       run:
         working-directory: apps/cli
@@ -46,6 +48,7 @@ jobs:
             ~/.cargo/git
             apps/cli/target
           key: ${{ runner.os }}-cargo-${{ hashFiles('apps/cli/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
 
       - parallel:
           - name: Check formatting

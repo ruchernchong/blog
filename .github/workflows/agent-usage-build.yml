@@ -21,10 +21,15 @@ permissions: { }
 
 jobs:
   build:
-    name: Build
+    name: Build (${{ matrix.target }})
     runs-on: macos-latest
     permissions:
       contents: read
+    strategy:
+      matrix:
+        target: [ aarch64-apple-darwin, x86_64-apple-darwin ]
+    env:
+      CARGO_INCREMENTAL: 0
     defaults:
       run:
         working-directory: apps/cli
@@ -38,23 +43,68 @@ jobs:
           persist-credentials: false
 
       - name: Setup Rust
+        env:
+          TARGET: ${{ matrix.target }}
         run: |
           rustup toolchain install stable --profile minimal
           rustup default stable
-          rustup target add aarch64-apple-darwin x86_64-apple-darwin
+          rustup target add "$TARGET"
+
+      - name: Cache Rust
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            apps/cli/target
+          key: ${{ runner.os }}-cargo-release-${{ matrix.target }}-${{ hashFiles('apps/cli/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-release-${{ matrix.target }}-
 
       - name: Build
-        run: |
-          cargo build --locked --release --target aarch64-apple-darwin
-          cargo build --locked --release --target x86_64-apple-darwin
+        env:
+          TARGET: ${{ matrix.target }}
+        run: cargo build --locked --release --target "$TARGET"
+
+      - name: Upload binary
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: agent-usage-${{ matrix.target }}
+          path: apps/cli/target/${{ matrix.target }}/release/agent-usage
+          if-no-files-found: error
+
+  package:
+    name: Package
+    needs: build
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: apps/cli
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.version && format('v{0}', inputs.version) || '' }}
+          persist-credentials: false
+          sparse-checkout: apps/cli/macos
+
+      - name: Download binaries
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          # Each binary lands in its own agent-usage-<target>/ folder.
+          pattern: agent-usage-*-apple-darwin
+          path: apps/cli/build
 
       - name: Package
         run: |
           dist=dist/agent-usage
           mkdir -p "$dist/bin" "$dist/macos"
           lipo -create -output "$dist/bin/agent-usage" \
-            target/aarch64-apple-darwin/release/agent-usage \
-            target/x86_64-apple-darwin/release/agent-usage
+            build/agent-usage-aarch64-apple-darwin/agent-usage \
+            build/agent-usage-x86_64-apple-darwin/agent-usage
+          # Artifacts don't keep the executable bit.
+          chmod +x "$dist/bin/agent-usage"
           lipo -info "$dist/bin/agent-usage"
           HOME=$(mktemp -d) "$dist/bin/agent-usage" measure
           cp macos/install.sh macos/dev.ruchern.agent-usage.plist "$dist/macos/"
