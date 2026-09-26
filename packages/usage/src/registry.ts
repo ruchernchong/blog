@@ -205,16 +205,23 @@ export function normaliseModelsDev(api: ModelsDevApi): ModelEntry[] {
  * documents dots for version numbers (`claude-opus-4.8`) while the Anthropic
  * API — and therefore our agent logs — use dashes (`claude-opus-4-8`), and logs
  * additionally carry a dated variant (`claude-haiku-4-5-20251001`). Stripping
- * the date suffix and all punctuation makes those three forms one key.
+ * the date suffix and folding every separator run into a single `-` makes
+ * those three forms one key, while keeping version boundaries (`gpt-5.1` is
+ * not `gpt-51`).
+ *
+ * Agent mode tags are stripped too: the Grok CLI stamps `-build` on whatever
+ * model it resolved (`grok-4.7-build`), which no source lists. Variant suffixes
+ * that change the price (`-fast`, `-pro`) are left alone.
  *
  * Only ever used as a *fallback* after an exact id match, so a hypothetical
  * collision between two genuinely different slugs cannot displace an exact hit.
  */
 export function canonicalSlug(slug: string): string {
   return slug
+    .replace(/-build$/i, "")
     .replace(/-\d{8}$/, "")
     .toLowerCase()
-    .replace(/[^a-z0-9]/g, "");
+    .replace(/[^a-z0-9]+/g, "-");
 }
 
 /**

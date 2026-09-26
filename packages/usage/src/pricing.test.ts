@@ -83,6 +83,13 @@ describe("buildPricingFromRegistry", () => {
     expect(
       pricing.canonicalModel("claude-sonnet-20260101", { agent: "claude" }),
     ).toBe("claude-sonnet");
+    // Agent mode tag → the base model, under any provider.
+    expect(pricing.canonicalModel("grok-4.6-build", { provider: "xai" })).toBe(
+      "grok-4.6",
+    );
+    expect(
+      pricing.canonicalModel("gpt-5.5-build", { provider: "openai" }),
+    ).toBe("gpt-5.5");
     // Unknown id, or no provider, stays its own key.
     expect(pricing.canonicalModel("mystery", { agent: "claude" })).toBe(
       "mystery",
