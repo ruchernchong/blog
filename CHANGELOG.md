@@ -1,3 +1,9 @@
+## [1.54.1](https://github.com/ruchernchong/blog/compare/v1.54.0...v1.54.1) (2026-09-26)
+
+### Bug Fixes
+
+* republish agent-usage release assets ([c71c1c3](https://github.com/ruchernchong/blog/commit/c71c1c307dd81d160b2cea76b9f45ffb7b1ef149))
+
 ## [1.54.0](https://github.com/ruchernchong/blog/compare/v1.53.0...v1.54.0) (2026-09-26)
 
 ### Features
