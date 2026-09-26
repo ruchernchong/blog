@@ -1,3 +1,11 @@
+## [1.49.1](https://github.com/ruchernchong/blog/compare/v1.49.0...v1.49.1) (2026-09-26)
+
+### Bug Fixes
+
+* price GPT-5.6 from list-price sources ([5d099ad](https://github.com/ruchernchong/blog/commit/5d099ad79288d9dcd2c1f001fdb6becca8891685))
+* resolve -build model slugs to their base model ([ce8a035](https://github.com/ruchernchong/blog/commit/ce8a035e1264e1de60363357f4418ae9451b95a7))
+* skip model display names that echo the slug ([c2979f1](https://github.com/ruchernchong/blog/commit/c2979f1068eded5179235d34c552de836935ecd7))
+
 ## [1.49.0](https://github.com/ruchernchong/blog/compare/v1.48.0...v1.49.0) (2026-09-26)
 
 ### Features
