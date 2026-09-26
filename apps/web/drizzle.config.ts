@@ -1,7 +1,8 @@
 import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
-  schema: "./src/schema",
+  // Skip colocated tests: relations.test.ts imports Vitest, which drizzle-kit cannot require.
+  schema: "./src/schema/!(*.test).ts",
   out: "./migrations",
   dialect: "postgresql",
   dbCredentials: {
