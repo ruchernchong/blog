@@ -57,8 +57,7 @@ jobs:
             target/x86_64-apple-darwin/release/agent-usage
           lipo -info "$dist/bin/agent-usage"
           HOME=$(mktemp -d) "$dist/bin/agent-usage" measure
-          cp macos/install.sh macos/uninstall.sh \
-            macos/dev.ruchern.agent-usage.plist "$dist/macos/"
+          cp macos/install.sh macos/dev.ruchern.agent-usage.plist "$dist/macos/"
           tar -czf dist/agent-usage-macos.tar.gz -C dist agent-usage
           (cd dist && shasum -a 256 agent-usage-macos.tar.gz > agent-usage-macos.tar.gz.sha256)
 

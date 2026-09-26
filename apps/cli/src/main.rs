@@ -13,6 +13,7 @@ mod ingest;
 mod oauth;
 mod parse;
 mod store;
+mod uninstall;
 mod update;
 
 use anyhow::{Context, Result};
@@ -62,6 +63,12 @@ enum Command {
         /// Only report the current and latest versions
         #[arg(long)]
         check: bool,
+    },
+    /// Remove the LaunchAgent and binary (keeps your sign-in, config and log)
+    Uninstall {
+        /// Do not ask for confirmation
+        #[arg(short, long)]
+        yes: bool,
     },
     /// Print a shell completion script
     Completions {
@@ -123,6 +130,7 @@ impl Command {
             Command::Completions { .. }
                 | Command::Measure { json: true }
                 | Command::Update { .. }
+                | Command::Uninstall { .. }
                 | Command::Run
         )
     }
@@ -178,6 +186,7 @@ fn run(command: Command) -> Result<()> {
             command: AuthCommand::Status,
         } => oauth::status(),
         Command::Update { check } => update::run(check).context("update"),
+        Command::Uninstall { yes } => uninstall::run(yes).context("uninstall"),
         Command::Completions { shell } => {
             clap_complete::generate(
                 Shell::from(shell),
@@ -295,6 +304,19 @@ mod tests {
             assert_eq!(version.kind(), ErrorKind::DisplayVersion, "{flag}");
             assert!(version.to_string().contains(env!("CARGO_PKG_VERSION")));
         }
+    }
+
+    #[test]
+    fn uninstall_flags() {
+        assert!(matches!(
+            parse(&["uninstall"]).unwrap(),
+            Command::Uninstall { yes: false }
+        ));
+        assert!(matches!(
+            parse(&["uninstall", "-y"]).unwrap(),
+            Command::Uninstall { yes: true }
+        ));
+        assert!(parse(&["uninstall", "--purge"]).is_err());
     }
 
     #[test]

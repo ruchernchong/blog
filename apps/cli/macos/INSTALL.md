@@ -127,14 +127,15 @@ when unset.
 ## 4. Uninstall
 
 ```zsh
-~/.local/bin/agent-usage auth logout
-zsh apps/cli/macos/uninstall.sh
-# without a checkout:
-curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/apps/cli/macos/uninstall.sh | zsh
+agent-usage auth logout   # optional: also remove the Keychain sign-in
+agent-usage uninstall
 ```
 
-`uninstall.sh` removes a leftover `usage-ingest` install too, and `auth logout`
-clears both the new and the legacy Keychain items.
+`uninstall` lists what it removes and asks before going ahead (`--yes` skips
+the prompt). It unloads the LaunchAgent and deletes its plist and the binary.
+Your Keychain sign-in, `~/.config/agent-usage` and
+`~/Library/Logs/agent-usage.log` are kept, so a reinstall picks up where it left
+off; delete them by hand to remove everything.
 
 ## Releasing
 
