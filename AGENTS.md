@@ -64,7 +64,10 @@ See `packages/usage/src/registry.ts` (pure normalise/merge) and
   `.envrc`), defaulting to production. Login (OAuth, admin account, Keychain) follows
   the same server, and each non-production server gets its own Keychain entry, so
   local and production logins never mix. `AGENT_USAGE_DRY_RUN=1` prints the payload
-  without POSTing. The installed binary is production only. semantic-release keeps
+  without POSTing. Commands (clap): `measure [--json]`, `ingest [--dry-run] [--url <URL>]`
+  (flags win over `AGENT_USAGE_DRY_RUN` / `AGENT_USAGE_URL`), `auth login|logout|status`
+  (hidden `login`/`logout` aliases), and `completions <zsh|bash|fish>`; no subcommand
+  prints help. The installed binary is production only. semantic-release keeps
   its `Cargo.toml` version in sync with the monorepo release, and it prints a once-a-day update notice
   in interactive terminals (`AGENT_USAGE_NO_UPDATE_CHECK=1` disables it). The CLI was
   renamed from `usage-ingest`: each `AGENT_USAGE_*` variable falls back to its legacy

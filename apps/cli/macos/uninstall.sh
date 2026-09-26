@@ -18,4 +18,4 @@ done
 rm -f "$HOME_DIR/.local/bin/agent-usage" "$HOME_DIR/.local/bin/agent-usage-run" \
   "$HOME_DIR/.local/bin/usage-ingest" "$HOME_DIR/.local/bin/usage-ingest-run"
 
-echo "Removed $LABEL (Keychain tokens left — run: agent-usage logout)"
+echo "Removed $LABEL (Keychain tokens left — run: agent-usage auth logout)"

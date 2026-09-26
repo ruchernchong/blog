@@ -53,7 +53,7 @@ echo "Installed $LABEL"
 echo "  binary  $BIN"
 echo "  log     $LOGS/agent-usage.log"
 echo
-echo "1. Sign in (admin account):  $BIN login"
+echo "1. Sign in (admin account):  $BIN auth login"
 echo "2. Prove one run:            $WRAPPER"
 echo "3. Then:  launchctl kickstart -k $DOMAIN/$LABEL"
 echo "4. Turn off AgentUsage → Settings → Blog Usage Sync"

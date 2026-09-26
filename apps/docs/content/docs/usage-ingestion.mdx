@@ -133,8 +133,10 @@ Sign in once per server (OAuth, admin account; the token is stored in the Keycha
 
 Optional environment variables:
 
-- `AGENT_USAGE_URL` overrides the endpoint, e.g. `https://blog.localhost/api/usage/ingest` for the local dev server (defaults to `VERCEL_PROJECT_PRODUCTION_URL`, `VERCEL_URL`, then `https://ruchern.dev`)
-- `AGENT_USAGE_DRY_RUN=1` prints the payload without POSTing
+- `AGENT_USAGE_URL` overrides the endpoint (`agent-usage ingest --url <URL>` wins over it), e.g. `https://blog.localhost/api/usage/ingest` for the local dev server (defaults to `VERCEL_PROJECT_PRODUCTION_URL`, `VERCEL_URL`, then `https://ruchern.dev`)
+- `AGENT_USAGE_DRY_RUN=1` prints the payload without POSTing (same as `agent-usage ingest --dry-run`)
+
+`agent-usage auth status` shows the stored sign-in for the current server without a network call.
 
 The CLI was renamed from `usage-ingest`. Each `AGENT_USAGE_*` variable falls back to its legacy `USAGE_INGEST_*` name when unset, so existing shells and `.envrc` files keep working.
 

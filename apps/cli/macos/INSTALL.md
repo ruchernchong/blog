@@ -30,13 +30,16 @@ zsh apps/cli/macos/install.sh
 Then sign in. Use the **installed** binary for login so Keychain access matches launchd.
 
 ```zsh
-~/.local/bin/agent-usage login
+~/.local/bin/agent-usage auth login
 ```
 
 The browser opens ruchern.dev. Sign in with the **admin** account (ingest
 rejects non-admin OAuth). Tokens go in the login Keychain
 (`dev.ruchern.agent-usage`). The cached OAuth client id, update check, and
 refresh lock live in `~/.config/agent-usage/` (or `$XDG_CONFIG_HOME/agent-usage/`).
+`agent-usage auth status` shows the server, the
+access token expiry, and whether a refresh token is stored, without a network
+call; it exits non-zero when signed out.
 
 ## 2. Prove one POST
 
@@ -62,12 +65,30 @@ tail -f ~/Library/Logs/agent-usage.log
 launchctl print "gui/$(id -u)/dev.ruchern.agent-usage"
 ```
 
-To update, run the `curl` line again (or `install.sh` from a checkout). After parser changes, run `install.sh` again, then `login` only if Keychain
+To update, run the `curl` line again (or `install.sh` from a checkout). After parser changes, run `install.sh` again, then `auth login` only if Keychain
 prompts (same machine, same binary path, usually not).
 
 The collector checks GitHub for a newer release at most once a day and print the
 update command when one exists. The check only runs in an interactive terminal
-(never from the LaunchAgent); set `AGENT_USAGE_NO_UPDATE_CHECK=1` to turn it off.
+(never from the LaunchAgent), never after `completions` or `measure --json`; set
+`AGENT_USAGE_NO_UPDATE_CHECK=1` to turn it off.
+
+## Commands
+
+```zsh
+agent-usage measure [--json]                  # stats table, or JSON only
+agent-usage ingest [--dry-run] [--url <URL>]  # what the LaunchAgent runs
+agent-usage auth login | logout | status
+agent-usage completions zsh > "${fpath[1]}/_agent-usage"   # or bash, fish
+```
+
+`--url` wins over `AGENT_USAGE_URL` and `--dry-run` over `AGENT_USAGE_DRY_RUN`.
+`auth login`, `logout` and `status` have no `--url`: they pick the server from
+`AGENT_USAGE_URL`. To sign in to the server an `ingest --url` run uses, run
+`AGENT_USAGE_URL=<origin> agent-usage auth login`; the not-signed-in error
+prints that command.
+`login` and `logout` still work on their own as aliases of `auth login` and
+`auth logout`.
 
 ## Upgrading from usage-ingest
 
@@ -89,13 +110,13 @@ unset.
 ## 4. Uninstall
 
 ```zsh
-~/.local/bin/agent-usage logout
+~/.local/bin/agent-usage auth logout
 zsh apps/cli/macos/uninstall.sh
 # without a checkout:
 curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/apps/cli/macos/uninstall.sh | zsh
 ```
 
-`uninstall.sh` removes a leftover `usage-ingest` install too, and `logout`
+`uninstall.sh` removes a leftover `usage-ingest` install too, and `auth logout`
 clears both the new and the legacy Keychain items.
 
 ## Releasing

@@ -13,7 +13,11 @@ pub const KEYRING_SERVICE: &str = "dev.ruchern.agent-usage";
 pub const LEGACY_KEYRING_SERVICE: &str = "dev.ruchern.usage-ingest";
 #[cfg_attr(test, allow(dead_code))]
 pub const KEYRING_ACCOUNT: &str = "oauth-tokens";
-pub const NOT_SIGNED_IN: &str = "not signed in — run: agent-usage login";
+
+/// Not-signed-in error text, with the sign-in command for this run's server.
+pub fn not_signed_in() -> String {
+    format!("not signed in — run: {}", crate::ingest::login_command())
+}
 
 /// Same JSON shape the Go collector stored, so existing Keychain items still load.
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
@@ -35,11 +39,19 @@ pub fn save_tokens(tokens: &OauthTokens) -> Result<()> {
 }
 
 pub fn load_tokens() -> Result<OauthTokens> {
+    stored_tokens()?.ok_or_else(|| anyhow!(not_signed_in()))
+}
+
+/// The stored tokens, or `None` when nothing is stored for this server.
+pub fn stored_tokens() -> Result<Option<OauthTokens>> {
     let raw = match backend::get(KEYRING_SERVICE)? {
         Some(raw) => raw,
-        None => migrate_legacy_tokens()?.ok_or_else(|| anyhow!(NOT_SIGNED_IN))?,
+        None => match migrate_legacy_tokens()? {
+            Some(raw) => raw,
+            None => return Ok(None),
+        },
     };
-    Ok(serde_json::from_str(&raw)?)
+    Ok(Some(serde_json::from_str(&raw)?))
 }
 
 /// Moves tokens saved under [`LEGACY_KEYRING_SERVICE`] to [`KEYRING_SERVICE`],
@@ -254,9 +266,9 @@ pub mod backend {
 #[cfg(test)]
 mod tests {
     use super::{
-        KEYRING_SERVICE, LEGACY_KEYRING_SERVICE, NOT_SIGNED_IN, OauthTokens, backend,
-        client_id_path, config_dir, delete_tokens, legacy_config_dir, load_tokens,
-        resolve_config_dir, save_tokens,
+        KEYRING_SERVICE, LEGACY_KEYRING_SERVICE, OauthTokens, backend, client_id_path, config_dir,
+        delete_tokens, legacy_config_dir, load_tokens, not_signed_in, resolve_config_dir,
+        save_tokens,
     };
 
     fn tokens(access_token: &str) -> OauthTokens {
@@ -311,7 +323,7 @@ mod tests {
         delete_tokens().unwrap();
         assert_eq!(backend::get(KEYRING_SERVICE).unwrap(), None);
         assert_eq!(backend::get(LEGACY_KEYRING_SERVICE).unwrap(), None);
-        assert_eq!(load_tokens().unwrap_err().to_string(), NOT_SIGNED_IN);
+        assert_eq!(load_tokens().unwrap_err().to_string(), not_signed_in());
     }
 
     #[test]

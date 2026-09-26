@@ -1,4 +1,4 @@
-use crate::store::{self, NOT_SIGNED_IN, OauthTokens};
+use crate::store::{self, OauthTokens};
 use anyhow::{Context, Result, anyhow, bail};
 use base64::Engine;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
@@ -87,7 +87,7 @@ pub fn login() -> Result<()> {
             if is_invalid_target(Some(&error)) {
                 let _ = std::fs::remove_file(store::client_id_path());
                 return Err(anyhow!(
-                    "{error:#} (cached client dropped — run login again)"
+                    "{error:#} (cached client dropped — run: agent-usage auth login)"
                 ));
             }
             return Err(error);
@@ -119,6 +119,64 @@ pub fn logout() -> Result<()> {
     Ok(())
 }
 
+/// Prints the server, whether tokens are stored for it, and their expiry,
+/// from the Keychain alone (no network). Fails when not signed in.
+pub fn status() -> Result<()> {
+    let tokens = store::stored_tokens()?;
+    let (report, signed_in) = status_report(&issuer(), tokens.as_ref(), unix_now());
+    print!("{report}");
+    if !signed_in {
+        bail!(store::not_signed_in());
+    }
+    Ok(())
+}
+
+/// Testable core of [`status`]: the report text and whether a run could get a
+/// bearer token (an unexpired access token, or a refresh token to renew it).
+fn status_report(server: &str, tokens: Option<&OauthTokens>, now: i64) -> (String, bool) {
+    let mut report = format!("Server:        {server}\n");
+    let Some(tokens) = tokens else {
+        report.push_str("Signed in:     no (no tokens stored)\n");
+        return (report, false);
+    };
+    let access_valid = !tokens.access_token.is_empty() && now < tokens.expiry_unix;
+    let has_refresh = !tokens.refresh_token.is_empty();
+    let signed_in = access_valid || has_refresh;
+
+    let who = if tokens.email.is_empty() {
+        String::new()
+    } else {
+        format!(" as {}", tokens.email)
+    };
+    let signed_in_line = if signed_in {
+        format!("yes{who}")
+    } else {
+        format!("no (session expired{who})")
+    };
+    report.push_str(&format!("Signed in:     {signed_in_line}\n"));
+
+    let expiry = chrono::DateTime::from_timestamp(tokens.expiry_unix, 0)
+        .map(|at| {
+            at.with_timezone(&chrono::Local)
+                .format("%d/%m/%Y %H:%M")
+                .to_string()
+        })
+        .unwrap_or_else(|| tokens.expiry_unix.to_string());
+    let access_line = if tokens.access_token.is_empty() {
+        "none".to_string()
+    } else if access_valid {
+        format!("valid until {expiry}")
+    } else {
+        format!("expired {expiry}")
+    };
+    report.push_str(&format!("Access token:  {access_line}\n"));
+    report.push_str(&format!(
+        "Refresh token: {}\n",
+        if has_refresh { "stored" } else { "none" }
+    ));
+    (report, signed_in)
+}
+
 pub fn bearer_token() -> Result<String> {
     // Better Auth rotates refresh tokens and revokes the whole family on reuse,
     // so two runs refreshing with the same token (the 15-minute LaunchAgent and a
@@ -131,11 +189,15 @@ pub fn bearer_token() -> Result<String> {
         return Ok(tokens.access_token);
     }
     if tokens.refresh_token.is_empty() {
-        bail!(NOT_SIGNED_IN);
+        bail!(store::not_signed_in());
     }
     let config = discover_oidc();
-    let refreshed = refresh_tokens(&config.token_endpoint, &tokens)
-        .map_err(|error| anyhow!("token refresh failed ({error:#}) — run: agent-usage login"))?;
+    let refreshed = refresh_tokens(&config.token_endpoint, &tokens).map_err(|error| {
+        anyhow!(
+            "token refresh failed ({error:#}) — run: {}",
+            crate::ingest::login_command()
+        )
+    })?;
     store::save_tokens(&refreshed)?;
     Ok(refreshed.access_token)
 }
@@ -772,6 +834,68 @@ mod tests {
     }
 
     #[test]
+    fn status_report_reads_stored_tokens_only() {
+        let now = 1_000_000;
+        let tokens = |access: &str, expiry_unix, refresh: &str| OauthTokens {
+            access_token: access.into(),
+            refresh_token: refresh.into(),
+            expiry_unix,
+            client_id: "c".into(),
+            email: "me@example.com".into(),
+        };
+
+        let (report, signed_in) = status_report(PRODUCTION_ISSUER, None, now);
+        assert!(!signed_in);
+        assert!(
+            report.contains("Server:        https://ruchern.dev"),
+            "{report}"
+        );
+        assert!(
+            report.contains("Signed in:     no (no tokens stored)"),
+            "{report}"
+        );
+
+        let valid = tokens("access", now + 3600, "refresh");
+        let (report, signed_in) = status_report(PRODUCTION_ISSUER, Some(&valid), now);
+        assert!(signed_in);
+        assert!(
+            report.contains("Signed in:     yes as me@example.com"),
+            "{report}"
+        );
+        assert!(report.contains("Access token:  valid until "), "{report}");
+        assert!(report.contains("Refresh token: stored"), "{report}");
+
+        // An expired access token with a refresh token renews on the next run.
+        let refreshable = tokens("access", now - 1, "refresh");
+        let (report, signed_in) = status_report(PRODUCTION_ISSUER, Some(&refreshable), now);
+        assert!(signed_in);
+        assert!(report.contains("Access token:  expired "), "{report}");
+
+        let expired = tokens("access", now - 1, "");
+        let (report, signed_in) = status_report(PRODUCTION_ISSUER, Some(&expired), now);
+        assert!(!signed_in);
+        assert!(
+            report.contains("Signed in:     no (session expired as me@example.com)"),
+            "{report}"
+        );
+        assert!(report.contains("Refresh token: none"), "{report}");
+    }
+
+    #[test]
+    fn status_fails_when_not_signed_in() {
+        let _guard = crate::store::backend::serial();
+        assert_eq!(status().unwrap_err().to_string(), store::not_signed_in());
+
+        store::save_tokens(&OauthTokens {
+            access_token: "access".into(),
+            expiry_unix: unix_now() + 3600,
+            ..Default::default()
+        })
+        .unwrap();
+        status().unwrap();
+    }
+
+    #[test]
     fn save_and_load_tokens_round_trip() {
         let _guard = crate::store::backend::serial();
         let want = OauthTokens {
@@ -790,6 +914,6 @@ mod tests {
     fn load_tokens_without_stored_value_reports_not_signed_in() {
         let _guard = crate::store::backend::serial();
         let error = store::load_tokens().unwrap_err();
-        assert_eq!(error.to_string(), NOT_SIGNED_IN);
+        assert_eq!(error.to_string(), store::not_signed_in());
     }
 }

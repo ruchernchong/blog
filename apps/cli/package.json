@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "login": "cargo run --release -- login",
+    "login": "cargo run --release -- auth login",
     "measure": "cargo run --release -- measure",
     "ingest": "cargo run --release -- ingest"
   }
