@@ -325,6 +325,9 @@ export async function getModelDisplayNames(
 
     const names: Record<string, string> = {};
     for (const row of rows) {
+      // Some models.dev providers echo the slug as the name (302ai lists
+      // `claude-opus-4-7`); skip those so a real name from another row wins.
+      if (row.displayName === row.id) continue;
       if (row.displayName && !names[row.id]) {
         names[row.id] = row.displayName;
       }

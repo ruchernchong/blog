@@ -47,12 +47,21 @@ describe("canonicalSlug", () => {
     );
   });
 
+  it("should strip the agent mode tag", () => {
+    expect(canonicalSlug("grok-4.7-build")).toBe(canonicalSlug("grok-4.7"));
+    expect(canonicalSlug("gpt-5.6-sol-build")).toBe(
+      canonicalSlug("gpt-5.6-sol"),
+    );
+  });
+
   it("should keep genuinely different models apart", () => {
     expect(canonicalSlug("gpt-5.6-sol")).not.toBe(
       canonicalSlug("gpt-5.6-sol-fast"),
     );
     expect(canonicalSlug("grok-4.6")).toBe(canonicalSlug("grok-4-6"));
     expect(canonicalSlug("grok-4.6")).not.toBe(canonicalSlug("grok-4.6-fast"));
+    expect(canonicalSlug("gpt-5.1")).not.toBe(canonicalSlug("gpt-51"));
+    expect(canonicalSlug("kimi-k2.7")).not.toBe(canonicalSlug("kimi-k27"));
     expect(canonicalSlug("claude-opus-4-8")).not.toBe(
       canonicalSlug("claude-opus-5"),
     );

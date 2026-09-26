@@ -437,6 +437,17 @@ describe("getModelDisplayNames", () => {
     });
   });
 
+  it("should skip a display name that only echoes the model id", async () => {
+    whereRows.mockResolvedValue([
+      { id: "claude-opus-4-7", displayName: "claude-opus-4-7" },
+      { id: "claude-opus-4-7", displayName: "Claude Opus 4.7" },
+    ]);
+
+    await expect(getModelDisplayNames(["claude-opus-4-7"])).resolves.toEqual({
+      "claude-opus-4-7": "Claude Opus 4.7",
+    });
+  });
+
   it("should return an empty map when the registry query fails", async () => {
     whereRows.mockRejectedValue(new Error("db down"));
 
