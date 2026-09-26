@@ -18,8 +18,8 @@ import { syncModelRegistryWorkflow } from "@/workflows/sync-model-registry";
  * ingested using the deployment's own `DATABASE_URL` — the prod connection
  * string never has to touch the local machine.
  *
- * Writes are gated to the static MCP token or an admin session (OAuth sign-up is
- * open, so a plain authenticated session is not enough to overwrite prod data).
+ * Writes are gated to an OAuth access token owned by an admin (OAuth sign-up is
+ * open, so a plain authenticated user is not enough to overwrite prod data).
  *
  * The upsert is the only synchronous work. Refreshing the model registry and
  * repricing previously-unpriceable rows are handed to
@@ -33,10 +33,9 @@ import { syncModelRegistryWorkflow } from "@/workflows/sync-model-registry";
  */
 export async function POST(request: Request) {
   const auth = await validateMcpAuth(request);
-  // Static service token has full trust; any user-bearing auth (session or
-  // OAuth) must resolve to an admin. Gating on the resolved user instead of the
-  // auth type means new user-auth sources need no change here.
-  const allowed = auth?.type === "token" || auth?.user?.role === "admin";
+  // OAuth is the only accepted auth: the static MCP token and cookie/bearer
+  // sessions are rejected even when they would otherwise resolve to an admin.
+  const allowed = auth?.type === "oauth" && auth.user?.role === "admin";
 
   if (!allowed) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });

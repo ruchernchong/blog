@@ -21,12 +21,9 @@ apps/web/src/app/api/usage/ingest/route.ts
 
 ## Authentication
 
-Requests must be authorised by either:
+Requests must send `Authorization: Bearer <access_token>`, where the token is an OAuth access token issued by this site's OAuth provider to a user whose role is `admin`. `agent-usage auth login` obtains one.
 
-- `Authorization: Bearer ${BLOG_MCP_AUTH_TOKEN}`
-- An authenticated Better Auth session whose user role is `admin`
-
-The static bearer token is the expected path for production ingestion.
+The static `BLOG_MCP_AUTH_TOKEN` bearer and Better Auth sessions are rejected.
 
 ## Request Body
 
@@ -154,7 +151,7 @@ The production database connection string stays inside the deployment environmen
 
 ```bash
 curl -X POST "https://ruchern.dev/api/usage/ingest" \
-  -H "Authorization: Bearer $BLOG_MCP_AUTH_TOKEN" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "rows": [
@@ -203,7 +200,7 @@ curl -X POST "https://ruchern.dev/api/usage/ingest" \
 
 | Status | Cause |
 | --- | --- |
-| `401` | Missing or invalid bearer token, or non-admin session. |
+| `401` | Missing or invalid OAuth access token, or a token not owned by an admin. |
 | `400` | Request body does not match the ingest schema. |
 | `500` | Database write or server-side ingestion failure. |
 
