@@ -12,6 +12,7 @@ mod ingest;
 mod oauth;
 mod parse;
 mod store;
+mod update;
 
 use anyhow::{Context, Result, bail};
 use collect::ParserStats;
@@ -28,7 +29,9 @@ struct MeasureResult<'a> {
 }
 
 fn main() {
-    if let Err(error) = run() {
+    let result = run();
+    update::notify();
+    if let Err(error) = result {
         eprintln!("{error:#}");
         std::process::exit(1);
     }

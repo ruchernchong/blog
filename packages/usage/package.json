@@ -5,9 +5,9 @@
   "private": true,
   "scripts": {
     "lint": "biome check .",
-    "measure": "node src/scripts/measure.ts",
-    "measure:rust": "cargo run --release --manifest-path rust/Cargo.toml --",
-    "ingest:rust": "cargo run --release --manifest-path rust/Cargo.toml -- ingest",
+    "login": "cargo run --release --manifest-path rust/Cargo.toml -- login",
+    "measure": "cargo run --release --manifest-path rust/Cargo.toml -- measure",
+    "ingest": "cargo run --release --manifest-path rust/Cargo.toml -- ingest",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
@@ -19,7 +19,6 @@
     "./narrative": "./src/narrative.ts",
     "./period-comparison": "./src/period-comparison.ts",
     "./ingest": "./src/ingest.ts",
-    "./parsers": "./src/parsers/index.ts",
     "./pricing": "./src/pricing.ts",
     "./providers": "./src/providers.ts",
     "./registry": "./src/registry.ts",

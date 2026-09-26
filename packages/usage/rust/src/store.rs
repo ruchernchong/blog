@@ -57,7 +57,20 @@ pub fn config_dir() -> PathBuf {
 }
 
 pub fn client_id_path() -> PathBuf {
-    config_dir().join("usage-ingest-client-id")
+    config_dir().join(scoped("usage-ingest-client-id"))
+}
+
+/// Production keeps the original names so existing installs stay signed in;
+/// any other server (e.g. a local dev server) gets its own login.
+fn scoped(name: &str) -> String {
+    let issuer = crate::oauth::issuer();
+    if issuer == crate::oauth::PRODUCTION_ISSUER {
+        return name.to_string();
+    }
+    let host = issuer
+        .split_once("://")
+        .map_or(issuer.as_str(), |(_, host)| host);
+    format!("{name}@{host}")
 }
 
 pub fn ensure_config_dir() -> Result<PathBuf> {
@@ -93,11 +106,14 @@ pub fn lock_tokens() -> Result<TokenLock> {
 
 #[cfg(not(test))]
 mod backend {
-    use super::{KEYRING_ACCOUNT, KEYRING_SERVICE};
+    use super::{KEYRING_ACCOUNT, KEYRING_SERVICE, scoped};
     use anyhow::Result;
 
     fn entry() -> Result<keyring::Entry> {
-        Ok(keyring::Entry::new(KEYRING_SERVICE, KEYRING_ACCOUNT)?)
+        Ok(keyring::Entry::new(
+            KEYRING_SERVICE,
+            &scoped(KEYRING_ACCOUNT),
+        )?)
     }
 
     pub fn get() -> Result<Option<String>> {

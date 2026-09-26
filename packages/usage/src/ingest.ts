@@ -3,9 +3,9 @@ import * as z from "zod";
 /**
  * Wire contract for `POST /api/usage/ingest`.
  *
- * The local `usage:ingest` script parses local agent logs (which only exist on
- * the machine that ran the agents), prices and folds them into daily aggregates,
- * then POSTs those rows here. The route upserts them using the deployment's own
+ * The Rust collector (`pnpm usage:ingest`) parses local agent logs (which only
+ * exist on the machine that ran the agents), folds them into daily aggregates,
+ * then POSTs those rows here with `costUsd: null`; the route prices them. The route upserts them using the deployment's own
  * `DATABASE_URL`, so production data can be ingested without the prod connection
  * string ever touching the local machine.
  *

@@ -12,8 +12,8 @@ import { syncModelRegistryWorkflow } from "@/workflows/sync-model-registry";
 /**
  * Ingest daily token-usage aggregates into *this* deployment's database.
  *
- * The `usage:ingest` script parses local agent logs (which only exist on the
- * machine that ran the agents), prices and folds them into daily rows, then
+ * The Rust collector (`pnpm usage:ingest`) parses local agent logs (which only
+ * exist on the machine that ran the agents), folds them into daily rows, then
  * POSTs them here. Because the write happens server-side, production data is
  * ingested using the deployment's own `DATABASE_URL` — the prod connection
  * string never has to touch the local machine.

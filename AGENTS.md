@@ -55,19 +55,19 @@ override is the no-deploy fix for internal/routed slugs no public source carries
 See `packages/usage/src/registry.ts` (pure normalise/merge) and
 `apps/web/src/lib/queries/models.ts` (`syncModelRegistry`).
 
-- `pnpm usage:ingest` - Parse local agent logs, sync the model registry, price
-  the logs, and upsert daily `token_usage` aggregates into the `DATABASE_URL`
-  database (local dev branch)
-- `pnpm usage:ingest:prod` - Same parse/price step locally, but POST the rows to
-  the deployed `POST /api/usage/ingest` route, which upserts them using the
-  deployment's own production `DATABASE_URL` (the prod connection string never
-  touches the local machine). Requires `BLOG_MCP_AUTH_TOKEN` and Vercel's
-  `VERCEL_PROJECT_PRODUCTION_URL` (or `VERCEL_URL`) in the environment.
-- `pnpm usage:measure:rust` / `pnpm usage:ingest:rust` - Rust collector (`packages/usage/rust`).
-  Parses Claude, Codex, OpenCode, Cursor, and Grok on this machine. `ingest:rust` POSTs
-  daily rows with `costUsd: null` so the ingest route prices them. Auth is
-  `usage-ingest login` (OAuth, admin account, Keychain). `USAGE_INGEST_DRY_RUN=1`
-  prints the payload without POSTing. Install (LaunchAgent): `curl | bash`
+- `pnpm usage:login` / `pnpm usage:measure` / `pnpm usage:ingest` - Rust collector
+  (`packages/usage/rust`), run via `turbo run @workspace/usage#…`. Parses Claude, Codex,
+  OpenCode, Cursor, and Grok on this machine. `ingest` POSTs daily rows with
+  `costUsd: null` to `POST /api/usage/ingest`, which upserts them with that server's
+  own `DATABASE_URL`, prices them, and syncs the model registry. The target is
+  `USAGE_INGEST_URL` (set to `https://blog.localhost/api/usage/ingest` in the local
+  `.envrc`), defaulting to production. Login (OAuth, admin account, Keychain) follows
+  the same server, and each non-production server gets its own Keychain entry, so
+  local and production logins never mix. `USAGE_INGEST_DRY_RUN=1` prints the payload
+  without POSTing. The installed binary is production only. semantic-release keeps
+  its `Cargo.toml` version in sync with the monorepo release, and it prints a once-a-day update notice
+  in interactive terminals (`USAGE_INGEST_NO_UPDATE_CHECK=1` disables it). Install
+  (LaunchAgent): `curl | bash`
   `packages/usage/rust/macos/install-remote.sh` pulls the prebuilt binary from the
   latest monorepo release (`ci.yml` runs `usage-ingest-build.yml` after semantic-release
   and attaches the package); `install.sh` builds from a checkout. See
@@ -267,7 +267,7 @@ See `apps/web/.env.example` for all required variables:
 - `POSTHOG_API_KEY` - PostHog Personal API Key with `query:read` scope
 - `CLOUDFLARE_ACCOUNT_ID` - R2 storage
 - `R2_ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET_NAME/PUBLIC_URL` - R2 config
-- `BLOG_MCP_AUTH_TOKEN` - Static bearer for headless MCP/CLI clients (remote MCP server, `usage:ingest:prod`). Retained alongside OAuth; slated for removal once those clients migrate. The OAuth provider itself needs no extra env vars
+- `BLOG_MCP_AUTH_TOKEN` - Static bearer for headless MCP/CLI clients (remote MCP server). Retained alongside OAuth; slated for removal once the remote MCP server migrates. The OAuth provider itself needs no extra env vars
 
 ## Code Conventions
 

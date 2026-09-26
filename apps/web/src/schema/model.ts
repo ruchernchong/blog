@@ -13,7 +13,7 @@ import {
 /**
  * Merged model registry: pricing + display metadata per (provider, model).
  *
- * Populated on each local `pnpm usage:ingest` by `syncModelRegistry`, which
+ * Populated after each `POST /api/usage/ingest` by `syncModelRegistry`, which
  * fetches LiteLLM (primary rates) and models.dev (display names, release dates,
  * and rate gap-fill), folds in human `isOverride` rows, and upserts the merged
  * result here. `token_usage` pricing is then built from these rows rather than

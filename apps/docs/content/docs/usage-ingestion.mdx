@@ -120,30 +120,23 @@ date + agent
 
 After a successful upsert, the route revalidates the `usage` cache tag so the public usage page can pick up the new data (tokens and effort share this tag via `getUsageProfile`).
 
-## Local Ingestion
+## Ingesting From This Machine
 
-Use local ingestion to write directly to the database in `DATABASE_URL`.
+The Rust collector in `packages/usage/rust` parses local agent logs and POSTs daily rows to the ingest endpoint.
 
 ```bash
+pnpm usage:login   # once per server
 pnpm usage:ingest
 ```
 
-This is intended for a local development branch/database. Local parsers currently emit token rows only; effort rows come from AgentUsage.
+Sign in once per server (OAuth, admin account; the token is stored in the Keychain). Login follows `USAGE_INGEST_URL`, so a local dev server and production keep separate logins. The installed collector is production only. Rows are sent with `costUsd: null`, and the route prices them after the model registry sync. The collector emits token rows only; effort rows come from AgentUsage.
 
-## Production Ingestion
+Optional environment variables:
 
-Use production ingestion to parse locally, then POST rows to the deployed endpoint.
+- `USAGE_INGEST_URL` overrides the endpoint, e.g. `https://blog.localhost/api/usage/ingest` for the local dev server (defaults to `VERCEL_PROJECT_PRODUCTION_URL`, `VERCEL_URL`, then `https://ruchern.dev`)
+- `USAGE_INGEST_DRY_RUN=1` prints the payload without POSTing
 
-```bash
-pnpm usage:ingest:prod
-```
-
-Required environment variables:
-
-- `BLOG_MCP_AUTH_TOKEN`
-- `VERCEL_PROJECT_PRODUCTION_URL` or `VERCEL_URL`
-
-The production database connection string stays inside the deployment environment. The local machine only sends the bearer token and JSON rows.
+The production database connection string stays inside the deployment environment. The local machine only sends the OAuth bearer and JSON rows.
 
 ## Example Request
 
@@ -205,7 +198,7 @@ curl -X POST "https://ruchern.dev/api/usage/ingest" \
 ## Source Files
 
 - `packages/usage/src/ingest.ts` defines the wire schema.
-- `apps/web/src/scripts/ingest-usage.ts` parses, prices, folds, and posts token rows.
+- `packages/usage/rust` parses, folds, and posts token rows.
 - `apps/web/src/app/api/usage/ingest/route.ts` authenticates and upserts rows.
 - `apps/web/src/lib/queries/usage.ts` performs the chunked upsert and usage profile aggregation.
 - `apps/web/src/schema/token-effort-usage.ts` defines the `token_effort_usage` table.

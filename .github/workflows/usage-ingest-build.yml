@@ -5,6 +5,12 @@ name: Usage Ingest Build
 # touch packaging run it as a build check.
 on:
   workflow_call:
+    inputs:
+      version:
+        description: Release version whose tag is built (Cargo.toml carries the version)
+        type: string
+        required: false
+        default: ""
   pull_request:
     branches: [ main ]
     paths:
@@ -26,6 +32,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # The release commit (with the bumped Cargo.toml) lands after this
+          # run's commit, so build the tag rather than the triggering SHA.
+          ref: ${{ inputs.version && format('v{0}', inputs.version) || '' }}
           persist-credentials: false
 
       - name: Setup Rust

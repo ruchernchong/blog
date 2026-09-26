@@ -186,8 +186,8 @@ async function tryOAuthAuth(token: string): Promise<OAuthOutcome> {
  *    locally against the provider's JWKS, for clients that obtain a
  *    user-scoped token via the Authorization Code flow with PKCE
  * 3. Static MCP token (fallback) — DEPRECATED, marked for deletion. Retained
- *    only until the remote MCP server and `usage:ingest:prod` migrate to OAuth;
- *    remove this branch (and `BLOG_MCP_AUTH_TOKEN`) once they have.
+ *    only until the remote MCP server migrates to OAuth; remove this branch
+ *    (and `BLOG_MCP_AUTH_TOKEN`) once it has.
  *
  * @param request - The incoming HTTP request
  * @returns Auth result on success, null on failure
@@ -217,7 +217,7 @@ export async function validateMcpAuth(
 
   // 3. Fall back to static MCP token.
   // TODO(remove): delete this fallback and BLOG_MCP_AUTH_TOKEN once the remote
-  // MCP server and usage:ingest:prod authenticate via OAuth.
+  // MCP server authenticates via OAuth.
   if (token && token === process.env.BLOG_MCP_AUTH_TOKEN) {
     return { type: "token" };
   }

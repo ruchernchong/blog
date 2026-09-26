@@ -73,12 +73,6 @@
     },
     "db:seed": {
       "cache": false
-    },
-    "usage:ingest": {
-      "cache": false
-    },
-    "usage:ingest:prod": {
-      "cache": false
     }
   }
 }

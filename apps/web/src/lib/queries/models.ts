@@ -254,7 +254,7 @@ async function loadOverrideEntries(): Promise<ModelEntry[]> {
  * After a curated override changes, heal any `N.A.` (cost-`NULL`) `token_usage`
  * rows against the new pricing and revalidate the `/usage` page. Best-effort:
  * the override row is already persisted, so a failure here just defers pricing
- * to the next `pnpm usage:ingest`. Called by the MCP override tools.
+ * to the next ingest's registry sync. Called by the MCP override tools.
  */
 export async function repriceAndRevalidateUsage(): Promise<void> {
   try {
