@@ -17,11 +17,7 @@ struct Payload<'a> {
 
 /// POST daily rows to `/api/usage/ingest` (OAuth bearer; the server prices them).
 pub fn ingest(result: &CollectResult) -> Result<()> {
-    let endpoint = resolve_endpoint(
-        &std::env::var("USAGE_INGEST_URL").unwrap_or_default(),
-        &std::env::var("VERCEL_PROJECT_PRODUCTION_URL").unwrap_or_default(),
-        &std::env::var("VERCEL_URL").unwrap_or_default(),
-    );
+    let endpoint = endpoint();
     // Go checks the raw env var for emptiness (no trimming) here.
     let dry_run = !std::env::var("USAGE_INGEST_DRY_RUN")
         .unwrap_or_default()
@@ -71,7 +67,8 @@ fn ingest_inner(
     )?;
 
     let started = Instant::now();
-    let mut response = ureq::post(endpoint)
+    let mut response = oauth::http()
+        .post(endpoint)
         .header("content-type", "application/json")
         .header("authorization", format!("Bearer {token}"))
         .config()
@@ -102,6 +99,15 @@ fn ingest_inner(
 
     print_ingest_summary(out, &result.rows)?;
     Ok(())
+}
+
+/// Ingest endpoint from the environment; defaults to production.
+pub fn endpoint() -> String {
+    resolve_endpoint(
+        &std::env::var("USAGE_INGEST_URL").unwrap_or_default(),
+        &std::env::var("VERCEL_PROJECT_PRODUCTION_URL").unwrap_or_default(),
+        &std::env::var("VERCEL_URL").unwrap_or_default(),
+    )
 }
 
 fn resolve_endpoint(explicit: &str, production: &str, vercel: &str) -> String {

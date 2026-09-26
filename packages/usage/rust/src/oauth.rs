@@ -9,17 +9,53 @@ use std::fs::OpenOptions;
 use std::io::{BufRead, BufReader, Write};
 use std::net::{TcpListener, TcpStream};
 use std::os::unix::fs::OpenOptionsExt;
-use std::sync::mpsc;
+use std::sync::{LazyLock, mpsc};
 use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use ureq::tls::{RootCerts, TlsConfig};
 use url::Url;
 
-pub const OAUTH_ISSUER: &str = "https://ruchern.dev";
-pub const OAUTH_RESOURCE: &str = "https://ruchern.dev/api/auth";
+/// The installed (curl | bash) collector always talks to production; the repo
+/// can point `USAGE_INGEST_URL` at a local dev server instead.
+pub const PRODUCTION_ISSUER: &str = "https://ruchern.dev";
 pub const OAUTH_SCOPES: &str = "openid profile email offline_access mcp";
 pub const OAUTH_REDIRECT_URI: &str = "http://127.0.0.1:8741/callback";
 pub const OAUTH_LISTEN_ADDR: &str = "127.0.0.1:8741";
 pub const OAUTH_CLIENT_NAME: &str = "usage-ingest";
+
+/// Origin of the ingest endpoint, so login and ingest always hit the same server.
+#[cfg(not(test))]
+pub fn issuer() -> String {
+    Url::parse(&crate::ingest::endpoint())
+        .map(|url| url.origin().ascii_serialization())
+        .unwrap_or_else(|_| PRODUCTION_ISSUER.to_string())
+}
+
+/// Tests stay on production regardless of the developer's environment.
+#[cfg(test)]
+pub fn issuer() -> String {
+    PRODUCTION_ISSUER.to_string()
+}
+
+fn resource() -> String {
+    format!("{}/api/auth", issuer())
+}
+
+/// Shared HTTP agent that trusts the OS certificate store, so a local dev
+/// server's certificate (e.g. portless on `*.localhost`) verifies like in curl.
+pub fn http() -> &'static ureq::Agent {
+    static AGENT: LazyLock<ureq::Agent> = LazyLock::new(|| {
+        ureq::Agent::config_builder()
+            .tls_config(
+                TlsConfig::builder()
+                    .root_certs(RootCerts::PlatformVerifier)
+                    .build(),
+            )
+            .build()
+            .new_agent()
+    });
+    &AGENT
+}
 
 pub fn login() -> Result<()> {
     let discovery = discover_oidc();
@@ -43,7 +79,7 @@ pub fn login() -> Result<()> {
         .append_pair("state", &state)
         .append_pair("code_challenge", &challenge)
         .append_pair("code_challenge_method", "S256")
-        .append_pair("resource", OAUTH_RESOURCE);
+        .append_pair("resource", &resource());
 
     let code = match wait_for_code(auth_url.as_str(), &state) {
         Ok(code) => code,
@@ -125,19 +161,21 @@ pub struct OidcDiscovery {
 
 /// Never fails: falls back to the issuer's well-known paths.
 fn discover_oidc() -> OidcDiscovery {
+    let issuer = issuer();
     let fallback = OidcDiscovery {
-        authorization_endpoint: format!("{OAUTH_ISSUER}/api/auth/oauth2/authorize"),
-        token_endpoint: format!("{OAUTH_ISSUER}/api/auth/oauth2/token"),
-        registration_endpoint: format!("{OAUTH_ISSUER}/api/auth/oauth2/register"),
-        userinfo_endpoint: format!("{OAUTH_ISSUER}/api/auth/oauth2/userinfo"),
+        authorization_endpoint: format!("{issuer}/api/auth/oauth2/authorize"),
+        token_endpoint: format!("{issuer}/api/auth/oauth2/token"),
+        registration_endpoint: format!("{issuer}/api/auth/oauth2/register"),
+        userinfo_endpoint: format!("{issuer}/api/auth/oauth2/userinfo"),
     };
 
     let attempt = (|| -> Result<OidcDiscovery> {
-        let mut response = ureq::get(format!(
-            "{OAUTH_ISSUER}/api/auth/.well-known/openid-configuration"
-        ))
-        .header("Origin", OAUTH_ISSUER)
-        .call()?;
+        let mut response = http()
+            .get(format!(
+                "{issuer}/api/auth/.well-known/openid-configuration"
+            ))
+            .header("Origin", &issuer)
+            .call()?;
         if response.status().as_u16() != 200 {
             bail!("discovery status {}", response.status());
         }
@@ -170,12 +208,13 @@ fn load_or_register_client(register_url: &str) -> Result<String> {
         "grant_types": ["authorization_code", "refresh_token"],
         "response_types": ["code"],
         "scope": OAUTH_SCOPES,
-        "resources": [OAUTH_RESOURCE],
+        "resources": [resource()],
     }))?;
 
-    let mut response = ureq::post(register_url)
+    let mut response = http()
+        .post(register_url)
         .header("content-type", "application/json")
-        .header("Origin", OAUTH_ISSUER)
+        .header("Origin", issuer())
         .config()
         .http_status_as_error(false)
         .build()
@@ -323,7 +362,7 @@ fn exchange_code(
             ("redirect_uri", OAUTH_REDIRECT_URI),
             ("client_id", client_id),
             ("code_verifier", verifier),
-            ("resource", OAUTH_RESOURCE),
+            ("resource", &resource()),
         ],
         client_id,
     )
@@ -336,7 +375,7 @@ fn refresh_tokens(token_url: &str, existing: &OauthTokens) -> Result<OauthTokens
             ("grant_type", "refresh_token"),
             ("refresh_token", &existing.refresh_token),
             ("client_id", &existing.client_id),
-            ("resource", OAUTH_RESOURCE),
+            ("resource", &resource()),
         ],
         &existing.client_id,
     )?;
@@ -348,8 +387,9 @@ fn refresh_tokens(token_url: &str, existing: &OauthTokens) -> Result<OauthTokens
 }
 
 fn post_token(token_url: &str, form: &[(&str, &str)], client_id: &str) -> Result<OauthTokens> {
-    let mut response = ureq::post(token_url)
-        .header("Origin", OAUTH_ISSUER)
+    let mut response = http()
+        .post(token_url)
+        .header("Origin", issuer())
         .config()
         .http_status_as_error(false)
         .build()
@@ -393,9 +433,10 @@ fn fetch_email(userinfo_url: &str, access_token: &str) -> Result<String> {
     if userinfo_url.is_empty() {
         bail!("no userinfo");
     }
-    let mut response = ureq::get(userinfo_url)
+    let mut response = http()
+        .get(userinfo_url)
         .header("authorization", format!("Bearer {access_token}"))
-        .header("Origin", OAUTH_ISSUER)
+        .header("Origin", issuer())
         .config()
         .http_status_as_error(false)
         .build()
@@ -523,14 +564,14 @@ mod tests {
         let mock = server
             .mock("POST", "/")
             .match_header("content-type", "application/x-www-form-urlencoded")
-            .match_header("origin", OAUTH_ISSUER)
+            .match_header("origin", PRODUCTION_ISSUER)
             .match_body(mockito::Matcher::AllOf(vec![
                 mockito::Matcher::UrlEncoded("grant_type".into(), "authorization_code".into()),
                 mockito::Matcher::UrlEncoded("code".into(), "code-1".into()),
                 mockito::Matcher::UrlEncoded("redirect_uri".into(), OAUTH_REDIRECT_URI.into()),
                 mockito::Matcher::UrlEncoded("client_id".into(), "client-1".into()),
                 mockito::Matcher::UrlEncoded("code_verifier".into(), "verifier-1".into()),
-                mockito::Matcher::UrlEncoded("resource".into(), OAUTH_RESOURCE.into()),
+                mockito::Matcher::UrlEncoded("resource".into(), resource()),
             ]))
             .with_status(200)
             .with_body(r#"{"access_token":"access","refresh_token":"refresh","expires_in":600}"#)
@@ -662,7 +703,7 @@ mod tests {
                     mockito::Matcher::UrlEncoded("grant_type".into(), "refresh_token".into()),
                     mockito::Matcher::UrlEncoded("refresh_token".into(), "old-refresh".into()),
                     mockito::Matcher::UrlEncoded("client_id".into(), "client-1".into()),
-                    mockito::Matcher::UrlEncoded("resource".into(), OAUTH_RESOURCE.into()),
+                    mockito::Matcher::UrlEncoded("resource".into(), resource()),
                 ]))
                 .with_body(body)
                 .create();

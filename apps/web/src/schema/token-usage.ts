@@ -23,9 +23,10 @@ import {
  * One row per (date, agent, provider, model) — daily is the finest grain by
  * design. Only the
  * calendar `date` is stored, never a time-of-day, so the data cannot reveal *when*
- * within a day work happened. The local `usage:ingest` script parses agent logs,
- * prices them, folds to these aggregates, and upserts on the composite key
- * (idempotent re-ingest). The public `/usage` page only ever reads these rows.
+ * within a day work happened. The Rust collector (`pnpm usage:ingest`) parses
+ * agent logs, folds them to these aggregates, and POSTs them to
+ * `/api/usage/ingest`, which upserts on the composite key (idempotent
+ * re-ingest) and prices them. The public `/usage` page only ever reads these rows.
  *
  * `updatedAt` records when the ingest ran (not when usage happened).
  *

@@ -14,8 +14,8 @@ import { db, model } from "@/schema";
  *
  * Rates are USD per 1,000,000 tokens. After an upsert we reprice any `N.A.`
  * (`cost IS NULL`) `token_usage` rows and revalidate the page immediately;
- * changing an *already-priced* rate only takes effect on the next full
- * `pnpm usage:ingest` (which recomputes every row).
+ * changing an *already-priced* rate only takes effect for a day once a later
+ * `pnpm usage:ingest` re-sends it (the server prices incoming rows).
  */
 
 function serialise(output: unknown): CallToolResult {
@@ -205,7 +205,7 @@ export function registerModelTools(server: McpServer): void {
     {
       title: "Upsert Model Override",
       description:
-        "Create or update a curated pricing/metadata override for a model. Rates are USD per 1,000,000 tokens and win over the live LiteLLM/models.dev sources. Set aliasTarget to price/label from another model instead. Newly-priced (N.A.) rows are healed immediately; a changed rate on already-priced rows applies on the next `pnpm usage:ingest`.",
+        "Create or update a curated pricing/metadata override for a model. Rates are USD per 1,000,000 tokens and win over the live LiteLLM/models.dev sources. Set aliasTarget to price/label from another model instead. Newly-priced (N.A.) rows are healed immediately; a changed rate on already-priced rows applies once a later `pnpm usage:ingest` re-sends that day.",
       inputSchema: z.object({
         provider: z.string().describe("Inference provider, e.g. 'openai'"),
         id: z.string().describe("Model id/slug as it appears in logs"),

@@ -44,9 +44,6 @@
     },
     "packages/mcp": {
       "entry": ["src/tools/index.ts"]
-    },
-    "packages/usage": {
-      "entry": ["src/scripts/measure.ts"]
     }
   }
 }

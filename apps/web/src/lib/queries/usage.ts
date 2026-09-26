@@ -83,9 +83,9 @@ const EFFORT_UPDATE_COLUMNS = [
 
 /**
  * Upsert daily `token_usage` aggregates on the composite key
- * (date, agent, provider, model). Shared by the local `usage:ingest` script
- * (direct write) and `POST /api/usage/ingest` (remote write into whichever DB
- * the deployment is configured for). Returns the number of rows submitted.
+ * (date, agent, provider, model). Called by `POST /api/usage/ingest`, which
+ * writes into whichever DB the deployment is configured for. Returns the number
+ * of rows submitted.
  *
  * **Non-decreasing on conflict.** The DB is the permanent lifetime record, but
  * the ingest clients (e.g. ClaudeMeter) send an absolute snapshot recomputed from
@@ -238,7 +238,7 @@ export async function repriceUnpricedTokenUsage(
  */
 export async function getUsageProfile(): Promise<UsageProfile> {
   "use cache";
-  // Data only changes on a manual local `pnpm usage:ingest`; refresh ~daily.
+  // Data only changes when `/api/usage/ingest` runs; refresh ~daily.
   cacheLife("days");
   cacheTag("usage");
 

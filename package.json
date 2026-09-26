@@ -30,10 +30,9 @@
     "db:up": "turbo run @workspace/web#db:up",
     "db:studio": "turbo run @workspace/web#db:studio",
     "db:seed": "turbo run @workspace/web#db:seed",
-    "usage:ingest": "turbo run @workspace/web#usage:ingest",
-    "usage:ingest:prod": "turbo run @workspace/web#usage:ingest:prod",
-    "usage:ingest:rust": "pnpm --filter @workspace/usage ingest:rust",
-    "usage:measure:rust": "pnpm --filter @workspace/usage measure:rust",
+    "usage:ingest": "turbo run @workspace/usage#ingest",
+    "usage:login": "turbo run @workspace/usage#login",
+    "usage:measure": "turbo run @workspace/usage#measure",
     "mcp": "turbo run @workspace/mcp#mcp",
     "prepare": "husky",
     "release": "semantic-release"
