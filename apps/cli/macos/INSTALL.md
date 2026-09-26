@@ -11,7 +11,7 @@ latest GitHub release of the monorepo. The script checks the SHA-256 before
 installing:
 
 ```zsh
-curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install-remote.sh | bash
+curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install.sh | bash
 ```
 
 Pin a release with `AGENT_USAGE_VERSION=X.Y.Z` in front of `bash`. A release
@@ -20,20 +20,20 @@ back to it and installs `usage-ingest`, which the next upgrade migrates. To read
 script first, download it (the release URL redirects, so keep `-L`):
 
 ```zsh
-curl -fsSLo install-remote.sh https://github.com/ruchernchong/blog/releases/latest/download/install-remote.sh
-bash install-remote.sh
+curl -fsSLo install.sh https://github.com/ruchernchong/blog/releases/latest/download/install.sh
+bash install.sh
 ```
 
 `packages/usage/rust/macos/install-remote.sh` only forwards to
-`apps/cli/macos/install-remote.sh`, for installs from v1.50.0 and earlier whose
+`apps/cli/macos/install.sh`, for installs from v1.50.0 and earlier whose
 update notice still prints its raw GitHub URL. Delete it once no v1.50.0
 installs remain.
 
-From a checkout, build from source instead (needs a **Rust toolchain**, via
-[rustup](https://rustup.rs) or `brew install rust`):
+From a checkout, the same script builds from source instead (needs a **Rust
+toolchain**, via [rustup](https://rustup.rs) or `brew install rust`):
 
 ```zsh
-zsh apps/cli/macos/install.sh
+bash apps/cli/macos/install.sh
 ```
 
 Then sign in. Use the **installed** binary for login so Keychain access matches launchd.
@@ -139,5 +139,5 @@ clears both the new and the legacy Keychain items.
 Nothing to do by hand. Whenever semantic-release publishes `vX.Y.Z` from
 `main`, `ci.yml` runs `agent-usage-build.yml`, which builds both architectures, merges them with `lipo`, and attaches
 `agent-usage-macos.tar.gz` plus its `.sha256` to that release, along with
-`install-remote.sh`. The files land a few minutes after the release appears, so
+`install.sh`. The files land a few minutes after the release appears, so
 an install or `agent-usage update` in that window gets a 404.
