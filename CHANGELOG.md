@@ -1,3 +1,11 @@
+## [1.53.0](https://github.com/ruchernchong/blog/compare/v1.52.0...v1.53.0) (2026-09-26)
+
+### Features
+
+* drop legacy handling from the agent-usage installer ([0ecf672](https://github.com/ruchernchong/blog/commit/0ecf672cddb724dd8eba7a459e66785911b2614c))
+* merge the agent-usage installers into install.sh ([9e79950](https://github.com/ruchernchong/blog/commit/9e79950cf8f94e104f12cb190032ad0114d44919))
+* remove the legacy installer forwarder ([7a4b50e](https://github.com/ruchernchong/blog/commit/7a4b50e340dc2bc06e6ef8664c6f0f7a8377d498))
+
 ## [1.52.0](https://github.com/ruchernchong/blog/compare/v1.51.0...v1.52.0) (2026-09-26)
 
 ### Features
