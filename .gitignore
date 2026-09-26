@@ -26,7 +26,7 @@ coverage/
 # Caches
 .cache/
 .turbo/
-packages/usage/rust/target/
+packages/usage/target/
 apps/docs/.source/
 
 # Misc

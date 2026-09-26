@@ -3,8 +3,8 @@
   "version": "1.15.0",
   "private": true,
   "scripts": {
-    "login": "cargo run --release --manifest-path rust/Cargo.toml -- login",
-    "measure": "cargo run --release --manifest-path rust/Cargo.toml -- measure",
-    "ingest": "cargo run --release --manifest-path rust/Cargo.toml -- ingest"
+    "login": "cargo run --release -- login",
+    "measure": "cargo run --release -- measure",
+    "ingest": "cargo run --release -- ingest"
   }
 }

@@ -122,7 +122,7 @@ After a successful upsert, the route revalidates the `usage` cache tag so the pu
 
 ## Ingesting From This Machine
 
-The Rust collector in `packages/usage/rust` parses local agent logs and POSTs daily rows to the ingest endpoint.
+The Rust collector in `packages/usage` parses local agent logs and POSTs daily rows to the ingest endpoint.
 
 ```bash
 pnpm usage:login   # once per server
@@ -198,7 +198,7 @@ curl -X POST "https://ruchern.dev/api/usage/ingest" \
 ## Source Files
 
 - `apps/web/src/lib/usage/ingest.ts` defines the wire schema.
-- `packages/usage/rust` parses, folds, and posts token rows.
+- `packages/usage` parses, folds, and posts token rows.
 - `apps/web/src/app/api/usage/ingest/route.ts` authenticates and upserts rows.
 - `apps/web/src/lib/queries/usage.ts` performs the chunked upsert and usage profile aggregation.
 - `apps/web/src/schema/token-effort-usage.ts` defines the `token_effort_usage` table.

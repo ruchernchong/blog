@@ -56,7 +56,7 @@ See `apps/web/src/lib/usage/registry.ts` (pure normalise/merge) and
 `apps/web/src/lib/queries/models.ts` (`syncModelRegistry`).
 
 - `pnpm usage:login` / `pnpm usage:measure` / `pnpm usage:ingest` - Rust collector
-  (`packages/usage/rust`), run via `turbo run @workspace/usage#…`. Parses Claude, Codex,
+  (`packages/usage`), run via `turbo run @workspace/usage#…`. Parses Claude, Codex,
   OpenCode, Cursor, and Grok on this machine. `ingest` POSTs daily rows with
   `costUsd: null` to `POST /api/usage/ingest`, which upserts them with that server's
   own `DATABASE_URL`, prices them, and syncs the model registry. The target is
@@ -68,10 +68,10 @@ See `apps/web/src/lib/usage/registry.ts` (pure normalise/merge) and
   its `Cargo.toml` version in sync with the monorepo release, and it prints a once-a-day update notice
   in interactive terminals (`USAGE_INGEST_NO_UPDATE_CHECK=1` disables it). Install
   (LaunchAgent): `curl | bash`
-  `packages/usage/rust/macos/install-remote.sh` pulls the prebuilt binary from the
+  `packages/usage/macos/install-remote.sh` pulls the prebuilt binary from the
   latest monorepo release (`ci.yml` runs `usage-ingest-build.yml` after semantic-release
   and attaches the package); `install.sh` builds from a checkout. See
-  README.md “Usage collector (macOS)” and `packages/usage/rust/macos/INSTALL.md`.
+  README.md “Usage collector (macOS)” and `packages/usage/macos/INSTALL.md`.
 
 AgentUsage may also POST session-level `effortRows` into `token_effort_usage`
 (alongside token rows); the `/usage` page folds these into an all-time effort
