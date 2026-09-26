@@ -239,7 +239,7 @@ describe("mergeRegistry", () => {
     },
   ];
 
-  it("should take the rate from Gateway ahead of OpenRouter and models.dev", () => {
+  it("should take the rate from Gateway ahead of models.dev and OpenRouter", () => {
     const [entry] = mergeRegistry({
       overrides: [],
       gateway,
@@ -257,12 +257,23 @@ describe("mergeRegistry", () => {
     });
   });
 
-  it("should fall back to OpenRouter when Gateway lacks the model", () => {
+  it("should take the rate from models.dev ahead of OpenRouter when Gateway lacks the model", () => {
     const [entry] = mergeRegistry({
       overrides: [],
       gateway: [],
       openrouter,
       modelsDev,
+    });
+    expect(entry.rate).toMatchObject({ input: 99, output: 99 });
+    expect(entry.source).toBe("models.dev");
+  });
+
+  it("should fall back to OpenRouter only when no other source prices the model", () => {
+    const [entry] = mergeRegistry({
+      overrides: [],
+      gateway: [],
+      openrouter,
+      modelsDev: [],
     });
     expect(entry.rate).toMatchObject({ input: 50, output: 50 });
     expect(entry.source).toBe("openrouter");
