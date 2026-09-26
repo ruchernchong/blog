@@ -1,3 +1,9 @@
+## [1.52.0](https://github.com/ruchernchong/blog/compare/v1.51.0...v1.52.0) (2026-09-26)
+
+### Features
+
+* accept only OAuth tokens for usage ingest ([973e469](https://github.com/ruchernchong/blog/commit/973e469fd4816d64cec23d9b2f3b8b25235bfd5b))
+
 ## [1.51.0](https://github.com/ruchernchong/blog/compare/v1.50.0...v1.51.0) (2026-09-26)
 
 ### Features
