@@ -1,8 +1,7 @@
 # `@workspace/usage`
 
-Shared usage types, ingest schema, pricing, and parsers for ruchern.dev.
+Shared usage types, ingest schema, pricing, and aggregation helpers for
+ruchern.dev.
 
-The **macOS collector** is the Go binary in `go/`. It reads local agent logs and
-POSTs daily rows to production. Install, OAuth login, and LaunchAgent:
-
-**[go/macos/INSTALL.md](./go/macos/INSTALL.md)**
+The **macOS usage collector** lives in [`apps/cli`](../../apps/cli). Install,
+OAuth login, and LaunchAgent: **[apps/cli/macos/INSTALL.md](../../apps/cli/macos/INSTALL.md)**

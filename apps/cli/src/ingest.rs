@@ -2,7 +2,9 @@ use crate::collect::{CollectResult, IngestRow, print_table};
 use crate::oauth;
 use anyhow::{Result, bail};
 use serde::Serialize;
+use std::ffi::OsString;
 use std::io::{self, Write};
+use std::sync::OnceLock;
 use std::time::{Duration, Instant};
 
 const ROW_CAP: usize = 20_000;
@@ -15,13 +17,22 @@ struct Payload<'a> {
     rows: &'a [IngestRow],
 }
 
+/// `--url` for this run. Global because [`endpoint`] also picks the OAuth
+/// issuer and Keychain entry, so the refresh and the POST hit the same server.
+static URL_FLAG: OnceLock<String> = OnceLock::new();
+
 /// POST daily rows to `/api/usage/ingest` (OAuth bearer; the server prices them).
-pub fn ingest(result: &CollectResult) -> Result<()> {
+/// `url` and `dry_run` are the command-line flags; each falls back to the
+/// environment when not given.
+pub fn ingest(result: &CollectResult, url: Option<String>, dry_run: bool) -> Result<()> {
+    if let Some(url) = url {
+        let _ = URL_FLAG.set(url);
+    }
     let endpoint = endpoint();
-    // Go checks the raw env var for emptiness (no trimming) here.
-    let dry_run = !std::env::var("USAGE_INGEST_DRY_RUN")
-        .unwrap_or_default()
-        .is_empty();
+    let dry_run = resolve_dry_run(
+        dry_run,
+        crate::env_var("AGENT_USAGE_DRY_RUN", "USAGE_INGEST_DRY_RUN"),
+    );
 
     let mut out = io::stdout().lock();
     ingest_inner(result, &endpoint, dry_run, &mut out)
@@ -101,13 +112,41 @@ fn ingest_inner(
     Ok(())
 }
 
-/// Ingest endpoint from the environment; defaults to production.
+/// Ingest endpoint from `--url`, then the environment; defaults to production.
 pub fn endpoint() -> String {
     resolve_endpoint(
-        &std::env::var("USAGE_INGEST_URL").unwrap_or_default(),
+        &resolve_url(
+            URL_FLAG.get().cloned(),
+            crate::env_var("AGENT_USAGE_URL", "USAGE_INGEST_URL"),
+        )
+        .unwrap_or_default(),
         &std::env::var("VERCEL_PROJECT_PRODUCTION_URL").unwrap_or_default(),
         &std::env::var("VERCEL_URL").unwrap_or_default(),
     )
+}
+
+/// Sign-in command for this run's server. `auth login` has no `--url`, so
+/// after `ingest --url` it names that server through `AGENT_USAGE_URL`.
+pub fn login_command() -> String {
+    login_command_for(URL_FLAG.get().map(|_| oauth::issuer()))
+}
+
+fn login_command_for(server: Option<String>) -> String {
+    match server {
+        Some(server) => format!("AGENT_USAGE_URL={server} agent-usage auth login"),
+        None => "agent-usage auth login".to_string(),
+    }
+}
+
+/// `--url` wins over the `AGENT_USAGE_URL` / `USAGE_INGEST_URL` value.
+fn resolve_url(flag: Option<String>, env: Option<OsString>) -> Option<String> {
+    flag.or_else(|| env.and_then(|value| value.into_string().ok()))
+}
+
+/// `--dry-run`, or any non-empty `AGENT_USAGE_DRY_RUN` / `USAGE_INGEST_DRY_RUN`
+/// (Go checked the raw value for emptiness, with no trimming).
+fn resolve_dry_run(flag: bool, env: Option<OsString>) -> bool {
+    flag || env.is_some_and(|value| !value.is_empty())
 }
 
 fn resolve_endpoint(explicit: &str, production: &str, vercel: &str) -> String {
@@ -568,6 +607,79 @@ mod tests {
                 "case {name}"
             );
         }
+    }
+
+    #[test]
+    fn url_flag_wins_over_environment() {
+        let lookup = |vars: &'static [(&'static str, &'static str)]| {
+            move |key: &str| {
+                vars.iter()
+                    .find(|(name, _)| *name == key)
+                    .map(|(_, value)| OsString::from(value))
+            }
+        };
+        let env = |vars| crate::env_var_from("AGENT_USAGE_URL", "USAGE_INGEST_URL", lookup(vars));
+        let both = &[
+            ("AGENT_USAGE_URL", "https://new.example"),
+            ("USAGE_INGEST_URL", "https://legacy.example"),
+        ];
+        let legacy = &[("USAGE_INGEST_URL", "https://legacy.example")];
+
+        assert_eq!(
+            resolve_url(Some("https://flag.example".into()), env(both)).as_deref(),
+            Some("https://flag.example")
+        );
+        assert_eq!(
+            resolve_url(None, env(both)).as_deref(),
+            Some("https://new.example")
+        );
+        assert_eq!(
+            resolve_url(None, env(legacy)).as_deref(),
+            Some("https://legacy.example")
+        );
+        assert_eq!(resolve_url(None, env(&[])), None);
+        assert_eq!(
+            resolve_endpoint(&resolve_url(None, env(&[])).unwrap_or_default(), "", ""),
+            "https://ruchern.dev/api/usage/ingest"
+        );
+    }
+
+    #[test]
+    fn login_command_names_the_url_flag_server() {
+        assert_eq!(login_command_for(None), "agent-usage auth login");
+        assert_eq!(
+            login_command_for(Some("https://blog.localhost".into())),
+            "AGENT_USAGE_URL=https://blog.localhost agent-usage auth login"
+        );
+        // Tests never set `--url`, so the plain command is used.
+        assert_eq!(login_command(), "agent-usage auth login");
+    }
+
+    #[test]
+    fn dry_run_flag_or_non_empty_environment() {
+        let lookup = |vars: &'static [(&'static str, &'static str)]| {
+            move |key: &str| {
+                vars.iter()
+                    .find(|(name, _)| *name == key)
+                    .map(|(_, value)| OsString::from(value))
+            }
+        };
+        let env =
+            |vars| crate::env_var_from("AGENT_USAGE_DRY_RUN", "USAGE_INGEST_DRY_RUN", lookup(vars));
+
+        assert!(resolve_dry_run(true, env(&[])));
+        assert!(!resolve_dry_run(false, env(&[])));
+        assert!(resolve_dry_run(false, env(&[("AGENT_USAGE_DRY_RUN", "1")])));
+        assert!(resolve_dry_run(
+            false,
+            env(&[("USAGE_INGEST_DRY_RUN", "1")])
+        ));
+        assert!(!resolve_dry_run(false, env(&[("AGENT_USAGE_DRY_RUN", "")])));
+        // The new name wins even when it is set but empty.
+        assert!(!resolve_dry_run(
+            false,
+            env(&[("AGENT_USAGE_DRY_RUN", ""), ("USAGE_INGEST_DRY_RUN", "1")])
+        ));
     }
 
     #[test]

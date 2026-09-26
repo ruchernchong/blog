@@ -23,7 +23,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "pnpm version ${nextRelease.version} --no-git-tag-version --no-git-checks && sed -i -E '0,/^version = \".*\"/s//version = \"${nextRelease.version}\"/' packages/usage/rust/Cargo.toml && sed -i -E '/^name = \"usage-ingest\"$/{n;s/^version = \".*\"/version = \"${nextRelease.version}\"/}' packages/usage/rust/Cargo.lock",
+        "prepareCmd": "pnpm version ${nextRelease.version} --no-git-tag-version --no-git-checks && sed -i -E '0,/^version = \".*\"/s//version = \"${nextRelease.version}\"/' apps/cli/Cargo.toml && sed -i -E '/^name = \"agent-usage\"$/{n;s/^version = \".*\"/version = \"${nextRelease.version}\"/}' apps/cli/Cargo.lock",
         "successCmd": "echo \"version=${nextRelease.version}\" >> \"$GITHUB_OUTPUT\""
       }
     ],
@@ -33,8 +33,8 @@
         "assets": [
           "package.json",
           "CHANGELOG.md",
-          "packages/usage/rust/Cargo.toml",
-          "packages/usage/rust/Cargo.lock"
+          "apps/cli/Cargo.toml",
+          "apps/cli/Cargo.lock"
         ],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }

@@ -1,6 +1,6 @@
-name: Usage Ingest Build
+name: Agent Usage Build
 
-# Builds the macOS universal usage-ingest package. ci.yml calls this after a
+# Builds the macOS universal agent-usage package. ci.yml calls this after a
 # semantic-release and uploads the result to that release; pull requests that
 # touch packaging run it as a build check.
 on:
@@ -14,8 +14,8 @@ on:
   pull_request:
     branches: [ main ]
     paths:
-      - "packages/usage/rust/**"
-      - ".github/workflows/usage-ingest-build.yml"
+      - "apps/cli/**"
+      - ".github/workflows/agent-usage-build.yml"
 
 permissions: { }
 
@@ -27,7 +27,7 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: packages/usage/rust
+        working-directory: apps/cli
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -50,21 +50,21 @@ jobs:
 
       - name: Package
         run: |
-          dist=dist/usage-ingest
+          dist=dist/agent-usage
           mkdir -p "$dist/bin" "$dist/macos"
-          lipo -create -output "$dist/bin/usage-ingest" \
-            target/aarch64-apple-darwin/release/usage-ingest \
-            target/x86_64-apple-darwin/release/usage-ingest
-          lipo -info "$dist/bin/usage-ingest"
-          HOME=$(mktemp -d) "$dist/bin/usage-ingest" measure
-          cp macos/install.sh macos/uninstall.sh macos/usage-ingest-run.sh \
-            macos/dev.ruchern.usage-ingest.plist "$dist/macos/"
-          tar -czf dist/usage-ingest-macos.tar.gz -C dist usage-ingest
-          (cd dist && shasum -a 256 usage-ingest-macos.tar.gz > usage-ingest-macos.tar.gz.sha256)
+          lipo -create -output "$dist/bin/agent-usage" \
+            target/aarch64-apple-darwin/release/agent-usage \
+            target/x86_64-apple-darwin/release/agent-usage
+          lipo -info "$dist/bin/agent-usage"
+          HOME=$(mktemp -d) "$dist/bin/agent-usage" measure
+          cp macos/install.sh macos/uninstall.sh macos/agent-usage-run.sh \
+            macos/dev.ruchern.agent-usage.plist "$dist/macos/"
+          tar -czf dist/agent-usage-macos.tar.gz -C dist agent-usage
+          (cd dist && shasum -a 256 agent-usage-macos.tar.gz > agent-usage-macos.tar.gz.sha256)
 
       - name: Upload package
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: usage-ingest-macos
-          path: packages/usage/rust/dist/usage-ingest-macos.tar.gz*
+          name: agent-usage-macos
+          path: apps/cli/dist/agent-usage-macos.tar.gz*
           if-no-files-found: error

@@ -8,11 +8,11 @@
     },
     "login": {
       "cache": false,
-      "passThroughEnv": ["USAGE_INGEST_*"]
+      "passThroughEnv": ["AGENT_USAGE_*", "USAGE_INGEST_*"]
     },
     "ingest": {
       "cache": false,
-      "passThroughEnv": ["USAGE_INGEST_*", "XDG_DATA_HOME"]
+      "passThroughEnv": ["AGENT_USAGE_*", "USAGE_INGEST_*", "XDG_DATA_HOME"]
     }
   }
 }

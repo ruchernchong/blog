@@ -1,5 +1,5 @@
 [package]
-name = "usage-ingest"
+name = "agent-usage"
 version = "1.50.0"
 edition = "2024"
 rust-version = "1.89"
@@ -8,19 +8,21 @@ rust-version = "1.89"
 anyhow = "1.0.104"
 base64 = "0.23.1"
 chrono = "0.4.45"
+clap = { version = "4.6.7", features = ["derive"] }
+clap_complete = "4.6.11"
 getrandom = "0.4.3"
 keyring = "4.2.0"
 rusqlite = { version = "0.40.2", features = ["bundled"] }
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
 sha2 = "0.11.0"
+tempfile = "3.27.0"
 ureq = { version = "3.4.2", features = ["platform-verifier"] }
 url = "2.5.8"
 walkdir = "2.5.0"
 
 [dev-dependencies]
 mockito = "1.7.2"
-tempfile = "3.27.0"
 
 [profile.release]
 lto = true

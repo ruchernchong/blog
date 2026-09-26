@@ -100,20 +100,23 @@ See [AGENTS.md](./AGENTS.md) for complete command reference including:
 
 ### Usage collector (macOS)
 
-A Rust binary parses local Claude, Codex, OpenCode, Cursor, and Grok logs and POSTs daily
+The `agent-usage` CLI, a Rust binary, parses local Claude, Codex, OpenCode, Cursor, and Grok logs and POSTs daily
 rows to `https://ruchern.dev/api/usage/ingest`. Auth is OAuth (admin account),
 not `BLOG_MCP_AUTH_TOKEN`. 15-minute LaunchAgent optional.
 
 Install the prebuilt universal binary from the latest release
 (no checkout or Rust toolchain needed), or build from a checkout with
-`zsh packages/usage/rust/macos/install.sh` (needs Rust). Details:
-[packages/usage/rust/macos/INSTALL.md](./packages/usage/rust/macos/INSTALL.md)
+`zsh apps/cli/macos/install.sh` (needs Rust). Details:
+[apps/cli/macos/INSTALL.md](./apps/cli/macos/INSTALL.md)
 
 ```zsh
-curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/packages/usage/rust/macos/install-remote.sh | bash
-~/.local/bin/usage-ingest login    # admin account
-~/.local/bin/usage-ingest-run      # POST if there are rows; then check /usage
+curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install-remote.sh | bash
+~/.local/bin/agent-usage auth login   # admin account
+~/.local/bin/agent-usage-run         # POST if there are rows; then check /usage
 ```
+
+`agent-usage update` installs the latest release in place. `agent-usage --help`
+lists the commands (`measure`, `ingest`, `auth`, `update`, `completions`).
 
 ## Contributing
 
