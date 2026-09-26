@@ -1,8 +1,8 @@
 "use client";
 
 import { BarChart, ChartTooltip } from "@heroui-pro/react";
-import { formatTokens } from "@workspace/usage/format";
 import type { TooltipContentProps } from "recharts";
+import { formatTokens } from "@/lib/usage/format";
 
 /** One category slice of the token mix, pre-computed and coloured by the shell. */
 export interface MixSegment {

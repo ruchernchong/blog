@@ -1,10 +1,10 @@
-import { PERIOD_LENGTHS } from "@workspace/usage/period-comparison";
 import {
   parseAsBoolean,
   parseAsNumberLiteral,
   parseAsString,
   parseAsStringLiteral,
 } from "nuqs/server";
+import { PERIOD_LENGTHS } from "@/lib/usage/period-comparison";
 
 export const USAGE_BREAKDOWN_VIEWS = ["model", "provider", "agent"] as const;
 

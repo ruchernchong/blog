@@ -1,7 +1,7 @@
 "use client";
 
-import type { WeeklyShareRow } from "@workspace/usage/weekly-insights";
 import { useQueryState } from "nuqs";
+import type { WeeklyShareRow } from "@/lib/usage/weekly-insights";
 import { type UsageStackView, usageParsers } from "../searchParams";
 import { StackShiftChartClient } from "./stack-shift-chart.client";
 import type { SeriesMeta } from "./usage-series";

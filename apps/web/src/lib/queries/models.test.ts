@@ -1,5 +1,5 @@
-import type { ModelEntry } from "@workspace/usage/registry";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ModelEntry } from "@/lib/usage/registry";
 
 // `vi.mock` factories are hoisted above module scope, so the spies they close
 // over have to be created with `vi.hoisted`.
@@ -102,7 +102,7 @@ describe("syncModelRegistry source fetching", () => {
       "fetch",
       vi.fn().mockResolvedValue({ ok: false, status: 503 }),
     );
-    const { SEED_OVERRIDES } = await import("@workspace/usage/registry");
+    const { SEED_OVERRIDES } = await import("@/lib/usage/registry");
     const seed = SEED_OVERRIDES[0];
     const curated: ModelEntry = { ...seed, displayName: "Curated name" };
     whereRows.mockResolvedValue([curated]);

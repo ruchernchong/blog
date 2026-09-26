@@ -1,6 +1,6 @@
-import type { ModelEntry } from "@workspace/usage/registry";
 import { sql } from "drizzle-orm";
 import { excludedColumns } from "@/lib/queries/upsert";
+import type { ModelEntry } from "@/lib/usage/registry";
 import { db, type InsertModel, model, type SelectModel } from "@/schema";
 
 /** Postgres caps bound parameters per statement; chunk large upserts under it. */

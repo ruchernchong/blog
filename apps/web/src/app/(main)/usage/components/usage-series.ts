@@ -1,5 +1,5 @@
-import type { WeeklySeries } from "@workspace/usage/types";
-import { OTHER_SERIES_KEY } from "@workspace/usage/weekly-insights";
+import type { WeeklySeries } from "@/lib/usage/types";
+import { OTHER_SERIES_KEY } from "@/lib/usage/weekly-insights";
 
 /**
  * Categorical series colours in their validated order (see `--series-*` in

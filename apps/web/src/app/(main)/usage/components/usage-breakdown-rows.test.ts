@@ -1,5 +1,5 @@
-import type { UsageBreakdownRow } from "@workspace/usage/types";
 import { describe, expect, it } from "vitest";
+import type { UsageBreakdownRow } from "@/lib/usage/types";
 import {
   columnPreferenceAfterChange,
   compareRows,

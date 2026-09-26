@@ -52,7 +52,7 @@ release dates, rate gap-fill) + curated MCP-editable overrides (`is_override`
 rows, which win the merge). This replaces the former hardcoded pricing constants
 so a newly-released model prices automatically once a live source lists it; an
 override is the no-deploy fix for internal/routed slugs no public source carries.
-See `packages/usage/src/registry.ts` (pure normalise/merge) and
+See `apps/web/src/lib/usage/registry.ts` (pure normalise/merge) and
 `apps/web/src/lib/queries/models.ts` (`syncModelRegistry`).
 
 - `pnpm usage:login` / `pnpm usage:measure` / `pnpm usage:ingest` - Rust collector
@@ -208,7 +208,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 - **OpenGraph Images**: Dynamic OG image generation via `opengraph-image.tsx` route files
 - **Series Support**: Organise posts into series with navigation and ordering
 - **Analytics**: PostHog-backed dashboard (Query API) with Vercel Analytics
-- **Usage Page**: Public `/usage` page built from the cached `getUsageProfile()` (`lib/queries/usage.ts`). An editorial top half (generated summary, heatmap, "This period", stack shift, model character, cost vs volume, cache & effort) sits over an Explorer (DataGrid on desktop, card list on phones). A `?model=` profile drawer opens from the "View profile" buttons in Model character. Pure aggregation and shaping live in `@workspace/usage` (`narrative`, `period-comparison`, `weekly-insights`, `model-character`). Identity charts use the validated `--series-*` tokens in `globals.css`; magnitude uses the coral `--chart-*` ramp
+- **Usage Page**: Public `/usage` page built from the cached `getUsageProfile()` (`lib/queries/usage.ts`). An editorial top half (generated summary, heatmap, "This period", stack shift, model character, cost vs volume, cache & effort) sits over an Explorer (DataGrid on desktop, card list on phones). A `?model=` profile drawer opens from the "View profile" buttons in Model character. Pure aggregation and shaping live in `lib/usage/` (`narrative`, `period-comparison`, `weekly-insights`, `model-character`). Identity charts use the validated `--series-*` tokens in `globals.css`; magnitude uses the coral `--chart-*` ramp
 - **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers
 - **RSS Feed**: Dynamic `/feed.xml` endpoint
 - **OAuth Provider**: The app is its own OAuth 2.1 / OIDC provider via `@better-auth/oauth-provider` (`oauthProvider`) with the `jwt()` plugin. Clients authenticate users with the Authorization Code flow (PKCE required) and use the issued JWT access token as a bearer; public clients self-register via dynamic client registration and approve access at `/consent`. Discovery at `/api/auth/.well-known/openid-configuration`. Protected routes verify OAuth bearers in `validateMcpAuth` (`lib/api/mcp-auth.ts`) via `verifyAccessToken` from `better-auth/oauth2` with an explicit JWKS URL (local JWKS)
@@ -233,7 +233,7 @@ apps/
 └── docs/             # @workspace/docs Fumadocs documentation site
 packages/
 ├── mcp/              # @workspace/mcp private MCP server package
-└── usage/            # @workspace/usage usage parsers, pricing, and heatmap helpers
+└── usage/            # @workspace/usage Rust usage collector (`usage-ingest`)
 ```
 
 ### Layered Architecture

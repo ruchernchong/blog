@@ -1,4 +1,4 @@
-import { REGISTRY_SOURCES } from "@workspace/usage/registry";
+import { REGISTRY_SOURCES } from "@/lib/usage/registry";
 import {
   mergeAndUpsert,
   publishRegistry,

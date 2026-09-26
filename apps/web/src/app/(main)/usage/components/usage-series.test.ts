@@ -1,5 +1,5 @@
-import { OTHER_SERIES_KEY } from "@workspace/usage/weekly-insights";
 import { describe, expect, it } from "vitest";
+import { OTHER_SERIES_KEY } from "@/lib/usage/weekly-insights";
 import {
   describeSeries,
   OTHER_SERIES_COLOR,

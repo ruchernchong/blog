@@ -1,4 +1,3 @@
-import { usageIngestSchema } from "@workspace/usage/ingest";
 import { revalidateTag } from "next/cache";
 import { start } from "workflow/api";
 import { ERROR_IDS } from "@/constants/error-ids";
@@ -7,6 +6,7 @@ import { validateMcpAuth } from "@/lib/api/mcp-auth";
 import { parseAndValidateBody } from "@/lib/api/validation";
 import { logWarning } from "@/lib/logger";
 import { upsertTokenEffortUsage, upsertTokenUsage } from "@/lib/queries/usage";
+import { usageIngestSchema } from "@/lib/usage/ingest";
 import { syncModelRegistryWorkflow } from "@/workflows/sync-model-registry";
 
 /**

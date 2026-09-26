@@ -1,11 +1,11 @@
-import { buildHeatmapLayout } from "@workspace/usage/heatmap-layout";
-import { buildUsageNarrativeParts } from "@workspace/usage/narrative";
 import { ImageResponse } from "next/og";
 import { OG_HEADERS, OG_SIZE } from "@/lib/og/config";
 import { getOGFonts } from "@/lib/og/fonts";
 import { UsageHeatmap } from "@/lib/og/templates/usage-heatmap";
 import { getModelDisplayNames } from "@/lib/queries/models";
 import { getUsageProfile } from "@/lib/queries/usage";
+import { buildHeatmapLayout } from "@/lib/usage/heatmap-layout";
+import { buildUsageNarrativeParts } from "@/lib/usage/narrative";
 
 export const alt = "Usage - Ru Chern";
 export const size = OG_SIZE;

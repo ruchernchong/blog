@@ -1,6 +1,6 @@
-import type { UsageBreakdownRow } from "@workspace/usage/types";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-react";
+import type { UsageBreakdownRow } from "@/lib/usage/types";
 import { UsageCostScatter } from "./usage-cost-scatter";
 
 function row(key: string, tokens: number, cost: number | null) {

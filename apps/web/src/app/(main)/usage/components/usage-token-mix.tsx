@@ -1,6 +1,6 @@
 import { cn, Typography } from "@heroui/react";
-import { formatTokens } from "@workspace/usage/format";
-import type { TokenBreakdown } from "@workspace/usage/types";
+import { formatTokens } from "@/lib/usage/format";
+import type { TokenBreakdown } from "@/lib/usage/types";
 import { type MixSegment, TokenMixChartClient } from "./token-mix-chart.client";
 
 interface UsageTokenMixProps {

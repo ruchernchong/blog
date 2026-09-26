@@ -1,5 +1,3 @@
-import { buildUsageNarrativeParts } from "@workspace/usage/narrative";
-import type { UsageProfile } from "@workspace/usage/types";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import globalMetadata from "@/app/metadata";
@@ -9,6 +7,8 @@ import {
   getProviderDisplayNames,
 } from "@/lib/queries/models";
 import { getUsageProfile } from "@/lib/queries/usage";
+import { buildUsageNarrativeParts } from "@/lib/usage/narrative";
+import type { UsageProfile } from "@/lib/usage/types";
 import {
   type BreakdownView,
   UsageBreakdown,

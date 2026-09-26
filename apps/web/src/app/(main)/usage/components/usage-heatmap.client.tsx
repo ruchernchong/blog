@@ -1,11 +1,11 @@
 "use client";
 
 import { Button, cn } from "@heroui/react";
-import { INTENSITY_CLASSES } from "@workspace/usage";
-import type { HeatmapLayout } from "@workspace/usage/heatmap-layout";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { APP_LOCALE, APP_TIME_ZONE } from "@/constants/date-time";
+import { INTENSITY_CLASSES } from "@/lib/usage";
+import type { HeatmapLayout } from "@/lib/usage/heatmap-layout";
 import { usageParsers } from "../searchParams";
 import { HeatmapGridClient } from "./heatmap-grid.client";
 

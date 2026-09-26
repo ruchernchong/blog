@@ -1,9 +1,9 @@
 import "dotenv/config";
-import { buildPricingFromRegistry } from "@workspace/usage/pricing";
 import {
   MODEL_PRICING_COLUMNS,
   pricingRowToEntry,
 } from "@/lib/queries/model-registry";
+import { buildPricingFromRegistry } from "@/lib/usage/pricing";
 import { db, model, tokenUsage } from "@/schema";
 
 /**

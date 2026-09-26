@@ -1,4 +1,4 @@
-import type { UsageBreakdownRow } from "@workspace/usage/types";
+import type { UsageBreakdownRow } from "@/lib/usage/types";
 
 export interface CostPoint {
   key: string;

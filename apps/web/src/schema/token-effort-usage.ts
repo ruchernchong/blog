@@ -1,4 +1,3 @@
-import type { EffortLevelCount } from "@workspace/usage/types";
 import {
   date,
   index,
@@ -9,6 +8,7 @@ import {
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
+import type { EffortLevelCount } from "@/lib/usage/types";
 
 /**
  * Daily session-level effort aggregates per coding agent.

@@ -1,5 +1,5 @@
 import { Chip } from "@heroui/react";
-import type { Cost } from "@workspace/usage/types";
+import type { Cost } from "@/lib/usage/types";
 
 interface FreeModelChipProps {
   cost: Cost;

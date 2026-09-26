@@ -1,13 +1,13 @@
 "use client";
 
 import { AreaChart, ChartTooltip } from "@heroui-pro/react";
-import {
-  memberShareKey,
-  type WeeklyShareRow,
-} from "@workspace/usage/weekly-insights";
 import { format, parseISO } from "date-fns";
 import { Fragment } from "react";
 import type { TooltipContentProps } from "recharts";
+import {
+  memberShareKey,
+  type WeeklyShareRow,
+} from "@/lib/usage/weekly-insights";
 import type { SeriesMeta } from "./usage-series";
 
 interface StackShiftChartClientProps {

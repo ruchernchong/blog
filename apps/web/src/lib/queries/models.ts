@@ -1,7 +1,10 @@
-import {
-  buildPricingFromRegistry,
-  type Pricing,
-} from "@workspace/usage/pricing";
+import { and, eq, inArray } from "drizzle-orm";
+import { cacheLife, cacheTag, revalidateTag } from "next/cache";
+import redis from "@/config/redis";
+import { logWarning } from "@/lib/logger";
+import { rowToEntry, upsertModelRegistry } from "@/lib/queries/model-registry";
+import { repriceUnpricedTokenUsage } from "@/lib/queries/usage";
+import { buildPricingFromRegistry, type Pricing } from "@/lib/usage/pricing";
 import {
   type GatewayApi,
   type ModelEntry,
@@ -13,13 +16,7 @@ import {
   type OpenRouterApi,
   type RegistrySource,
   SEED_OVERRIDES,
-} from "@workspace/usage/registry";
-import { and, eq, inArray } from "drizzle-orm";
-import { cacheLife, cacheTag, revalidateTag } from "next/cache";
-import redis from "@/config/redis";
-import { logWarning } from "@/lib/logger";
-import { rowToEntry, upsertModelRegistry } from "@/lib/queries/model-registry";
-import { repriceUnpricedTokenUsage } from "@/lib/queries/usage";
+} from "@/lib/usage/registry";
 import { db, model } from "@/schema";
 
 const MODELS_API_URL = "https://models.dev/api.json";

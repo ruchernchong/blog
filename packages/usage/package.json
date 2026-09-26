@@ -1,38 +1,10 @@
 {
   "name": "@workspace/usage",
   "version": "1.15.0",
-  "type": "module",
   "private": true,
   "scripts": {
-    "lint": "biome check .",
     "login": "cargo run --release --manifest-path rust/Cargo.toml -- login",
     "measure": "cargo run --release --manifest-path rust/Cargo.toml -- measure",
-    "ingest": "cargo run --release --manifest-path rust/Cargo.toml -- ingest",
-    "test": "vitest run",
-    "typecheck": "tsc --noEmit"
-  },
-  "exports": {
-    ".": "./src/index.ts",
-    "./format": "./src/format.ts",
-    "./heatmap-layout": "./src/heatmap-layout.ts",
-    "./model-character": "./src/model-character.ts",
-    "./narrative": "./src/narrative.ts",
-    "./period-comparison": "./src/period-comparison.ts",
-    "./ingest": "./src/ingest.ts",
-    "./pricing": "./src/pricing.ts",
-    "./providers": "./src/providers.ts",
-    "./registry": "./src/registry.ts",
-    "./types": "./src/types.ts",
-    "./weekly-insights": "./src/weekly-insights.ts"
-  },
-  "dependencies": {
-    "date-fns": "^4.1.0",
-    "zod": "4.4.3"
-  },
-  "devDependencies": {
-    "@types/node": "catalog:",
-    "@vitest/coverage-v8": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:"
+    "ingest": "cargo run --release --manifest-path rust/Cargo.toml -- ingest"
   }
 }

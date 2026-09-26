@@ -1,11 +1,11 @@
+import type { ReactNode } from "react";
 import {
   formatCurrencyCompact,
   formatNumber,
   formatTokens,
-} from "@workspace/usage/format";
-import type { UsageNarrativePart } from "@workspace/usage/narrative";
-import type { UsageSummary } from "@workspace/usage/types";
-import type { ReactNode } from "react";
+} from "@/lib/usage/format";
+import type { UsageNarrativePart } from "@/lib/usage/narrative";
+import type { UsageSummary } from "@/lib/usage/types";
 
 interface UsageHeroProps {
   summary: UsageSummary;

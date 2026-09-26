@@ -1,6 +1,6 @@
-import type { UsageSummary } from "@workspace/usage/types";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-react";
+import type { UsageSummary } from "@/lib/usage/types";
 import { UsageHero } from "./usage-hero";
 
 const summary: UsageSummary = {

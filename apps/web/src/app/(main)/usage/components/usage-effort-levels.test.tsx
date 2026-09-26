@@ -1,6 +1,6 @@
-import type { EffortSummary } from "@workspace/usage/types";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-react";
+import type { EffortSummary } from "@/lib/usage/types";
 import { UsageEffortLevels } from "./usage-effort-levels";
 
 const classified: EffortSummary = {

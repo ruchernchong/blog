@@ -1,4 +1,3 @@
-import type { RegistrySource } from "@workspace/usage/registry";
 import { revalidateTag } from "next/cache";
 import { getStepMetadata, getWritable } from "workflow";
 import { ERROR_IDS } from "@/constants/error-ids";
@@ -10,6 +9,7 @@ import {
   syncModelRegistry,
 } from "@/lib/queries/models";
 import { repriceUnpricedTokenUsage } from "@/lib/queries/usage";
+import type { RegistrySource } from "@/lib/usage/registry";
 
 /**
  * Steps for {@link import("./sync-model-registry").syncModelRegistryWorkflow}.

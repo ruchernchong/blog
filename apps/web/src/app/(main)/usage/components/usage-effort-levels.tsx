@@ -1,6 +1,6 @@
 import { cn, Typography } from "@heroui/react";
-import { formatNumber } from "@workspace/usage/format";
-import { type EffortSummary, effortLevelLabel } from "@workspace/usage/types";
+import { formatNumber } from "@/lib/usage/format";
+import { type EffortSummary, effortLevelLabel } from "@/lib/usage/types";
 
 interface UsageEffortLevelsProps {
   className?: string;

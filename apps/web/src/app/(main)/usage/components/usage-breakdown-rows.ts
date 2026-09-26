@@ -1,4 +1,4 @@
-import type { Cost, UsageBreakdownRow } from "@workspace/usage/types";
+import type { Cost, UsageBreakdownRow } from "@/lib/usage/types";
 
 /**
  * Pure row logic for the usage Explorer, shared by the desktop DataGrid and

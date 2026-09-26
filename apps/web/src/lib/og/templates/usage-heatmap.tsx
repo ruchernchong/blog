@@ -1,5 +1,5 @@
-import type { HeatmapLayout } from "@workspace/usage/heatmap-layout";
-import type { UsageNarrativePart } from "@workspace/usage/narrative";
+import type { HeatmapLayout } from "@/lib/usage/heatmap-layout";
+import type { UsageNarrativePart } from "@/lib/usage/narrative";
 import { OG_COLOURS } from "../colours";
 import { OG_CONFIG } from "../config";
 

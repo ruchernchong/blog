@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   cacheComponents: true,
   partialPrefetching: true,
-  transpilePackages: ["@workspace/mcp", "@workspace/usage"],
+  transpilePackages: ["@workspace/mcp"],
   images: {
     qualities: [75, 100],
     remotePatterns: [

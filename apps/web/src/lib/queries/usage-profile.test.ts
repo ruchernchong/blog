@@ -1,5 +1,5 @@
-import type { Pricing } from "@workspace/usage/pricing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Pricing } from "@/lib/usage/pricing";
 
 const { mocks } = vi.hoisted(() => ({
   mocks: {

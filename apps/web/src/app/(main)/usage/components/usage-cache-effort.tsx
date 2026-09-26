@@ -2,7 +2,7 @@ import type {
   CacheTrendPoint,
   EffortSummary,
   TokenBreakdown,
-} from "@workspace/usage/types";
+} from "@/lib/usage/types";
 import { UsageCacheSummary } from "./usage-cache-summary";
 import { UsageEffortLevels } from "./usage-effort-levels";
 import { UsageSection } from "./usage-section";

@@ -1,5 +1,5 @@
-import { formatCost } from "@workspace/usage/format";
-import type { UsageBreakdownRow } from "@workspace/usage/types";
+import { formatCost } from "@/lib/usage/format";
+import type { UsageBreakdownRow } from "@/lib/usage/types";
 import { CostScatterChartClient } from "./cost-scatter-chart.client";
 import { toCostPoints } from "./usage-cost-points";
 import { UsageSection } from "./usage-section";

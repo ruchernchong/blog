@@ -24,11 +24,11 @@ import {
   LayoutTable02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { providerLogoUrl } from "@workspace/usage/providers";
-import type { Cost, UsageBreakdownRow } from "@workspace/usage/types";
 import Image from "next/image";
 import { useQueryStates } from "nuqs";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { providerLogoUrl } from "@/lib/usage/providers";
+import type { Cost, UsageBreakdownRow } from "@/lib/usage/types";
 import {
   USAGE_SORT_COLUMNS,
   type UsageBreakdownView,

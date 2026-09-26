@@ -1,4 +1,3 @@
-import type { UsageBreakdownRow } from "@workspace/usage/types";
 import {
   type OnUrlUpdateFunction,
   withNuqsTestingAdapter,
@@ -6,6 +5,7 @@ import {
 import { describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { render } from "vitest-browser-react";
+import type { UsageBreakdownRow } from "@/lib/usage/types";
 import { UsageModelDrawer } from "./usage-model-drawer";
 
 const row: UsageBreakdownRow = {

@@ -1,6 +1,6 @@
-import { agentLabel } from "@workspace/usage/narrative";
-import type { WeeklyShare } from "@workspace/usage/types";
-import { toWeeklyShareRows } from "@workspace/usage/weekly-insights";
+import { agentLabel } from "@/lib/usage/narrative";
+import type { WeeklyShare } from "@/lib/usage/types";
+import { toWeeklyShareRows } from "@/lib/usage/weekly-insights";
 import { UsageSection } from "./usage-section";
 import { describeSeries } from "./usage-series";
 import { UsageStackShiftClient } from "./usage-stack-shift.client";

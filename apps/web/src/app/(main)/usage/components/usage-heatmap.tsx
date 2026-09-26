@@ -1,6 +1,6 @@
-import { buildHeatmapLayout } from "@workspace/usage/heatmap-layout";
-import type { DayContribution } from "@workspace/usage/types";
 import { eachDayOfInterval, format } from "date-fns";
+import { buildHeatmapLayout } from "@/lib/usage/heatmap-layout";
+import type { DayContribution } from "@/lib/usage/types";
 import { type HeatmapYear, UsageHeatmapClient } from "./usage-heatmap.client";
 import { UsageSection } from "./usage-section";
 

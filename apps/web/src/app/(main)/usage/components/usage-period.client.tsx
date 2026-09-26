@@ -1,16 +1,16 @@
 "use client";
 
+import { format, parseISO } from "date-fns";
+import { useQueryState } from "nuqs";
 import {
   formatCurrencyCompact,
   formatNumber,
   formatTokens,
-} from "@workspace/usage/format";
+} from "@/lib/usage/format";
 import {
   PERIOD_LENGTHS,
   type PeriodComparisons,
-} from "@workspace/usage/period-comparison";
-import { format, parseISO } from "date-fns";
-import { useQueryState } from "nuqs";
+} from "@/lib/usage/period-comparison";
 import { usageParsers } from "../searchParams";
 import { UsageToggle } from "./usage-toggle.client";
 

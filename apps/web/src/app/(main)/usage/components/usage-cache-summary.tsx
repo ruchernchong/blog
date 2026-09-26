@@ -1,6 +1,6 @@
-import { formatCurrencyCompact } from "@workspace/usage/format";
-import type { CacheTrendPoint, TokenBreakdown } from "@workspace/usage/types";
 import { format, parseISO } from "date-fns";
+import { formatCurrencyCompact } from "@/lib/usage/format";
+import type { CacheTrendPoint, TokenBreakdown } from "@/lib/usage/types";
 
 interface UsageCacheSummaryProps {
   tokenMix: TokenBreakdown;

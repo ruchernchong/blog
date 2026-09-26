@@ -1,8 +1,8 @@
-import { formatCost, formatNumber } from "@workspace/usage/format";
-import { deriveModelCharacter } from "@workspace/usage/model-character";
-import type { UsageBreakdownRow } from "@workspace/usage/types";
 import { format, parseISO } from "date-fns";
 import { Suspense } from "react";
+import { formatCost, formatNumber } from "@/lib/usage/format";
+import { deriveModelCharacter } from "@/lib/usage/model-character";
+import type { UsageBreakdownRow } from "@/lib/usage/types";
 import { UsageModelCharacterRows } from "./usage-model-character-rows.client";
 import {
   UsageModelProfileButton,

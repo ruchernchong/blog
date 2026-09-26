@@ -8,22 +8,12 @@ import {
 } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { INTENSITY_CLASSES } from "@workspace/usage";
-import {
-  formatCost,
-  formatNumber,
-  formatTokens,
-} from "@workspace/usage/format";
-import type {
-  HeatmapCell,
-  HeatmapLayout,
-} from "@workspace/usage/heatmap-layout";
-import type {
-  DayContribution,
-  ModelDayBreakdown,
-} from "@workspace/usage/types";
 import { format, parseISO } from "date-fns";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { INTENSITY_CLASSES } from "@/lib/usage";
+import { formatCost, formatNumber, formatTokens } from "@/lib/usage/format";
+import type { HeatmapCell, HeatmapLayout } from "@/lib/usage/heatmap-layout";
+import type { DayContribution, ModelDayBreakdown } from "@/lib/usage/types";
 
 interface HeatmapGridClientProps {
   layout: HeatmapLayout;

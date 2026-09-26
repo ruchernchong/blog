@@ -1,10 +1,10 @@
-import type {
-  PeriodComparison,
-  PeriodTotals,
-} from "@workspace/usage/period-comparison";
 import { withNuqsTestingAdapter } from "nuqs/adapters/testing";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-react";
+import type {
+  PeriodComparison,
+  PeriodTotals,
+} from "@/lib/usage/period-comparison";
 import { UsagePeriodClient } from "./usage-period.client";
 
 function totals(overrides: Partial<PeriodTotals>): PeriodTotals {

@@ -1,5 +1,5 @@
-import type { Cost } from "@workspace/usage/types";
 import { render } from "vitest-browser-react";
+import type { Cost } from "@/lib/usage/types";
 import { FreeModelChip } from "./free-model-chip";
 
 function renderChip(viewId: string, cost: Cost) {

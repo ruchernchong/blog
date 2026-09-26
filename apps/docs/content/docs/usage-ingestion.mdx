@@ -30,7 +30,7 @@ The static bearer token is the expected path for production ingestion.
 
 ## Request Body
 
-The body must match `UsageIngestPayload` from `@workspace/usage/ingest`. Field names are **camelCase** (matching AgentUsage Codable and the token-row wire style).
+The body must match `UsageIngestPayload` from `apps/web/src/lib/usage/ingest.ts`. Field names are **camelCase** (matching AgentUsage Codable and the token-row wire style).
 
 ```json
 {
@@ -197,7 +197,7 @@ curl -X POST "https://ruchern.dev/api/usage/ingest" \
 
 ## Source Files
 
-- `packages/usage/src/ingest.ts` defines the wire schema.
+- `apps/web/src/lib/usage/ingest.ts` defines the wire schema.
 - `packages/usage/rust` parses, folds, and posts token rows.
 - `apps/web/src/app/api/usage/ingest/route.ts` authenticates and upserts rows.
 - `apps/web/src/lib/queries/usage.ts` performs the chunked upsert and usage profile aggregation.

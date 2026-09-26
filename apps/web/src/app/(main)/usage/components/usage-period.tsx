@@ -1,4 +1,4 @@
-import type { PeriodComparisons } from "@workspace/usage/period-comparison";
+import type { PeriodComparisons } from "@/lib/usage/period-comparison";
 import { UsagePeriodClient } from "./usage-period.client";
 import { UsageSection } from "./usage-section";
 

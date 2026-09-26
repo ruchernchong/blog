@@ -1,16 +1,12 @@
 "use client";
 
 import { Drawer } from "@heroui/react";
-import {
-  formatCost,
-  formatNumber,
-  formatTokens,
-} from "@workspace/usage/format";
-import { deriveModelCharacter } from "@workspace/usage/model-character";
-import { agentLabel } from "@workspace/usage/narrative";
-import type { UsageBreakdownRow } from "@workspace/usage/types";
 import { format, parseISO } from "date-fns";
 import { useQueryState } from "nuqs";
+import { formatCost, formatNumber, formatTokens } from "@/lib/usage/format";
+import { deriveModelCharacter } from "@/lib/usage/model-character";
+import { agentLabel } from "@/lib/usage/narrative";
+import type { UsageBreakdownRow } from "@/lib/usage/types";
 import { usageParsers } from "../searchParams";
 
 interface UsageModelDrawerProps {

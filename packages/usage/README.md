@@ -1,8 +1,7 @@
 # `@workspace/usage`
 
-Shared usage types, ingest schema, pricing, and parsers for ruchern.dev.
+The **macOS usage collector**, a Rust binary (`usage-ingest`) in `rust/`. It
+reads local agent logs and POSTs daily rows to the ingest endpoint. Install,
+OAuth login, and LaunchAgent:
 
-The **macOS collector** is the Go binary in `go/`. It reads local agent logs and
-POSTs daily rows to production. Install, OAuth login, and LaunchAgent:
-
-**[go/macos/INSTALL.md](./go/macos/INSTALL.md)**
+**[rust/macos/INSTALL.md](./rust/macos/INSTALL.md)**

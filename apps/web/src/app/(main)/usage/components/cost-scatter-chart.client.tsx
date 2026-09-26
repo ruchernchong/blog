@@ -1,11 +1,6 @@
 "use client";
 
 import {
-  formatCost,
-  formatNumber,
-  formatTokens,
-} from "@workspace/usage/format";
-import {
   CartesianGrid,
   LabelList,
   type LabelProps,
@@ -17,6 +12,7 @@ import {
   YAxis,
   ZAxis,
 } from "recharts";
+import { formatCost, formatNumber, formatTokens } from "@/lib/usage/format";
 import { type CostPoint, logAxis } from "./usage-cost-points";
 
 interface CostScatterChartClientProps {

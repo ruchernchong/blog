@@ -1,10 +1,6 @@
 import { Chip } from "@heroui/react";
-import {
-  formatCost,
-  formatNumber,
-  formatTokens,
-} from "@workspace/usage/format";
-import type { UsageBreakdownRow } from "@workspace/usage/types";
+import { formatCost, formatNumber, formatTokens } from "@/lib/usage/format";
+import type { UsageBreakdownRow } from "@/lib/usage/types";
 import {
   type BreakdownNames,
   rowDisplayName,
