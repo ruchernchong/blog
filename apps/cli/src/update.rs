@@ -41,7 +41,7 @@ pub fn notify() {
 }
 
 fn latest_version() -> Option<String> {
-    let path = store::config_dir().join("agent-usage-update-check.json");
+    let path = store::config_dir().join("update-check.json");
     let cached: UpdateCheck = std::fs::read_to_string(&path)
         .ok()
         .and_then(|raw| serde_json::from_str(&raw).ok())

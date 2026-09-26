@@ -35,7 +35,8 @@ Then sign in. Use the **installed** binary for login so Keychain access matches 
 
 The browser opens ruchern.dev. Sign in with the **admin** account (ingest
 rejects non-admin OAuth). Tokens go in the login Keychain
-(`dev.ruchern.agent-usage`).
+(`dev.ruchern.agent-usage`). The cached OAuth client id, update check, and
+refresh lock live in `~/.config/agent-usage/` (or `$XDG_CONFIG_HOME/agent-usage/`).
 
 ## 2. Prove one POST
 
@@ -74,8 +75,9 @@ Run the install again. It boots out the old `dev.ruchern.usage-ingest`
 LaunchAgent and deletes its plist, `~/.local/bin/usage-ingest`, and
 `~/.local/bin/usage-ingest-run` before loading `dev.ruchern.agent-usage`. On
 its first run the new binary moves the Keychain tokens from
-`dev.ruchern.usage-ingest` to `dev.ruchern.agent-usage` and renames the cached
-client id file, so there is no need to sign in again. macOS may ask once to let
+`dev.ruchern.usage-ingest` to `dev.ruchern.agent-usage` and moves the cached
+client id from `~/.config/ruchern/` to `~/.config/agent-usage/` (removing the old
+directory once empty), so there is no need to sign in again. macOS may ask once to let
 `agent-usage` read the old Keychain item. The old
 `~/Library/Logs/ruchern-usage-ingest.log` is left in place.
 

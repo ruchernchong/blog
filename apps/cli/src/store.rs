@@ -2,6 +2,7 @@
 //! cross-process refresh lock. Tests swap the Keychain for an in-memory store.
 use anyhow::{Context, Result, anyhow};
 use serde::{Deserialize, Serialize};
+use std::ffi::OsString;
 use std::fs::{DirBuilder, File, OpenOptions};
 use std::os::unix::fs::{DirBuilderExt, OpenOptionsExt};
 use std::path::PathBuf;
@@ -61,12 +62,21 @@ pub fn delete_tokens() -> Result<()> {
     backend::delete(LEGACY_KEYRING_SERVICE)
 }
 
+/// `$XDG_CONFIG_HOME/agent-usage`, or `~/.config/agent-usage` when it is unset
+/// or not absolute.
 #[cfg(not(test))]
 pub fn config_dir() -> PathBuf {
-    std::env::var_os("HOME")
-        .map(PathBuf::from)
-        .unwrap_or_default()
-        .join(".config/ruchern")
+    resolve_config_dir(
+        std::env::var_os("XDG_CONFIG_HOME"),
+        std::env::var_os("HOME"),
+    )
+}
+
+fn resolve_config_dir(xdg: Option<OsString>, home: Option<OsString>) -> PathBuf {
+    xdg.map(PathBuf::from)
+        .filter(|dir| dir.is_absolute())
+        .unwrap_or_else(|| home.map(PathBuf::from).unwrap_or_default().join(".config"))
+        .join("agent-usage")
 }
 
 #[cfg(test)]
@@ -74,12 +84,33 @@ pub fn config_dir() -> PathBuf {
     std::env::temp_dir().join(format!("agent-usage-test-{}", std::process::id()))
 }
 
-/// Cached OAuth client id. A file left by the collector before it was renamed
-/// from usage-ingest is moved here first, so the client is not registered again.
+/// Where the collector kept its files before it was renamed from usage-ingest.
+#[cfg(not(test))]
+fn legacy_config_dir() -> PathBuf {
+    std::env::var_os("HOME")
+        .map(PathBuf::from)
+        .unwrap_or_default()
+        .join(".config/ruchern")
+}
+
+#[cfg(test)]
+fn legacy_config_dir() -> PathBuf {
+    std::env::temp_dir().join(format!("agent-usage-test-legacy-{}", std::process::id()))
+}
+
+/// Cached OAuth client id. A file left in [`legacy_config_dir`] by usage-ingest
+/// is moved here first, so the client is not registered again.
 pub fn client_id_path() -> PathBuf {
-    let path = config_dir().join(scoped("agent-usage-client-id"));
-    if !path.exists() {
-        let _ = std::fs::rename(config_dir().join(scoped("usage-ingest-client-id")), &path);
+    let path = config_dir().join(scoped("client-id"));
+    let legacy = legacy_config_dir().join(scoped("usage-ingest-client-id"));
+    if !path.exists() && legacy.exists() && ensure_config_dir().is_ok() {
+        let _ = std::fs::rename(&legacy, &path);
+        // The old lock and update-check files are never read again; drop them
+        // and the directory once it is empty.
+        let old = legacy_config_dir();
+        let _ = std::fs::remove_file(old.join("usage-ingest.lock"));
+        let _ = std::fs::remove_file(old.join("usage-ingest-update-check.json"));
+        let _ = std::fs::remove_dir(old);
     }
     path
 }
@@ -114,7 +145,7 @@ pub struct TokenLock {
 }
 
 pub fn lock_tokens() -> Result<TokenLock> {
-    let path = ensure_config_dir()?.join("agent-usage.lock");
+    let path = ensure_config_dir()?.join("tokens.lock");
     let file = OpenOptions::new()
         .create(true)
         .truncate(false)
@@ -224,7 +255,8 @@ pub mod backend {
 mod tests {
     use super::{
         KEYRING_SERVICE, LEGACY_KEYRING_SERVICE, NOT_SIGNED_IN, OauthTokens, backend,
-        client_id_path, config_dir, delete_tokens, ensure_config_dir, load_tokens, save_tokens,
+        client_id_path, config_dir, delete_tokens, legacy_config_dir, load_tokens,
+        resolve_config_dir, save_tokens,
     };
 
     fn tokens(access_token: &str) -> OauthTokens {
@@ -284,21 +316,26 @@ mod tests {
 
     #[test]
     fn client_id_path_migrates_legacy_file() {
-        let dir = ensure_config_dir().unwrap();
-        let legacy = config_dir().join("usage-ingest-client-id");
-        let current = dir.join("agent-usage-client-id");
+        let old = legacy_config_dir();
+        let legacy = old.join("usage-ingest-client-id");
+        let current = config_dir().join("client-id");
         let _ = std::fs::remove_file(&current);
 
-        // Legacy only: moved to the new name.
+        // Legacy only: moved to the new directory, stale files and the old
+        // directory cleaned up.
+        std::fs::create_dir_all(&old).unwrap();
         std::fs::write(&legacy, "legacy-client\n").unwrap();
+        std::fs::write(old.join("usage-ingest.lock"), "").unwrap();
+        std::fs::write(old.join("usage-ingest-update-check.json"), "{}").unwrap();
         assert_eq!(client_id_path(), current);
         assert_eq!(
             std::fs::read_to_string(&current).unwrap(),
             "legacy-client\n"
         );
-        assert!(!legacy.exists());
+        assert!(!old.exists());
 
         // Both present: the new file wins and the legacy one is left alone.
+        std::fs::create_dir_all(&old).unwrap();
         std::fs::write(&legacy, "stale-client\n").unwrap();
         assert_eq!(client_id_path(), current);
         assert_eq!(
@@ -307,7 +344,22 @@ mod tests {
         );
         assert!(legacy.exists());
 
-        let _ = std::fs::remove_file(&legacy);
+        let _ = std::fs::remove_dir_all(&old);
         let _ = std::fs::remove_file(&current);
+    }
+
+    #[test]
+    fn resolve_config_dir_prefers_absolute_xdg_config_home() {
+        let home = Some("/Users/me".into());
+        assert_eq!(
+            resolve_config_dir(Some("/xdg".into()), home.clone()),
+            std::path::Path::new("/xdg/agent-usage")
+        );
+        for xdg in [None, Some("".into()), Some("relative".into())] {
+            assert_eq!(
+                resolve_config_dir(xdg, home.clone()),
+                std::path::Path::new("/Users/me/.config/agent-usage")
+            );
+        }
     }
 }
