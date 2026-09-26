@@ -64,7 +64,9 @@ See `packages/usage/src/registry.ts` (pure normalise/merge) and
   `.envrc`), defaulting to production. Login (OAuth, admin account, Keychain) follows
   the same server, and each non-production server gets its own Keychain entry, so
   local and production logins never mix. `USAGE_INGEST_DRY_RUN=1` prints the payload
-  without POSTing. The installed binary is production only. Install
+  without POSTing. The installed binary is production only. semantic-release keeps
+  its `Cargo.toml` version in sync with the monorepo release, and it prints a once-a-day update notice
+  in interactive terminals (`USAGE_INGEST_NO_UPDATE_CHECK=1` disables it). Install
   (LaunchAgent): `curl | bash`
   `packages/usage/rust/macos/install-remote.sh` pulls the prebuilt binary from the
   latest monorepo release (`ci.yml` runs `usage-ingest-build.yml` after semantic-release

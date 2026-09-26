@@ -61,6 +61,10 @@ launchctl print "gui/$(id -u)/dev.ruchern.usage-ingest"
 To update, run the `curl` line again (or `install.sh` from a checkout). After parser changes, run `install.sh` again, then `login` only if Keychain
 prompts (same machine, same binary path, usually not).
 
+The collector checks GitHub for a newer release at most once a day and print the
+update command when one exists. The check only runs in an interactive terminal
+(never from the LaunchAgent); set `USAGE_INGEST_NO_UPDATE_CHECK=1` to turn it off.
+
 ## 4. Uninstall
 
 ```zsh

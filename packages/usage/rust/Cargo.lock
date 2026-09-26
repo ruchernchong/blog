@@ -2086,7 +2086,7 @@ dependencies = [
 
 [[package]]
 name = "usage-ingest"
-version = "0.1.0"
+version = "1.49.1"
 dependencies = [
  "anyhow",
  "base64",
