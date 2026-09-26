@@ -7,7 +7,7 @@ use std::time::Duration;
 
 const CURRENT_VERSION: &str = env!("CARGO_PKG_VERSION");
 const LATEST_RELEASE_URL: &str = "https://api.github.com/repos/ruchernchong/blog/releases/latest";
-const INSTALL_COMMAND: &str = "curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/packages/usage/rust/macos/install-remote.sh | bash";
+const INSTALL_COMMAND: &str = "curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/apps/cli/macos/install-remote.sh | bash";
 const CHECK_INTERVAL_SECS: i64 = 24 * 60 * 60;
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(2);
 

@@ -1,0 +1,10 @@
+{
+  "name": "@workspace/cli",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "login": "cargo run --release -- login",
+    "measure": "cargo run --release -- measure",
+    "ingest": "cargo run --release -- ingest"
+  }
+}

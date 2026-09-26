@@ -11,7 +11,7 @@ latest GitHub release of the monorepo. The script checks the SHA-256 before
 installing:
 
 ```zsh
-curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/packages/usage/rust/macos/install-remote.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/apps/cli/macos/install-remote.sh | bash
 ```
 
 Pin a release with `USAGE_INGEST_VERSION=1.42.0` in front of `bash`. To read the
@@ -22,7 +22,7 @@ From a checkout, build from source instead (needs a **Rust toolchain**, via
 [rustup](https://rustup.rs) or `brew install rust`):
 
 ```zsh
-zsh packages/usage/rust/macos/install.sh
+zsh apps/cli/macos/install.sh
 ```
 
 Then sign in. Use the **installed** binary for login so Keychain access matches launchd.
@@ -69,9 +69,9 @@ update command when one exists. The check only runs in an interactive terminal
 
 ```zsh
 ~/.local/bin/usage-ingest logout
-zsh packages/usage/rust/macos/uninstall.sh
+zsh apps/cli/macos/uninstall.sh
 # without a checkout:
-curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/packages/usage/rust/macos/uninstall.sh | zsh
+curl -fsSL https://raw.githubusercontent.com/ruchernchong/blog/main/apps/cli/macos/uninstall.sh | zsh
 ```
 
 ## Releasing
