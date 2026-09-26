@@ -7,20 +7,15 @@
 # SHA-256, and runs the install.sh inside it. Run from the release package it
 # installs the prebuilt binary; run from a checkout it builds from source.
 #
-# AGENT_USAGE_VERSION=X.Y.Z pins a release instead of the latest (the legacy
-# USAGE_INGEST_VERSION is read when it is unset).
+# AGENT_USAGE_VERSION=X.Y.Z pins a release instead of the latest.
 #
 # Runs under bash or zsh: agent-usage 1.51.0 runs the package's copy with zsh.
 set -euo pipefail
 
 REPO=ruchernchong/blog
 ASSET=agent-usage-macos.tar.gz
-# Releases cut before the rename (v1.50.0 and earlier) only carry the
-# usage-ingest package.
-LEGACY_ASSET=usage-ingest-macos.tar.gz
-VERSION=${AGENT_USAGE_VERSION:-${USAGE_INGEST_VERSION:-}}
+VERSION=${AGENT_USAGE_VERSION:-}
 LABEL=dev.ruchern.agent-usage
-LEGACY_LABEL=dev.ruchern.usage-ingest
 TMP_DIR=
 # Read here, not inside a function: zsh sets $0 to the function name there.
 SCRIPT=${BASH_SOURCE[0]:-$0}
@@ -49,23 +44,13 @@ download_and_install() {
   TMP_DIR=$(mktemp -d)
   trap 'rm -rf "$TMP_DIR"' EXIT
 
-  local asset=$ASSET dir=agent-usage
   echo "Downloading ${VERSION:-latest release}"
-  if ! fetch -o "$TMP_DIR/$asset" "$base/$asset"; then
-    echo "No $ASSET in this release, falling back to $LEGACY_ASSET"
-    asset=$LEGACY_ASSET dir=usage-ingest
-    fetch -o "$TMP_DIR/$asset" "$base/$asset"
-  fi
-  fetch -o "$TMP_DIR/$asset.sha256" "$base/$asset.sha256"
-  (cd "$TMP_DIR" && shasum -a 256 -c "$asset.sha256")
+  fetch -o "$TMP_DIR/$ASSET" "$base/$ASSET"
+  fetch -o "$TMP_DIR/$ASSET.sha256" "$base/$ASSET.sha256"
+  (cd "$TMP_DIR" && shasum -a 256 -c "$ASSET.sha256")
 
-  tar -xzf "$TMP_DIR/$asset" -C "$TMP_DIR"
-  # A legacy package installs usage-ingest, which the next upgrade migrates.
-  if [[ $dir == usage-ingest ]]; then
-    zsh "$TMP_DIR/$dir/macos/install.sh"
-  else
-    bash "$TMP_DIR/$dir/macos/install.sh"
-  fi
+  tar -xzf "$TMP_DIR/$ASSET" -C "$TMP_DIR"
+  bash "$TMP_DIR/agent-usage/macos/install.sh"
 }
 
 install_from() {
@@ -77,7 +62,6 @@ install_from() {
   local bin="$bin_dir/agent-usage"
   local wrapper="$bin_dir/agent-usage-run"
   local plist="$launch_agents/${LABEL}.plist"
-  local legacy_plist="$launch_agents/${LEGACY_LABEL}.plist"
   local domain
   domain="gui/$(id -u)"
 
@@ -93,16 +77,6 @@ install_from() {
     cargo build --release --manifest-path "$root/Cargo.toml"
     install -S -m 755 "$root/target/release/agent-usage" "$bin"
   fi
-
-  # Remove an install from before the rename to agent-usage, once the new
-  # binary is in place, so the two agents never both run. Its Keychain tokens
-  # and client id move over on the first run of the new binary.
-  if [[ -e $legacy_plist ]] || launchctl print "$domain/$LEGACY_LABEL" >/dev/null 2>&1; then
-    echo "Removing legacy $LEGACY_LABEL"
-    launchctl bootout "$domain" "$legacy_plist" 2>/dev/null ||
-      launchctl bootout "$domain/$LEGACY_LABEL" 2>/dev/null || true
-  fi
-  rm -f "$legacy_plist" "$bin_dir/usage-ingest" "$bin_dir/usage-ingest-run"
 
   install -m 755 "$root/macos/agent-usage-run.sh" "$wrapper"
 
