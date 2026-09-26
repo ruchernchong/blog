@@ -1,3 +1,11 @@
+## [1.54.0](https://github.com/ruchernchong/blog/compare/v1.53.0...v1.54.0) (2026-09-26)
+
+### Features
+
+* accept -v for the agent-usage version ([d173666](https://github.com/ruchernchong/blog/commit/d173666e730444fe7b32eab844961faed46c5c54))
+* replace agent-usage-run with agent-usage run ([bbd2953](https://github.com/ruchernchong/blog/commit/bbd295349f63089c592b5f0008e7e12131f76f17))
+* replace uninstall.sh with agent-usage uninstall ([d4daed3](https://github.com/ruchernchong/blog/commit/d4daed3588e4203d12b9384e527039654e64b6e6))
+
 ## [1.53.0](https://github.com/ruchernchong/blog/compare/v1.52.0...v1.53.0) (2026-09-26)
 
 ### Features
