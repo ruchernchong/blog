@@ -1,3 +1,15 @@
+## [1.49.0](https://github.com/ruchernchong/blog/compare/v1.48.0...v1.49.0) (2026-09-26)
+
+### Features
+
+* add open weights filter to the usage explorer ([edcd917](https://github.com/ruchernchong/blog/commit/edcd9173053787907408c5e9567c17d37fb0b179))
+* fit open weights chips in the explorer model column ([b5a6c69](https://github.com/ruchernchong/blog/commit/b5a6c691fd197c64cc5d470c53d5b91e0b88f292))
+* keep stored open weights when an update omits it ([0c38d18](https://github.com/ruchernchong/blog/commit/0c38d1882cc3d6da26116f2d75d544c446fe382e))
+
+### Bug Fixes
+
+* skip schema tests when loading the drizzle config ([df00dcf](https://github.com/ruchernchong/blog/commit/df00dcf5d30fabf29b158c68e7ab83ad5352d013))
+
 ## [1.48.0](https://github.com/ruchernchong/blog/compare/v1.47.4...v1.48.0) (2026-09-26)
 
 ### Features
