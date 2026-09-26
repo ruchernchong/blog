@@ -1,3 +1,10 @@
+## [1.50.0](https://github.com/ruchernchong/blog/compare/v1.49.1...v1.50.0) (2026-09-26)
+
+### Features
+
+* ingest usage with the Rust collector ([90f0cdd](https://github.com/ruchernchong/blog/commit/90f0cdddc97478070d9bff316d67c79bd1cc552c))
+* prompt to update the usage collector ([d4a4d62](https://github.com/ruchernchong/blog/commit/d4a4d6237460a8c94114fcc9701c50c2dac279b2))
+
 ## [1.49.1](https://github.com/ruchernchong/blog/compare/v1.49.0...v1.49.1) (2026-09-26)
 
 ### Bug Fixes
