@@ -60,7 +60,6 @@ install_from() {
   local launch_agents="$home_dir/Library/LaunchAgents"
   local logs="$home_dir/Library/Logs"
   local bin="$bin_dir/agent-usage"
-  local wrapper="$bin_dir/agent-usage-run"
   local plist="$launch_agents/${LABEL}.plist"
   local domain
   domain="gui/$(id -u)"
@@ -78,9 +77,7 @@ install_from() {
     install -S -m 755 "$root/target/release/agent-usage" "$bin"
   fi
 
-  install -m 755 "$root/macos/agent-usage-run.sh" "$wrapper"
-
-  sed -e "s|__HOME__|$home_dir|g" -e "s|__WRAPPER__|$wrapper|g" \
+  sed -e "s|__HOME__|$home_dir|g" -e "s|__BIN__|$bin|g" \
     "$root/macos/dev.ruchern.agent-usage.plist" >"$plist"
 
   if launchctl print "$domain/$LABEL" >/dev/null 2>&1; then
@@ -95,7 +92,7 @@ install_from() {
   echo "  log     $logs/agent-usage.log"
   echo
   echo "1. Sign in (admin account):  $bin auth login"
-  echo "2. Prove one run:            $wrapper"
+  echo "2. Prove one run:            $bin run"
   echo "3. Then:  launchctl kickstart -k $domain/$LABEL"
   echo "4. Turn off AgentUsage → Settings → Blog Usage Sync"
 }

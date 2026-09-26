@@ -13,10 +13,11 @@ mod ingest;
 mod oauth;
 mod parse;
 mod store;
+mod uninstall;
 mod update;
 
 use anyhow::{Context, Result};
-use clap::{Args, CommandFactory, Parser, Subcommand, ValueEnum};
+use clap::{ArgAction, Args, CommandFactory, Parser, Subcommand, ValueEnum};
 use clap_complete::Shell;
 use collect::ParserStats;
 use serde::Serialize;
@@ -26,8 +27,16 @@ use std::path::PathBuf;
 
 /// Collects local AI agent usage and ingests daily rows into ruchern.dev.
 #[derive(Debug, Parser)]
-#[command(name = "agent-usage", version, arg_required_else_help = true)]
+#[command(
+    name = "agent-usage",
+    version,
+    disable_version_flag = true,
+    arg_required_else_help = true
+)]
 struct Cli {
+    /// Print version
+    #[arg(short = 'v', long, short_alias = 'V', action = ArgAction::Version)]
+    _version: (),
     #[command(subcommand)]
     command: Command,
 }
@@ -42,6 +51,8 @@ enum Command {
     },
     /// POST daily rows to the ingest endpoint
     Ingest(IngestArgs),
+    /// Ingest between timestamped start and end lines (what the LaunchAgent runs)
+    Run,
     /// Sign in, sign out, or check the stored sign-in
     Auth {
         #[command(subcommand)]
@@ -52,6 +63,12 @@ enum Command {
         /// Only report the current and latest versions
         #[arg(long)]
         check: bool,
+    },
+    /// Remove the LaunchAgent and binary (keeps your sign-in, config and log)
+    Uninstall {
+        /// Do not ask for confirmation
+        #[arg(short, long)]
+        yes: bool,
     },
     /// Print a shell completion script
     Completions {
@@ -110,7 +127,11 @@ impl Command {
     fn notifies_update(&self) -> bool {
         !matches!(
             self,
-            Command::Completions { .. } | Command::Measure { json: true } | Command::Update { .. }
+            Command::Completions { .. }
+                | Command::Measure { json: true }
+                | Command::Update { .. }
+                | Command::Uninstall { .. }
+                | Command::Run
         )
     }
 }
@@ -165,6 +186,7 @@ fn run(command: Command) -> Result<()> {
             command: AuthCommand::Status,
         } => oauth::status(),
         Command::Update { check } => update::run(check).context("update"),
+        Command::Uninstall { yes } => uninstall::run(yes).context("uninstall"),
         Command::Completions { shell } => {
             clap_complete::generate(
                 Shell::from(shell),
@@ -193,11 +215,44 @@ fn run(command: Command) -> Result<()> {
             }
             Ok(())
         }
-        Command::Ingest(args) => {
-            let result = collect_home()?;
-            ingest::ingest(&result, args.url, args.dry_run).context("ingest")
-        }
+        Command::Ingest(args) => ingest_home(args),
+        Command::Run => std::process::exit(scheduled_run()),
     }
+}
+
+fn ingest_home(args: IngestArgs) -> Result<()> {
+    let result = collect_home()?;
+    ingest::ingest(&result, args.url, args.dry_run).context("ingest")
+}
+
+/// Runs `ingest` between `=== <time> start` and `=== <time> end exit=<code>
+/// duration=<secs>s` lines, so the LaunchAgent log shows where each run begins
+/// and ends. Returns the exit code.
+fn scheduled_run() -> i32 {
+    let started = std::time::Instant::now();
+    println!("=== {} start", log_time());
+    let code = match ingest_home(IngestArgs {
+        dry_run: false,
+        url: None,
+    }) {
+        Ok(()) => 0,
+        Err(error) => {
+            eprintln!("{error:#}");
+            1
+        }
+    };
+    println!(
+        "=== {} end exit={code} duration={}s",
+        log_time(),
+        started.elapsed().as_secs()
+    );
+    code
+}
+
+fn log_time() -> String {
+    chrono::Local::now()
+        .format("%Y-%m-%d %H:%M:%S %z")
+        .to_string()
 }
 
 /// Collects every agent's logs under `$HOME`, printing warnings to stderr.
@@ -244,9 +299,30 @@ mod tests {
             parse(&["--help"]).unwrap_err().kind(),
             ErrorKind::DisplayHelp
         );
-        let version = parse(&["--version"]).unwrap_err();
-        assert_eq!(version.kind(), ErrorKind::DisplayVersion);
-        assert!(version.to_string().contains(env!("CARGO_PKG_VERSION")));
+        for flag in ["--version", "-v", "-V"] {
+            let version = parse(&[flag]).unwrap_err();
+            assert_eq!(version.kind(), ErrorKind::DisplayVersion, "{flag}");
+            assert!(version.to_string().contains(env!("CARGO_PKG_VERSION")));
+        }
+    }
+
+    #[test]
+    fn uninstall_flags() {
+        assert!(matches!(
+            parse(&["uninstall"]).unwrap(),
+            Command::Uninstall { yes: false }
+        ));
+        assert!(matches!(
+            parse(&["uninstall", "-y"]).unwrap(),
+            Command::Uninstall { yes: true }
+        ));
+        assert!(parse(&["uninstall", "--purge"]).is_err());
+    }
+
+    #[test]
+    fn run_takes_no_arguments() {
+        assert!(matches!(parse(&["run"]).unwrap(), Command::Run));
+        assert!(parse(&["run", "--dry-run"]).is_err());
     }
 
     #[test]

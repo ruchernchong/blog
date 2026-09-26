@@ -73,7 +73,7 @@ enum Outcome {
 
 /// `agent-usage update [--check]`: replaces the running binary with the
 /// latest release, then lets that release's own `install.sh` refresh the
-/// wrapper, plist and LaunchAgent when the running binary is the installed one.
+/// plist and LaunchAgent when the running binary is the installed one.
 pub fn run(check: bool) -> Result<()> {
     let current = CURRENT_VERSION;
     let exe = std::env::current_exe()
@@ -226,7 +226,7 @@ fn installed_binary() -> Option<PathBuf> {
 }
 
 /// Runs the release package's own `install.sh`, which installs its prebuilt
-/// `bin/agent-usage` and refreshes the wrapper, plist and LaunchAgent.
+/// `bin/agent-usage` and refreshes the plist and LaunchAgent.
 fn run_installer(package: &Path) -> Result<()> {
     let script = package.join("agent-usage/macos/install.sh");
     let status = Command::new("bash")
