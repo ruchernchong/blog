@@ -204,7 +204,7 @@ function OpenWeightsChip({
   }
 
   return (
-    <Chip size="sm" variant="soft">
+    <Chip className="shrink-0" size="sm" variant="soft">
       Open Weights
     </Chip>
   );
@@ -228,7 +228,7 @@ function getColumns({
       isRowHeader: true,
       allowsSorting: true,
       cell: (row) => (
-        <span className="inline-flex w-full min-w-0 items-center gap-2 pe-8 sm:pe-0">
+        <span className="inline-flex w-full min-w-0 items-center gap-2 overflow-hidden pe-8 sm:pe-0">
           <RowVisual row={row} viewId={viewId} />
           <span
             className="truncate font-medium"
@@ -244,7 +244,8 @@ function getColumns({
           />
         </span>
       ),
-      minWidth: 240,
+      // Room for a name plus both the Free and Open Weights chips.
+      minWidth: 320,
       pinned: "start",
     },
     ...(viewId === "provider"
@@ -269,6 +270,8 @@ function getColumns({
       id: "trend",
       header: "Trend",
       align: "end",
+      // A sparkline reads fine at this size; spare width goes to the text columns.
+      width: 110,
       minWidth: 110,
       cell: (row) => (
         <AreaChart
