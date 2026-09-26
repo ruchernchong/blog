@@ -49,6 +49,17 @@ const validRow = {
   messages: 5,
 };
 
+/** The only accepted auth: an OAuth access token owned by an admin. */
+const adminOAuth = {
+  type: "oauth",
+  user: {
+    id: "admin",
+    email: "admin@example.com",
+    name: "Admin",
+    role: "admin",
+  },
+} as const;
+
 const validEffortRow = {
   date: "2026-06-02",
   agent: "claude",
@@ -106,7 +117,7 @@ describe("POST /api/usage/ingest", () => {
   });
 
   it("should upsert, start the sync workflow, and revalidate", async () => {
-    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+    mockValidateMcpAuth.mockResolvedValue(adminOAuth);
 
     const response = await POST(postRequest({ rows: [validRow] }));
 
@@ -124,7 +135,7 @@ describe("POST /api/usage/ingest", () => {
   });
 
   it("should not block the response on registry work", async () => {
-    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+    mockValidateMcpAuth.mockResolvedValue(adminOAuth);
 
     await POST(postRequest({ rows: [validRow] }));
 
@@ -135,7 +146,7 @@ describe("POST /api/usage/ingest", () => {
   });
 
   it("should still succeed when the workflow cannot be started", async () => {
-    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+    mockValidateMcpAuth.mockResolvedValue(adminOAuth);
     // The upsert is the durable operation — a scheduling failure must not turn
     // a successful write into a caller-visible error.
     mockStart.mockRejectedValue(new Error("queue unavailable"));
@@ -152,25 +163,41 @@ describe("POST /api/usage/ingest", () => {
     expect(mockRevalidateTag).toHaveBeenCalledWith("usage", "max");
   });
 
-  it("should upsert for an admin session", async () => {
+  it("should return 401 for an admin session", async () => {
     mockValidateMcpAuth.mockResolvedValue({
+      ...adminOAuth,
       type: "session",
-      user: {
-        id: "admin",
-        email: "admin@example.com",
-        name: "Admin",
-        role: "admin",
-      },
     });
 
     const response = await POST(postRequest({ rows: [validRow] }));
 
-    expect(response.status).toBe(200);
-    expect(mockUpsertTokenUsage).toHaveBeenCalledWith([validRow]);
+    expect(response.status).toBe(401);
+    expect(mockUpsertTokenUsage).not.toHaveBeenCalled();
+  });
+
+  it("should return 401 for the static MCP token", async () => {
+    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+
+    const response = await POST(postRequest({ rows: [validRow] }));
+
+    expect(response.status).toBe(401);
+    expect(mockUpsertTokenUsage).not.toHaveBeenCalled();
+  });
+
+  it("should return 401 for a non-admin OAuth token", async () => {
+    mockValidateMcpAuth.mockResolvedValue({
+      type: "oauth",
+      user: { ...adminOAuth.user, role: "user" },
+    });
+
+    const response = await POST(postRequest({ rows: [validRow] }));
+
+    expect(response.status).toBe(401);
+    expect(mockUpsertTokenUsage).not.toHaveBeenCalled();
   });
 
   it("should return 400 when a row is malformed", async () => {
-    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+    mockValidateMcpAuth.mockResolvedValue(adminOAuth);
 
     const response = await POST(
       postRequest({ rows: [{ ...validRow, inputTokens: -1 }] }),
@@ -182,7 +209,7 @@ describe("POST /api/usage/ingest", () => {
   });
 
   it("should return 400 when rows is empty", async () => {
-    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+    mockValidateMcpAuth.mockResolvedValue(adminOAuth);
 
     const response = await POST(postRequest({ rows: [] }));
 
@@ -191,7 +218,7 @@ describe("POST /api/usage/ingest", () => {
   });
 
   it("should skip effort upsert when effortRows is omitted", async () => {
-    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+    mockValidateMcpAuth.mockResolvedValue(adminOAuth);
 
     const response = await POST(postRequest({ rows: [validRow] }));
 
@@ -202,7 +229,7 @@ describe("POST /api/usage/ingest", () => {
   });
 
   it("should skip effort upsert when effortRows is empty", async () => {
-    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+    mockValidateMcpAuth.mockResolvedValue(adminOAuth);
 
     const response = await POST(
       postRequest({ rows: [validRow], effortRows: [] }),
@@ -215,7 +242,7 @@ describe("POST /api/usage/ingest", () => {
   });
 
   it("should upsert effort rows when provided", async () => {
-    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+    mockValidateMcpAuth.mockResolvedValue(adminOAuth);
     mockUpsertTokenEffortUsage.mockResolvedValue(1);
 
     const response = await POST(
@@ -238,7 +265,7 @@ describe("POST /api/usage/ingest", () => {
   });
 
   it("should return 400 when effort rows are malformed", async () => {
-    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+    mockValidateMcpAuth.mockResolvedValue(adminOAuth);
 
     const response = await POST(
       postRequest({
