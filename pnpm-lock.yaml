@@ -284,6 +284,8 @@ importers:
         specifier: 2.11.3
         version: 2.11.3
 
+  apps/cli: {}
+
   apps/docs:
     dependencies:
       fumadocs-core:
