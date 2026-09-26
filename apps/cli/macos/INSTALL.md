@@ -47,8 +47,11 @@ call; it exits non-zero when signed out.
 ## 2. Prove one POST
 
 ```zsh
-~/.local/bin/agent-usage-run
+~/.local/bin/agent-usage run
 ```
+
+`run` is what the LaunchAgent calls every 15 minutes: an `ingest` between
+timestamped `=== … start` and `=== … end exit=… duration=…s` lines in the log.
 
 If there are no local log rows it prints `Nothing to ingest.` and does not POST.
 Otherwise check `/usage`. Costs may show N.A. until the server model-registry
@@ -71,7 +74,7 @@ launchctl print "gui/$(id -u)/dev.ruchern.agent-usage"
 To update, run `agent-usage update` (`--check` only reports the current and
 latest versions). It downloads the latest release package and its `.sha256`,
 aborts on a checksum mismatch, swaps the new binary in by rename, and then runs
-the package's own `install.sh` to refresh the wrapper, plist and LaunchAgent.
+the package's own `install.sh` to refresh the plist and LaunchAgent.
 Running the `curl` line again works too. From a checkout, after parser changes,
 run `install.sh` again, then `auth login` only if Keychain prompts (same
 machine, same binary path, usually not).
@@ -117,9 +120,9 @@ directory once empty), so there is no need to sign in again. macOS may ask once 
 `~/Library/Logs/ruchern-usage-ingest.log` is left in place.
 
 Environment variables moved to `AGENT_USAGE_*` (`AGENT_USAGE_URL`,
-`AGENT_USAGE_DRY_RUN`, `AGENT_USAGE_NO_UPDATE_CHECK`, `AGENT_USAGE_VERSION`,
-`AGENT_USAGE_BIN`). All but `AGENT_USAGE_VERSION` fall back to their legacy
-`USAGE_INGEST_*` name when unset.
+`AGENT_USAGE_DRY_RUN`, `AGENT_USAGE_NO_UPDATE_CHECK`, `AGENT_USAGE_VERSION`).
+All but `AGENT_USAGE_VERSION` fall back to their legacy `USAGE_INGEST_*` name
+when unset.
 
 ## 4. Uninstall
 

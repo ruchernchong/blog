@@ -50,6 +50,8 @@ enum Command {
     },
     /// POST daily rows to the ingest endpoint
     Ingest(IngestArgs),
+    /// Ingest between timestamped start and end lines (what the LaunchAgent runs)
+    Run,
     /// Sign in, sign out, or check the stored sign-in
     Auth {
         #[command(subcommand)]
@@ -118,7 +120,10 @@ impl Command {
     fn notifies_update(&self) -> bool {
         !matches!(
             self,
-            Command::Completions { .. } | Command::Measure { json: true } | Command::Update { .. }
+            Command::Completions { .. }
+                | Command::Measure { json: true }
+                | Command::Update { .. }
+                | Command::Run
         )
     }
 }
@@ -201,11 +206,44 @@ fn run(command: Command) -> Result<()> {
             }
             Ok(())
         }
-        Command::Ingest(args) => {
-            let result = collect_home()?;
-            ingest::ingest(&result, args.url, args.dry_run).context("ingest")
-        }
+        Command::Ingest(args) => ingest_home(args),
+        Command::Run => std::process::exit(scheduled_run()),
     }
+}
+
+fn ingest_home(args: IngestArgs) -> Result<()> {
+    let result = collect_home()?;
+    ingest::ingest(&result, args.url, args.dry_run).context("ingest")
+}
+
+/// Runs `ingest` between `=== <time> start` and `=== <time> end exit=<code>
+/// duration=<secs>s` lines, so the LaunchAgent log shows where each run begins
+/// and ends. Returns the exit code.
+fn scheduled_run() -> i32 {
+    let started = std::time::Instant::now();
+    println!("=== {} start", log_time());
+    let code = match ingest_home(IngestArgs {
+        dry_run: false,
+        url: None,
+    }) {
+        Ok(()) => 0,
+        Err(error) => {
+            eprintln!("{error:#}");
+            1
+        }
+    };
+    println!(
+        "=== {} end exit={code} duration={}s",
+        log_time(),
+        started.elapsed().as_secs()
+    );
+    code
+}
+
+fn log_time() -> String {
+    chrono::Local::now()
+        .format("%Y-%m-%d %H:%M:%S %z")
+        .to_string()
 }
 
 /// Collects every agent's logs under `$HOME`, printing warnings to stderr.
@@ -257,6 +295,12 @@ mod tests {
             assert_eq!(version.kind(), ErrorKind::DisplayVersion, "{flag}");
             assert!(version.to_string().contains(env!("CARGO_PKG_VERSION")));
         }
+    }
+
+    #[test]
+    fn run_takes_no_arguments() {
+        assert!(matches!(parse(&["run"]).unwrap(), Command::Run));
+        assert!(parse(&["run", "--dry-run"]).is_err());
     }
 
     #[test]

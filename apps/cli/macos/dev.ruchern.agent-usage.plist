@@ -6,7 +6,8 @@
   <string>dev.ruchern.agent-usage</string>
   <key>ProgramArguments</key>
   <array>
-    <string>__WRAPPER__</string>
+    <string>__BIN__</string>
+    <string>run</string>
   </array>
   <key>WorkingDirectory</key>
   <string>__HOME__</string>

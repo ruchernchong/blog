@@ -112,7 +112,7 @@ Install the prebuilt universal binary from the latest release
 ```zsh
 curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install.sh | bash
 ~/.local/bin/agent-usage auth login   # admin account
-~/.local/bin/agent-usage-run         # POST if there are rows; then check /usage
+~/.local/bin/agent-usage run         # POST if there are rows; then check /usage
 ```
 
 `agent-usage update` installs the latest release in place. `agent-usage --help`
