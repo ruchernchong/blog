@@ -1,3 +1,9 @@
+## [1.48.0](https://github.com/ruchernchong/blog/compare/v1.47.4...v1.48.0) (2026-09-26)
+
+### Features
+
+* group stack chart models by family ([0f8dfce](https://github.com/ruchernchong/blog/commit/0f8dfceb98b36a17dc1ff4fbd7e3bc4fe5af3afc))
+
 ## [1.47.4](https://github.com/ruchernchong/blog/compare/v1.47.3...v1.47.4) (2026-09-25)
 
 ### Bug Fixes
