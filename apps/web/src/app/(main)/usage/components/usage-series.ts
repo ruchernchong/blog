@@ -23,6 +23,8 @@ export interface SeriesMeta {
   color: string;
   /** Share of all tokens across every week, 0–1. */
   share: number;
+  /** Models or agents folded into this series, largest first. */
+  members: { key: string; label: string }[];
 }
 
 /**
@@ -50,6 +52,10 @@ export function describeSeries(
       label: isOther ? "Other" : labelOf(entry.key),
       color,
       share: grandTotal > 0 ? totals[index] / grandTotal : 0,
+      members: (entry.members ?? []).map((member) => ({
+        key: member.key,
+        label: labelOf(member.key),
+      })),
     };
   });
 }

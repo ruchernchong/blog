@@ -4,6 +4,8 @@ import {
   buildCacheTrend,
   buildWeeklyShare,
   isoWeekStart,
+  memberShareKey,
+  modelFamily,
   OTHER_SERIES_KEY,
   toWeeklyShareRows,
 } from "./weekly-insights";
@@ -58,31 +60,76 @@ describe("buildWeeklyShare", () => {
       "2026-01-26",
     ]);
     expect(share.models).toEqual([
-      { key: "opus", tokens: [10, 0, 0, 5] },
-      { key: "sonnet", tokens: [3, 0, 0, 0] },
+      {
+        key: "opus",
+        tokens: [10, 0, 0, 5],
+        members: [{ key: "opus", tokens: [10, 0, 0, 5] }],
+      },
+      {
+        key: "sonnet",
+        tokens: [3, 0, 0, 0],
+        members: [{ key: "sonnet", tokens: [3, 0, 0, 0] }],
+      },
     ]);
     expect(share.agents).toEqual([
-      { key: "claude", tokens: [10, 0, 0, 5] },
-      { key: "cursor", tokens: [3, 0, 0, 0] },
+      {
+        key: "claude",
+        tokens: [10, 0, 0, 5],
+        members: [{ key: "claude", tokens: [10, 0, 0, 5] }],
+      },
+      {
+        key: "cursor",
+        tokens: [3, 0, 0, 0],
+        members: [{ key: "cursor", tokens: [3, 0, 0, 0] }],
+      },
     ]);
   });
 
-  it("should fold keys beyond the top N into a trailing other series", () => {
+  it("should group model versions into one family series", () => {
+    const share = buildWeeklyShare([
+      fact("2026-01-05", "claude-opus-4-8", 30),
+      fact("2026-01-05", "claude-opus-5", 10),
+      fact("2026-01-05", "gpt-5.3-codex", 20),
+    ]);
+
+    expect(share.models).toEqual([
+      {
+        key: "Claude Opus",
+        tokens: [40],
+        members: [
+          { key: "claude-opus-4-8", tokens: [30] },
+          { key: "claude-opus-5", tokens: [10] },
+        ],
+      },
+      {
+        key: "GPT Codex",
+        tokens: [20],
+        members: [{ key: "gpt-5.3-codex", tokens: [20] }],
+      },
+    ]);
+  });
+
+  it("should rank by summed weekly share so a quieter era keeps its own series", () => {
     const share = buildWeeklyShare(
       [
-        fact("2026-01-05", "a", 30),
-        fact("2026-01-05", "b", 20),
-        fact("2026-01-05", "c", 10),
-        fact("2026-01-12", "d", 5),
+        fact("2026-01-05", "a", 10),
+        fact("2026-01-12", "b", 900),
+        fact("2026-01-12", "c", 100),
       ],
       2,
     );
 
-    expect(share.models).toEqual([
-      { key: "a", tokens: [30, 0] },
-      { key: "b", tokens: [20, 0] },
-      { key: OTHER_SERIES_KEY, tokens: [10, 5] },
+    // "a" owns a whole week, so it outranks "c" despite fewer tokens.
+    expect(share.models.map((series) => series.key)).toEqual([
+      "a",
+      "b",
+      OTHER_SERIES_KEY,
     ]);
+    expect(share.models[2]).toEqual({
+      key: OTHER_SERIES_KEY,
+      tokens: [0, 100],
+      members: [{ key: "c", tokens: [0, 100] }],
+    });
   });
 
   it("should return empty series when there are no facts", () => {
@@ -138,5 +185,40 @@ describe("toWeeklyShareRows", () => {
       { week: "2026-01-05", a: 0.75, b: 0.25 },
       { week: "2026-01-12" },
     ]);
+  });
+
+  it("should add each member's share of the week under its member key", () => {
+    const [row] = toWeeklyShareRows(
+      ["2026-01-05"],
+      [
+        {
+          key: "Claude Opus",
+          tokens: [40],
+          members: [
+            { key: "claude-opus-5", tokens: [30] },
+            { key: "claude-opus-4-8", tokens: [10] },
+          ],
+        },
+      ],
+    );
+
+    expect(row["Claude Opus"]).toBe(1);
+    expect(row[memberShareKey("Claude Opus", "claude-opus-5")]).toBe(0.75);
+    expect(row[memberShareKey("Claude Opus", "claude-opus-4-8")]).toBe(0.25);
+  });
+});
+
+describe("modelFamily", () => {
+  it("should map model slugs to their family", () => {
+    expect(modelFamily("claude-opus-5")).toBe("Claude Opus");
+    expect(modelFamily("gpt-5.1-codex-max")).toBe("GPT Codex");
+    expect(modelFamily("gpt-5.6-sol")).toBe("GPT");
+    expect(modelFamily("accounts/fireworks/routers/kimi-k2p5-turbo")).toBe(
+      "Kimi",
+    );
+  });
+
+  it("should keep an unrecognised slug as its own family", () => {
+    expect(modelFamily("north-mini-code-free")).toBe("north-mini-code-free");
   });
 });

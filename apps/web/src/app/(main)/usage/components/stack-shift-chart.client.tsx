@@ -1,8 +1,12 @@
 "use client";
 
 import { AreaChart, ChartTooltip } from "@heroui-pro/react";
-import type { WeeklyShareRow } from "@workspace/usage/weekly-insights";
+import {
+  memberShareKey,
+  type WeeklyShareRow,
+} from "@workspace/usage/weekly-insights";
 import { format, parseISO } from "date-fns";
+import { Fragment } from "react";
 import type { TooltipContentProps } from "recharts";
 import type { SeriesMeta } from "./usage-series";
 
@@ -23,12 +27,26 @@ const formatShare = (share: number) =>
 const formatTick = (week: string) => format(parseISO(week), "MMM yy");
 
 type StackShiftTooltipProps = Partial<TooltipContentProps<number, string>> & {
-  colorByKey: Map<string, string>;
+  seriesByKey: Map<string, SeriesMeta>;
 };
+
+/** Members that week, largest first; none when the series is just itself. */
+function usedMembers(entry: SeriesMeta, row: WeeklyShareRow) {
+  const { key, members } = entry;
+  if (members.length === 1 && members[0].key === key) return [];
+  return members
+    .map((member) => ({
+      ...member,
+      share: Number(row[memberShareKey(key, member.key)] ?? 0),
+    }))
+    .filter((member) => member.share > 0)
+    .sort((a, b) => b.share - a.share);
+}
 
 /**
  * Only series used that week, largest share first; the stable sort keeps
- * legend order on ties. The auto TooltipContent colours indicators from
+ * legend order on ties. Each family lists its models used that week beneath
+ * it, so versions within a band stay distinguishable. The auto TooltipContent colours indicators from
  * `stroke`, which here is the background separator, so colour them by series
  * instead. Recharts injects `active`, `label` and `payload` when cloning.
  */
@@ -36,7 +54,7 @@ function StackShiftTooltip({
   active,
   label,
   payload,
-  colorByKey,
+  seriesByKey,
 }: StackShiftTooltipProps) {
   if (!active) return null;
   const entries = (payload ?? [])
@@ -53,17 +71,32 @@ function StackShiftTooltip({
           <ChartTooltip.Label>No activity</ChartTooltip.Label>
         </ChartTooltip.Item>
       ) : null}
-      {entries.map((entry) => (
-        <ChartTooltip.Item key={String(entry.dataKey)}>
-          <ChartTooltip.Indicator
-            color={colorByKey.get(String(entry.dataKey))}
-          />
-          <ChartTooltip.Label>{entry.name}</ChartTooltip.Label>
-          <ChartTooltip.Value>
-            {formatShare(Number(entry.value))}
-          </ChartTooltip.Value>
-        </ChartTooltip.Item>
-      ))}
+      {entries.map((entry) => {
+        const meta = seriesByKey.get(String(entry.dataKey));
+        const members =
+          meta && entry.payload ? usedMembers(meta, entry.payload) : [];
+        return (
+          <Fragment key={String(entry.dataKey)}>
+            <ChartTooltip.Item>
+              <ChartTooltip.Indicator color={meta?.color} />
+              <ChartTooltip.Label>{entry.name}</ChartTooltip.Label>
+              <ChartTooltip.Value>
+                {formatShare(Number(entry.value))}
+              </ChartTooltip.Value>
+            </ChartTooltip.Item>
+            {members.map((member) => (
+              <ChartTooltip.Item className="pl-5" key={member.key}>
+                <ChartTooltip.Label className="text-muted">
+                  {member.label}
+                </ChartTooltip.Label>
+                <ChartTooltip.Value className="text-muted">
+                  {formatShare(member.share)}
+                </ChartTooltip.Value>
+              </ChartTooltip.Item>
+            ))}
+          </Fragment>
+        );
+      })}
     </ChartTooltip>
   );
 }
@@ -78,7 +111,7 @@ export function StackShiftChartClient({
   rows,
   series,
 }: Readonly<StackShiftChartClientProps>) {
-  const colorByKey = new Map(series.map((entry) => [entry.key, entry.color]));
+  const seriesByKey = new Map(series.map((entry) => [entry.key, entry]));
   // One tick per month (its first week), so a month label never repeats.
   const monthTicks = rows
     .map((row) => row.week)
@@ -120,7 +153,7 @@ export function StackShiftChartClient({
       {/* Keep idle weeks' empty entries so Recharts still shows the tooltip
           (it hides on an empty payload); StackShiftTooltip drops them. */}
       <AreaChart.Tooltip
-        content={<StackShiftTooltip colorByKey={colorByKey} />}
+        content={<StackShiftTooltip seriesByKey={seriesByKey} />}
         filterNull={false}
       />
     </AreaChart>
