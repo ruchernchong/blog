@@ -22,6 +22,8 @@ export interface BreakdownFilters {
   providerFilter: string;
   /** Only free (zero or unpriced) rows. */
   freeOnly: boolean;
+  /** When set, keep only these model ids (the Open Weights filter). */
+  openWeightModelIds?: ReadonlySet<string>;
 }
 
 export interface ProviderOption {
@@ -86,11 +88,11 @@ export function compareRows(
   return sort.direction === "descending" ? -result : result;
 }
 
-/** Search (name or provider), provider and free filters, in that order. */
+/** Search (name or provider), provider, free and open-weight filters, in that order. */
 export function filterRows(
   rows: UsageBreakdownRow[],
   viewId: string,
-  { search, providerFilter, freeOnly }: BreakdownFilters,
+  { search, providerFilter, freeOnly, openWeightModelIds }: BreakdownFilters,
   names: BreakdownNames,
 ): UsageBreakdownRow[] {
   let filtered = rows;
@@ -116,6 +118,10 @@ export function filterRows(
 
   if (freeOnly) {
     filtered = filtered.filter((row) => row.cost === 0 || row.cost === null);
+  }
+
+  if (openWeightModelIds) {
+    filtered = filtered.filter((row) => openWeightModelIds.has(row.key));
   }
 
   return filtered;

@@ -2,7 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
-import { entryToRow } from "@/lib/queries/model-registry";
+import { entryToRow, keepOpenWeights } from "@/lib/queries/model-registry";
 import { repriceAndRevalidateUsage } from "@/lib/queries/models";
 import { db, model } from "@/schema";
 
@@ -36,6 +36,7 @@ function rowToOutput(row: typeof model.$inferSelect) {
     cacheWriteRate: row.cacheWriteRate,
     contextLimit: row.contextLimit,
     releaseDate: row.releaseDate,
+    openWeights: row.openWeights,
     source: row.source,
     isOverride: row.isOverride,
     aliasTarget: row.aliasTarget,
@@ -83,6 +84,7 @@ export async function upsertModelOverrideHandler(args: {
   cacheWriteRate?: number;
   contextLimit?: number;
   releaseDate?: string;
+  openWeights?: boolean;
   aliasTarget?: string;
 }): Promise<CallToolResult> {
   const row = entryToRow({
@@ -100,6 +102,7 @@ export async function upsertModelOverrideHandler(args: {
         : undefined,
     contextLimit: args.contextLimit,
     releaseDate: args.releaseDate,
+    openWeights: args.openWeights,
     aliasTarget: args.aliasTarget,
     source: "override",
     isOverride: true,
@@ -110,7 +113,7 @@ export async function upsertModelOverrideHandler(args: {
     .values(row)
     .onConflictDoUpdate({
       target: [model.provider, model.id],
-      set: { ...row, updatedAt: new Date() },
+      set: { ...row, openWeights: keepOpenWeights, updatedAt: new Date() },
     })
     .returning();
 
@@ -150,6 +153,7 @@ const modelOutputSchema = z.object({
   cacheWriteRate: z.string().nullable(),
   contextLimit: z.number().nullable(),
   releaseDate: z.string().nullable(),
+  openWeights: z.boolean().nullable(),
   source: z.string(),
   isOverride: z.boolean(),
   aliasTarget: z.string().nullable(),
@@ -221,6 +225,12 @@ export function registerModelTools(server: McpServer): void {
           .describe("USD per 1M cache-write tokens"),
         contextLimit: z.number().optional().describe("Max context tokens"),
         releaseDate: z.string().optional().describe("Release date, YYYY-MM-DD"),
+        openWeights: z
+          .boolean()
+          .optional()
+          .describe(
+            "Whether the weights are public; omit to keep the stored flag",
+          ),
         aliasTarget: z
           .string()
           .optional()

@@ -84,6 +84,17 @@ describe("filterRows", () => {
       ),
     ).toEqual(["gpt", "free"]);
   });
+
+  it("should keep only open-weight models when that filter is set", () => {
+    expect(
+      filterRows(
+        rows,
+        "model",
+        { ...none, openWeightModelIds: new Set(["free"]) },
+        names,
+      ).map((r) => r.key),
+    ).toEqual(["free"]);
+  });
 });
 
 describe("compareRows", () => {

@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import globalMetadata from "@/app/metadata";
 import {
   getModelDisplayNames,
+  getOpenWeightModelIds,
   getProviderDisplayNames,
 } from "@/lib/queries/models";
 import { getUsageProfile } from "@/lib/queries/usage";
@@ -48,10 +49,12 @@ export const metadata: Metadata = {
 
 export default async function UsagePage() {
   const profile = await getUsageProfile();
-  const [providerDisplayNames, modelDisplayNames] = await Promise.all([
-    getProviderDisplayNames(getUsageProviderIds(profile)),
-    getModelDisplayNames(getUsageModelIds(profile)),
-  ]);
+  const [providerDisplayNames, modelDisplayNames, openWeightModelIds] =
+    await Promise.all([
+      getProviderDisplayNames(getUsageProviderIds(profile)),
+      getModelDisplayNames(getUsageModelIds(profile)),
+      getOpenWeightModelIds(getUsageModelIds(profile)),
+    ]);
 
   const narrative = buildUsageNarrativeParts({
     summary: profile.summary,
@@ -122,6 +125,7 @@ export default async function UsagePage() {
         <UsageBreakdown
           providerDisplayNames={providerDisplayNames}
           modelDisplayNames={modelDisplayNames}
+          openWeightModelIds={openWeightModelIds}
           title="Explorer"
           views={getBreakdownViews(profile)}
         />

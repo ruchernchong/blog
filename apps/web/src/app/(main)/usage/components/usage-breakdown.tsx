@@ -60,6 +60,8 @@ interface UsageBreakdownProps {
   className?: string;
   providerDisplayNames: Record<string, string>;
   modelDisplayNames: Record<string, string>;
+  /** Model ids with open weights, per the registry. */
+  openWeightModelIds: string[];
   title: string;
   views: BreakdownView[];
 }
@@ -101,6 +103,7 @@ const breakdownParsers = {
   }),
   provider: usageParsers.provider,
   free: usageParsers.free,
+  open: usageParsers.open,
   sort: usageParsers.sort,
   dir: usageParsers.dir,
 };
@@ -193,11 +196,27 @@ function RowVisual({
   return null;
 }
 
+function OpenWeightsChip({
+  isOpenWeights,
+}: Readonly<{ isOpenWeights: boolean }>) {
+  if (!isOpenWeights) {
+    return null;
+  }
+
+  return (
+    <Chip className="shrink-0" size="sm" variant="soft">
+      Open Weights
+    </Chip>
+  );
+}
+
 function getColumns({
   names,
+  openWeightModelIds,
   viewId,
 }: {
   names: BreakdownNames;
+  openWeightModelIds: ReadonlySet<string>;
   viewId: string;
 }): DataGridColumn<UsageBreakdownRow>[] {
   const { providerDisplayNames } = names;
@@ -209,7 +228,7 @@ function getColumns({
       isRowHeader: true,
       allowsSorting: true,
       cell: (row) => (
-        <span className="inline-flex w-full min-w-0 items-center gap-2 pe-8 sm:pe-0">
+        <span className="inline-flex w-full min-w-0 items-center gap-2 overflow-hidden pe-8 sm:pe-0">
           <RowVisual row={row} viewId={viewId} />
           <span
             className="truncate font-medium"
@@ -218,9 +237,15 @@ function getColumns({
             {rowDisplayName(row, viewId, names)}
           </span>
           <FreeModelChip cost={row.cost} viewId={viewId} />
+          <OpenWeightsChip
+            isOpenWeights={
+              viewId === "model" && openWeightModelIds.has(row.key)
+            }
+          />
         </span>
       ),
-      minWidth: 240,
+      // Room for a name plus both the Free and Open Weights chips.
+      minWidth: 320,
       pinned: "start",
     },
     ...(viewId === "provider"
@@ -245,6 +270,8 @@ function getColumns({
       id: "trend",
       header: "Trend",
       align: "end",
+      // A sparkline reads fine at this size; spare width goes to the text columns.
+      width: 110,
       minWidth: 110,
       cell: (row) => (
         <AreaChart
@@ -385,20 +412,27 @@ function ColumnsMenu({
 
 function BreakdownToolbar({
   onFreeFilterChange,
+  onOpenWeightsChange,
   onProviderFilterChange,
   onSearchChange,
   freeFilter,
+  isOpenWeightsOnly,
   providerFilter,
   providerOptions,
   search,
+  showOpenWeights,
 }: Readonly<{
   onFreeFilterChange: (value: string) => void;
+  onOpenWeightsChange: (value: boolean) => void;
   onProviderFilterChange: (value: string) => void;
   onSearchChange: (value: string) => void;
   freeFilter: string;
+  isOpenWeightsOnly: boolean;
   providerFilter: string;
   providerOptions: ProviderOption[];
   search: string;
+  /** Open weights is a model property, so the toggle only shows in the model view. */
+  showOpenWeights: boolean;
 }>) {
   return (
     <div className="flex flex-wrap items-center gap-4">
@@ -424,6 +458,16 @@ function BreakdownToolbar({
       >
         Free
       </Button>
+      {showOpenWeights && (
+        <Button
+          size="sm"
+          variant={isOpenWeightsOnly ? "primary" : "outline"}
+          onPress={() => onOpenWeightsChange(!isOpenWeightsOnly)}
+          aria-pressed={isOpenWeightsOnly}
+        >
+          Open Weights
+        </Button>
+      )}
       {providerOptions.length > 0 && (
         <Dropdown>
           <Button size="sm" variant="outline">
@@ -485,6 +529,7 @@ export function UsageBreakdown({
   className,
   providerDisplayNames,
   modelDisplayNames,
+  openWeightModelIds,
   title,
   views,
 }: Readonly<UsageBreakdownProps>) {
@@ -496,6 +541,7 @@ export function UsageBreakdown({
       q: search,
       provider: providerFilter,
       free: isFreeOnly,
+      open: isOpenWeightsOnly,
       sort,
       dir,
     },
@@ -518,12 +564,20 @@ export function UsageBreakdown({
     [providerDisplayNames, modelDisplayNames],
   );
 
+  const openWeightModelIdSet = useMemo(
+    () => new Set(openWeightModelIds),
+    [openWeightModelIds],
+  );
+
   const active = views.find((view) => view.id === selectedKey) ?? views[0];
+  // A shared `?open=true` link on another view is ignored rather than emptying it.
+  const isOpenWeightsFilterActive = isOpenWeightsOnly && active.id === "model";
 
   const setSearch = (q: string) => setBreakdown({ q });
   const setProviderFilter = (provider: string) => setBreakdown({ provider });
   const setFreeFilter = (value: string) =>
     setBreakdown({ free: value === "free" });
+  const setOpenWeightsOnly = (open: boolean) => setBreakdown({ open });
   const setSortDescriptor = (descriptor: DataGridSortDescriptor) => {
     if (!isSortColumn(descriptor.column)) {
       return;
@@ -545,13 +599,14 @@ export function UsageBreakdown({
       q: null,
       provider: null,
       free: null,
+      open: null,
       sort: null,
       dir: null,
     });
   };
 
   const handleClearFilters = () => {
-    setBreakdown({ q: null, provider: null, free: null });
+    setBreakdown({ q: null, provider: null, free: null, open: null });
   };
 
   const providerOptions = useMemo<ProviderOption[]>(
@@ -568,7 +623,14 @@ export function UsageBreakdown({
         ...filterRows(
           active.rows,
           active.id,
-          { search, providerFilter, freeOnly: isFreeOnly },
+          {
+            search,
+            providerFilter,
+            freeOnly: isFreeOnly,
+            openWeightModelIds: isOpenWeightsFilterActive
+              ? openWeightModelIdSet
+              : undefined,
+          },
           names,
         ),
       ]
@@ -591,7 +653,16 @@ export function UsageBreakdown({
               }
             : row,
         ),
-    [active, isFreeOnly, names, providerFilter, search, sortDescriptor],
+    [
+      active,
+      isFreeOnly,
+      isOpenWeightsFilterActive,
+      names,
+      openWeightModelIdSet,
+      providerFilter,
+      search,
+      sortDescriptor,
+    ],
   );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: reset scroll when the visible row set changes; the array is the trigger, not a value we read
@@ -611,6 +682,7 @@ export function UsageBreakdown({
     () =>
       getColumns({
         names,
+        openWeightModelIds: openWeightModelIdSet,
         viewId: active.id,
       }).filter(
         (column) =>
@@ -618,7 +690,7 @@ export function UsageBreakdown({
           shownColumns === "all" ||
           shownColumns.has(column.id),
       ),
-    [active.id, names, shownColumns],
+    [active.id, names, openWeightModelIdSet, shownColumns],
   );
 
   const columnOptions =
@@ -627,7 +699,10 @@ export function UsageBreakdown({
       : HIDEABLE_COLUMNS;
 
   const hasActiveFilters =
-    search !== "" || providerFilter !== "all" || freeFilter !== "all";
+    search !== "" ||
+    providerFilter !== "all" ||
+    freeFilter !== "all" ||
+    isOpenWeightsFilterActive;
 
   return (
     <UsageSection
@@ -665,12 +740,15 @@ export function UsageBreakdown({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <BreakdownToolbar
           onFreeFilterChange={setFreeFilter}
+          onOpenWeightsChange={setOpenWeightsOnly}
           onProviderFilterChange={setProviderFilter}
           onSearchChange={setSearch}
           freeFilter={freeFilter}
+          isOpenWeightsOnly={isOpenWeightsFilterActive}
           providerFilter={providerFilter}
           providerOptions={providerOptions}
           search={search}
+          showOpenWeights={active.id === "model"}
         />
         <Chip color="accent" size="sm" variant="soft">
           {sortedRows.length} {sortedRows.length === 1 ? "row" : "rows"}
@@ -690,6 +768,13 @@ export function UsageBreakdown({
               clearLabel="Clear free filter"
               label="Free"
               onClear={() => setFreeFilter("all")}
+            />
+          )}
+          {isOpenWeightsFilterActive && (
+            <FilterChip
+              clearLabel="Clear open weights filter"
+              label="Open Weights"
+              onClear={() => setOpenWeightsOnly(false)}
             />
           )}
           {providerFilter !== "all" && (
@@ -715,6 +800,7 @@ export function UsageBreakdown({
         />
         <UsageBreakdownList
           names={names}
+          openWeightModelIds={openWeightModelIdSet}
           rows={sortedRows}
           viewId={active.id}
         />

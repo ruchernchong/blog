@@ -42,6 +42,8 @@ export const model = pgTable(
     cacheWriteRate: numeric({ precision: 14, scale: 6 }),
     contextLimit: integer(),
     releaseDate: date(),
+    /** From models.dev `open_weights`; null when no source says. */
+    openWeights: boolean(),
     source: text({
       // `litellm` is retained so rows written before that source was retired
       // still read back cleanly; the next sync rewrites them.

@@ -31,6 +31,12 @@ function validDate(value?: string): string | null {
   return Number.isNaN(parsed.getTime()) ? null : value;
 }
 
+/**
+ * Upsert value for `open_weights`: an incoming NULL means "unknown" (models.dev
+ * unavailable, or an override that did not set it), so keep the stored flag.
+ */
+export const keepOpenWeights = sql`coalesce(excluded.open_weights, ${model.openWeights})`;
+
 /** A merged {@link ModelEntry} → a `model` table insert row. */
 export function entryToRow(entry: ModelEntry): InsertModel {
   return {
@@ -43,6 +49,7 @@ export function entryToRow(entry: ModelEntry): InsertModel {
     cacheWriteRate: rate(entry.rate?.cacheWrite),
     contextLimit: entry.contextLimit ?? null,
     releaseDate: validDate(entry.releaseDate),
+    openWeights: entry.openWeights ?? null,
     source: entry.source,
     isOverride: entry.isOverride ?? false,
     aliasTarget: entry.aliasTarget ?? null,
@@ -104,6 +111,7 @@ export function rowToEntry(row: SelectModel): ModelEntry {
     displayName: row.displayName ?? undefined,
     contextLimit: row.contextLimit ?? undefined,
     releaseDate: row.releaseDate ?? undefined,
+    openWeights: row.openWeights ?? undefined,
     source: row.source,
     isOverride: row.isOverride,
   };
@@ -126,6 +134,7 @@ export async function upsertModelRegistry(
   const rows = entries.map(entryToRow);
   const set = {
     ...excludedColumns(model, UPDATE_COLUMNS),
+    openWeights: keepOpenWeights,
     updatedAt: sql`now()`,
   };
   for (let i = 0; i < rows.length; i += UPSERT_CHUNK_SIZE) {
