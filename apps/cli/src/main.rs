@@ -16,7 +16,7 @@ mod store;
 mod update;
 
 use anyhow::{Context, Result};
-use clap::{Args, CommandFactory, Parser, Subcommand, ValueEnum};
+use clap::{ArgAction, Args, CommandFactory, Parser, Subcommand, ValueEnum};
 use clap_complete::Shell;
 use collect::ParserStats;
 use serde::Serialize;
@@ -26,8 +26,16 @@ use std::path::PathBuf;
 
 /// Collects local AI agent usage and ingests daily rows into ruchern.dev.
 #[derive(Debug, Parser)]
-#[command(name = "agent-usage", version, arg_required_else_help = true)]
+#[command(
+    name = "agent-usage",
+    version,
+    disable_version_flag = true,
+    arg_required_else_help = true
+)]
 struct Cli {
+    /// Print version
+    #[arg(short = 'v', long, short_alias = 'V', action = ArgAction::Version)]
+    _version: (),
     #[command(subcommand)]
     command: Command,
 }
@@ -244,9 +252,11 @@ mod tests {
             parse(&["--help"]).unwrap_err().kind(),
             ErrorKind::DisplayHelp
         );
-        let version = parse(&["--version"]).unwrap_err();
-        assert_eq!(version.kind(), ErrorKind::DisplayVersion);
-        assert!(version.to_string().contains(env!("CARGO_PKG_VERSION")));
+        for flag in ["--version", "-v", "-V"] {
+            let version = parse(&[flag]).unwrap_err();
+            assert_eq!(version.kind(), ErrorKind::DisplayVersion, "{flag}");
+            assert!(version.to_string().contains(env!("CARGO_PKG_VERSION")));
+        }
     }
 
     #[test]
