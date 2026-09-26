@@ -131,5 +131,5 @@ jobs:
           gh release upload "v$VERSION" \
             dist/agent-usage-macos.tar.gz \
             dist/agent-usage-macos.tar.gz.sha256 \
-            apps/cli/macos/install-remote.sh \
+            apps/cli/macos/install.sh \
             --repo "$REPO"

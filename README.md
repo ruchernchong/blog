@@ -106,11 +106,11 @@ not `BLOG_MCP_AUTH_TOKEN`. 15-minute LaunchAgent optional.
 
 Install the prebuilt universal binary from the latest release
 (no checkout or Rust toolchain needed), or build from a checkout with
-`zsh apps/cli/macos/install.sh` (needs Rust). Details:
+`bash apps/cli/macos/install.sh` (needs Rust). Details:
 [apps/cli/macos/INSTALL.md](./apps/cli/macos/INSTALL.md)
 
 ```zsh
-curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install-remote.sh | bash
+curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install.sh | bash
 ~/.local/bin/agent-usage auth login   # admin account
 ~/.local/bin/agent-usage-run         # POST if there are rows; then check /usage
 ```

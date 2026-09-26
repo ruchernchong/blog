@@ -11,29 +11,23 @@ latest GitHub release of the monorepo. The script checks the SHA-256 before
 installing:
 
 ```zsh
-curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install-remote.sh | bash
+curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install.sh | bash
 ```
 
-Pin a release with `AGENT_USAGE_VERSION=X.Y.Z` in front of `bash`. A release
-cut before the rename only ships the `usage-ingest` package, so the script falls
-back to it and installs `usage-ingest`, which the next upgrade migrates. To read the
+Pin a release with `AGENT_USAGE_VERSION=X.Y.Z` in front of `bash` (v1.51.0 or
+later; earlier releases only ship the `usage-ingest` package). To read the
 script first, download it (the release URL redirects, so keep `-L`):
 
 ```zsh
-curl -fsSLo install-remote.sh https://github.com/ruchernchong/blog/releases/latest/download/install-remote.sh
-bash install-remote.sh
+curl -fsSLo install.sh https://github.com/ruchernchong/blog/releases/latest/download/install.sh
+bash install.sh
 ```
 
-`packages/usage/rust/macos/install-remote.sh` only forwards to
-`apps/cli/macos/install-remote.sh`, for installs from v1.50.0 and earlier whose
-update notice still prints its raw GitHub URL. Delete it once no v1.50.0
-installs remain.
-
-From a checkout, build from source instead (needs a **Rust toolchain**, via
-[rustup](https://rustup.rs) or `brew install rust`):
+From a checkout, the same script builds from source instead (needs a **Rust
+toolchain**, via [rustup](https://rustup.rs) or `brew install rust`):
 
 ```zsh
-zsh apps/cli/macos/install.sh
+bash apps/cli/macos/install.sh
 ```
 
 Then sign in. Use the **installed** binary for login so Keychain access matches launchd.
@@ -107,10 +101,15 @@ prints that command.
 
 ## Upgrading from usage-ingest
 
-Run the install again. It boots out the old `dev.ruchern.usage-ingest`
-LaunchAgent and deletes its plist, `~/.local/bin/usage-ingest`, and
-`~/.local/bin/usage-ingest-run` before loading `dev.ruchern.agent-usage`. On
-its first run the new binary moves the Keychain tokens from
+Remove the old LaunchAgent and files, then run the install:
+
+```zsh
+launchctl bootout gui/$(id -u)/dev.ruchern.usage-ingest
+rm -f ~/Library/LaunchAgents/dev.ruchern.usage-ingest.plist \
+  ~/.local/bin/usage-ingest ~/.local/bin/usage-ingest-run
+```
+
+On its first run the new binary moves the Keychain tokens from
 `dev.ruchern.usage-ingest` to `dev.ruchern.agent-usage` and moves the cached
 client id from `~/.config/ruchern/` to `~/.config/agent-usage/` (removing the old
 directory once empty), so there is no need to sign in again. macOS may ask once to let
@@ -119,8 +118,8 @@ directory once empty), so there is no need to sign in again. macOS may ask once 
 
 Environment variables moved to `AGENT_USAGE_*` (`AGENT_USAGE_URL`,
 `AGENT_USAGE_DRY_RUN`, `AGENT_USAGE_NO_UPDATE_CHECK`, `AGENT_USAGE_VERSION`,
-`AGENT_USAGE_BIN`). Each falls back to its legacy `USAGE_INGEST_*` name when
-unset.
+`AGENT_USAGE_BIN`). All but `AGENT_USAGE_VERSION` fall back to their legacy
+`USAGE_INGEST_*` name when unset.
 
 ## 4. Uninstall
 
@@ -139,5 +138,5 @@ clears both the new and the legacy Keychain items.
 Nothing to do by hand. Whenever semantic-release publishes `vX.Y.Z` from
 `main`, `ci.yml` runs `agent-usage-build.yml`, which builds both architectures, merges them with `lipo`, and attaches
 `agent-usage-macos.tar.gz` plus its `.sha256` to that release, along with
-`install-remote.sh`. The files land a few minutes after the release appears, so
+`install.sh`. The files land a few minutes after the release appears, so
 an install or `agent-usage update` in that window gets a 404.

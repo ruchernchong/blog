@@ -101,7 +101,7 @@ pub fn run(check: bool) -> Result<()> {
                 run_installer(package.path()).with_context(|| {
                     format!(
                         "binary updated to {latest}, but refreshing the LaunchAgent failed; rerun \
-                         `curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install-remote.sh | bash`"
+                         `curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install.sh | bash`"
                     )
                 })?;
             } else {
@@ -229,7 +229,7 @@ fn installed_binary() -> Option<PathBuf> {
 /// `bin/agent-usage` and refreshes the wrapper, plist and LaunchAgent.
 fn run_installer(package: &Path) -> Result<()> {
     let script = package.join("agent-usage/macos/install.sh");
-    let status = Command::new("zsh")
+    let status = Command::new("bash")
         .arg(&script)
         .status()
         .with_context(|| format!("run {}", script.display()))?;

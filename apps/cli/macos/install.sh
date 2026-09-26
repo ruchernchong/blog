@@ -1,61 +1,119 @@
-#!/bin/zsh
+#!/bin/bash
+# Install agent-usage and its LaunchAgent on macOS.
+#
+#   curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install.sh | bash
+#
+# Piped from curl, it downloads the latest release package, verifies its
+# SHA-256, and runs the install.sh inside it. Run from the release package it
+# installs the prebuilt binary; run from a checkout it builds from source.
+#
+# AGENT_USAGE_VERSION=X.Y.Z pins a release instead of the latest.
+#
+# Runs under bash or zsh: agent-usage 1.51.0 runs the package's copy with zsh.
 set -euo pipefail
 
+REPO=ruchernchong/blog
+ASSET=agent-usage-macos.tar.gz
+VERSION=${AGENT_USAGE_VERSION:-}
 LABEL=dev.ruchern.agent-usage
-LEGACY_LABEL=dev.ruchern.usage-ingest
-ROOT=$(cd "$(dirname "$0")/.." && pwd)
-HOME_DIR=${HOME:?}
-BIN_DIR="$HOME_DIR/.local/bin"
-LAUNCH_AGENTS="$HOME_DIR/Library/LaunchAgents"
-LOGS="$HOME_DIR/Library/Logs"
-BIN="$BIN_DIR/agent-usage"
-WRAPPER="$BIN_DIR/agent-usage-run"
-PLIST="$LAUNCH_AGENTS/${LABEL}.plist"
-LEGACY_PLIST="$LAUNCH_AGENTS/${LEGACY_LABEL}.plist"
-UID_NUM=$(id -u)
-DOMAIN="gui/${UID_NUM}"
+TMP_DIR=
+# Read here, not inside a function: zsh sets $0 to the function name there.
+SCRIPT=${BASH_SOURCE[0]:-$0}
 
-mkdir -p "$BIN_DIR" "$LAUNCH_AGENTS" "$LOGS"
+fetch() {
+  curl --proto '=https' --tlsv1.2 -fsSL "$@"
+}
 
-# Release packages ship a prebuilt binary in bin/; a checkout builds from source.
-# -S swaps the binary in through a temp file, so a running agent-usage (e.g.
-# `agent-usage update`) never sees it half-written.
-if [[ -x $ROOT/bin/agent-usage ]]; then
-  echo "Installing prebuilt $BIN"
-  install -S -m 755 "$ROOT/bin/agent-usage" "$BIN"
-else
-  echo "Building $BIN"
-  cargo build --release --manifest-path "$ROOT/Cargo.toml"
-  install -S -m 755 "$ROOT/target/release/agent-usage" "$BIN"
-fi
+# The directory holding bin/ (release package) or Cargo.toml (checkout), or
+# nothing when the script was piped in and has no files beside it.
+local_root() {
+  [[ -f $SCRIPT && -f $(dirname "$SCRIPT")/$LABEL.plist ]] || return 0
+  local root
+  root=$(cd "$(dirname "$SCRIPT")/.." && pwd)
+  if [[ -x $root/bin/agent-usage || -f $root/Cargo.toml ]]; then
+    echo "$root"
+  fi
+}
 
-# Remove an install from before the rename to agent-usage, once the new binary
-# is in place, so the two agents never both run. Its Keychain tokens and
-# client id move over on the first run of the new binary.
-if [[ -e $LEGACY_PLIST ]] || launchctl print "$DOMAIN/$LEGACY_LABEL" >/dev/null 2>&1; then
-  echo "Removing legacy $LEGACY_LABEL"
-  launchctl bootout "$DOMAIN" "$LEGACY_PLIST" 2>/dev/null ||
-    launchctl bootout "$DOMAIN/$LEGACY_LABEL" 2>/dev/null || true
-fi
-rm -f "$LEGACY_PLIST" "$BIN_DIR/usage-ingest" "$BIN_DIR/usage-ingest-run"
+download_and_install() {
+  local base="https://github.com/$REPO/releases/latest/download"
+  if [[ -n "$VERSION" ]]; then
+    base="https://github.com/$REPO/releases/download/v$VERSION"
+  fi
 
-install -m 755 "$ROOT/macos/agent-usage-run.sh" "$WRAPPER"
+  TMP_DIR=$(mktemp -d)
+  trap 'rm -rf "$TMP_DIR"' EXIT
 
-sed -e "s|__HOME__|$HOME_DIR|g" -e "s|__WRAPPER__|$WRAPPER|g" \
-  "$ROOT/macos/dev.ruchern.agent-usage.plist" >"$PLIST"
+  echo "Downloading ${VERSION:-latest release}"
+  fetch -o "$TMP_DIR/$ASSET" "$base/$ASSET"
+  fetch -o "$TMP_DIR/$ASSET.sha256" "$base/$ASSET.sha256"
+  (cd "$TMP_DIR" && shasum -a 256 -c "$ASSET.sha256")
 
-if launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1; then
-  launchctl bootout "$DOMAIN" "$PLIST" || true
-fi
-launchctl bootstrap "$DOMAIN" "$PLIST"
-launchctl enable "$DOMAIN/$LABEL"
+  tar -xzf "$TMP_DIR/$ASSET" -C "$TMP_DIR"
+  bash "$TMP_DIR/agent-usage/macos/install.sh"
+}
 
-echo
-echo "Installed $LABEL"
-echo "  binary  $BIN"
-echo "  log     $LOGS/agent-usage.log"
-echo
-echo "1. Sign in (admin account):  $BIN auth login"
-echo "2. Prove one run:            $WRAPPER"
-echo "3. Then:  launchctl kickstart -k $DOMAIN/$LABEL"
-echo "4. Turn off AgentUsage → Settings → Blog Usage Sync"
+install_from() {
+  local root=$1
+  local home_dir=${HOME:?}
+  local bin_dir="$home_dir/.local/bin"
+  local launch_agents="$home_dir/Library/LaunchAgents"
+  local logs="$home_dir/Library/Logs"
+  local bin="$bin_dir/agent-usage"
+  local wrapper="$bin_dir/agent-usage-run"
+  local plist="$launch_agents/${LABEL}.plist"
+  local domain
+  domain="gui/$(id -u)"
+
+  mkdir -p "$bin_dir" "$launch_agents" "$logs"
+
+  # -S swaps the binary in through a temp file, so a running agent-usage (e.g.
+  # `agent-usage update`) never sees it half-written.
+  if [[ -x $root/bin/agent-usage ]]; then
+    echo "Installing prebuilt $bin"
+    install -S -m 755 "$root/bin/agent-usage" "$bin"
+  else
+    echo "Building $bin"
+    cargo build --release --manifest-path "$root/Cargo.toml"
+    install -S -m 755 "$root/target/release/agent-usage" "$bin"
+  fi
+
+  install -m 755 "$root/macos/agent-usage-run.sh" "$wrapper"
+
+  sed -e "s|__HOME__|$home_dir|g" -e "s|__WRAPPER__|$wrapper|g" \
+    "$root/macos/dev.ruchern.agent-usage.plist" >"$plist"
+
+  if launchctl print "$domain/$LABEL" >/dev/null 2>&1; then
+    launchctl bootout "$domain" "$plist" || true
+  fi
+  launchctl bootstrap "$domain" "$plist"
+  launchctl enable "$domain/$LABEL"
+
+  echo
+  echo "Installed $LABEL"
+  echo "  binary  $bin"
+  echo "  log     $logs/agent-usage.log"
+  echo
+  echo "1. Sign in (admin account):  $bin auth login"
+  echo "2. Prove one run:            $wrapper"
+  echo "3. Then:  launchctl kickstart -k $domain/$LABEL"
+  echo "4. Turn off AgentUsage → Settings → Blog Usage Sync"
+}
+
+main() {
+  if [[ "$(uname -s)" != Darwin ]]; then
+    echo "agent-usage: macOS only" >&2
+    exit 1
+  fi
+
+  local root
+  root=$(local_root)
+  if [[ -n $root ]]; then
+    install_from "$root"
+  else
+    download_and_install
+  fi
+}
+
+# Called last so a partial download never runs half a script.
+main "$@"

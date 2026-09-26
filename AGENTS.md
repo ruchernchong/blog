@@ -74,10 +74,11 @@ See `packages/usage/src/registry.ts` (pure normalise/merge) and
   renamed from `usage-ingest`: each `AGENT_USAGE_*` variable falls back to its legacy
   `USAGE_INGEST_*` name when unset, and the Keychain item, client id file, and
   LaunchAgent migrate on their own, so nobody signs in again. Install
-  (LaunchAgent): `curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install-remote.sh | bash`
-  runs `apps/cli/macos/install-remote.sh`, which pulls the prebuilt binary from the
+  (LaunchAgent): `curl -fsSL https://github.com/ruchernchong/blog/releases/latest/download/install.sh | bash`
+  runs `apps/cli/macos/install.sh`, which pulls the prebuilt binary from the
   latest monorepo release (`ci.yml` runs `agent-usage-build.yml` after semantic-release
-  and attaches the package and `install-remote.sh`); `install.sh` builds from a checkout.
+  and attaches the package and `install.sh`); the same script builds from source when run
+  in a checkout.
   `agent-usage update` verifies the release package's SHA-256, swaps the binary in by
   rename, and reruns the package's own `install.sh` to refresh the LaunchAgent. See
   README.md “Usage collector (macOS)” and `apps/cli/macos/INSTALL.md`.
