@@ -519,9 +519,12 @@ function OAuthClientDetailBody({
                 <span className="font-medium">
                   {token.userName || token.userEmail || "Unknown user"}
                 </span>
-                <span className="text-muted text-xs">
-                  Expires {dateTimeFormatter.format(new Date(token.expiresAt))}
-                </span>
+                {token.expiresAt && (
+                  <span className="text-muted text-xs">
+                    Expires{" "}
+                    {dateTimeFormatter.format(new Date(token.expiresAt))}
+                  </span>
+                )}
                 <div className="flex flex-wrap gap-1">
                   {token.scopes.map((scope) => (
                     <Chip key={scope} size="sm" variant="soft" color="default">
@@ -551,10 +554,12 @@ function OAuthClientDetailBody({
                 <span className="font-medium">
                   {consent.userName || consent.userEmail || "Unknown user"}
                 </span>
-                <span className="text-muted text-xs">
-                  Consented{" "}
-                  {dateTimeFormatter.format(new Date(consent.createdAt))}
-                </span>
+                {consent.createdAt && (
+                  <span className="text-muted text-xs">
+                    Consented{" "}
+                    {dateTimeFormatter.format(new Date(consent.createdAt))}
+                  </span>
+                )}
                 <div className="flex flex-wrap gap-1">
                   {consent.scopes.map((scope) => (
                     <Chip key={scope} size="sm" variant="soft" color="default">

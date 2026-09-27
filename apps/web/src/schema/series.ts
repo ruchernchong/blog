@@ -1,8 +1,6 @@
-import { relations } from "drizzle-orm";
-import { index, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { posts } from "./posts";
+import { index, snakeCase, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-export const series = pgTable(
+export const series = snakeCase.table(
   "series",
   {
     id: uuid().defaultRandom().primaryKey(),
@@ -25,10 +23,6 @@ export const series = pgTable(
     ];
   },
 );
-
-export const seriesRelations = relations(series, ({ many }) => ({
-  posts: many(posts),
-}));
 
 export type InsertSeries = typeof series.$inferInsert;
 export type SelectSeries = typeof series.$inferSelect;

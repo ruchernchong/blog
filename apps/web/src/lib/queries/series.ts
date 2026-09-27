@@ -4,13 +4,13 @@ import { db, posts, series } from "@/schema";
 
 export const getSeriesById = async (id: string) => {
   return db.query.series.findFirst({
-    where: eq(series.id, id),
+    where: { id },
   });
 };
 
 export const getSeriesBySlug = async (slug: string) => {
   return db.query.series.findFirst({
-    where: and(eq(series.slug, slug), isNull(series.deletedAt)),
+    where: { slug, deletedAt: { isNull: true } },
   });
 };
 

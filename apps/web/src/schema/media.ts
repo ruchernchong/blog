@@ -2,13 +2,13 @@ import {
   bigint,
   index,
   integer,
-  pgTable,
+  snakeCase,
   text,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
 
-export const media = pgTable(
+export const media = snakeCase.table(
   "media",
   {
     id: uuid().defaultRandom().primaryKey(),

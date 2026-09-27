@@ -21,7 +21,6 @@
     "docs:build": "turbo run @workspace/docs#build",
     "docs:typecheck": "turbo run @workspace/docs#typecheck",
     "auth:generate": "turbo run @workspace/web#auth:generate",
-    "db:drop": "turbo run @workspace/web#db:drop",
     "db:generate": "turbo run @workspace/web#db:generate",
     "db:migrate": "turbo run @workspace/web#db:migrate",
     "db:push": "turbo run @workspace/web#db:push",

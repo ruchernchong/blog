@@ -31,8 +31,8 @@ export async function getPublishedPosts() {
     columns: {
       content: false,
     },
-    where: and(eq(posts.status, "published"), isNull(posts.deletedAt)),
-    orderBy: desc(posts.publishedAt),
+    where: { status: "published", deletedAt: { isNull: true } },
+    orderBy: { publishedAt: "desc" },
   });
 }
 
@@ -70,11 +70,7 @@ export const getPublishedPostBySlug = async (slug: string) => {
     with: {
       author: true,
     },
-    where: and(
-      eq(posts.slug, slug),
-      eq(posts.status, "published"),
-      isNull(posts.deletedAt),
-    ),
+    where: { slug, status: "published", deletedAt: { isNull: true } },
   });
 };
 
@@ -83,7 +79,7 @@ export const getPostBySlugForPreview = async (slug: string) => {
     with: {
       author: true,
     },
-    where: and(eq(posts.slug, slug), isNull(posts.deletedAt)),
+    where: { slug, deletedAt: { isNull: true } },
   });
 };
 
