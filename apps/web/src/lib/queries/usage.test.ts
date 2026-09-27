@@ -30,7 +30,11 @@ vi.mock("@/schema", async () => {
 });
 
 import { tokenEffortUsage, tokenUsage } from "@/schema";
-import { upsertTokenEffortUsage, upsertTokenUsage } from "./usage";
+import {
+  reconcileLegacyRows,
+  upsertTokenEffortUsage,
+  upsertTokenUsage,
+} from "./usage";
 
 // Tables declare snake_case column names via `snakeCase.table`, so the default
 // dialect serialises embedded columns to their real names, as the live query does.
@@ -92,18 +96,20 @@ describe("upsertTokenUsage", () => {
     );
   });
 
-  it("should keep each device's snapshot of a day as its own row", async () => {
-    await upsertTokenUsage([{ ...baseRow, device: "mac-mini" }]);
+  it("should keep each device's snapshot of a session as its own row", async () => {
+    await upsertTokenUsage([
+      { ...baseRow, device: "mac-mini", session: "0123456789abcdef" },
+    ]);
 
-    // Without `device` in the key, a second Mac's snapshot of the same day
-    // would compete with the first under the larger-total guard instead of
-    // being stored alongside it and summed on read.
+    // Each session is its own row, and each device keeps its own copy of it;
+    // the profile read collapses copies of one session across devices.
     expect(onConflictConfigs[0].target).toEqual([
       tokenUsage.date,
       tokenUsage.agent,
       tokenUsage.provider,
       tokenUsage.model,
       tokenUsage.device,
+      tokenUsage.session,
     ]);
   });
 
@@ -185,5 +191,71 @@ describe("upsertTokenEffortUsage", () => {
 
     expect(submitted).toBe(0);
     expect(onConflictConfigs).toHaveLength(0);
+  });
+});
+
+describe("reconcileLegacyRows", () => {
+  const snapshot = (
+    legacy: boolean,
+    totalTokens: number,
+    overrides: Partial<{ date: string; updatedAt: Date }> = {},
+  ) => ({
+    date: "2026-09-12",
+    agent: "claude",
+    provider: "anthropic",
+    model: "claude-opus-5",
+    inputTokens: totalTokens,
+    outputTokens: 0,
+    cacheReadTokens: 0,
+    cacheWriteTokens: 0,
+    reasoningTokens: 0,
+    totalTokens,
+    messages: 1,
+    updatedAt: new Date("2026-09-12T00:00:00Z"),
+    legacy,
+    ...overrides,
+  });
+
+  it("should keep the session total when it covers more than the legacy snapshot", () => {
+    const rows = reconcileLegacyRows([
+      snapshot(true, 100),
+      snapshot(false, 150),
+    ]);
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].totalTokens).toBe(150);
+  });
+
+  it("should keep the legacy snapshot when the day's logs have since been pruned", () => {
+    const rows = reconcileLegacyRows([
+      snapshot(true, 300),
+      snapshot(false, 40),
+    ]);
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].totalTokens).toBe(300);
+  });
+
+  it("should keep the latest ingest time of either snapshot", () => {
+    const later = new Date("2026-09-27T10:00:00Z");
+    const rows = reconcileLegacyRows([
+      snapshot(true, 300),
+      snapshot(false, 40, { updatedAt: later }),
+    ]);
+
+    expect(rows[0].updatedAt).toEqual(later);
+  });
+
+  it("should leave different days and models apart", () => {
+    const rows = reconcileLegacyRows([
+      snapshot(true, 100),
+      snapshot(false, 50, { date: "2026-09-13" }),
+    ]);
+
+    expect(rows.map((row) => [row.date, row.totalTokens])).toEqual([
+      ["2026-09-12", 100],
+      ["2026-09-13", 50],
+    ]);
+    expect(rows[0]).not.toHaveProperty("legacy");
   });
 });

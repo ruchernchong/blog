@@ -129,11 +129,27 @@ describe("POST /api/usage/ingest", () => {
       syncRunId: "run_123",
     });
     expect(mockUpsertTokenUsage).toHaveBeenCalledWith([
-      { ...validRow, device: null },
+      { ...validRow, session: null, device: null },
     ]);
     expect(mockUpsertTokenEffortUsage).not.toHaveBeenCalled();
     expect(mockStart).toHaveBeenCalledOnce();
     expect(mockRevalidateTag).toHaveBeenCalledWith("usage", "max");
+  });
+
+  it("should keep the session each row sends", async () => {
+    mockValidateMcpAuth.mockResolvedValue(adminOAuth);
+
+    const response = await POST(
+      postRequest({
+        device: "mac-mini",
+        rows: [{ ...validRow, session: "0123456789abcdef" }],
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mockUpsertTokenUsage).toHaveBeenCalledWith([
+      { ...validRow, session: "0123456789abcdef", device: "mac-mini" },
+    ]);
   });
 
   it("should file every row under the device the client sends", async () => {
@@ -145,7 +161,7 @@ describe("POST /api/usage/ingest", () => {
 
     expect(response.status).toBe(200);
     expect(mockUpsertTokenUsage).toHaveBeenCalledWith([
-      { ...validRow, device: "mac-mini" },
+      { ...validRow, session: null, device: "mac-mini" },
     ]);
   });
 
@@ -239,7 +255,7 @@ describe("POST /api/usage/ingest", () => {
 
     expect(response.status).toBe(200);
     expect(mockUpsertTokenUsage).toHaveBeenCalledWith([
-      { ...validRow, device: null },
+      { ...validRow, session: null, device: null },
     ]);
     expect(mockUpsertTokenEffortUsage).not.toHaveBeenCalled();
     expect(await response.json()).toMatchObject({ effortUpserted: 0 });
@@ -254,7 +270,7 @@ describe("POST /api/usage/ingest", () => {
 
     expect(response.status).toBe(200);
     expect(mockUpsertTokenUsage).toHaveBeenCalledWith([
-      { ...validRow, device: null },
+      { ...validRow, session: null, device: null },
     ]);
     expect(mockUpsertTokenEffortUsage).not.toHaveBeenCalled();
     expect(await response.json()).toMatchObject({ effortUpserted: 0 });
@@ -274,7 +290,7 @@ describe("POST /api/usage/ingest", () => {
 
     expect(response.status).toBe(200);
     expect(mockUpsertTokenUsage).toHaveBeenCalledWith([
-      { ...validRow, device: null },
+      { ...validRow, session: null, device: null },
     ]);
     expect(mockUpsertTokenEffortUsage).toHaveBeenCalledWith([validEffortRow]);
     expect(await response.json()).toEqual({

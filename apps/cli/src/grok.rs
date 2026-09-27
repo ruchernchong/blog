@@ -49,6 +49,13 @@ pub fn parse_grok(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
                 continue;
             }
         };
+        // `<session>/usage.json`: the directory is the session.
+        let session = entry
+            .path()
+            .parent()
+            .and_then(Path::file_name)
+            .map(|name| name.to_string_lossy().into_owned())
+            .unwrap_or_default();
         for turn in usage.turns {
             let Ok(ts) = DateTime::parse_from_rfc3339(&turn.ended_at) else {
                 continue;
@@ -72,6 +79,7 @@ pub fn parse_grok(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
                     agent: "grok",
                     provider: String::new(),
                     model,
+                    session: session.clone(),
                     tokens,
                 });
             }
@@ -175,6 +183,7 @@ mod tests {
                     agent: "grok",
                     provider: String::new(),
                     model: "grok-4.6-build".to_string(),
+                    session: "01a0a853-0000-7000-8000-000000000001".to_string(),
                     tokens: Tokens {
                         input: 56450,
                         output: 2477,
@@ -190,6 +199,7 @@ mod tests {
                     agent: "grok",
                     provider: String::new(),
                     model: "grok-4.5".to_string(),
+                    session: "01a0a853-0000-7000-8000-000000000002".to_string(),
                     tokens: Tokens {
                         input: 10,
                         output: 5,
@@ -203,6 +213,7 @@ mod tests {
                     agent: "grok",
                     provider: String::new(),
                     model: "grok-4.6-build".to_string(),
+                    session: "01a0a853-0000-7000-8000-000000000002".to_string(),
                     tokens: Tokens {
                         input: 1000,
                         output: 100,

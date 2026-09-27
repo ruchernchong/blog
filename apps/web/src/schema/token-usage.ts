@@ -20,14 +20,18 @@ import {
  * Provider is part of the key because one model can run under several
  * providers (e.g. "gpt-5.5" via both "openai" and "opencode").
  *
- * `device` is the collector install that sent the row. Each machine only sees
- * its own agent logs, so rows are kept per device and summed on read. It is
- * `null` for clients that send none. The key is a `NULLS NOT DISTINCT` unique
- * constraint rather than a primary key (which cannot hold `null`), so those
- * rows still collide on re-ingest and the upsert stays idempotent.
+ * `device` is the collector install that sent the row. `session` is a hash of
+ * the agent's session id, so a day holds one row per session. Migration
+ * Assistant copies session logs verbatim, so a copied session arrives from two
+ * devices under the same hash; the read keeps the larger copy instead of adding
+ * them, while different sessions (on any Mac) still add up. Both are `null` for
+ * clients that send none; those legacy daily rows are reconciled against the
+ * session rows on read. The key is a `NULLS NOT DISTINCT` unique constraint
+ * rather than a primary key (which cannot hold `null`), so those rows still
+ * collide on re-ingest and the upsert stays idempotent.
  *
- * One row per (date, agent, provider, model, device) — daily is the finest grain by
- * design. Only the
+ * One row per (date, agent, provider, model, device, session) — daily is the
+ * finest time grain by design. Only the
  * calendar `date` is stored, never a time-of-day, so the data cannot reveal *when*
  * within a day work happened. The Rust collector (`pnpm usage:ingest`) parses
  * agent logs, folds them to these aggregates, and POSTs them to
@@ -51,6 +55,7 @@ export const tokenUsage = snakeCase.table(
     provider: text().notNull().default("unknown"),
     model: text().notNull(),
     device: text(),
+    session: text(),
     inputTokens: bigint({ mode: "number" }).notNull().default(0),
     outputTokens: bigint({ mode: "number" }).notNull().default(0),
     cacheReadTokens: bigint({ mode: "number" }).notNull().default(0),
@@ -66,7 +71,14 @@ export const tokenUsage = snakeCase.table(
   },
   (table) => [
     unique()
-      .on(table.date, table.agent, table.provider, table.model, table.device)
+      .on(
+        table.date,
+        table.agent,
+        table.provider,
+        table.model,
+        table.device,
+        table.session,
+      )
       .nullsNotDistinct(),
     index().on(table.date),
     index().on(table.agent),

@@ -22,6 +22,11 @@ export const usageRowSchema = z.object({
   agent: z.string().min(1),
   provider: z.string().min(1),
   model: z.string().min(1),
+  /**
+   * Hashed session id. Rows from the same session sent by two devices (a
+   * Migration Assistant copy) are one session, not two. Older clients send none.
+   */
+  session: z.string().min(1).max(64).nullable().default(null),
   inputTokens: nonNegativeInt,
   outputTokens: nonNegativeInt,
   cacheReadTokens: nonNegativeInt,
@@ -63,9 +68,8 @@ export const effortRowSchema = z.object({
  * the JSON body within the serverless function's request-size limit.
  *
  * `device` names the sending machine and applies to every row. Rows are kept
- * per device and summed on read, so two Macs running the same model on the
- * same day add up instead of the larger snapshot winning. Older clients send
- * none, stored as `null`.
+ * per device and session: different sessions add up, and the same session
+ * reported by two Macs counts once. Older clients send none, stored as `null`.
  *
  * Token `rows` remain required (`min(1)`). Effort is optional: AgentUsage may
  * omit `effortRows` / `effortSnapshotComplete` on older clients; defaults keep

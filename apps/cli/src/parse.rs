@@ -26,6 +26,7 @@ pub fn parse_claude(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
     let mut pending: Vec<UsageEvent> = Vec::new();
     let mut file_errors = Vec::new();
     for file in &files {
+        let file_session = file_stem(file);
         let result = each_jsonl(file, |raw| {
             let Ok(line) = serde_json::from_slice::<ClaudeLine>(raw) else {
                 return;
@@ -60,11 +61,18 @@ pub fn parse_claude(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
                 }
                 seen.insert(key, pending.len());
             }
+            // Subagent files carry their parent's sessionId, so they fold into it.
+            let session = if line.session_id.is_empty() {
+                file_session.clone()
+            } else {
+                line.session_id
+            };
             pending.push(UsageEvent {
                 ts,
                 agent: "claude",
                 provider: String::new(),
                 model: message.model,
+                session,
                 tokens,
             });
         });
@@ -107,6 +115,8 @@ pub fn parse_codex(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
     let mut events = 0;
     let mut file_errors = Vec::new();
     for file in &files {
+        // Rollout file names carry the session's uuid and survive archiving.
+        let session = file_stem(file);
         let mut current_model = String::new();
         let mut first_model = String::new();
         let mut prev_total: Option<CodexTokenUsage> = None;
@@ -147,6 +157,7 @@ pub fn parse_codex(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
                 agent: "codex",
                 provider: String::new(),
                 model: current_model.clone(),
+                session: session.clone(),
                 tokens: Tokens {
                     input: (usage.input_tokens as i64 - cached).max(0),
                     output: (usage.output_tokens as i64 - reasoning).max(0),
@@ -210,12 +221,13 @@ fn parse_opencode_at(path: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
     let started = Instant::now();
     let mut run = || -> rusqlite::Result<(usize, Tokens)> {
         let conn = Connection::open_with_flags(path, OpenFlags::SQLITE_OPEN_READ_ONLY)?;
-        let mut stmt = conn.prepare("SELECT data FROM message")?;
+        let mut stmt = conn.prepare("SELECT session_id, data FROM message")?;
         let mut rows = stmt.query([])?;
         let mut buckets = Tokens::default();
         let mut events = 0;
         while let Some(row) = rows.next()? {
-            let Some(raw) = value_bytes(row.get_ref(0)?) else {
+            let session = row.get::<_, Option<String>>(0)?.unwrap_or_default();
+            let Some(raw) = value_bytes(row.get_ref(1)?) else {
                 continue;
             };
             if raw.is_empty() {
@@ -256,6 +268,7 @@ fn parse_opencode_at(path: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
                 agent: "opencode",
                 provider: or_unknown(message.provider_id),
                 model: or_unknown(message.model_id),
+                session,
                 tokens,
             });
         }
@@ -275,6 +288,12 @@ pub fn failed(error: impl std::fmt::Display) -> Parsed {
         stats: None,
         error: Some(error.to_string()),
     }
+}
+
+fn file_stem(path: &Path) -> String {
+    path.file_stem()
+        .map(|stem| stem.to_string_lossy().into_owned())
+        .unwrap_or_default()
 }
 
 fn or_unknown(value: String) -> String {
@@ -344,6 +363,8 @@ struct ClaudeLine {
     request_id: String,
     #[serde(default, deserialize_with = "null_string")]
     uuid: String,
+    #[serde(default, rename = "sessionId", deserialize_with = "null_string")]
+    session_id: String,
     #[serde(default)]
     message: Option<ClaudeMessage>,
 }
@@ -527,11 +548,14 @@ pub(crate) mod tests {
     fn write_message_db(path: &Path, rows: &[(&str, Option<&str>)]) {
         fs::create_dir_all(path.parent().unwrap()).expect("create db dir");
         let conn = Connection::open(path).expect("open sqlite db");
-        conn.execute("CREATE TABLE message (id TEXT PRIMARY KEY, data TEXT)", [])
-            .expect("create table");
+        conn.execute(
+            "CREATE TABLE message (id TEXT PRIMARY KEY, session_id TEXT, data TEXT)",
+            [],
+        )
+        .expect("create table");
         for (id, data) in rows {
             conn.execute(
-                "INSERT INTO message (id, data) VALUES (?1, ?2)",
+                "INSERT INTO message (id, session_id, data) VALUES (?1, 'ses_1', ?2)",
                 rusqlite::params![id, data],
             )
             .expect("insert row");
@@ -602,6 +626,7 @@ pub(crate) mod tests {
                     agent: "claude",
                     provider: String::new(),
                     model: "claude-sonnet-4-5".to_string(),
+                    session: "session".to_string(),
                     tokens: Tokens {
                         input: 100,
                         output: 30,
@@ -615,6 +640,7 @@ pub(crate) mod tests {
                     agent: "claude",
                     provider: String::new(),
                     model: "claude-sonnet-4-5".to_string(),
+                    session: "session".to_string(),
                     tokens: Tokens {
                         input: 10,
                         output: 5,
@@ -626,6 +652,7 @@ pub(crate) mod tests {
                     agent: "claude",
                     provider: String::new(),
                     model: "claude-opus-4-1".to_string(),
+                    session: "sess-opus".to_string(),
                     tokens: Tokens {
                         input: 1,
                         output: 2,
@@ -777,6 +804,7 @@ pub(crate) mod tests {
                     agent: "codex",
                     provider: String::new(),
                     model: "gpt-5-codex".to_string(),
+                    session: "rollout".to_string(),
                     tokens: Tokens {
                         input: 4,
                         output: 2,
@@ -790,6 +818,7 @@ pub(crate) mod tests {
                     agent: "codex",
                     provider: String::new(),
                     model: "gpt-5-codex".to_string(),
+                    session: "rollout".to_string(),
                     tokens: Tokens {
                         input: 200,
                         output: 100,
@@ -804,6 +833,7 @@ pub(crate) mod tests {
                     agent: "codex",
                     provider: String::new(),
                     model: "gpt-5-codex".to_string(),
+                    session: "rollout".to_string(),
                     tokens: Tokens {
                         cache_read: 10,
                         reasoning: 4,
@@ -816,6 +846,7 @@ pub(crate) mod tests {
                     agent: "codex",
                     provider: String::new(),
                     model: "unknown".to_string(),
+                    session: "early".to_string(),
                     tokens: Tokens {
                         input: 7,
                         output: 3,
@@ -866,6 +897,7 @@ pub(crate) mod tests {
                     agent: "opencode",
                     provider: "anthropic".to_string(),
                     model: "claude-sonnet-4-5".to_string(),
+                    session: "ses_1".to_string(),
                     tokens: Tokens {
                         input: 10,
                         output: 15,
@@ -879,6 +911,7 @@ pub(crate) mod tests {
                     agent: "opencode",
                     provider: "unknown".to_string(),
                     model: "unknown".to_string(),
+                    session: "ses_1".to_string(),
                     tokens: Tokens {
                         reasoning: 9,
                         ..Default::default()
