@@ -79,13 +79,18 @@ pub fn run(check: bool) -> Result<()> {
     let exe = std::env::current_exe()
         .and_then(std::fs::canonicalize)
         .context("locate the running binary")?;
-    match update(
+    let outcome = update(
         LATEST_RELEASE_URL,
         RELEASE_DOWNLOAD_URL,
         current,
         check,
         &exe,
-    )? {
+    )?;
+    let (Outcome::UpToDate { latest }
+    | Outcome::Available { latest }
+    | Outcome::Installed { latest, .. }) = &outcome;
+    save_latest(latest, oauth::unix_now());
+    match outcome {
         Outcome::UpToDate { latest } => {
             println!("agent-usage {current} is up to date (latest release {latest})");
         }
@@ -239,30 +244,46 @@ fn run_installer(package: &Path) -> Result<()> {
     Ok(())
 }
 
+fn update_check_path() -> PathBuf {
+    store::config_dir().join("update-check.json")
+}
+
 fn latest_version() -> Option<String> {
-    let path = store::config_dir().join("update-check.json");
-    let cached: UpdateCheck = std::fs::read_to_string(&path)
+    let cached: UpdateCheck = std::fs::read_to_string(update_check_path())
         .ok()
         .and_then(|raw| serde_json::from_str(&raw).ok())
         .unwrap_or_default();
     let now = oauth::unix_now();
-    if !is_stale(cached.checked_at, now) {
+    if !needs_refresh(&cached, now, CURRENT_VERSION) {
         return Some(cached.latest);
     }
 
-    let latest = fetch_latest(LATEST_RELEASE_URL, NOTICE_TIMEOUT).unwrap_or(cached.latest);
     // Record the attempt even when it failed, so an offline machine retries
-    // tomorrow rather than on every run.
+    // tomorrow rather than on every run. A failed fetch never keeps a cached
+    // version older than this binary, which would force a refetch next run.
+    let latest = fetch_latest(LATEST_RELEASE_URL, NOTICE_TIMEOUT).unwrap_or_else(|_| {
+        if is_newer(&cached.latest, CURRENT_VERSION) {
+            cached.latest
+        } else {
+            CURRENT_VERSION.to_string()
+        }
+    });
+    save_latest(&latest, now);
+    (!latest.is_empty()).then_some(latest)
+}
+
+/// Caches `latest` for the daily notice, so it agrees with what
+/// `agent-usage update` just found.
+fn save_latest(latest: &str, now: i64) {
     let check = UpdateCheck {
         checked_at: now,
-        latest: latest.clone(),
+        latest: latest.to_string(),
     };
     if store::ensure_config_dir().is_ok()
         && let Ok(raw) = serde_json::to_string(&check)
     {
-        let _ = std::fs::write(&path, raw);
+        let _ = std::fs::write(update_check_path(), raw);
     }
-    (!latest.is_empty()).then_some(latest)
 }
 
 /// Latest release version from the GitHub API, without the tag's `v`.
@@ -285,6 +306,12 @@ fn fetch_latest(url: &str, timeout: Duration) -> Result<String> {
 
 fn is_stale(checked_at: i64, now: i64) -> bool {
     now - checked_at >= CHECK_INTERVAL_SECS
+}
+
+/// A cached check is refetched after a day, or sooner when it predates this
+/// binary (the CLI was upgraded since), since its "latest" is then out of date.
+fn needs_refresh(cached: &UpdateCheck, now: i64, current: &str) -> bool {
+    is_stale(cached.checked_at, now) || is_newer(current, &cached.latest)
 }
 
 /// Numeric `major.minor.patch` comparison; anything unparseable is not newer.
@@ -379,6 +406,27 @@ mod tests {
     fn is_stale_after_one_day() {
         assert!(is_stale(0, CHECK_INTERVAL_SECS));
         assert!(!is_stale(100, 100 + CHECK_INTERVAL_SECS - 1));
+    }
+
+    #[test]
+    fn needs_refresh_when_stale_or_older_than_the_binary() {
+        let check = |checked_at, latest: &str| UpdateCheck {
+            checked_at,
+            latest: latest.to_string(),
+        };
+        assert!(!needs_refresh(&check(100, "1.55.1"), 200, "1.55.1"));
+        assert!(!needs_refresh(&check(100, "1.55.2"), 200, "1.55.1"));
+        assert!(needs_refresh(&check(100, "1.54.1"), 200, "1.55.1"));
+        assert!(needs_refresh(
+            &check(100, "1.55.2"),
+            100 + CHECK_INTERVAL_SECS,
+            "1.55.1"
+        ));
+        assert!(needs_refresh(
+            &UpdateCheck::default(),
+            oauth::unix_now(),
+            "1.55.1"
+        ));
     }
 
     #[test]
