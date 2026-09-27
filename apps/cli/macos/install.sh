@@ -80,7 +80,11 @@ install_from() {
   sed -e "s|__HOME__|$home_dir|g" -e "s|__BIN__|$bin|g" \
     "$root/macos/dev.ruchern.agent-usage.plist" >"$plist"
 
+  # An agent already loaded means this is an update or reinstall, so the
+  # first-install checklist below would only repeat finished steps.
+  local reinstall=false
   if launchctl print "$domain/$LABEL" >/dev/null 2>&1; then
+    reinstall=true
     launchctl bootout "$domain" "$plist" || true
   fi
   launchctl bootstrap "$domain" "$plist"
@@ -90,6 +94,9 @@ install_from() {
   echo "Installed $LABEL"
   echo "  binary  $bin"
   echo "  log     $logs/agent-usage.log"
+  if $reinstall; then
+    return
+  fi
   echo
   echo "1. Sign in (admin account):  $bin auth login"
   echo "2. Prove one run:            $bin run"
