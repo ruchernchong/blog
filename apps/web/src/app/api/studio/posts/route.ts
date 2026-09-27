@@ -1,4 +1,3 @@
-import { desc } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { ERROR_IDS } from "@/constants/error-ids";
@@ -21,7 +20,7 @@ export const GET = async () => {
 
   try {
     const allPosts = await db.query.posts.findMany({
-      orderBy: desc(posts.updatedAt),
+      orderBy: { updatedAt: "desc" },
       with: {
         author: true,
       },

@@ -27,8 +27,7 @@ This file provides guidance to coding agents when working with code in this repo
 - `pnpm db:push` - Push schema changes to database
 - `pnpm db:pull` - Pull schema from existing database
 - `pnpm db:check` - Check migration consistency
-- `pnpm db:up` - Run pending migrations
-- `pnpm db:drop` - Drop database tables
+- `pnpm db:up` - Upgrade the migrations folder and snapshots to the current drizzle-kit format
 - `pnpm db:studio` - Open Drizzle Studio
 - `pnpm db:seed` - Seed database with test data
 - `pnpm auth:generate` - Regenerate the Better Auth Drizzle schema (core + `jwt`/OAuth provider tables) into `apps/web/src/schema/auth.ts`

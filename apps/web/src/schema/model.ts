@@ -4,8 +4,8 @@ import {
   index,
   integer,
   numeric,
-  pgTable,
   primaryKey,
+  snakeCase,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
@@ -30,7 +30,7 @@ import {
  * them. `aliasTarget`, when set, means price/label resolve from
  * `(provider, aliasTarget)` instead (e.g. Codex's `codex-auto-review`).
  */
-export const model = pgTable(
+export const model = snakeCase.table(
   "model",
   {
     provider: text().notNull(),

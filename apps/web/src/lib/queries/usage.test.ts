@@ -32,9 +32,9 @@ vi.mock("@/schema", async () => {
 import { tokenEffortUsage, tokenUsage } from "@/schema";
 import { upsertTokenEffortUsage, upsertTokenUsage } from "./usage";
 
-// Mirror the production `db` casing (see schema/index.ts) so embedded columns
-// serialize to their real snake_case names, the way the live query is built.
-const dialect = new PgDialect({ casing: "snake_case" });
+// Tables declare snake_case column names via `snakeCase.table`, so the default
+// dialect serialises embedded columns to their real names, as the live query does.
+const dialect = new PgDialect();
 
 const baseRow = {
   date: "2026-05-30",
@@ -88,7 +88,7 @@ describe("upsertTokenUsage", () => {
     // and at an equal total a finer reasoning split wins (row comparison).
     const { sql } = dialect.sqlToQuery(setWhere as never);
     expect(sql).toBe(
-      '(excluded.total_tokens > "token_usage"."total_tokens" or (excluded.total_tokens = "token_usage"."total_tokens" and excluded.reasoning_tokens > "token_usage"."reasoning_tokens"))',
+      '((excluded.total_tokens > "token_usage"."total_tokens") or (((excluded.total_tokens = "token_usage"."total_tokens") and (excluded.reasoning_tokens > "token_usage"."reasoning_tokens"))))',
     );
   });
 

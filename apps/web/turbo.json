@@ -43,10 +43,6 @@
     "auth:generate": {
       "cache": false
     },
-    "db:drop": {
-      "cache": false,
-      "interactive": true
-    },
     "db:generate": {
       "cache": false,
       "interactive": true

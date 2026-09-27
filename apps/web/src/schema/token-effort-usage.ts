@@ -4,8 +4,8 @@ import {
   index,
   integer,
   jsonb,
-  pgTable,
   primaryKey,
+  snakeCase,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
@@ -25,7 +25,7 @@ import {
  *
  * `updatedAt` records when the ingest ran (not when usage happened).
  */
-export const tokenEffortUsage = pgTable(
+export const tokenEffortUsage = snakeCase.table(
   "token_effort_usage",
   {
     date: date().notNull(),

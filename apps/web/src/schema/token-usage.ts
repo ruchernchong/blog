@@ -4,8 +4,8 @@ import {
   index,
   integer,
   numeric,
-  pgTable,
   primaryKey,
+  snakeCase,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
@@ -37,7 +37,7 @@ import {
  * Codex sessions that recorded no model), rendered as "N.A." — distinct from a
  * genuine `0`. We never fabricate a cost for an unidentifiable model.
  */
-export const tokenUsage = pgTable(
+export const tokenUsage = snakeCase.table(
   "token_usage",
   {
     date: date().notNull(),
