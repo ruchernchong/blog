@@ -79,15 +79,15 @@ export interface OAuthClientDetail {
   activeTokens: {
     id: string;
     scopes: string[];
-    expiresAt: Date;
-    createdAt: Date;
+    expiresAt: Date | null;
+    createdAt: Date | null;
     userName: string | null;
     userEmail: string | null;
   }[];
   consents: {
     id: string;
     scopes: string[];
-    createdAt: Date;
+    createdAt: Date | null;
     userName: string | null;
     userEmail: string | null;
   }[];
