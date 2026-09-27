@@ -1,3 +1,10 @@
+## [1.55.4](https://github.com/ruchernchong/blog/compare/v1.55.3...v1.55.4) (2026-09-27)
+
+### Bug Fixes
+
+* re-register a stale cached oauth client ([13624b3](https://github.com/ruchernchong/blog/commit/13624b30851384932910f653acf3a560091f6272))
+* skip setup steps when reinstalling the agent ([203cadc](https://github.com/ruchernchong/blog/commit/203cadc2470f6f44f8ecc17f67457750ed3b3ac9))
+
 ## [1.55.3](https://github.com/ruchernchong/blog/compare/v1.55.2...v1.55.3) (2026-09-27)
 
 ### Bug Fixes
