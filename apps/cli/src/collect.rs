@@ -1,6 +1,7 @@
 use crate::{cursor, grok, parse};
 use chrono::{DateTime, Local, Utc};
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::io::{self, Write};
 use std::path::Path;
@@ -39,6 +40,9 @@ pub struct UsageEvent {
     pub agent: &'static str,
     pub provider: String,
     pub model: String,
+    /// The agent's own id for the session (file, composer, or conversation) that
+    /// produced the event; empty when the agent records none.
+    pub session: String,
     pub tokens: Tokens,
 }
 
@@ -64,6 +68,10 @@ pub struct IngestRow {
     pub agent: String,
     pub provider: String,
     pub model: String,
+    /// Hashed session id. Migration Assistant copies session logs verbatim, so a
+    /// copied session reports under the same id on both Macs and the server keeps
+    /// one copy instead of adding them.
+    pub session: Option<String>,
     pub input_tokens: i64,
     pub output_tokens: i64,
     pub cache_read_tokens: i64,
@@ -116,12 +124,19 @@ fn collect_with(home: &Path, local_date: impl Fn(DateTime<Utc>) -> String) -> Co
             event.provider
         };
         let date = local_date(event.ts);
-        let key = format!("{date}|{}|{provider}|{}", event.agent, event.model);
+        let session = session_hash(event.agent, &event.session);
+        let key = format!(
+            "{date}|{}|{provider}|{}|{}",
+            event.agent,
+            event.model,
+            session.as_deref().unwrap_or_default()
+        );
         let row = groups.entry(key).or_insert_with(|| IngestRow {
             date,
             agent: event.agent.to_string(),
             provider,
             model: event.model,
+            session,
             ..Default::default()
         });
         row.input_tokens += event.tokens.input;
@@ -166,9 +181,25 @@ fn collect_with(home: &Path, local_date: impl Fn(DateTime<Utc>) -> String) -> Co
         })
         .collect();
     out.rows.sort_by(|a, b| {
-        (&a.date, &a.agent, &a.provider, &a.model).cmp(&(&b.date, &b.agent, &b.provider, &b.model))
+        (&a.date, &a.agent, &a.provider, &a.model, &a.session).cmp(&(
+            &b.date,
+            &b.agent,
+            &b.provider,
+            &b.model,
+            &b.session,
+        ))
     });
     out
+}
+
+/// Hashed so session ids never leave the Mac; the agent is mixed in so two
+/// agents can never share one.
+fn session_hash(agent: &str, session: &str) -> Option<String> {
+    if session.is_empty() {
+        return None;
+    }
+    let digest = Sha256::digest(format!("{agent}:{session}").as_bytes());
+    Some(digest[..8].iter().map(|b| format!("{b:02x}")).collect())
 }
 
 pub fn provider_for_agent(agent: &str) -> &str {
@@ -268,13 +299,32 @@ mod tests {
         format!("{}|{}|{}|{}", row.date, row.agent, row.provider, row.model)
     }
 
+    /// Folds session rows back into one row per day and model, so date and
+    /// token expectations hold regardless of how many sessions fed them.
     fn rows_by_key(rows: &[IngestRow]) -> HashMap<String, IngestRow> {
-        rows.iter().map(|row| (row_key(row), row.clone())).collect()
+        let mut merged: HashMap<String, IngestRow> = HashMap::new();
+        for row in rows {
+            let entry = merged.entry(row_key(row)).or_insert_with(|| IngestRow {
+                date: row.date.clone(),
+                agent: row.agent.clone(),
+                provider: row.provider.clone(),
+                model: row.model.clone(),
+                ..Default::default()
+            });
+            entry.input_tokens += row.input_tokens;
+            entry.output_tokens += row.output_tokens;
+            entry.cache_read_tokens += row.cache_read_tokens;
+            entry.cache_write_tokens += row.cache_write_tokens;
+            entry.reasoning_tokens += row.reasoning_tokens;
+            entry.total_tokens += row.total_tokens;
+            entry.messages += row.messages;
+        }
+        merged
     }
 
     fn assert_rows(label: &str, rows: &[IngestRow], want: &[IngestRow]) {
         let got = rows_by_key(rows);
-        assert_eq!(rows.len(), want.len(), "{label}: row count, got {rows:?}");
+        assert_eq!(got.len(), want.len(), "{label}: row count, got {rows:?}");
         for w in want {
             let key = row_key(w);
             let g = got
@@ -535,8 +585,8 @@ mod tests {
         }
         assert_eq!(messages, result.event_count as i64);
 
-        assert_eq!(result.rows.len(), 6, "got {:?}", result.rows);
         let got = rows_by_key(&result.rows);
+        assert_eq!(got.len(), 6, "got {:?}", result.rows);
         for want in [
             IngestRow {
                 date: "2026-09-12".into(),
@@ -566,6 +616,39 @@ mod tests {
             let key = row_key(&want);
             assert_eq!(got.get(&key), Some(&want), "row {key}");
         }
+    }
+
+    #[test]
+    fn test_collect_splits_rows_by_hashed_session() {
+        let home = TempDir::new().unwrap();
+        seed_claude(home.path());
+
+        let result = collect_with(home.path(), fixed_offset_date(0));
+
+        let sessions: Vec<(&str, Option<&str>)> = result
+            .rows
+            .iter()
+            .map(|row| (row.model.as_str(), row.session.as_deref()))
+            .collect();
+        // Lines without a sessionId fall back to their file's name.
+        let file_session = session_hash("claude", "session");
+        let opus_session = session_hash("claude", "sess-opus");
+        assert_eq!(
+            sessions,
+            vec![
+                ("claude-sonnet-4-5", file_session.as_deref()),
+                ("claude-opus-4-1", opus_session.as_deref()),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_session_hash() {
+        assert_eq!(session_hash("claude", ""), None);
+        let hash = session_hash("claude", "abc").unwrap();
+        assert_eq!(hash.len(), 16);
+        assert_eq!(session_hash("claude", "abc"), Some(hash.clone()));
+        assert_ne!(session_hash("codex", "abc"), Some(hash));
     }
 
     #[test]

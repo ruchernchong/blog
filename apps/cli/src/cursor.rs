@@ -166,6 +166,7 @@ pub fn map_cursor_bubble(
             agent: "cursor",
             provider: cursor_provider(&model).to_string(),
             model,
+            session: composer_id.to_string(),
             tokens: Tokens {
                 input,
                 output,
@@ -379,6 +380,7 @@ mod tests {
                     agent: "cursor",
                     provider: "cursor".to_string(),
                     model: "gpt-5".to_string(),
+                    session: "c1".to_string(),
                     tokens: Tokens {
                         input: 100,
                         output: 20,
@@ -393,6 +395,7 @@ mod tests {
                     agent: "cursor",
                     provider: "cursor".to_string(),
                     model: "claude-4-sonnet".to_string(),
+                    session: "c1".to_string(),
                     tokens: Tokens {
                         input: 7,
                         output: 3,
@@ -533,6 +536,7 @@ mod tests {
                 agent: "cursor",
                 provider: "cursor".to_string(),
                 model: "claude-4-sonnet".to_string(),
+                session: "c1".to_string(),
                 tokens: Tokens {
                     input: 7,
                     output: 3,
@@ -544,6 +548,7 @@ mod tests {
                 agent: "cursor",
                 provider: "cursor".to_string(),
                 model: "gpt-5".to_string(),
+                session: "c1".to_string(),
                 tokens: Tokens {
                     input: 100,
                     output: 20,

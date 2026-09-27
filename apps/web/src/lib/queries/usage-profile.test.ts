@@ -15,6 +15,10 @@ vi.mock("@/schema", async () => {
   const actual = await vi.importActual<typeof import("@/schema")>("@/schema");
   const db = {
     batch: () => Promise.resolve(mocks.batchResult),
+    // The per-session copies subquery; its rows come through `batchResult`.
+    selectDistinctOn: () => ({
+      from: () => ({ orderBy: () => ({ as: () => ({}) }) }),
+    }),
     select: () => ({
       from: () => ({
         orderBy: () => ({}),

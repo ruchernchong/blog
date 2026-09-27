@@ -7,7 +7,10 @@ use std::io::{self, Write};
 use std::sync::OnceLock;
 use std::time::{Duration, Instant};
 
-const ROW_CAP: usize = 20_000;
+/// Rows per POST. Session-level rows grow with every session, so one request per
+/// batch keeps each body well inside the function's 4.5 MB request limit and the
+/// route's 20,000-row cap.
+const BATCH_ROWS: usize = 5_000;
 /// Matches Go's `io.LimitReader(resp.Body, 1<<20)`.
 const RESPONSE_BODY_LIMIT: u64 = 1 << 20;
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(120);
@@ -53,29 +56,20 @@ fn ingest_inner(
         writeln!(out, "Nothing to ingest.")?;
         return Ok(());
     }
-    if result.rows.len() > ROW_CAP {
-        bail!(
-            "row count {} exceeds ingest cap of {ROW_CAP}",
-            result.rows.len()
-        );
-    }
-
     print_table(out, &result.stats)?;
     writeln!(out)?;
 
-    let payload = Payload {
-        device,
-        rows: &result.rows,
-    };
-
     if dry_run {
+        let payload = Payload {
+            device,
+            rows: &result.rows,
+        };
         writeln!(out, "Dry run: {} rows → {endpoint}", result.rows.len())?;
         writeln!(out, "{}", serde_json::to_string_pretty(&payload)?)?;
         return Ok(());
     }
 
     let token = oauth::bearer_token()?;
-    let body = serde_json::to_vec(&payload)?;
 
     writeln!(
         out,
@@ -83,36 +77,39 @@ fn ingest_inner(
         format_count(result.rows.len() as i64)
     )?;
 
-    let started = Instant::now();
-    let mut response = oauth::http()
-        .post(endpoint)
-        .header("content-type", "application/json")
-        .header("authorization", format!("Bearer {token}"))
-        .config()
-        .http_status_as_error(false)
-        .timeout_global(Some(REQUEST_TIMEOUT))
-        .build()
-        .send(&body)?;
-    let elapsed = started.elapsed();
+    for rows in result.rows.chunks(BATCH_ROWS) {
+        let body = serde_json::to_vec(&Payload { device, rows })?;
+        let started = Instant::now();
+        let mut response = oauth::http()
+            .post(endpoint)
+            .header("content-type", "application/json")
+            .header("authorization", format!("Bearer {token}"))
+            .config()
+            .http_status_as_error(false)
+            .timeout_global(Some(REQUEST_TIMEOUT))
+            .build()
+            .send(&body)?;
+        let elapsed = started.elapsed();
 
-    let status = response.status().as_u16();
-    let detail = response
-        .body_mut()
-        .with_config()
-        .limit(RESPONSE_BODY_LIMIT)
-        .lossy_utf8(true)
-        .read_to_string()
-        .unwrap_or_default();
-    let detail = detail.trim();
+        let status = response.status().as_u16();
+        let detail = response
+            .body_mut()
+            .with_config()
+            .limit(RESPONSE_BODY_LIMIT)
+            .lossy_utf8(true)
+            .read_to_string()
+            .unwrap_or_default();
+        let detail = detail.trim();
 
-    if !(200..300).contains(&status) {
-        bail!("ingest endpoint {status}: {detail}");
+        if !(200..300).contains(&status) {
+            bail!("ingest endpoint {status}: {detail}");
+        }
+        writeln!(
+            out,
+            "Response: {status} in {} {detail}",
+            format_duration(elapsed)
+        )?;
     }
-    writeln!(
-        out,
-        "Response: {status} in {} {detail}",
-        format_duration(elapsed)
-    )?;
 
     print_ingest_summary(out, &result.rows)?;
     Ok(())
@@ -351,6 +348,7 @@ mod tests {
             "outputTokens",
             "provider",
             "reasoningTokens",
+            "session",
             "totalTokens",
         ];
         for (i, row) in rows.iter().enumerate() {
@@ -393,25 +391,41 @@ mod tests {
     }
 
     #[test]
-    fn ingest_row_cap_rejects_over_20000_rows() {
-        // Port of TestIngestRowCap.
+    fn ingest_posts_large_payloads_in_batches() {
         let _guard = store::backend::serial();
-        store::backend::fail_with("keychain must not be used");
+        store::save_tokens(&OauthTokens {
+            access_token: "access-123".into(),
+            expiry_unix: oauth::unix_now() + 3600,
+            client_id: "client".into(),
+            ..Default::default()
+        })
+        .unwrap();
+
+        let mut server = mockito::Server::new();
+        let sizes = Arc::new(Mutex::new(Vec::new()));
+        let sizes_writer = Arc::clone(&sizes);
+        let mock = server
+            .mock("POST", "/")
+            .with_body_from_request(move |req| {
+                let value: serde_json::Value = serde_json::from_slice(req.body().unwrap()).unwrap();
+                sizes_writer
+                    .lock()
+                    .unwrap()
+                    .push(value["rows"].as_array().unwrap().len());
+                br#"{"ok":true}"#.to_vec()
+            })
+            .expect(2)
+            .create();
 
         let collected = CollectResult {
-            rows: vec![IngestRow::default(); 20_001],
+            rows: vec![IngestRow::default(); BATCH_ROWS + 1],
             ..Default::default()
         };
         let mut out = Vec::new();
-        let err = ingest_inner(
-            &collected,
-            "http://unused.invalid",
-            "device-1",
-            false,
-            &mut out,
-        )
-        .unwrap_err();
-        assert!(err.to_string().contains("exceeds ingest cap of 20000"));
+        ingest_inner(&collected, &server.url(), "device-1", false, &mut out).unwrap();
+
+        mock.assert();
+        assert_eq!(*sizes.lock().unwrap(), vec![BATCH_ROWS, 1]);
     }
 
     #[test]

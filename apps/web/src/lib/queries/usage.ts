@@ -24,7 +24,7 @@ import {
   buildWeeklyShare,
 } from "@workspace/usage/weekly-insights";
 import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns";
-import { and, asc, eq, gt, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, isNull, or, sql } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { cacheLife, cacheTag } from "next/cache";
 import {
@@ -46,8 +46,8 @@ const UPSERT_CHUNK_SIZE = 1000;
 
 /**
  * Composite unique key of `token_usage` (`NULLS NOT DISTINCT`, so rows with no
- * device still conflict). A conflict means we already have that device's daily
- * aggregate and should overwrite it.
+ * device or session still conflict). A conflict means we already have that
+ * device's aggregate for the session and should overwrite it.
  */
 const CONFLICT_TARGET = [
   tokenUsage.date,
@@ -55,6 +55,7 @@ const CONFLICT_TARGET = [
   tokenUsage.provider,
   tokenUsage.model,
   tokenUsage.device,
+  tokenUsage.session,
 ] as const;
 
 /** Columns refreshed from the incoming row on conflict (everything but the key). */
@@ -86,7 +87,7 @@ const EFFORT_UPDATE_COLUMNS = [
 
 /**
  * Upsert daily `token_usage` aggregates on the composite key
- * (date, agent, provider, model, device). Called by `POST /api/usage/ingest`, which
+ * (date, agent, provider, model, device, session). Called by `POST /api/usage/ingest`, which
  * writes into whichever DB the deployment is configured for. Returns the number
  * of rows submitted.
  *
@@ -246,44 +247,84 @@ export async function getUsageProfile(): Promise<UsageProfile> {
   cacheLife("days");
   cacheTag("usage");
 
-  // neon-http: one HTTP round-trip via Neon's batch API. The model select is
-  // in this batch (not Promise.all / loadPricing) so we do not add a round-trip
-  // and do not import models.ts (which already imports this module).
-  // Each device stores its own snapshot of a day, so the rows are summed
-  // across devices here; everything below sees one row per key.
-  const [rows, effortRows, modelRows] = await db.batch([
-    db
-      .select({
-        date: tokenUsage.date,
-        agent: tokenUsage.agent,
-        provider: tokenUsage.provider,
-        model: tokenUsage.model,
-        inputTokens: sumOf(tokenUsage.inputTokens),
-        outputTokens: sumOf(tokenUsage.outputTokens),
-        cacheReadTokens: sumOf(tokenUsage.cacheReadTokens),
-        cacheWriteTokens: sumOf(tokenUsage.cacheWriteTokens),
-        reasoningTokens: sumOf(tokenUsage.reasoningTokens),
-        totalTokens: sumOf(tokenUsage.totalTokens),
-        messages: sumOf(tokenUsage.messages),
-        updatedAt: sql<Date>`max(${tokenUsage.updatedAt})`.mapWith(
-          tokenUsage.updatedAt,
-        ),
-      })
-      .from(tokenUsage)
-      .groupBy(
+  // A copied session (Migration Assistant) is stored once per device; keep the
+  // largest copy. Rows with no session are legacy daily snapshots, and the same
+  // rule keeps one device's snapshot of each day rather than adding them.
+  const copies = db
+    .selectDistinctOn(
+      [
         tokenUsage.date,
         tokenUsage.agent,
         tokenUsage.provider,
         tokenUsage.model,
+        tokenUsage.session,
+      ],
+      {
+        date: tokenUsage.date,
+        agent: tokenUsage.agent,
+        provider: tokenUsage.provider,
+        model: tokenUsage.model,
+        session: tokenUsage.session,
+        inputTokens: tokenUsage.inputTokens,
+        outputTokens: tokenUsage.outputTokens,
+        cacheReadTokens: tokenUsage.cacheReadTokens,
+        cacheWriteTokens: tokenUsage.cacheWriteTokens,
+        reasoningTokens: tokenUsage.reasoningTokens,
+        totalTokens: tokenUsage.totalTokens,
+        messages: tokenUsage.messages,
+        updatedAt: tokenUsage.updatedAt,
+      },
+    )
+    .from(tokenUsage)
+    .orderBy(
+      tokenUsage.date,
+      tokenUsage.agent,
+      tokenUsage.provider,
+      tokenUsage.model,
+      tokenUsage.session,
+      desc(tokenUsage.totalTokens),
+      desc(tokenUsage.reasoningTokens),
+    )
+    .as("copies");
+  const isLegacy = sql<boolean>`${copies.session} is null`;
+
+  // neon-http: one HTTP round-trip via Neon's batch API. The model select is
+  // in this batch (not Promise.all / loadPricing) so we do not add a round-trip
+  // and do not import models.ts (which already imports this module).
+  // Sessions are summed per day; legacy rows stay a separate group so
+  // `reconcileLegacyRows` can weigh them against the sessions.
+  const [snapshots, effortRows, modelRows] = await db.batch([
+    db
+      .select({
+        date: copies.date,
+        agent: copies.agent,
+        provider: copies.provider,
+        model: copies.model,
+        legacy: isLegacy,
+        inputTokens: sumOf(copies.inputTokens),
+        outputTokens: sumOf(copies.outputTokens),
+        cacheReadTokens: sumOf(copies.cacheReadTokens),
+        cacheWriteTokens: sumOf(copies.cacheWriteTokens),
+        reasoningTokens: sumOf(copies.reasoningTokens),
+        totalTokens: sumOf(copies.totalTokens),
+        messages: sumOf(copies.messages),
+        updatedAt: sql<Date>`max(${copies.updatedAt})`.mapWith(
+          tokenUsage.updatedAt,
+        ),
+      })
+      .from(copies)
+      .groupBy(
+        copies.date,
+        copies.agent,
+        copies.provider,
+        copies.model,
+        isLegacy,
       )
-      .orderBy(
-        asc(tokenUsage.date),
-        asc(tokenUsage.agent),
-        asc(tokenUsage.model),
-      ),
+      .orderBy(asc(copies.date), asc(copies.agent), asc(copies.model)),
     db.select().from(tokenEffortUsage),
     db.select(MODEL_PRICING_COLUMNS).from(model),
   ]);
+  const rows = reconcileLegacyRows(snapshots);
 
   if (rows.length === 0) {
     return emptyProfile();
@@ -408,8 +449,38 @@ export async function getUsageProfile(): Promise<UsageProfile> {
 
 // --- Internal aggregation shapes --------------------------------------------
 
-/** A `token_usage` key summed across devices, as the profile reads it. */
-type UsageRow = Omit<typeof tokenUsage.$inferSelect, "costUsd" | "device">;
+/** A `token_usage` key summed across sessions, as the profile reads it. */
+type UsageRow = Omit<
+  typeof tokenUsage.$inferSelect,
+  "costUsd" | "device" | "session"
+>;
+
+/**
+ * One row per day and model. Legacy rows (no session) were daily snapshots from
+ * before the collector sent sessions, so they cover the same usage as that
+ * day's session rows rather than adding to it: the larger total wins. Agents
+ * prune their logs (Claude clears sessions after 30 days), so an older day can
+ * no longer be rebuilt from sessions and keeps its legacy total; newer days are
+ * session rows only.
+ */
+export function reconcileLegacyRows(
+  snapshots: (UsageRow & { legacy: boolean })[],
+): UsageRow[] {
+  const byKey = new Map<string, UsageRow>();
+  for (const { legacy: _legacy, ...row } of snapshots) {
+    const key = `${row.date}|${row.agent}|${row.provider}|${row.model}`;
+    const current = byKey.get(key);
+    if (!current) {
+      byKey.set(key, row);
+      continue;
+    }
+    const updatedAt =
+      row.updatedAt > current.updatedAt ? row.updatedAt : current.updatedAt;
+    const larger = row.totalTokens > current.totalTokens ? row : current;
+    byKey.set(key, { ...larger, updatedAt });
+  }
+  return [...byKey.values()];
+}
 
 /** `sum()` of an integer column; Postgres returns `numeric`, parsed back here. */
 function sumOf(column: AnyPgColumn) {

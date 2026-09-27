@@ -64,9 +64,14 @@ See `packages/usage/src/registry.ts` (pure normalise/merge) and
   the same server, and each non-production server gets its own Keychain entry, so
   local and production logins never mix. `AGENT_USAGE_DRY_RUN=1` prints the payload
   without POSTing. Each install sends a `device` id (a hash of the Mac's LocalHostName, saved
-  to `~/.config/agent-usage/device-id` on first use); `token_usage` is keyed per device and
-  `/usage` sums across devices, so several Macs add up. Clients sending no device store
-  `null`, which the `NULLS NOT DISTINCT` key still dedupes. Commands (clap): `measure [--json]`, `ingest [--dry-run] [--url <URL>]`
+  to `~/.config/agent-usage/device-id` on first use), and every row carries a hashed `session`
+  id; the CLI POSTs in batches of 5,000 rows. `token_usage` is keyed per device and session,
+  and `/usage` takes the largest copy of each session across devices before summing, so
+  separate work on several Macs adds up while a session copied by Migration Assistant counts
+  once. Rows with no session (older clients, and history from before sessions were sent) are
+  weighed against that day's session total and the larger wins, which keeps days whose agent
+  logs have since been pruned (Claude clears sessions after 30 days). Clients sending no
+  device store `null`, which the `NULLS NOT DISTINCT` key still dedupes. Commands (clap): `measure [--json]`, `ingest [--dry-run] [--url <URL>]`
   (flags win over `AGENT_USAGE_DRY_RUN` / `AGENT_USAGE_URL`), `auth login|logout|status`
   (hidden `login`/`logout` aliases), `update [--check]` (self-update from the latest release),
   and `completions <zsh|bash|fish>`; no subcommand
