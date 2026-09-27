@@ -1,6 +1,6 @@
 {
   "name": "ruchern-dev",
-  "version": "1.55.1",
+  "version": "1.55.2",
   "type": "module",
   "private": true,
   "scripts": {

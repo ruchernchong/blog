@@ -1,3 +1,9 @@
+## [1.55.2](https://github.com/ruchernchong/blog/compare/v1.55.1...v1.55.2) (2026-09-27)
+
+### Bug Fixes
+
+* keep local dev tokens out of the keychain ([cbcb64d](https://github.com/ruchernchong/blog/commit/cbcb64d77beba273d446e19b894ef2d1fcc3f0dd))
+
 ## [1.55.1](https://github.com/ruchernchong/blog/compare/v1.55.0...v1.55.1) (2026-09-27)
 
 ### Bug Fixes
