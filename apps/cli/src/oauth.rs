@@ -59,27 +59,20 @@ pub fn http() -> &'static ureq::Agent {
 
 pub fn login() -> Result<()> {
     let discovery = discover_oidc();
-    let client_id = load_or_register_client(&discovery.registration_endpoint)?;
+    let mut client_id = load_or_register_client(&discovery.registration_endpoint)?;
 
     let (verifier, challenge) = pkce()?;
     let state = random_b64(16)?;
 
-    let mut auth_url = Url::parse(&discovery.authorization_endpoint).with_context(|| {
-        format!(
-            "parse authorization endpoint {}",
-            discovery.authorization_endpoint
-        )
-    })?;
-    auth_url
-        .query_pairs_mut()
-        .append_pair("response_type", "code")
-        .append_pair("client_id", &client_id)
-        .append_pair("redirect_uri", OAUTH_REDIRECT_URI)
-        .append_pair("scope", OAUTH_SCOPES)
-        .append_pair("state", &state)
-        .append_pair("code_challenge", &challenge)
-        .append_pair("code_challenge_method", "S256")
-        .append_pair("resource", &resource());
+    let mut auth_url = authorize_url(&discovery, &client_id, &state, &challenge)?;
+    // A server that no longer knows the cached client (e.g. its database was
+    // reset) sends the browser to its login page instead of our callback, so
+    // check first and register a fresh client rather than wait out the timeout.
+    if is_unknown_client(&auth_url) {
+        let _ = std::fs::remove_file(store::client_id_path());
+        client_id = load_or_register_client(&discovery.registration_endpoint)?;
+        auth_url = authorize_url(&discovery, &client_id, &state, &challenge)?;
+    }
 
     let code = match wait_for_code(auth_url.as_str(), &state) {
         Ok(code) => code,
@@ -252,6 +245,56 @@ fn discover_oidc() -> OidcDiscovery {
     })();
 
     attempt.unwrap_or(fallback)
+}
+
+fn authorize_url(
+    discovery: &OidcDiscovery,
+    client_id: &str,
+    state: &str,
+    challenge: &str,
+) -> Result<Url> {
+    let mut url = Url::parse(&discovery.authorization_endpoint).with_context(|| {
+        format!(
+            "parse authorization endpoint {}",
+            discovery.authorization_endpoint
+        )
+    })?;
+    url.query_pairs_mut()
+        .append_pair("response_type", "code")
+        .append_pair("client_id", client_id)
+        .append_pair("redirect_uri", OAUTH_REDIRECT_URI)
+        .append_pair("scope", OAUTH_SCOPES)
+        .append_pair("state", state)
+        .append_pair("code_challenge", challenge)
+        .append_pair("code_challenge_method", "S256")
+        .append_pair("resource", &resource());
+    Ok(url)
+}
+
+/// Requests the authorize URL without following its redirect and reports
+/// whether the server rejected the client as unknown (`invalid_client`).
+/// Network failures report `false` so login still opens the browser.
+fn is_unknown_client(auth_url: &Url) -> bool {
+    let Ok(response) = http()
+        .get(auth_url.as_str())
+        .config()
+        .max_redirects(0)
+        .http_status_as_error(false)
+        .build()
+        .call()
+    else {
+        return false;
+    };
+    response
+        .headers()
+        .get("location")
+        .and_then(|location| location.to_str().ok())
+        .and_then(|location| auth_url.join(location).ok())
+        .is_some_and(|location| {
+            location
+                .query_pairs()
+                .any(|(key, value)| key == "error" && value == "invalid_client")
+        })
 }
 
 fn load_or_register_client(register_url: &str) -> Result<String> {
@@ -618,6 +661,35 @@ mod tests {
             "invalid_target: resource not allowed"
         ))));
         assert!(!is_invalid_target(Some(&anyhow!("access_denied"))));
+    }
+
+    #[test]
+    fn is_unknown_client_reads_authorize_redirect() {
+        let cases = [
+            (
+                "unknown client",
+                "/login?error=invalid_client&error_description=client_id+is+required",
+                true,
+            ),
+            ("known client", "/login?client_id=c&sig=s", false),
+            (
+                "other error",
+                "/login?error=invalid_request&error_description=x",
+                false,
+            ),
+        ];
+        for (name, location, expected) in cases {
+            let mut server = mockito::Server::new();
+            let mock = server
+                .mock("GET", "/authorize")
+                .match_query(mockito::Matcher::Any)
+                .with_status(302)
+                .with_header("location", location)
+                .create();
+            let url = Url::parse(&format!("{}/authorize?client_id=c", server.url())).unwrap();
+            assert_eq!(is_unknown_client(&url), expected, "{name}");
+            mock.assert();
+        }
     }
 
     #[test]
