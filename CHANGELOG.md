@@ -1,3 +1,9 @@
+## [1.55.0](https://github.com/ruchernchong/blog/compare/v1.54.1...v1.55.0) (2026-09-27)
+
+### Features
+
+* sum agent usage across devices ([ae39210](https://github.com/ruchernchong/blog/commit/ae392104441f017904ee2aec3396a9867802af19))
+
 ## [1.54.1](https://github.com/ruchernchong/blog/compare/v1.54.0...v1.54.1) (2026-09-26)
 
 ### Bug Fixes
