@@ -1,3 +1,9 @@
+## [1.55.1](https://github.com/ruchernchong/blog/compare/v1.55.0...v1.55.1) (2026-09-27)
+
+### Bug Fixes
+
+* count migrated agent sessions once ([36fa254](https://github.com/ruchernchong/blog/commit/36fa2547c2e87ee68dff0949840229be16595a0b))
+
 ## [1.55.0](https://github.com/ruchernchong/blog/compare/v1.54.1...v1.55.0) (2026-09-27)
 
 ### Features
