@@ -214,16 +214,36 @@ pub fn lock_tokens() -> Result<TokenLock> {
     Ok(TokenLock { _file: file })
 }
 
+/// Production tokens live in the login Keychain. Any other server keeps them in
+/// a 0600 file instead: the binary is only ad-hoc signed, so the Keychain treats
+/// every `cargo run` rebuild as a new app and asks for the login password.
 #[cfg(not(test))]
 mod backend {
-    use super::{KEYRING_ACCOUNT, scoped};
-    use anyhow::Result;
+    use super::{KEYRING_ACCOUNT, config_dir, ensure_config_dir, scoped};
+    use anyhow::{Context, Result};
+    use std::io::{ErrorKind, Write};
+    use std::path::PathBuf;
 
     fn entry(service: &str) -> Result<keyring::Entry> {
         Ok(keyring::Entry::new(service, &scoped(KEYRING_ACCOUNT))?)
     }
 
+    /// Token file for a non-production server, or `None` on production.
+    fn local_file(service: &str) -> Option<PathBuf> {
+        if crate::oauth::issuer() == crate::oauth::PRODUCTION_ISSUER {
+            return None;
+        }
+        Some(config_dir().join(format!("{service}.{}.json", scoped(KEYRING_ACCOUNT))))
+    }
+
     pub fn get(service: &str) -> Result<Option<String>> {
+        if let Some(path) = local_file(service) {
+            return match std::fs::read_to_string(&path) {
+                Ok(value) => Ok(Some(value)),
+                Err(error) if error.kind() == ErrorKind::NotFound => Ok(None),
+                Err(error) => Err(error).with_context(|| format!("read {}", path.display())),
+            };
+        }
         match entry(service)?.get_password() {
             Ok(value) => Ok(Some(value)),
             Err(keyring::Error::NoEntry) => Ok(None),
@@ -232,11 +252,27 @@ mod backend {
     }
 
     pub fn set(service: &str, value: &str) -> Result<()> {
+        if let Some(path) = local_file(service) {
+            // NamedTempFile is created 0600; persist swaps it in by rename.
+            let mut file = tempfile::NamedTempFile::new_in(ensure_config_dir()?)?;
+            file.write_all(value.as_bytes())?;
+            file.persist(&path)
+                .with_context(|| format!("write {}", path.display()))?;
+            return Ok(());
+        }
         entry(service)?.set_password(value)?;
         Ok(())
     }
 
     pub fn delete(service: &str) -> Result<()> {
+        if let Some(path) = local_file(service) {
+            return match std::fs::remove_file(&path) {
+                Err(error) if error.kind() != ErrorKind::NotFound => {
+                    Err(error).with_context(|| format!("remove {}", path.display()))
+                }
+                _ => Ok(()),
+            };
+        }
         match entry(service)?.delete_credential() {
             Ok(()) | Err(keyring::Error::NoEntry) => Ok(()),
             Err(error) => Err(error.into()),
