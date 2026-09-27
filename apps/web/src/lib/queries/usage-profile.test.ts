@@ -18,6 +18,7 @@ vi.mock("@/schema", async () => {
     select: () => ({
       from: () => ({
         orderBy: () => ({}),
+        groupBy: () => ({ orderBy: () => ({}) }),
         where: () => Promise.resolve(mocks.unpricedRows),
       }),
     }),

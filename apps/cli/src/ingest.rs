@@ -1,5 +1,5 @@
 use crate::collect::{CollectResult, IngestRow, print_table};
-use crate::oauth;
+use crate::{oauth, store};
 use anyhow::{Result, bail};
 use serde::Serialize;
 use std::ffi::OsString;
@@ -14,6 +14,7 @@ const REQUEST_TIMEOUT: Duration = Duration::from_secs(120);
 
 #[derive(Serialize)]
 struct Payload<'a> {
+    device: &'a str,
     rows: &'a [IngestRow],
 }
 
@@ -29,13 +30,14 @@ pub fn ingest(result: &CollectResult, url: Option<String>, dry_run: bool) -> Res
         let _ = URL_FLAG.set(url);
     }
     let endpoint = endpoint();
+    let device = store::device_id()?;
     let dry_run = resolve_dry_run(
         dry_run,
         crate::env_var("AGENT_USAGE_DRY_RUN", "USAGE_INGEST_DRY_RUN"),
     );
 
     let mut out = io::stdout().lock();
-    ingest_inner(result, &endpoint, dry_run, &mut out)
+    ingest_inner(result, &endpoint, &device, dry_run, &mut out)
 }
 
 /// Testable core: takes the endpoint and dry-run flag explicitly instead of
@@ -43,6 +45,7 @@ pub fn ingest(result: &CollectResult, url: Option<String>, dry_run: bool) -> Res
 fn ingest_inner(
     result: &CollectResult,
     endpoint: &str,
+    device: &str,
     dry_run: bool,
     out: &mut dyn Write,
 ) -> Result<()> {
@@ -60,7 +63,10 @@ fn ingest_inner(
     print_table(out, &result.stats)?;
     writeln!(out)?;
 
-    let payload = Payload { rows: &result.rows };
+    let payload = Payload {
+        device,
+        rows: &result.rows,
+    };
 
     if dry_run {
         writeln!(out, "Dry run: {} rows → {endpoint}", result.rows.len())?;
@@ -326,6 +332,10 @@ mod tests {
     fn assert_rows_payload(raw: &[u8], want: &[IngestRow]) {
         let value: serde_json::Value =
             serde_json::from_slice(raw).expect("payload should be valid JSON");
+        assert_eq!(
+            value["device"], "device-1",
+            "payload should name the device"
+        );
         let rows = value["rows"].as_array().expect("payload should have rows");
         assert_eq!(rows.len(), want.len(), "row count mismatch");
 
@@ -374,6 +384,7 @@ mod tests {
         let result = ingest_inner(
             &CollectResult::default(),
             "http://unused.invalid",
+            "device-1",
             false,
             &mut out,
         );
@@ -392,7 +403,14 @@ mod tests {
             ..Default::default()
         };
         let mut out = Vec::new();
-        let err = ingest_inner(&collected, "http://unused.invalid", false, &mut out).unwrap_err();
+        let err = ingest_inner(
+            &collected,
+            "http://unused.invalid",
+            "device-1",
+            false,
+            &mut out,
+        )
+        .unwrap_err();
         assert!(err.to_string().contains("exceeds ingest cap of 20000"));
     }
 
@@ -419,7 +437,7 @@ mod tests {
             ..Default::default()
         };
         let mut out = Vec::new();
-        ingest_inner(&collected, &server.url(), true, &mut out).unwrap();
+        ingest_inner(&collected, &server.url(), "device-1", true, &mut out).unwrap();
 
         let out = String::from_utf8(out).unwrap();
         assert!(out.contains(&format!("Dry run: 2 rows → {}", server.url())));
@@ -476,7 +494,7 @@ mod tests {
             ..Default::default()
         };
         let mut out = Vec::new();
-        ingest_inner(&collected, &server.url(), false, &mut out).unwrap();
+        ingest_inner(&collected, &server.url(), "device-1", false, &mut out).unwrap();
 
         let captured = captured.lock().unwrap();
         assert_eq!(captured.content_type.as_deref(), Some("application/json"));
@@ -521,7 +539,7 @@ mod tests {
             ..Default::default()
         };
         let mut out = Vec::new();
-        let err = ingest_inner(&collected, &server.url(), false, &mut out).unwrap_err();
+        let err = ingest_inner(&collected, &server.url(), "device-1", false, &mut out).unwrap_err();
         assert_eq!(err.to_string(), "ingest endpoint 403: forbidden");
         assert!(!String::from_utf8(out).unwrap().contains("Done."));
     }
@@ -542,7 +560,7 @@ mod tests {
             ..Default::default()
         };
         let mut out = Vec::new();
-        let err = ingest_inner(&collected, &server.url(), false, &mut out).unwrap_err();
+        let err = ingest_inner(&collected, &server.url(), "device-1", false, &mut out).unwrap_err();
         assert!(err.to_string().contains("not signed in"));
     }
 

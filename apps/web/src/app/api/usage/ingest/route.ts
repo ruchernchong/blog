@@ -45,7 +45,10 @@ export async function POST(request: Request) {
   if (!result.success) return result.response;
 
   try {
-    const upserted = await upsertTokenUsage(result.data.rows);
+    const { device } = result.data;
+    const upserted = await upsertTokenUsage(
+      result.data.rows.map((row) => ({ ...row, device })),
+    );
     const effortUpserted =
       result.data.effortRows.length > 0
         ? await upsertTokenEffortUsage(result.data.effortRows)

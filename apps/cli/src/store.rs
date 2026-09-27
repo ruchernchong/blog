@@ -2,6 +2,7 @@
 //! cross-process refresh lock. Tests swap the Keychain for an in-memory store.
 use anyhow::{Context, Result, anyhow};
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use std::ffi::OsString;
 use std::fs::{DirBuilder, File, OpenOptions};
 use std::os::unix::fs::{DirBuilderExt, OpenOptionsExt};
@@ -125,6 +126,48 @@ pub fn client_id_path() -> PathBuf {
         let _ = std::fs::remove_dir(old);
     }
     path
+}
+
+/// Device this collector reports as, so the server keeps each Mac's daily rows
+/// apart and sums them. Derived from the Mac's LocalHostName on first use and
+/// saved, so renaming the Mac later does not split its history across two ids.
+pub fn device_id() -> Result<String> {
+    let path = config_dir().join("device-id");
+    if let Ok(id) = std::fs::read_to_string(&path) {
+        let id = id.trim();
+        if !id.is_empty() {
+            return Ok(id.to_string());
+        }
+    }
+    let id = match local_host_name() {
+        Some(name) => device_id_for(&name),
+        None => crate::oauth::random_b64(16)?,
+    };
+    ensure_config_dir()?;
+    std::fs::write(&path, format!("{id}\n"))
+        .with_context(|| format!("write {}", path.display()))?;
+    Ok(id)
+}
+
+/// Hashed so the hostname itself never leaves the Mac.
+fn device_id_for(local_host_name: &str) -> String {
+    let digest = Sha256::digest(local_host_name.trim().to_lowercase().as_bytes());
+    digest[..8].iter().map(|b| format!("{b:02x}")).collect()
+}
+
+#[cfg(not(test))]
+fn local_host_name() -> Option<String> {
+    let output = std::process::Command::new("/usr/sbin/scutil")
+        .args(["--get", "LocalHostName"])
+        .output()
+        .ok()?;
+    let name = String::from_utf8(output.stdout).ok()?;
+    (output.status.success() && !name.trim().is_empty()).then(|| name.trim().to_string())
+}
+
+#[cfg(test)]
+fn local_host_name() -> Option<String> {
+    Some("Test-Mac".into())
 }
 
 /// Production keeps the original names so existing installs stay signed in;
@@ -267,8 +310,8 @@ pub mod backend {
 mod tests {
     use super::{
         KEYRING_SERVICE, LEGACY_KEYRING_SERVICE, OauthTokens, backend, client_id_path, config_dir,
-        delete_tokens, legacy_config_dir, load_tokens, not_signed_in, resolve_config_dir,
-        save_tokens,
+        delete_tokens, device_id, device_id_for, legacy_config_dir, load_tokens, not_signed_in,
+        resolve_config_dir, save_tokens,
     };
 
     fn tokens(access_token: &str) -> OauthTokens {
@@ -328,6 +371,7 @@ mod tests {
 
     #[test]
     fn client_id_path_migrates_legacy_file() {
+        let _guard = backend::serial();
         let old = legacy_config_dir();
         let legacy = old.join("usage-ingest-client-id");
         let current = config_dir().join("client-id");
@@ -358,6 +402,31 @@ mod tests {
 
         let _ = std::fs::remove_dir_all(&old);
         let _ = std::fs::remove_file(&current);
+    }
+
+    #[test]
+    fn device_id_hashes_the_local_host_name_and_keeps_it() {
+        let _guard = backend::serial();
+        let dir = config_dir();
+        let device = dir.join("device-id");
+        let _ = std::fs::remove_file(&device);
+
+        let id = device_id().unwrap();
+        assert_eq!(id, device_id_for("test-mac"));
+        assert_eq!(id.len(), 16);
+        assert!(!id.contains("test"), "hostname must not leak: {id}");
+
+        // Saved on first use: a later rename keeps the same id.
+        std::fs::write(&device, "kept-id\n").unwrap();
+        assert_eq!(device_id().unwrap(), "kept-id");
+
+        let _ = std::fs::remove_file(&device);
+    }
+
+    #[test]
+    fn device_id_for_ignores_case_and_whitespace() {
+        assert_eq!(device_id_for("Mac-mini\n"), device_id_for("mac-mini"));
+        assert_ne!(device_id_for("mac-mini"), device_id_for("macbook-pro"));
     }
 
     #[test]

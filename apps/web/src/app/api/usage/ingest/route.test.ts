@@ -128,10 +128,25 @@ describe("POST /api/usage/ingest", () => {
       effortUpserted: 0,
       syncRunId: "run_123",
     });
-    expect(mockUpsertTokenUsage).toHaveBeenCalledWith([validRow]);
+    expect(mockUpsertTokenUsage).toHaveBeenCalledWith([
+      { ...validRow, device: null },
+    ]);
     expect(mockUpsertTokenEffortUsage).not.toHaveBeenCalled();
     expect(mockStart).toHaveBeenCalledOnce();
     expect(mockRevalidateTag).toHaveBeenCalledWith("usage", "max");
+  });
+
+  it("should file every row under the device the client sends", async () => {
+    mockValidateMcpAuth.mockResolvedValue(adminOAuth);
+
+    const response = await POST(
+      postRequest({ device: "mac-mini", rows: [validRow] }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mockUpsertTokenUsage).toHaveBeenCalledWith([
+      { ...validRow, device: "mac-mini" },
+    ]);
   });
 
   it("should not block the response on registry work", async () => {
@@ -223,7 +238,9 @@ describe("POST /api/usage/ingest", () => {
     const response = await POST(postRequest({ rows: [validRow] }));
 
     expect(response.status).toBe(200);
-    expect(mockUpsertTokenUsage).toHaveBeenCalledWith([validRow]);
+    expect(mockUpsertTokenUsage).toHaveBeenCalledWith([
+      { ...validRow, device: null },
+    ]);
     expect(mockUpsertTokenEffortUsage).not.toHaveBeenCalled();
     expect(await response.json()).toMatchObject({ effortUpserted: 0 });
   });
@@ -236,7 +253,9 @@ describe("POST /api/usage/ingest", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(mockUpsertTokenUsage).toHaveBeenCalledWith([validRow]);
+    expect(mockUpsertTokenUsage).toHaveBeenCalledWith([
+      { ...validRow, device: null },
+    ]);
     expect(mockUpsertTokenEffortUsage).not.toHaveBeenCalled();
     expect(await response.json()).toMatchObject({ effortUpserted: 0 });
   });
@@ -254,7 +273,9 @@ describe("POST /api/usage/ingest", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(mockUpsertTokenUsage).toHaveBeenCalledWith([validRow]);
+    expect(mockUpsertTokenUsage).toHaveBeenCalledWith([
+      { ...validRow, device: null },
+    ]);
     expect(mockUpsertTokenEffortUsage).toHaveBeenCalledWith([validEffortRow]);
     expect(await response.json()).toEqual({
       ok: true,
