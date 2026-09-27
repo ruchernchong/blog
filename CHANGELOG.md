@@ -1,3 +1,9 @@
+## [1.55.3](https://github.com/ruchernchong/blog/compare/v1.55.2...v1.55.3) (2026-09-27)
+
+### Bug Fixes
+
+* refresh the update notice cache ([bbc221b](https://github.com/ruchernchong/blog/commit/bbc221b631bd38dab34f3a90e1fe9ebcb7eac682))
+
 ## [1.55.2](https://github.com/ruchernchong/blog/compare/v1.55.1...v1.55.2) (2026-09-27)
 
 ### Bug Fixes
