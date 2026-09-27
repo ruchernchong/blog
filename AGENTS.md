@@ -60,9 +60,11 @@ See `packages/usage/src/registry.ts` (pure normalise/merge) and
   `costUsd: null` to `POST /api/usage/ingest`, which upserts them with that server's
   own `DATABASE_URL`, prices them, and syncs the model registry. The target is
   `AGENT_USAGE_URL` (set to `https://blog.localhost/api/usage/ingest` in the local
-  `.envrc`), defaulting to production. Login (OAuth, admin account, Keychain) follows
-  the same server, and each non-production server gets its own Keychain entry, so
-  local and production logins never mix. `AGENT_USAGE_DRY_RUN=1` prints the payload
+  `.envrc`), defaulting to production. Login (OAuth, admin account) follows
+  the same server. Production tokens live in the Keychain; each non-production server
+  keeps its own in a 0600 file in `~/.config/agent-usage` (ad-hoc signed rebuilds would
+  otherwise trigger a Keychain password prompt every time), so local and production
+  logins never mix. `AGENT_USAGE_DRY_RUN=1` prints the payload
   without POSTing. Each install sends a `device` id (a hash of the Mac's LocalHostName, saved
   to `~/.config/agent-usage/device-id` on first use), and every row carries a hashed `session`
   id; the CLI POSTs in batches of 5,000 rows. `token_usage` is keyed per device and session,

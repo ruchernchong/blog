@@ -126,7 +126,7 @@ pnpm usage:login   # once per server
 pnpm usage:ingest
 ```
 
-Sign in once per server (OAuth, admin account; the token is stored in the Keychain). Login follows `AGENT_USAGE_URL`, so a local dev server and production keep separate logins. The installed collector is production only. Rows are sent with `costUsd: null`, and the route prices them after the model registry sync. The CLI emits token rows only; effort rows come from the AgentUsage app, a separate client.
+Sign in once per server (OAuth, admin account). Login follows `AGENT_USAGE_URL`, so a local dev server and production keep separate logins. Production tokens are stored in the Keychain; other servers keep theirs in a 0600 file in `~/.config/agent-usage`, so rebuilding the CLI never triggers a Keychain password prompt. The installed collector is production only. Rows are sent with `costUsd: null`, and the route prices them after the model registry sync. The CLI emits token rows only; effort rows come from the AgentUsage app, a separate client.
 
 Optional environment variables:
 
