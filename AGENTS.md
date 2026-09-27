@@ -63,7 +63,10 @@ See `packages/usage/src/registry.ts` (pure normalise/merge) and
   `.envrc`), defaulting to production. Login (OAuth, admin account, Keychain) follows
   the same server, and each non-production server gets its own Keychain entry, so
   local and production logins never mix. `AGENT_USAGE_DRY_RUN=1` prints the payload
-  without POSTing. Commands (clap): `measure [--json]`, `ingest [--dry-run] [--url <URL>]`
+  without POSTing. Each install sends a `device` id (a hash of the Mac's LocalHostName, saved
+  to `~/.config/agent-usage/device-id` on first use); `token_usage` is keyed per device and
+  `/usage` sums across devices, so several Macs add up. Clients sending no device store
+  `null`, which the `NULLS NOT DISTINCT` key still dedupes. Commands (clap): `measure [--json]`, `ingest [--dry-run] [--url <URL>]`
   (flags win over `AGENT_USAGE_DRY_RUN` / `AGENT_USAGE_URL`), `auth login|logout|status`
   (hidden `login`/`logout` aliases), `update [--check]` (self-update from the latest release),
   and `completions <zsh|bash|fish>`; no subcommand

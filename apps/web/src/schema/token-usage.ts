@@ -4,10 +4,10 @@ import {
   index,
   integer,
   numeric,
-  primaryKey,
   snakeCase,
   text,
   timestamp,
+  unique,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -17,10 +17,16 @@ import {
  * "opencode"); `provider` is the inference vendor that billed the tokens (e.g.
  * "anthropic", "openai", "fireworks-ai"). For single-provider agents it is
  * derived from the agent; multi-provider agents (OpenCode) record it per message.
- * Provider is part of the primary key because one model can run under several
+ * Provider is part of the key because one model can run under several
  * providers (e.g. "gpt-5.5" via both "openai" and "opencode").
  *
- * One row per (date, agent, provider, model) — daily is the finest grain by
+ * `device` is the collector install that sent the row. Each machine only sees
+ * its own agent logs, so rows are kept per device and summed on read. It is
+ * `null` for clients that send none. The key is a `NULLS NOT DISTINCT` unique
+ * constraint rather than a primary key (which cannot hold `null`), so those
+ * rows still collide on re-ingest and the upsert stays idempotent.
+ *
+ * One row per (date, agent, provider, model, device) — daily is the finest grain by
  * design. Only the
  * calendar `date` is stored, never a time-of-day, so the data cannot reveal *when*
  * within a day work happened. The Rust collector (`pnpm usage:ingest`) parses
@@ -44,6 +50,7 @@ export const tokenUsage = snakeCase.table(
     agent: text().notNull(),
     provider: text().notNull().default("unknown"),
     model: text().notNull(),
+    device: text(),
     inputTokens: bigint({ mode: "number" }).notNull().default(0),
     outputTokens: bigint({ mode: "number" }).notNull().default(0),
     cacheReadTokens: bigint({ mode: "number" }).notNull().default(0),
@@ -58,9 +65,9 @@ export const tokenUsage = snakeCase.table(
       .notNull(),
   },
   (table) => [
-    primaryKey({
-      columns: [table.date, table.agent, table.provider, table.model],
-    }),
+    unique()
+      .on(table.date, table.agent, table.provider, table.model, table.device)
+      .nullsNotDistinct(),
     index().on(table.date),
     index().on(table.agent),
     index().on(table.provider),

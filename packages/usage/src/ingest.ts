@@ -62,11 +62,17 @@ export const effortRowSchema = z.object({
  * a safety bound, comfortably above a multi-year, multi-agent history, and keeps
  * the JSON body within the serverless function's request-size limit.
  *
+ * `device` names the sending machine and applies to every row. Rows are kept
+ * per device and summed on read, so two Macs running the same model on the
+ * same day add up instead of the larger snapshot winning. Older clients send
+ * none, stored as `null`.
+ *
  * Token `rows` remain required (`min(1)`). Effort is optional: AgentUsage may
  * omit `effortRows` / `effortSnapshotComplete` on older clients; defaults keep
  * the payload backwards-compatible.
  */
 export const usageIngestSchema = z.object({
+  device: z.string().min(1).max(64).nullable().default(null),
   rows: z.array(usageRowSchema).min(1).max(20000),
   effortRows: z.array(effortRowSchema).max(20000).default([]),
   effortSnapshotComplete: z.boolean().default(false),

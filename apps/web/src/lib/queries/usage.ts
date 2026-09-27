@@ -25,6 +25,7 @@ import {
 } from "@workspace/usage/weekly-insights";
 import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns";
 import { and, asc, eq, gt, isNull, or, sql } from "drizzle-orm";
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { cacheLife, cacheTag } from "next/cache";
 import {
   MODEL_PRICING_COLUMNS,
@@ -44,14 +45,16 @@ import {
 const UPSERT_CHUNK_SIZE = 1000;
 
 /**
- * Composite primary key of `token_usage`. A conflict on these four columns means
- * we already have that daily aggregate and should overwrite it.
+ * Composite unique key of `token_usage` (`NULLS NOT DISTINCT`, so rows with no
+ * device still conflict). A conflict means we already have that device's daily
+ * aggregate and should overwrite it.
  */
 const CONFLICT_TARGET = [
   tokenUsage.date,
   tokenUsage.agent,
   tokenUsage.provider,
   tokenUsage.model,
+  tokenUsage.device,
 ] as const;
 
 /** Columns refreshed from the incoming row on conflict (everything but the key). */
@@ -83,7 +86,7 @@ const EFFORT_UPDATE_COLUMNS = [
 
 /**
  * Upsert daily `token_usage` aggregates on the composite key
- * (date, agent, provider, model). Called by `POST /api/usage/ingest`, which
+ * (date, agent, provider, model, device). Called by `POST /api/usage/ingest`, which
  * writes into whichever DB the deployment is configured for. Returns the number
  * of rows submitted.
  *
@@ -213,6 +216,7 @@ export async function repriceUnpricedTokenUsage(
           eq(tokenUsage.agent, row.agent),
           eq(tokenUsage.provider, row.provider),
           eq(tokenUsage.model, row.model),
+          sql`${tokenUsage.device} is not distinct from ${row.device}`,
           isNull(tokenUsage.costUsd),
         ),
       )
@@ -245,10 +249,33 @@ export async function getUsageProfile(): Promise<UsageProfile> {
   // neon-http: one HTTP round-trip via Neon's batch API. The model select is
   // in this batch (not Promise.all / loadPricing) so we do not add a round-trip
   // and do not import models.ts (which already imports this module).
+  // Each device stores its own snapshot of a day, so the rows are summed
+  // across devices here; everything below sees one row per key.
   const [rows, effortRows, modelRows] = await db.batch([
     db
-      .select()
+      .select({
+        date: tokenUsage.date,
+        agent: tokenUsage.agent,
+        provider: tokenUsage.provider,
+        model: tokenUsage.model,
+        inputTokens: sumOf(tokenUsage.inputTokens),
+        outputTokens: sumOf(tokenUsage.outputTokens),
+        cacheReadTokens: sumOf(tokenUsage.cacheReadTokens),
+        cacheWriteTokens: sumOf(tokenUsage.cacheWriteTokens),
+        reasoningTokens: sumOf(tokenUsage.reasoningTokens),
+        totalTokens: sumOf(tokenUsage.totalTokens),
+        messages: sumOf(tokenUsage.messages),
+        updatedAt: sql<Date>`max(${tokenUsage.updatedAt})`.mapWith(
+          tokenUsage.updatedAt,
+        ),
+      })
       .from(tokenUsage)
+      .groupBy(
+        tokenUsage.date,
+        tokenUsage.agent,
+        tokenUsage.provider,
+        tokenUsage.model,
+      )
       .orderBy(
         asc(tokenUsage.date),
         asc(tokenUsage.agent),
@@ -381,6 +408,14 @@ export async function getUsageProfile(): Promise<UsageProfile> {
 
 // --- Internal aggregation shapes --------------------------------------------
 
+/** A `token_usage` key summed across devices, as the profile reads it. */
+type UsageRow = Omit<typeof tokenUsage.$inferSelect, "costUsd" | "device">;
+
+/** `sum()` of an integer column; Postgres returns `numeric`, parsed back here. */
+function sumOf(column: AnyPgColumn) {
+  return sql<number>`sum(${column})`.mapWith(Number);
+}
+
 interface RollupAggregate {
   tokens: number;
   messages: number;
@@ -447,7 +482,7 @@ function getOrCreateRollup(
 
 function addToRollup(
   rollup: RollupAggregate,
-  row: typeof tokenUsage.$inferSelect,
+  row: UsageRow,
   cost: number | null,
 ): void {
   rollup.tokens += row.totalTokens;
@@ -462,10 +497,7 @@ function addToRollup(
   );
 }
 
-function addTokens(
-  breakdown: TokenBreakdown,
-  row: typeof tokenUsage.$inferSelect,
-): void {
+function addTokens(breakdown: TokenBreakdown, row: UsageRow): void {
   breakdown.input += row.inputTokens;
   breakdown.output += row.outputTokens;
   breakdown.cacheRead += row.cacheReadTokens;
@@ -473,7 +505,7 @@ function addTokens(
   breakdown.reasoning += row.reasoningTokens;
 }
 
-function tokensOf(row: typeof tokenUsage.$inferSelect): TokenBreakdown {
+function tokensOf(row: UsageRow): TokenBreakdown {
   return {
     input: row.inputTokens,
     output: row.outputTokens,
@@ -489,7 +521,7 @@ function tokensOf(row: typeof tokenUsage.$inferSelect): TokenBreakdown {
  */
 function cacheSavingsOf(
   pricing: Pricing,
-  row: typeof tokenUsage.$inferSelect,
+  row: UsageRow,
   priceOpts: { agent: string; provider: string },
 ): Cost {
   if (row.cacheReadTokens === 0) {

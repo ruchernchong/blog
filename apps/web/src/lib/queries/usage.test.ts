@@ -92,6 +92,21 @@ describe("upsertTokenUsage", () => {
     );
   });
 
+  it("should keep each device's snapshot of a day as its own row", async () => {
+    await upsertTokenUsage([{ ...baseRow, device: "mac-mini" }]);
+
+    // Without `device` in the key, a second Mac's snapshot of the same day
+    // would compete with the first under the larger-total guard instead of
+    // being stored alongside it and summed on read.
+    expect(onConflictConfigs[0].target).toEqual([
+      tokenUsage.date,
+      tokenUsage.agent,
+      tokenUsage.provider,
+      tokenUsage.model,
+      tokenUsage.device,
+    ]);
+  });
+
   it("should point every token column at the incoming (excluded) value", async () => {
     await upsertTokenUsage([baseRow]);
 

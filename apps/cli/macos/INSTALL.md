@@ -40,6 +40,10 @@ The browser opens ruchern.dev. Sign in with the **admin** account (ingest
 rejects non-admin OAuth). Tokens go in the login Keychain
 (`dev.ruchern.agent-usage`). The cached OAuth client id, update check, and
 refresh lock live in `~/.config/agent-usage/` (or `$XDG_CONFIG_HOME/agent-usage/`).
+So does `device-id`, which names this Mac on every ingest: a hash of its
+LocalHostName, saved on first use so a later rename keeps the same id. The
+server keeps each Mac's daily rows apart and adds them up, so running the
+collector on several Macs counts all of them.
 `agent-usage auth status` shows the server, the
 access token expiry, and whether a refresh token is stored, without a network
 call; it exits non-zero when signed out.

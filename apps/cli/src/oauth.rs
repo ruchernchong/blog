@@ -532,7 +532,7 @@ fn pkce() -> Result<(String, String)> {
     Ok((verifier, challenge))
 }
 
-fn random_b64(n: usize) -> Result<String> {
+pub(crate) fn random_b64(n: usize) -> Result<String> {
     let mut buf = vec![0u8; n];
     getrandom::fill(&mut buf)?;
     Ok(URL_SAFE_NO_PAD.encode(buf))
