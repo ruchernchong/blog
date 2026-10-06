@@ -100,7 +100,7 @@ See [AGENTS.md](./AGENTS.md) for complete command reference including:
 
 ### Usage collector (macOS)
 
-The `agent-usage` CLI, a Rust binary, parses local Claude, Codex, OpenCode, Cursor, and Grok logs and POSTs daily
+The `agent-usage` CLI, a Rust binary, parses local Claude, Codex, OpenCode, Cursor, Grok, Gemini CLI, and Antigravity CLI logs and POSTs daily
 rows to `https://ruchern.dev/api/usage/ingest`. Auth is OAuth (admin account),
 not `BLOG_MCP_AUTH_TOKEN`. 15-minute LaunchAgent optional.
 

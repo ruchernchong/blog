@@ -6,8 +6,10 @@
 //	agent-usage auth login | logout | status  # OAuth (browser + Keychain)
 //	agent-usage update [--check]              # install the latest release
 //	agent-usage completions <zsh|bash|fish>
+mod antigravity;
 mod collect;
 mod cursor;
+mod gemini;
 mod grok;
 mod ingest;
 mod oauth;

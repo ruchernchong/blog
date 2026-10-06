@@ -9,7 +9,14 @@ import type { PeriodComparisons } from "./period-comparison";
  */
 
 /** Known agents. Parsers self-register; this is just for nicer typing/labels. */
-export type Agent = "claude" | "codex" | "cursor" | "opencode";
+export type Agent =
+  | "claude"
+  | "codex"
+  | "cursor"
+  | "opencode"
+  | "grok"
+  | "gemini"
+  | "antigravity";
 
 export interface TokenBreakdown {
   input: number;
