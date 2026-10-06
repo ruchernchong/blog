@@ -1,3 +1,9 @@
+## [1.56.0](https://github.com/ruchernchong/blog/compare/v1.55.5...v1.56.0) (2026-10-06)
+
+### Features
+
+* support gemini and antigravity in usage collector ([039390c](https://github.com/ruchernchong/blog/commit/039390cb86a1c7cf5bc5340fd8ff84a7174bb0df))
+
 ## [1.55.5](https://github.com/ruchernchong/blog/compare/v1.55.4...v1.55.5) (2026-10-06)
 
 ### Bug Fixes
