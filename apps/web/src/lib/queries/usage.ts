@@ -134,10 +134,13 @@ export async function upsertTokenUsage(
 /**
  * Upsert daily `token_effort_usage` aggregates on `(date, agent)`.
  *
- * Same prune-erosion rationale as {@link upsertTokenUsage}: AgentUsage sends
+ * Same prune-erosion rationale as {@link upsertTokenUsage}: clients send
  * absolute session-count snapshots recomputed from logs that shrink over time.
- * A day is overwritten only when the incoming snapshot has a larger
- * `classifiedSessionCount + unclassifiedSessionCount`. Provided keys only —
+ * A day is overwritten when the incoming snapshot has a larger
+ * `classifiedSessionCount + unclassifiedSessionCount`. At an equal total,
+ * accept changed classifications when classified coverage does not decrease:
+ * existing sessions can acquire effort metadata or change their dominant level.
+ * Identical snapshots are ignored. Provided keys only —
  * unspecified dates are never deleted, even when `effortSnapshotComplete` is
  * true on the wire.
  */
@@ -149,16 +152,28 @@ export async function upsertTokenEffortUsage(
   }
 
   const set = excludedColumns(tokenEffortUsage, EFFORT_UPDATE_COLUMNS);
+  const queries = [];
   for (let i = 0; i < rows.length; i += UPSERT_CHUNK_SIZE) {
     const chunk = rows.slice(i, i + UPSERT_CHUNK_SIZE);
-    await db
-      .insert(tokenEffortUsage)
-      .values(chunk)
-      .onConflictDoUpdate({
-        target: [...EFFORT_CONFLICT_TARGET],
-        set,
-        setWhere: sql`(excluded.classified_session_count + excluded.unclassified_session_count) > (${tokenEffortUsage.classifiedSessionCount} + ${tokenEffortUsage.unclassifiedSessionCount})`,
-      });
+    queries.push(
+      db
+        .insert(tokenEffortUsage)
+        .values(chunk)
+        .onConflictDoUpdate({
+          target: [...EFFORT_CONFLICT_TARGET],
+          set,
+          setWhere: sql`(excluded.classified_session_count + excluded.unclassified_session_count) > (${tokenEffortUsage.classifiedSessionCount} + ${tokenEffortUsage.unclassifiedSessionCount}) or (
+          (excluded.classified_session_count + excluded.unclassified_session_count) = (${tokenEffortUsage.classifiedSessionCount} + ${tokenEffortUsage.unclassifiedSessionCount})
+          and excluded.classified_session_count >= ${tokenEffortUsage.classifiedSessionCount}
+          and (excluded.classified_session_count > ${tokenEffortUsage.classifiedSessionCount} or excluded.levels is distinct from ${tokenEffortUsage.levels})
+        )`,
+        }),
+    );
+  }
+  // Neon executes these chunks sequentially in one transaction and HTTP call.
+  const [first, ...remaining] = queries;
+  if (first) {
+    await db.batch([first, ...remaining]);
   }
   return rows.length;
 }

@@ -92,10 +92,14 @@ See `packages/usage/src/registry.ts` (pure normalise/merge) and
   rename, and reruns the package's own `install.sh` to refresh the LaunchAgent. See
   README.md “Usage collector (macOS)” and `apps/cli/macos/INSTALL.md`.
 
-The AgentUsage app (a separate client, not the `agent-usage` CLI) may also POST
-session-level `effortRows` into `token_effort_usage` (alongside token rows); the
-`/usage` page folds these into an all-time effort distribution. The `agent-usage`
-CLI parsers do not emit effort.
+The `agent-usage` CLI sends daily session-level `effortRows` alongside token rows
+in each ingest batch. Claude effort comes from `perTurnEffort` / `effort`; Codex
+effort comes from `turn_context` settings. Each session contributes its dominant
+recorded effort per local day (ties → `mixed`); missing metadata is unclassified.
+The separate AgentUsage app may also send the same contract. `/usage` folds
+`token_effort_usage` into an all-time distribution. Equal-size effort snapshots
+can refresh classifications when classified coverage does not decrease; smaller
+snapshots are ignored to preserve history when logs are pruned.
 
 ### MCP Server
 

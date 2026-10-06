@@ -1,7 +1,8 @@
-use crate::collect::{CollectResult, IngestRow, print_table};
+use crate::collect::{CollectResult, EffortRow, IngestRow, print_table};
 use crate::{oauth, store};
 use anyhow::{Result, bail};
 use serde::Serialize;
+use std::collections::HashSet;
 use std::ffi::OsString;
 use std::io::{self, Write};
 use std::sync::OnceLock;
@@ -16,9 +17,27 @@ const RESPONSE_BODY_LIMIT: u64 = 1 << 20;
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(120);
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 struct Payload<'a> {
     device: &'a str,
     rows: &'a [IngestRow],
+    effort_rows: Vec<&'a EffortRow>,
+}
+
+impl<'a> Payload<'a> {
+    fn new(device: &'a str, rows: &'a [IngestRow], effort_rows: &'a [EffortRow]) -> Self {
+        let days: HashSet<_> = rows.iter().map(|row| (&row.date, &row.agent)).collect();
+        Self {
+            device,
+            rows,
+            // Send the full day aggregate with its token batch. A day spanning
+            // batches repeats idempotently; no request is effort-only.
+            effort_rows: effort_rows
+                .iter()
+                .filter(|row| days.contains(&(&row.date, &row.agent)))
+                .collect(),
+        }
+    }
 }
 
 /// `--url` for this run. Global because [`endpoint`] also picks the OAuth
@@ -60,10 +79,7 @@ fn ingest_inner(
     writeln!(out)?;
 
     if dry_run {
-        let payload = Payload {
-            device,
-            rows: &result.rows,
-        };
+        let payload = Payload::new(device, &result.rows, &result.effort_rows);
         writeln!(out, "Dry run: {} rows → {endpoint}", result.rows.len())?;
         writeln!(out, "{}", serde_json::to_string_pretty(&payload)?)?;
         return Ok(());
@@ -78,7 +94,7 @@ fn ingest_inner(
     )?;
 
     for rows in result.rows.chunks(BATCH_ROWS) {
-        let body = serde_json::to_vec(&Payload { device, rows })?;
+        let body = serde_json::to_vec(&Payload::new(device, rows, &result.effort_rows))?;
         let started = Instant::now();
         let mut response = oauth::http()
             .post(endpoint)
@@ -291,6 +307,61 @@ fn fmt_frac(v: u128, prec: u32) -> (String, u128) {
 mod tests {
     use super::*;
     use crate::collect::ParserStats;
+
+    #[test]
+    fn payload_sends_full_effort_days_with_their_token_batches() {
+        use crate::collect::EffortLevelCount;
+        let rows = [
+            IngestRow {
+                date: "2026-10-05".into(),
+                agent: "codex".into(),
+                ..Default::default()
+            },
+            IngestRow {
+                date: "2026-10-05".into(),
+                agent: "codex".into(),
+                ..Default::default()
+            },
+            IngestRow {
+                date: "2026-10-06".into(),
+                agent: "claude".into(),
+                ..Default::default()
+            },
+        ];
+        let effort = vec![
+            EffortRow {
+                date: "2026-10-05".into(),
+                agent: "codex".into(),
+                levels: vec![EffortLevelCount {
+                    level: "ultra".into(),
+                    session_count: 3,
+                }],
+                classified_session_count: 3,
+                unclassified_session_count: 1,
+            },
+            EffortRow {
+                date: "2026-10-06".into(),
+                agent: "claude".into(),
+                ..Default::default()
+            },
+        ];
+        for batch in [&rows[0..1], &rows[1..2]] {
+            let payload = serde_json::to_value(Payload::new("device", batch, &effort)).unwrap();
+            assert_eq!(payload["rows"].as_array().unwrap().len(), 1);
+            assert_eq!(
+                payload["effortRows"],
+                serde_json::json!([{
+                    "date": "2026-10-05", "agent": "codex",
+                    "levels": [{"level": "ultra", "sessionCount": 3}],
+                    "classifiedSessionCount": 3, "unclassifiedSessionCount": 1
+                }])
+            );
+        }
+        assert_eq!(
+            Payload::new("device", &rows[2..], &effort).effort_rows,
+            vec![&effort[1]]
+        );
+    }
     use crate::store::{self, OauthTokens};
     use serde::Deserialize;
     use std::sync::{Arc, Mutex};

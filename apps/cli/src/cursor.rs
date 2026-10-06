@@ -162,6 +162,7 @@ pub fn map_cursor_bubble(
     Some(CursorEvent {
         id: format!("cursor-bubble-{composer_id}-{bubble_id}"),
         usage: UsageEvent {
+            effort: None,
             ts,
             agent: "cursor",
             provider: cursor_provider(&model).to_string(),
@@ -376,6 +377,7 @@ mod tests {
             CursorEvent {
                 id: "cursor-bubble-c1-b1".to_string(),
                 usage: UsageEvent {
+                    effort: None,
                     ts: bubble_created(),
                     agent: "cursor",
                     provider: "cursor".to_string(),
@@ -391,6 +393,7 @@ mod tests {
             CursorEvent {
                 id: "cursor-bubble-c1-b5".to_string(),
                 usage: UsageEvent {
+                    effort: None,
                     ts: composer_created(),
                     agent: "cursor",
                     provider: "cursor".to_string(),
@@ -532,6 +535,7 @@ mod tests {
         // nothing.
         let want = vec![
             UsageEvent {
+                effort: None,
                 ts: composer_created(),
                 agent: "cursor",
                 provider: "cursor".to_string(),
@@ -544,6 +548,7 @@ mod tests {
                 },
             },
             UsageEvent {
+                effort: None,
                 ts: bubble_created(),
                 agent: "cursor",
                 provider: "cursor".to_string(),

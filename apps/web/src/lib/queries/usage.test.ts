@@ -6,7 +6,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
  * stays non-decreasing. We keep the real schema (so `tokenUsage` columns
  * serialize to their true names) and swap only `db` for a recording stub.
  */
-const { onConflictConfigs } = vi.hoisted(() => ({
+const { onConflictConfigs, batch } = vi.hoisted(() => ({
+  batch: vi.fn((queries: Promise<unknown>[]) => Promise.all(queries)),
   onConflictConfigs: [] as Array<{
     target: unknown;
     set: Record<string, unknown>;
@@ -17,6 +18,7 @@ const { onConflictConfigs } = vi.hoisted(() => ({
 vi.mock("@/schema", async () => {
   const actual = await vi.importActual<typeof import("@/schema")>("@/schema");
   const db = {
+    batch,
     insert: () => ({
       values: () => ({
         onConflictDoUpdate: (config: (typeof onConflictConfigs)[number]) => {
@@ -155,9 +157,10 @@ describe("upsertTokenUsage", () => {
 describe("upsertTokenEffortUsage", () => {
   beforeEach(() => {
     onConflictConfigs.length = 0;
+    batch.mockClear();
   });
 
-  it("should only overwrite when the incoming session total is larger", async () => {
+  it("should accept changed classifications without decreasing session coverage", async () => {
     await upsertTokenEffortUsage([baseEffortRow]);
 
     expect(onConflictConfigs).toHaveLength(1);
@@ -165,8 +168,8 @@ describe("upsertTokenEffortUsage", () => {
     expect(setWhere).toBeDefined();
 
     const { sql } = dialect.sqlToQuery(setWhere as never);
-    expect(sql).toBe(
-      '(excluded.classified_session_count + excluded.unclassified_session_count) > ("token_effort_usage"."classified_session_count" + "token_effort_usage"."unclassified_session_count")',
+    expect(sql.replace(/\s+/g, " ").trim()).toBe(
+      '(excluded.classified_session_count + excluded.unclassified_session_count) > ("token_effort_usage"."classified_session_count" + "token_effort_usage"."unclassified_session_count") or ( (excluded.classified_session_count + excluded.unclassified_session_count) = ("token_effort_usage"."classified_session_count" + "token_effort_usage"."unclassified_session_count") and excluded.classified_session_count >= "token_effort_usage"."classified_session_count" and (excluded.classified_session_count > "token_effort_usage"."classified_session_count" or excluded.levels is distinct from "token_effort_usage"."levels") )',
     );
   });
 
@@ -191,6 +194,19 @@ describe("upsertTokenEffortUsage", () => {
 
     expect(submitted).toBe(0);
     expect(onConflictConfigs).toHaveLength(0);
+    expect(batch).not.toHaveBeenCalled();
+  });
+
+  it("should submit all effort chunks in one database batch", async () => {
+    const rows = Array.from({ length: 2500 }, () => baseEffortRow);
+
+    expect(await upsertTokenEffortUsage(rows)).toBe(2500);
+    expect(onConflictConfigs).toHaveLength(3);
+    expect(batch).toHaveBeenCalledOnce();
+    expect(batch.mock.calls[0][0]).toHaveLength(3);
+    for (const config of onConflictConfigs) {
+      expect(config.setWhere).toBeDefined();
+    }
   });
 });
 
