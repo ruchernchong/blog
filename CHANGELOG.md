@@ -1,3 +1,9 @@
+## [1.55.5](https://github.com/ruchernchong/blog/compare/v1.55.4...v1.55.5) (2026-10-06)
+
+### Bug Fixes
+
+* batch effort upserts to satisfy SonarCloud ([c5deedb](https://github.com/ruchernchong/blog/commit/c5deedb550283980c92622a25626a3f1b9a05a92))
+
 ## [1.55.4](https://github.com/ruchernchong/blog/compare/v1.55.3...v1.55.4) (2026-09-27)
 
 ### Bug Fixes
