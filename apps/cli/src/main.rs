@@ -27,7 +27,8 @@ use std::ffi::OsString;
 use std::io::{self, Write};
 use std::path::PathBuf;
 
-/// Collects local AI agent usage and ingests daily rows into ruchern.dev.
+/// Collects local AI agent usage (Claude, Codex, OpenCode, Cursor, Grok,
+/// Gemini CLI, Antigravity CLI) and ingests daily rows into ruchern.dev.
 #[derive(Debug, Parser)]
 #[command(
     name = "agent-usage",
