@@ -157,7 +157,7 @@ describe("upsertTokenEffortUsage", () => {
     onConflictConfigs.length = 0;
   });
 
-  it("should only overwrite when the incoming session total is larger", async () => {
+  it("should accept changed classifications without decreasing session coverage", async () => {
     await upsertTokenEffortUsage([baseEffortRow]);
 
     expect(onConflictConfigs).toHaveLength(1);
@@ -165,8 +165,8 @@ describe("upsertTokenEffortUsage", () => {
     expect(setWhere).toBeDefined();
 
     const { sql } = dialect.sqlToQuery(setWhere as never);
-    expect(sql).toBe(
-      '(excluded.classified_session_count + excluded.unclassified_session_count) > ("token_effort_usage"."classified_session_count" + "token_effort_usage"."unclassified_session_count")',
+    expect(sql.replace(/\s+/g, " ").trim()).toBe(
+      '(excluded.classified_session_count + excluded.unclassified_session_count) > ("token_effort_usage"."classified_session_count" + "token_effort_usage"."unclassified_session_count") or ( (excluded.classified_session_count + excluded.unclassified_session_count) = ("token_effort_usage"."classified_session_count" + "token_effort_usage"."unclassified_session_count") and excluded.classified_session_count >= "token_effort_usage"."classified_session_count" and (excluded.classified_session_count > "token_effort_usage"."classified_session_count" or excluded.levels is distinct from "token_effort_usage"."levels") )',
     );
   });
 

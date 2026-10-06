@@ -1,4 +1,4 @@
-use crate::collect::{Parsed, Tokens, UsageEvent, finish};
+use crate::collect::{Parsed, Tokens, UsageEvent, finish, normalise_effort};
 use chrono::{DateTime, TimeZone, Utc};
 use rusqlite::{Connection, OpenFlags, types::ValueRef};
 use serde::{Deserialize, Deserializer};
@@ -50,6 +50,8 @@ pub fn parse_claude(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
                     .output_tokens_details
                     .map_or(0, |details| details.thinking_tokens as i64),
             };
+            let effort =
+                normalise_effort(&line.per_turn_effort).or_else(|| normalise_effort(&line.effort));
             let key = [&message.id, &line.request_id, &line.uuid]
                 .into_iter()
                 .find(|value| !value.is_empty())
@@ -57,6 +59,9 @@ pub fn parse_claude(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
             if let Some(key) = key {
                 if let Some(&index) = seen.get(&key) {
                     pending[index].tokens.keep_max(tokens);
+                    if effort.is_some() {
+                        pending[index].effort = effort;
+                    }
                     return;
                 }
                 seen.insert(key, pending.len());
@@ -68,6 +73,7 @@ pub fn parse_claude(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
                 line.session_id
             };
             pending.push(UsageEvent {
+                effort,
                 ts,
                 agent: "claude",
                 provider: String::new(),
@@ -118,6 +124,7 @@ pub fn parse_codex(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
         // Rollout file names carry the session's uuid and survive archiving.
         let session = file_stem(file);
         let mut current_model = String::new();
+        let mut current_effort = None;
         let mut first_model = String::new();
         let mut prev_total: Option<CodexTokenUsage> = None;
         let mut file_events: Vec<UsageEvent> = Vec::new();
@@ -126,6 +133,10 @@ pub fn parse_codex(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
                 return;
             };
             let Some(payload) = line.payload else { return };
+            if line.kind == "turn_context" {
+                // A new context clears the previous turn's setting when absent.
+                current_effort = normalise_effort(&payload.effort);
+            }
             if !payload.model.is_empty() {
                 current_model = payload.model;
                 if first_model.is_empty() {
@@ -153,6 +164,7 @@ pub fn parse_codex(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
             let cached = usage.cached_input_tokens as i64;
             let reasoning = usage.reasoning_output_tokens as i64;
             file_events.push(UsageEvent {
+                effort: current_effort.clone(),
                 ts,
                 agent: "codex",
                 provider: String::new(),
@@ -264,6 +276,7 @@ fn parse_opencode_at(path: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
             events += 1;
             buckets.add(tokens);
             emit(UsageEvent {
+                effort: None,
                 ts,
                 agent: "opencode",
                 provider: or_unknown(message.provider_id),
@@ -358,6 +371,10 @@ struct ClaudeMessage {
 #[derive(Deserialize)]
 struct ClaudeLine {
     #[serde(default, deserialize_with = "null_string")]
+    effort: String,
+    #[serde(default, rename = "perTurnEffort", deserialize_with = "null_string")]
+    per_turn_effort: String,
+    #[serde(default, deserialize_with = "null_string")]
     timestamp: String,
     #[serde(default, rename = "requestId", deserialize_with = "null_string")]
     request_id: String,
@@ -391,6 +408,8 @@ struct CodexInfo {
 
 #[derive(Deserialize)]
 struct CodexPayload {
+    #[serde(default, deserialize_with = "null_string")]
+    effort: String,
     #[serde(default, rename = "type", deserialize_with = "null_string")]
     kind: String,
     #[serde(default, deserialize_with = "null_string")]
@@ -401,6 +420,8 @@ struct CodexPayload {
 
 #[derive(Deserialize)]
 struct CodexLine {
+    #[serde(default, rename = "type", deserialize_with = "null_string")]
+    kind: String,
     #[serde(default, deserialize_with = "null_string")]
     timestamp: String,
     #[serde(default)]
@@ -512,6 +533,86 @@ pub(crate) mod tests {
     use std::fs;
     use tempfile::TempDir;
 
+    #[test]
+    fn test_codex_effort_follows_turn_context_and_clears_missing_settings() {
+        let home = TempDir::new().unwrap();
+        let dir = home.path().join(".codex/sessions");
+        fs::create_dir_all(&dir).unwrap();
+        let context = |effort: Option<&str>| {
+            serde_json::json!({
+                "type": "turn_context", "payload": {"model": "gpt", "effort": effort}
+            })
+            .to_string()
+        };
+        let usage = |total: i64| {
+            serde_json::json!({
+                "timestamp": "2026-10-06T00:00:00Z", "type": "event_msg",
+                "payload": {"type": "token_count", "info": {
+                    "last_token_usage": {"input_tokens": 1},
+                    "total_token_usage": {"input_tokens": total}
+                }}
+            })
+            .to_string()
+        };
+        fs::write(
+            dir.join("s.jsonl"),
+            [
+                context(Some("ULTRA")),
+                usage(1),
+                usage(1),
+                context(Some("low")),
+                usage(2),
+                context(None),
+                usage(3),
+            ]
+            .join("\n"),
+        )
+        .unwrap();
+        let mut events = Vec::new();
+        parse_codex(home.path(), &mut |event| events.push(event));
+        assert_eq!(
+            events
+                .iter()
+                .map(|e| e.effort.as_deref())
+                .collect::<Vec<_>>(),
+            vec![Some("ultra"), Some("low"), None]
+        );
+    }
+
+    #[test]
+    fn test_claude_effort_prefers_per_turn_and_updates_streamed_metadata() {
+        let home = TempDir::new().unwrap();
+        let dir = home.path().join(".claude/projects/p");
+        fs::create_dir_all(&dir).unwrap();
+        let line = |id: &str, per_turn: Option<&str>, effort: Option<&str>| {
+            serde_json::json!({
+                "timestamp": "2026-10-06T00:00:00Z", "perTurnEffort": per_turn, "effort": effort,
+                "message": {"id": id, "model": "opus", "usage": {"input_tokens": 1}}
+            })
+            .to_string()
+        };
+        fs::write(
+            dir.join("s.jsonl"),
+            [
+                line("a", None, None),
+                line("a", Some("high"), Some("low")),
+                line("b", None, Some("xhigh")),
+                line("c", None, None),
+            ]
+            .join("\n"),
+        )
+        .unwrap();
+        let mut events = Vec::new();
+        parse_claude(home.path(), &mut |event| events.push(event));
+        assert_eq!(
+            events
+                .iter()
+                .map(|e| e.effort.as_deref())
+                .collect::<Vec<_>>(),
+            vec![Some("high"), Some("xhigh"), None]
+        );
+    }
+
     fn testdata_dir() -> PathBuf {
         Path::new(env!("CARGO_MANIFEST_DIR")).join("testdata")
     }
@@ -622,6 +723,7 @@ pub(crate) mod tests {
             events,
             vec![
                 UsageEvent {
+                    effort: None,
                     ts: ts("2026-09-12T15:30:00Z"),
                     agent: "claude",
                     provider: String::new(),
@@ -636,6 +738,7 @@ pub(crate) mod tests {
                     },
                 },
                 UsageEvent {
+                    effort: None,
                     ts: ts("2026-09-12T16:30:00Z"),
                     agent: "claude",
                     provider: String::new(),
@@ -648,6 +751,7 @@ pub(crate) mod tests {
                     },
                 },
                 UsageEvent {
+                    effort: None,
                     ts: ts("2026-09-13T01:00:00Z"),
                     agent: "claude",
                     provider: String::new(),
@@ -800,6 +904,7 @@ pub(crate) mod tests {
             vec![
                 // Logged before the first turn_context, so it takes the session's first model.
                 UsageEvent {
+                    effort: None,
                     ts: ts("2026-09-12T15:00:00.500Z"),
                     agent: "codex",
                     provider: String::new(),
@@ -814,6 +919,7 @@ pub(crate) mod tests {
                 // input excludes cached tokens, output excludes reasoning tokens. The
                 // repeat with an unchanged cumulative total is skipped.
                 UsageEvent {
+                    effort: None,
                     ts: ts("2026-09-12T15:59:59.999Z"),
                     agent: "codex",
                     provider: String::new(),
@@ -829,6 +935,7 @@ pub(crate) mod tests {
                 },
                 // Subtractions clamp at zero.
                 UsageEvent {
+                    effort: None,
                     ts: ts("2026-09-12T16:00:00Z"),
                     agent: "codex",
                     provider: String::new(),
@@ -842,6 +949,7 @@ pub(crate) mod tests {
                 },
                 // The model does not leak across files.
                 UsageEvent {
+                    effort: None,
                     ts: ts("2026-09-11T10:00:00Z"),
                     agent: "codex",
                     provider: String::new(),
@@ -893,6 +1001,7 @@ pub(crate) mod tests {
             events,
             vec![
                 UsageEvent {
+                    effort: None,
                     ts: opencode_created(),
                     agent: "opencode",
                     provider: "anthropic".to_string(),
@@ -907,6 +1016,7 @@ pub(crate) mod tests {
                     },
                 },
                 UsageEvent {
+                    effort: None,
                     ts: opencode_created(),
                     agent: "opencode",
                     provider: "unknown".to_string(),

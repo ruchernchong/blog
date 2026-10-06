@@ -3,7 +3,7 @@ title: Token Usage Ingestion
 description: Endpoint contract and operator workflow for importing local agent token usage into ruchern.dev.
 ---
 
-The token usage ingestion workflow parses local coding-agent logs, prices the token usage, folds events into daily aggregates, and writes those aggregates into the `token_usage` table. AgentUsage may also POST session-level effort aggregates into `token_effort_usage`.
+The token usage ingestion workflow parses local coding-agent logs, prices the token usage, folds events into daily aggregates, and writes those aggregates into the `token_usage` table. The collector also sends session-level effort aggregates into `token_effort_usage` in the same requests.
 
 Parsing happens locally because agent logs live on the machine that ran the agents. Production writes happen through the deployed API route, so the production `DATABASE_URL` never has to be present on a local machine.
 
@@ -111,7 +111,7 @@ Effort rows are upserted by:
 date + agent
 ```
 
-**Non-decreasing on conflict.** Both tables guard against prune erosion: a day is overwritten only when the incoming snapshot is more complete — larger `totalTokens` for tokens, or larger `classifiedSessionCount + unclassifiedSessionCount` for effort. Smaller re-parses from pruned logs are ignored. The whole incoming row wins together.
+**Non-decreasing on conflict.** Both tables guard against prune erosion: a day is overwritten only when the incoming snapshot is more complete — larger `totalTokens` for tokens, or larger `classifiedSessionCount + unclassifiedSessionCount` for effort. At an equal session total, effort classifications can update when classified coverage does not decrease and either coverage or the level distribution changes. This allows active sessions to change their dominant effort and previously unknown sessions to become classified. Identical snapshots and smaller re-parses from pruned logs are ignored. The whole incoming row wins together.
 
 ## Cache Revalidation
 
@@ -126,7 +126,7 @@ pnpm usage:login   # once per server
 pnpm usage:ingest
 ```
 
-Sign in once per server (OAuth, admin account). Login follows `AGENT_USAGE_URL`, so a local dev server and production keep separate logins. Production tokens are stored in the Keychain; other servers keep theirs in a 0600 file in `~/.config/agent-usage`, so rebuilding the CLI never triggers a Keychain password prompt. The installed collector is production only. Rows are sent with `costUsd: null`, and the route prices them after the model registry sync. The CLI emits token rows only; effort rows come from the AgentUsage app, a separate client.
+Sign in once per server (OAuth, admin account). Login follows `AGENT_USAGE_URL`, so a local dev server and production keep separate logins. Production tokens are stored in the Keychain; other servers keep theirs in a 0600 file in `~/.config/agent-usage`, so rebuilding the CLI never triggers a Keychain password prompt. The installed collector is production only. Rows are sent with `costUsd: null`, and the route prices them after the model registry sync. The CLI sends token and effort rows together in each batch. Claude effort is read from `perTurnEffort` (preferred) or `effort`; Codex effort follows `turn_context.effort`. Each session contributes its dominant recorded effort per local day (ties → `mixed`), irrespective of how many models it uses. Streaming duplicates do not add votes. Sessions without recorded metadata remain unclassified; requests without a session identifier are excluded from effort counts. Each token batch carries the full effort aggregate for its dates and agents, so a day spanning batches repeats idempotently. The separate AgentUsage app can also send this contract.
 
 Optional environment variables:
 
