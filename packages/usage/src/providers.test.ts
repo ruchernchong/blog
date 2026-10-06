@@ -9,6 +9,7 @@ describe("providerForAgent", () => {
     expect(providerForAgent("claude")).toBe("anthropic");
     expect(providerForAgent("codex")).toBe("openai");
     expect(providerForAgent("grok")).toBe("xai");
+    expect(providerForAgent("gemini")).toBe("google");
   });
 
   it("should fall back to the agent key for an unmapped agent", () => {

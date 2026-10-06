@@ -15,6 +15,7 @@ export const AGENT_PROVIDERS: Record<string, string> = {
   claude: "anthropic",
   codex: "openai",
   grok: "xai",
+  gemini: "google",
 };
 
 const MODELS_DEV_LOGO_PROVIDER_IDS: Record<string, string> = {

@@ -56,7 +56,14 @@ See `packages/usage/src/registry.ts` (pure normalise/merge) and
 
 - `pnpm usage:login` / `pnpm usage:measure` / `pnpm usage:ingest` - the `agent-usage`
   CLI, a Rust collector (`apps/cli`), run via `turbo run @workspace/cli#…`. Parses Claude, Codex,
-  OpenCode, Cursor, and Grok on this machine. `ingest` POSTs daily rows with
+  OpenCode, Cursor, Grok, Gemini CLI, and Antigravity CLI on this machine. Gemini
+  reads JSON/JSONL sessions in `~/.gemini/tmp/<project>/chats/`; Antigravity CLI
+  reads protobuf step usage from `~/.gemini/antigravity-cli/conversations/*.db`
+  (including live WAL data). Antigravity stamps the inference provider per call;
+  opaque model enums are preserved as `antigravity-model-<id>` and need a curated
+  registry override for pricing when no model name is recorded. Its private
+  storage format is version-dependent; Antigravity IDE `.pb` histories are not
+  parsed. `ingest` POSTs daily rows with
   `costUsd: null` to `POST /api/usage/ingest`, which upserts them with that server's
   own `DATABASE_URL`, prices them, and syncs the model registry. The target is
   `AGENT_USAGE_URL` (set to `https://blog.localhost/api/usage/ingest` in the local

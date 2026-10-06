@@ -8,6 +8,8 @@ const AGENT_LABELS: Record<string, string> = {
   codex: "Codex",
   cursor: "Cursor",
   grok: "Grok",
+  gemini: "Gemini CLI",
+  antigravity: "Antigravity",
   opencode: "OpenCode",
 };
 
