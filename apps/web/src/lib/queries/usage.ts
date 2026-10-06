@@ -152,20 +152,28 @@ export async function upsertTokenEffortUsage(
   }
 
   const set = excludedColumns(tokenEffortUsage, EFFORT_UPDATE_COLUMNS);
+  const queries = [];
   for (let i = 0; i < rows.length; i += UPSERT_CHUNK_SIZE) {
     const chunk = rows.slice(i, i + UPSERT_CHUNK_SIZE);
-    await db
-      .insert(tokenEffortUsage)
-      .values(chunk)
-      .onConflictDoUpdate({
-        target: [...EFFORT_CONFLICT_TARGET],
-        set,
-        setWhere: sql`(excluded.classified_session_count + excluded.unclassified_session_count) > (${tokenEffortUsage.classifiedSessionCount} + ${tokenEffortUsage.unclassifiedSessionCount}) or (
+    queries.push(
+      db
+        .insert(tokenEffortUsage)
+        .values(chunk)
+        .onConflictDoUpdate({
+          target: [...EFFORT_CONFLICT_TARGET],
+          set,
+          setWhere: sql`(excluded.classified_session_count + excluded.unclassified_session_count) > (${tokenEffortUsage.classifiedSessionCount} + ${tokenEffortUsage.unclassifiedSessionCount}) or (
           (excluded.classified_session_count + excluded.unclassified_session_count) = (${tokenEffortUsage.classifiedSessionCount} + ${tokenEffortUsage.unclassifiedSessionCount})
           and excluded.classified_session_count >= ${tokenEffortUsage.classifiedSessionCount}
           and (excluded.classified_session_count > ${tokenEffortUsage.classifiedSessionCount} or excluded.levels is distinct from ${tokenEffortUsage.levels})
         )`,
-      });
+        }),
+    );
+  }
+  // Neon executes these chunks sequentially in one transaction and HTTP call.
+  const [first, ...remaining] = queries;
+  if (first) {
+    await db.batch([first, ...remaining]);
   }
   return rows.length;
 }
