@@ -153,6 +153,7 @@ fn map_step(raw: &[u8], session: &str, idx: i64) -> anyhow::Result<Option<(Strin
             provider: provider.to_string(),
             model,
             session: session.to_string(),
+            effort: None,
             tokens,
         },
     )))

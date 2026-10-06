@@ -75,6 +75,7 @@ pub fn parse_grok(home: &Path, emit: &mut dyn FnMut(UsageEvent)) -> Parsed {
                 events += 1;
                 buckets.add(tokens);
                 emit(UsageEvent {
+                    effort: None,
                     ts,
                     agent: "grok",
                     provider: String::new(),
@@ -177,6 +178,7 @@ mod tests {
             vec![
                 // Cache reads are netted out of input, reasoning out of output.
                 UsageEvent {
+                    effort: None,
                     ts: DateTime::parse_from_rfc3339("2026-09-13T03:49:53.800571+00:00")
                         .unwrap()
                         .with_timezone(&Utc),
@@ -195,6 +197,7 @@ mod tests {
                 // A second model in the same turn is its own event; models are
                 // emitted in key order.
                 UsageEvent {
+                    effort: None,
                     ts: Utc.with_ymd_and_hms(2026, 9, 13, 4, 10, 0).unwrap(),
                     agent: "grok",
                     provider: String::new(),
@@ -209,6 +212,7 @@ mod tests {
                     },
                 },
                 UsageEvent {
+                    effort: None,
                     ts: Utc.with_ymd_and_hms(2026, 9, 13, 4, 10, 0).unwrap(),
                     agent: "grok",
                     provider: String::new(),

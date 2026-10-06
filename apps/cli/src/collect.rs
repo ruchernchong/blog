@@ -43,6 +43,8 @@ pub struct UsageEvent {
     /// The agent's own id for the session (file, composer, or conversation) that
     /// produced the event; empty when the agent records none.
     pub session: String,
+    /// Recorded effort for this request; never inferred from token counts.
+    pub effort: Option<String>,
     pub tokens: Tokens,
 }
 
@@ -89,7 +91,75 @@ pub struct CollectResult {
     pub event_count: usize,
     pub stats: Vec<ParserStats>,
     pub rows: Vec<IngestRow>,
+    pub effort_rows: Vec<EffortRow>,
     pub warnings: Vec<String>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EffortLevelCount {
+    pub level: String,
+    pub session_count: i64,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EffortRow {
+    pub date: String,
+    pub agent: String,
+    pub levels: Vec<EffortLevelCount>,
+    pub classified_session_count: i64,
+    pub unclassified_session_count: i64,
+}
+
+/// One vote per deduplicated request, grouped by local day and session.
+#[derive(Default)]
+struct SessionEffort {
+    levels: HashMap<String, usize>,
+}
+
+pub fn normalise_effort(value: &str) -> Option<String> {
+    let level = value.trim().to_lowercase();
+    (!level.is_empty()).then_some(level)
+}
+
+fn fold_effort(sessions: HashMap<(String, String, String), SessionEffort>) -> Vec<EffortRow> {
+    let mut days: HashMap<(String, String), EffortRow> = HashMap::new();
+    for ((date, agent, _session), effort) in sessions {
+        let day = days
+            .entry((date.clone(), agent.clone()))
+            .or_insert_with(|| EffortRow {
+                date,
+                agent,
+                ..Default::default()
+            });
+        let Some(max) = effort.levels.values().max() else {
+            day.unclassified_session_count += 1;
+            continue;
+        };
+        let mut winners = effort.levels.iter().filter(|(_, count)| *count == max);
+        let (level, _) = winners.next().unwrap();
+        let level = if winners.next().is_some() {
+            "mixed"
+        } else {
+            level
+        };
+        day.classified_session_count += 1;
+        if let Some(count) = day.levels.iter_mut().find(|count| count.level == level) {
+            count.session_count += 1;
+        } else {
+            day.levels.push(EffortLevelCount {
+                level: level.to_string(),
+                session_count: 1,
+            });
+        }
+    }
+    let mut rows: Vec<_> = days.into_values().collect();
+    for row in &mut rows {
+        row.levels.sort_by(|a, b| a.level.cmp(&b.level));
+    }
+    rows.sort_by(|a, b| (&a.date, &a.agent).cmp(&(&b.date, &b.agent)));
+    rows
 }
 
 /// A parser's outcome: `stats` is `None` when the agent isn't on this machine.
@@ -112,6 +182,7 @@ pub fn collect(home: &Path) -> CollectResult {
 /// machine's local timezone, tests pin a fixed offset for determinism.
 fn collect_with(home: &Path, local_date: impl Fn(DateTime<Utc>) -> String) -> CollectResult {
     let mut groups: HashMap<String, IngestRow> = HashMap::new();
+    let mut efforts: HashMap<(String, String, String), SessionEffort> = HashMap::new();
     let mut out = CollectResult::default();
 
     let mut emit = |event: UsageEvent| {
@@ -125,6 +196,16 @@ fn collect_with(home: &Path, local_date: impl Fn(DateTime<Utc>) -> String) -> Co
         };
         let date = local_date(event.ts);
         let session = session_hash(event.agent, &event.session);
+        // Agents without effort metadata stay unclassified. Missing session ids
+        // cannot be counted reliably and are excluded from session aggregates.
+        if let Some(session) = &session {
+            let effort = efforts
+                .entry((date.clone(), event.agent.to_string(), session.clone()))
+                .or_default();
+            if let Some(level) = event.effort.as_deref().and_then(normalise_effort) {
+                *effort.levels.entry(level).or_default() += 1;
+            }
+        }
         let key = format!(
             "{date}|{}|{provider}|{}|{}",
             event.agent,
@@ -182,6 +263,7 @@ fn collect_with(home: &Path, local_date: impl Fn(DateTime<Utc>) -> String) -> Co
             row
         })
         .collect();
+    out.effort_rows = fold_effort(efforts);
     out.rows.sort_by(|a, b| {
         (&a.date, &a.agent, &a.provider, &a.model, &a.session).cmp(&(
             &b.date,
@@ -297,6 +379,70 @@ mod tests {
     use crate::parse::tests::{seed_claude, seed_codex, seed_opencode};
     use chrono::FixedOffset;
     use tempfile::TempDir;
+
+    #[test]
+    fn test_collect_effort_with_tokens_deduplicates_streams_and_models() {
+        let home = TempDir::new().unwrap();
+        let dir = home.path().join(".claude/projects/p");
+        std::fs::create_dir_all(&dir).unwrap();
+        let line = |id: &str, session: &str, model: &str, effort: Option<&str>| {
+            serde_json::json!({
+                "timestamp": "2026-10-05T16:30:00Z", "sessionId": session,
+                "perTurnEffort": effort,
+                "message": {"id": id, "model": model, "usage": {"input_tokens": 1}}
+            })
+            .to_string()
+        };
+        let lines = [
+            line("a", "dominant", "opus", Some(" HIGH ")),
+            line("a", "dominant", "opus", Some("high")), // streaming duplicate
+            line("b", "dominant", "sonnet", Some("high")), // same session, another model
+            line("c", "dominant", "opus", Some("medium")),
+            line("d", "tie", "opus", Some("low")),
+            line("e", "tie", "opus", Some("high")),
+            line("f", "unknown", "opus", None),
+        ];
+        std::fs::write(dir.join("s.jsonl"), lines.join("\n")).unwrap();
+        let result = collect_with(home.path(), fixed_offset_date(8 * 3600));
+        assert_eq!(result.rows.iter().map(|r| r.messages).sum::<i64>(), 6);
+        assert_eq!(
+            result.effort_rows,
+            vec![EffortRow {
+                date: "2026-10-06".into(),
+                agent: "claude".into(),
+                levels: vec![
+                    EffortLevelCount {
+                        level: "high".into(),
+                        session_count: 1
+                    },
+                    EffortLevelCount {
+                        level: "mixed".into(),
+                        session_count: 1
+                    },
+                ],
+                classified_session_count: 2,
+                unclassified_session_count: 1,
+            }]
+        );
+    }
+
+    #[test]
+    fn test_collect_effort_keeps_days_separate() {
+        let mut sessions = HashMap::new();
+        for date in ["2026-10-05", "2026-10-06"] {
+            sessions.insert(
+                (date.into(), "codex".into(), "session".into()),
+                SessionEffort {
+                    levels: HashMap::from([("ultra".into(), 2)]),
+                },
+            );
+        }
+        let rows = fold_effort(sessions);
+        assert_eq!(rows.len(), 2);
+        assert!(rows.iter().all(|row| row.classified_session_count == 1));
+        assert_eq!(rows[0].date, "2026-10-05");
+        assert_eq!(rows[1].date, "2026-10-06");
+    }
 
     fn row_key(row: &IngestRow) -> String {
         format!("{}|{}|{}|{}", row.date, row.agent, row.provider, row.model)

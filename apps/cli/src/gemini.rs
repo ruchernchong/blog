@@ -150,6 +150,7 @@ fn add_message(
             provider: String::new(),
             model: model.to_string(),
             session: session.to_string(),
+            effort: None,
             tokens,
         });
 }
