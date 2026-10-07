@@ -1,3 +1,9 @@
+## [1.56.1](https://github.com/ruchernchong/blog/compare/v1.56.0...v1.56.1) (2026-10-07)
+
+### Bug Fixes
+
+* stop collecting gemini and antigravity usage ([47eb37a](https://github.com/ruchernchong/blog/commit/47eb37a0c51941a42284b3802d88d043b0a19853)), closes [#458](https://github.com/ruchernchong/blog/issues/458)
+
 ## [1.56.0](https://github.com/ruchernchong/blog/compare/v1.55.5...v1.56.0) (2026-10-06)
 
 ### Features
