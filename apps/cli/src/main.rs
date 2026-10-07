@@ -6,10 +6,8 @@
 //	agent-usage auth login | logout | status  # OAuth (browser + Keychain)
 //	agent-usage update [--check]              # install the latest release
 //	agent-usage completions <zsh|bash|fish>
-mod antigravity;
 mod collect;
 mod cursor;
-mod gemini;
 mod grok;
 mod ingest;
 mod oauth;
@@ -27,8 +25,8 @@ use std::ffi::OsString;
 use std::io::{self, Write};
 use std::path::PathBuf;
 
-/// Collects local AI agent usage (Claude, Codex, OpenCode, Cursor, Grok,
-/// Gemini CLI, Antigravity CLI) and ingests daily rows into ruchern.dev.
+/// Collects local AI agent usage (Claude, Codex, OpenCode, Cursor, Grok)
+/// and ingests daily rows into ruchern.dev.
 #[derive(Debug, Parser)]
 #[command(
     name = "agent-usage",

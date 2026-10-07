@@ -1,4 +1,4 @@
-use crate::{antigravity, cursor, gemini, grok, parse};
+use crate::{cursor, grok, parse};
 use chrono::{DateTime, Local, Utc};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -228,14 +228,12 @@ fn collect_with(home: &Path, local_date: impl Fn(DateTime<Utc>) -> String) -> Co
         row.messages += 1;
     };
 
-    let parsers: [(&str, Parser); 7] = [
+    let parsers: [(&str, Parser); 5] = [
         ("claude", parse::parse_claude),
         ("codex", parse::parse_codex),
         ("opencode", parse::parse_opencode),
         ("cursor", cursor::parse_cursor),
         ("grok", grok::parse_grok),
-        ("gemini", gemini::parse_gemini),
-        ("antigravity", antigravity::parse_antigravity),
     ];
 
     // A failing parser (or file) is a warning, not a fatal error: the server only
@@ -291,7 +289,6 @@ pub fn provider_for_agent(agent: &str) -> &str {
         "claude" => "anthropic",
         "codex" => "openai",
         "grok" => "xai",
-        "gemini" => "google",
         other => other,
     }
 }
@@ -816,25 +813,6 @@ mod tests {
     }
 
     #[test]
-    fn should_collect_gemini_into_pricing_ready_session_rows() {
-        let home = TempDir::new().unwrap();
-        crate::gemini::tests::seed_gemini(home.path());
-        let out = collect_with(home.path(), fixed_offset_date(8 * 60 * 60));
-        assert_eq!(out.agents, vec!["gemini"]);
-        assert!(out.warnings.is_empty());
-        assert_eq!(out.rows.len(), 2);
-        assert!(out.rows.iter().all(|row| row.date == "2026-10-06"
-            && row.provider == "google"
-            && row.cost_usd.is_none()
-            && row.session.as_ref().is_some_and(|id| id.len() == 16)));
-        assert_eq!(
-            out.rows.iter().map(|row| row.total_tokens).sum::<i64>(),
-            213
-        );
-        assert_eq!(out.rows.iter().map(|row| row.messages).sum::<i64>(), 3);
-    }
-
-    #[test]
     fn test_provider_for_agent() {
         for (agent, want) in [
             ("claude", "anthropic"),
@@ -842,7 +820,6 @@ mod tests {
             ("opencode", "opencode"),
             ("cursor", "cursor"),
             ("grok", "xai"),
-            ("gemini", "google"),
         ] {
             assert_eq!(provider_for_agent(agent), want);
         }
