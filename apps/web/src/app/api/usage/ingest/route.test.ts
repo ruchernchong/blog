@@ -32,7 +32,7 @@ vi.mock("next/cache", () => ({
 import { revalidateTag } from "next/cache";
 import { start } from "workflow/api";
 import redis from "@/config/redis";
-import { validateMcpAuth } from "@/lib/api/mcp-auth";
+import { type McpAuthResult, validateMcpAuth } from "@/lib/api/mcp-auth";
 import { getModelDisplayNames } from "@/lib/queries/models";
 import { upsertTokenEffortUsage, upsertTokenUsage } from "@/lib/queries/usage";
 import { POST } from "./route";
@@ -63,7 +63,7 @@ const validRow = {
 };
 
 /** The only accepted auth: an OAuth access token owned by an admin. */
-const adminOAuth = {
+const adminOAuth: McpAuthResult = {
   type: "oauth",
   user: {
     id: "admin",
@@ -71,7 +71,12 @@ const adminOAuth = {
     name: "Admin",
     role: "admin",
   },
-} as const;
+  authInfo: {
+    token: "oauth-token",
+    clientId: "client-1",
+    scopes: ["openid", "offline_access"],
+  },
+};
 
 const validEffortRow = {
   date: "2026-06-02",
@@ -244,23 +249,6 @@ describe("POST /api/usage/ingest", () => {
     expect(mockStart).not.toHaveBeenCalled();
   });
 
-  it("should return 401 for a non-admin session", async () => {
-    mockValidateMcpAuth.mockResolvedValue({
-      type: "session",
-      user: {
-        id: "u1",
-        email: "user@example.com",
-        name: "User",
-        role: "user",
-      },
-    });
-
-    const response = await POST(postRequest({ rows: [validRow] }));
-
-    expect(response.status).toBe(401);
-    expect(mockUpsertTokenUsage).not.toHaveBeenCalled();
-  });
-
   it("should upsert, start the sync workflow, and revalidate", async () => {
     mockValidateMcpAuth.mockResolvedValue(adminOAuth);
 
@@ -339,30 +327,9 @@ describe("POST /api/usage/ingest", () => {
     expect(mockRevalidateTag).toHaveBeenCalledWith("usage", "max");
   });
 
-  it("should return 401 for an admin session", async () => {
-    mockValidateMcpAuth.mockResolvedValue({
-      ...adminOAuth,
-      type: "session",
-    });
-
-    const response = await POST(postRequest({ rows: [validRow] }));
-
-    expect(response.status).toBe(401);
-    expect(mockUpsertTokenUsage).not.toHaveBeenCalled();
-  });
-
-  it("should return 401 for the static MCP token", async () => {
-    mockValidateMcpAuth.mockResolvedValue({ type: "token" });
-
-    const response = await POST(postRequest({ rows: [validRow] }));
-
-    expect(response.status).toBe(401);
-    expect(mockUpsertTokenUsage).not.toHaveBeenCalled();
-  });
-
   it("should return 401 for a non-admin OAuth token", async () => {
     mockValidateMcpAuth.mockResolvedValue({
-      type: "oauth",
+      ...adminOAuth,
       user: { ...adminOAuth.user, role: "user" },
     });
 

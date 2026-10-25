@@ -3,10 +3,7 @@
   "mcp": {
     "blog": {
       "type": "remote",
-      "url": "https://ruchern.dev/api/mcp",
-      "headers": {
-        "Authorization": "Bearer {env:BLOG_MCP_AUTH_TOKEN}"
-      }
+      "url": "https://ruchern.dev/api/mcp"
     },
     "heroui-pro": {
       "type": "remote",

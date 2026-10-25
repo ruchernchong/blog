@@ -103,8 +103,8 @@ See [AGENTS.md](./AGENTS.md) for complete command reference including:
 The `agent-usage` CLI, a Rust binary, parses local Claude, Codex, OpenCode, Cursor, and Grok logs and POSTs daily
 token and session effort rows together to `https://ruchern.dev/api/usage/ingest`.
 Claude and Codex effort settings are read from the same logs as their tokens;
-sessions without recorded effort remain unclassified. Auth is OAuth (admin account),
-not `BLOG_MCP_AUTH_TOKEN`. 15-minute LaunchAgent optional.
+sessions without recorded effort remain unclassified. Auth is OAuth (admin account).
+15-minute LaunchAgent optional.
 
 Install the prebuilt universal binary from the latest release
 (no checkout or Rust toolchain needed), or build from a checkout with

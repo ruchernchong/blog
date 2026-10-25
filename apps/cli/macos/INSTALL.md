@@ -1,8 +1,7 @@
 # Install the agent-usage CLI (macOS LaunchAgent)
 
 `agent-usage` (formerly `usage-ingest`) runs an every-15-minutes job: parse
-local Claude / Codex / OpenCode / Cursor / Grok logs and POST daily rows to `https://ruchern.dev/api/usage/ingest`. Auth is OAuth (admin account),
-not `BLOG_MCP_AUTH_TOKEN`.
+local Claude / Codex / OpenCode / Cursor / Grok logs and POST daily rows to `https://ruchern.dev/api/usage/ingest`. Auth is OAuth (admin account).
 
 ## 1. Install and sign in
 

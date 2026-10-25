@@ -23,7 +23,7 @@ apps/web/src/app/api/usage/ingest/route.ts
 
 Requests must send `Authorization: Bearer <access_token>`, where the token is an OAuth access token issued by this site's OAuth provider to a user whose role is `admin`. `agent-usage auth login` obtains one.
 
-The static `BLOG_MCP_AUTH_TOKEN` bearer and Better Auth sessions are rejected.
+Better Auth sessions and any other bearer are rejected.
 
 ## Request Body
 
