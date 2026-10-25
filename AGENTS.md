@@ -165,12 +165,18 @@ revalidation when either is unset. Tag and Redis invalidation lives in the Next-
 The MCP server is also available as a serverless API route for remote access from Claude Desktop, Claude Code, or the
 Claude mobile app.
 
-**Endpoint:** `https://ruchern.dev/api/mcp`
+**Endpoints (dual-run):** `https://ruchern.dev/api/mcp` (`blog` in `.mcp.json`) and the
+Worker at `https://mcp.ruchern.dev/mcp` (`blog-worker`). Both serve the same tools and data
+until `/api/mcp` is retired.
 
 **Auth:** OAuth only (admin account, `mcp` scope). Clients discover the provider via
-`/.well-known/oauth-protected-resource`, self-register, and sign in at `/consent`; no
-static token or session is accepted. Add the URL as a remote MCP server with no
-`headers` (Claude Code: `"type": "http"`, then authenticate via `/mcp`).
+`/.well-known/oauth-protected-resource` on the endpoint's own origin, self-register, and sign
+in at `/consent`; no static token or session is accepted. Add the URL as a remote MCP server
+with no `headers` (Claude Code: `"type": "http"`, then authenticate via `/mcp`). Each origin
+publishes its own `resource`, which clients request as the token audience: the provider issuer
+(`https://ruchern.dev/api/auth`) for `/api/mcp`, and `https://mcp.ruchern.dev/mcp`
+(`MCP_WORKER_RESOURCE`) for the Worker. `oauthProvider` lists both in `resources`, and each
+endpoint only accepts tokens issued for its own audience.
 
 ### MCP Worker
 
@@ -179,10 +185,14 @@ at `POST /mcp` on Cloudflare Workers, bundling `packages/mcp` and its `@/` impor
 `apps/web/src` through tsconfig `paths`. It mirrors `/api/mcp`: stateless transport, OAuth-only
 auth (jose against `${BETTER_AUTH_URL}/api/auth/jwks`, then the shared client/user lookup in
 `lib/api/oauth-user.ts`), revalidation over HTTP via `@workspace/mcp/revalidate-tags`, and no
-`upload_from_path`. No route or custom domain yet, and there is no deploy script.
+`upload_from_path`. It is served on the `mcp.ruchern.dev` custom domain (`routes` in
+`wrangler.jsonc`), with `GET /health` and the protected-resource metadata at
+`/.well-known/oauth-protected-resource/mcp` (and the root `/.well-known/oauth-protected-resource`);
+its 401/403 challenges point `resource_metadata` at the `/mcp` document on its own origin. There is no CI deploy.
 
 - `pnpm dev:mcp-worker` - `wrangler dev`; copy `.dev.vars.example` to `.dev.vars` first
 - `pnpm --filter @workspace/mcp-worker exec wrangler deploy --dry-run --outdir dist` - Bundle without deploying; the bundle must contain no `next/*` module
+- Deploy manually from `apps/mcp-worker` with `pnpm exec wrangler deploy` (Cloudflare login required); the first deploy creates the `mcp.ruchern.dev` DNS record and certificate
 - Secrets (`wrangler secret put`): `DATABASE_URL`, `UPSTASH_REDIS_REST_URL`/`TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `R2_*`, `REVALIDATE_SECRET`. `BETTER_AUTH_URL` and `REVALIDATE_URL` are vars in `wrangler.jsonc`. `DATABASE_URL` must be set: `neon()` throws at isolate start without it
 
 ## OAuth Provider

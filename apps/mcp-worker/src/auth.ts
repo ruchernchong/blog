@@ -1,6 +1,9 @@
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { AUTH_ERROR } from "@/constants/auth-error-ids";
-import { OAUTH_RESOURCE } from "@/lib/api/oauth-protected-resource";
+import {
+  MCP_WORKER_RESOURCE,
+  OAUTH_RESOURCE,
+} from "@/lib/api/oauth-protected-resource";
 import { type McpAuthResult, resolveOAuthUser } from "@/lib/api/oauth-user";
 import { logWarning } from "@/lib/logger";
 
@@ -31,10 +34,11 @@ export async function validateMcpAuth(
   const token = authHeader.slice("Bearer ".length);
 
   try {
-    // The provider stamps the OIDC issuer (BASE_URL + /api/auth) into the
-    // token's `aud`/`iss`, so verify against that — not the bare origin.
+    // Clients request the Worker's own URL as the resource, so it is the
+    // token's `aud`; the provider still signs as its issuer (BASE_URL +
+    // /api/auth), not the bare origin.
     const { payload } = await jwtVerify(token, jwks, {
-      audience: OAUTH_RESOURCE,
+      audience: MCP_WORKER_RESOURCE,
       issuer: OAUTH_RESOURCE,
     });
 

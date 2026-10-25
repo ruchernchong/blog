@@ -23,6 +23,14 @@ const BASE_URL = process.env.BETTER_AUTH_URL as string;
  */
 export const OAUTH_RESOURCE = `${BASE_URL}/api/auth`;
 
+/**
+ * The MCP Worker's resource identifier (RFC 8707): its canonical server URL.
+ * MCP clients only accept protected-resource metadata whose `resource` covers
+ * the server URL they connect to, so the Worker publishes this, the provider
+ * accepts it as a token audience, and the Worker verifies it as `aud`.
+ */
+export const MCP_WORKER_RESOURCE = "https://mcp.ruchern.dev/mcp";
+
 /** Scope a token must carry to reach the MCP API. */
 export const MCP_SCOPE = "mcp";
 
@@ -43,9 +51,13 @@ export const protectedResourceMetadata = {
 /**
  * Builds a `WWW-Authenticate: Bearer …` challenge that advertises the required
  * scope and the metadata document so MCP clients can discover the auth server.
- * Pass `insufficient_scope` when a valid token simply lacks the `mcp` scope.
+ * Pass `insufficient_scope` when a valid token simply lacks the `mcp` scope, and
+ * `metadataUrl` when the resource is served from another origin (the Worker).
  */
-export function bearerChallenge(error?: "insufficient_scope"): string {
+export function bearerChallenge(
+  error?: "insufficient_scope",
+  metadataUrl = protectedResourceMetadataUrl,
+): string {
   const parts: string[] = [];
   if (error) {
     parts.push(
@@ -53,9 +65,6 @@ export function bearerChallenge(error?: "insufficient_scope"): string {
       `error_description="The '${MCP_SCOPE}' scope is required to access this resource"`,
     );
   }
-  parts.push(
-    `scope="${MCP_SCOPE}"`,
-    `resource_metadata="${protectedResourceMetadataUrl}"`,
-  );
+  parts.push(`scope="${MCP_SCOPE}"`, `resource_metadata="${metadataUrl}"`);
   return `Bearer ${parts.join(", ")}`;
 }

@@ -68,7 +68,7 @@ describe("MCP Worker", () => {
 
       expect(response.status).toBe(401);
       expect(response.headers.get("WWW-Authenticate")).toBe(
-        'Bearer scope="mcp", resource_metadata="https://auth.test/.well-known/oauth-protected-resource"',
+        'Bearer scope="mcp", resource_metadata="https://worker.test/.well-known/oauth-protected-resource/mcp"',
       );
       expect(createServer).not.toHaveBeenCalled();
     });
@@ -81,7 +81,7 @@ describe("MCP Worker", () => {
       expect(response.status).toBe(403);
       expect(await response.json()).toEqual({ error: "insufficient_scope" });
       expect(response.headers.get("WWW-Authenticate")).toBe(
-        `Bearer error="insufficient_scope", error_description="The 'mcp' scope is required to access this resource", scope="mcp", resource_metadata="https://auth.test/.well-known/oauth-protected-resource"`,
+        `Bearer error="insufficient_scope", error_description="The 'mcp' scope is required to access this resource", scope="mcp", resource_metadata="https://worker.test/.well-known/oauth-protected-resource/mcp"`,
       );
     });
 
@@ -120,6 +120,59 @@ describe("MCP Worker", () => {
       expect(
         vi.mocked(createServer).mock.results[0].value.close,
       ).toHaveBeenCalled();
+    });
+  });
+
+  describe("GET discovery and health", () => {
+    it.each([
+      "/.well-known/oauth-protected-resource",
+      "/.well-known/oauth-protected-resource/mcp",
+    ])("should serve the protected-resource metadata at %s", async (path) => {
+      const response = await worker.fetch(request("GET", path));
+
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({
+        resource: "https://mcp.ruchern.dev/mcp",
+        authorization_servers: ["https://auth.test/api/auth"],
+        jwks_uri: "https://auth.test/api/auth/jwks",
+        scopes_supported: [
+          "openid",
+          "profile",
+          "email",
+          "offline_access",
+          "mcp",
+        ],
+        bearer_methods_supported: ["header"],
+      });
+      expect(mockValidateMcpAuth).not.toHaveBeenCalled();
+    });
+
+    it("should return 200 for /health", async () => {
+      const response = await worker.fetch(request("GET", "/health"));
+
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({
+        status: "ok",
+        service: "mcp-blog",
+      });
+    });
+
+    it("should return 404 for other well-known paths", async () => {
+      const response = await worker.fetch(
+        request("GET", "/.well-known/oauth-protected-resource/other"),
+      );
+
+      expect(response.status).toBe(404);
+    });
+
+    it.each([
+      "/health",
+      "/.well-known/oauth-protected-resource",
+    ])("should return 404 for POST %s", async (path) => {
+      const response = await worker.fetch(request("POST", path));
+
+      expect(response.status).toBe(404);
+      expect(mockValidateMcpAuth).not.toHaveBeenCalled();
     });
   });
 
