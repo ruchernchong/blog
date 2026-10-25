@@ -16,6 +16,7 @@
         "POSTHOG_API_*",
         "POSTHOG_PROJECT_ID",
         "R2_*",
+        "REVALIDATE_SECRET",
         "UPSTASH_REDIS_REST_*",
         "VERCEL_PROJECT_PRODUCTION_URL",
         "VERCEL_URL"

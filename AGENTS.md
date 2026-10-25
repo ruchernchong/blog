@@ -277,6 +277,7 @@ See `apps/web/.env.example` for all required variables:
 - `POSTHOG_API_KEY` - PostHog Personal API Key with `query:read` scope
 - `CLOUDFLARE_ACCOUNT_ID` - R2 storage
 - `R2_ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET_NAME/PUBLIC_URL` - R2 config
+- `REVALIDATE_SECRET` - Bearer for `POST /api/revalidate` (`{ tags: string[] }`), which lets the external MCP server invalidate Cache Components after a database write. Only allowlisted tags (see the route) are accepted; unset → 401
 - The OAuth provider (the only MCP auth) needs no extra env vars
 
 ## Code Conventions
