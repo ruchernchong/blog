@@ -23,6 +23,14 @@ const BASE_URL = process.env.BETTER_AUTH_URL as string;
  */
 export const OAUTH_RESOURCE = `${BASE_URL}/api/auth`;
 
+/**
+ * The MCP Worker's resource identifier (RFC 8707): its canonical server URL.
+ * MCP clients only accept protected-resource metadata whose `resource` covers
+ * the server URL they connect to, so the Worker publishes this, the provider
+ * accepts it as a token audience, and the Worker verifies it as `aud`.
+ */
+export const MCP_WORKER_RESOURCE = "https://mcp.ruchern.dev/mcp";
+
 /** Scope a token must carry to reach the MCP API. */
 export const MCP_SCOPE = "mcp";
 

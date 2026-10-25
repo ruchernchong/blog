@@ -25,6 +25,7 @@ vi.mock("@/schema", () => {
 
 vi.mock("@/lib/api/oauth-protected-resource", () => ({
   OAUTH_RESOURCE: "https://auth.test/api/auth",
+  MCP_WORKER_RESOURCE: "https://worker.test/mcp",
 }));
 
 vi.mock("@/lib/logger", () => ({ logWarning: vi.fn() }));
@@ -81,14 +82,14 @@ describe("validateMcpAuth", () => {
     expect(await validateMcpAuth(makeRequest("Bearer bad"))).toBeNull();
   });
 
-  it("should verify audience and issuer against the OAuth resource", async () => {
+  it("should verify the Worker audience and the provider issuer", async () => {
     verifiedPayload({ sub: "user-1", scope: "mcp" });
     mockLimit.mockResolvedValueOnce([adminRow]);
 
     await validateMcpAuth(makeRequest("Bearer good"));
 
     expect(mockJwtVerify).toHaveBeenCalledWith("good", "jwks", {
-      audience: "https://auth.test/api/auth",
+      audience: "https://worker.test/mcp",
       issuer: "https://auth.test/api/auth",
     });
   });

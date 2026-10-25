@@ -4,22 +4,32 @@ import { createServer } from "@workspace/mcp/server";
 import {
   bearerChallenge,
   MCP_SCOPE,
+  MCP_WORKER_RESOURCE,
   PROTECTED_RESOURCE_METADATA_PATH,
   protectedResourceMetadata,
 } from "@/lib/api/oauth-protected-resource";
 import { type McpAuthResult, validateMcpAuth } from "./auth";
 
+/** RFC 9728 metadata for the `/mcp` resource, suffixed with its path. */
+const RESOURCE_METADATA_PATH = `${PROTECTED_RESOURCE_METADATA_PATH}/mcp`;
+
 /**
- * RFC 9728 metadata paths on the Worker's own origin: the root document and
- * the copy suffixed with the MCP endpoint path, which MCP clients try first
- * when a 401 carries no `resource_metadata`. Both serve the web app's
- * document unchanged, so `resource` stays the provider's issuer and tokens
- * it issues today still validate.
+ * RFC 9728 metadata paths on the Worker's own origin: the path-suffixed
+ * document for `/mcp` and the root one, for clients that only try the root.
  */
 const METADATA_PATHS = new Set([
   PROTECTED_RESOURCE_METADATA_PATH,
-  `${PROTECTED_RESOURCE_METADATA_PATH}/mcp`,
+  RESOURCE_METADATA_PATH,
 ]);
+
+/**
+ * The web app's document with the Worker's own URL as `resource`, which MCP
+ * clients require to cover the server URL and then request as the audience.
+ */
+const workerResourceMetadata = {
+  ...protectedResourceMetadata,
+  resource: MCP_WORKER_RESOURCE,
+};
 
 /**
  * Authenticates the OAuth bearer and enforces the `mcp` scope and admin role.
@@ -32,7 +42,7 @@ async function requireMcpAuth(
 ): Promise<{ authResult: McpAuthResult } | { error: Response }> {
   const authResult = await validateMcpAuth(request);
   // Point clients at this origin's metadata, not the web app's.
-  const metadataUrl = `${new URL(request.url).origin}${PROTECTED_RESOURCE_METADATA_PATH}`;
+  const metadataUrl = `${new URL(request.url).origin}${RESOURCE_METADATA_PATH}`;
 
   if (!authResult) {
     return {
@@ -106,7 +116,7 @@ export default {
     const { pathname } = new URL(request.url);
 
     if (request.method === "GET" && METADATA_PATHS.has(pathname)) {
-      return Response.json(protectedResourceMetadata);
+      return Response.json(workerResourceMetadata);
     }
 
     if (request.method === "GET" && pathname === "/health") {

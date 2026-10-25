@@ -172,11 +172,11 @@ until `/api/mcp` is retired.
 **Auth:** OAuth only (admin account, `mcp` scope). Clients discover the provider via
 `/.well-known/oauth-protected-resource` on the endpoint's own origin, self-register, and sign
 in at `/consent`; no static token or session is accepted. Add the URL as a remote MCP server
-with no `headers` (Claude Code: `"type": "http"`, then authenticate via `/mcp`). Both origins
-publish `resource` as the provider issuer (`https://ruchern.dev/api/auth`), the only audience
-the provider issues today. MCP SDK clients that check `resource` against the server URL reject
-a different origin, so the Worker needs the provider to accept `https://mcp.ruchern.dev/mcp`
-as an audience before such clients can sign in there.
+with no `headers` (Claude Code: `"type": "http"`, then authenticate via `/mcp`). Each origin
+publishes its own `resource`, which clients request as the token audience: the provider issuer
+(`https://ruchern.dev/api/auth`) for `/api/mcp`, and `https://mcp.ruchern.dev/mcp`
+(`MCP_WORKER_RESOURCE`) for the Worker. `oauthProvider` lists both in `resources`, and each
+endpoint only accepts tokens issued for its own audience.
 
 ### MCP Worker
 
@@ -187,8 +187,8 @@ auth (jose against `${BETTER_AUTH_URL}/api/auth/jwks`, then the shared client/us
 `lib/api/oauth-user.ts`), revalidation over HTTP via `@workspace/mcp/revalidate-tags`, and no
 `upload_from_path`. It is served on the `mcp.ruchern.dev` custom domain (`routes` in
 `wrangler.jsonc`), with `GET /health` and the protected-resource metadata at
-`/.well-known/oauth-protected-resource` (and `/.well-known/oauth-protected-resource/mcp`); its
-401/403 challenges point `resource_metadata` at its own origin. There is no CI deploy.
+`/.well-known/oauth-protected-resource/mcp` (and the root `/.well-known/oauth-protected-resource`);
+its 401/403 challenges point `resource_metadata` at the `/mcp` document on its own origin. There is no CI deploy.
 
 - `pnpm dev:mcp-worker` - `wrangler dev`; copy `.dev.vars.example` to `.dev.vars` first
 - `pnpm --filter @workspace/mcp-worker exec wrangler deploy --dry-run --outdir dist` - Bundle without deploying; the bundle must contain no `next/*` module

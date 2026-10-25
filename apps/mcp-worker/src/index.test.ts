@@ -68,7 +68,7 @@ describe("MCP Worker", () => {
 
       expect(response.status).toBe(401);
       expect(response.headers.get("WWW-Authenticate")).toBe(
-        'Bearer scope="mcp", resource_metadata="https://worker.test/.well-known/oauth-protected-resource"',
+        'Bearer scope="mcp", resource_metadata="https://worker.test/.well-known/oauth-protected-resource/mcp"',
       );
       expect(createServer).not.toHaveBeenCalled();
     });
@@ -81,7 +81,7 @@ describe("MCP Worker", () => {
       expect(response.status).toBe(403);
       expect(await response.json()).toEqual({ error: "insufficient_scope" });
       expect(response.headers.get("WWW-Authenticate")).toBe(
-        `Bearer error="insufficient_scope", error_description="The 'mcp' scope is required to access this resource", scope="mcp", resource_metadata="https://worker.test/.well-known/oauth-protected-resource"`,
+        `Bearer error="insufficient_scope", error_description="The 'mcp' scope is required to access this resource", scope="mcp", resource_metadata="https://worker.test/.well-known/oauth-protected-resource/mcp"`,
       );
     });
 
@@ -132,7 +132,7 @@ describe("MCP Worker", () => {
 
       expect(response.status).toBe(200);
       expect(await response.json()).toEqual({
-        resource: "https://auth.test/api/auth",
+        resource: "https://mcp.ruchern.dev/mcp",
         authorization_servers: ["https://auth.test/api/auth"],
         jwks_uri: "https://auth.test/api/auth/jwks",
         scopes_supported: [
