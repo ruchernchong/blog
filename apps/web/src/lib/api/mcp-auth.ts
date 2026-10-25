@@ -3,7 +3,6 @@ import { verifyBearerToken } from "better-auth/oauth2";
 import { eq } from "drizzle-orm";
 import { AUTH_ERROR } from "@/constants/auth-error-ids";
 import { OAUTH_RESOURCE } from "@/lib/api/oauth-protected-resource";
-import { auth } from "@/lib/auth";
 import { logWarning } from "@/lib/logger";
 import { db, oauthClient, user } from "@/schema";
 
@@ -18,67 +17,12 @@ type McpUser = {
 };
 
 export interface McpAuthResult {
-  type: "session" | "token" | "oauth";
-  user?: McpUser;
-  authInfo?: AuthInfo;
+  type: "oauth";
+  user: McpUser;
+  authInfo: AuthInfo;
 }
-
-/**
- * Builds a user-scoped auth result, deriving both the returned `user` and the
- * MCP `authInfo.extra` payload from a single source so the two never diverge.
- */
-function userAuthResult(
-  type: "session" | "oauth",
-  user: McpUser,
-  authInfo: Pick<AuthInfo, "token" | "clientId" | "scopes">,
-): McpAuthResult {
-  return {
-    type,
-    user,
-    authInfo: {
-      ...authInfo,
-      extra: {
-        userId: user.id,
-        userEmail: user.email,
-        userName: user.name,
-        userRole: user.role,
-      },
-    },
-  };
-}
-
-/** Sentinel for an OAuth token that must be rejected outright (no fallback). */
-const OAUTH_REJECTED = "rejected";
-
-type OAuthOutcome = McpAuthResult | typeof OAUTH_REJECTED | undefined;
 
 type AccessTokenPayload = Awaited<ReturnType<typeof verifyBearerToken>>;
-
-/** Returns a session auth result when a Better Auth session is present. */
-async function trySessionAuth(request: Request): Promise<McpAuthResult | null> {
-  const session = await auth.api.getSession({
-    headers: request.headers,
-  });
-
-  if (!session?.user) {
-    return null;
-  }
-
-  return userAuthResult(
-    "session",
-    {
-      id: session.user.id,
-      email: session.user.email,
-      name: session.user.name,
-      role: session.user.role,
-    },
-    {
-      token: session.session.token,
-      clientId: session.user.id,
-      scopes: ["mcp:read", "mcp:write"],
-    },
-  );
-}
 
 /**
  * Reject tokens whose issuing client has since been disabled (e.g. after a
@@ -106,15 +50,15 @@ async function isOAuthClientActive(clientId: string): Promise<boolean> {
 async function resolveOAuthUser(
   token: string,
   payload: AccessTokenPayload,
-): Promise<OAuthOutcome> {
+): Promise<McpAuthResult | null> {
   if (!payload.sub) {
-    return undefined;
+    return null;
   }
 
   const clientId = typeof payload.azp === "string" ? payload.azp : "";
 
   if (clientId && !(await isOAuthClientActive(clientId))) {
-    return OAUTH_REJECTED;
+    return null;
   }
 
   const [record] = await db
@@ -129,25 +73,47 @@ async function resolveOAuthUser(
     .limit(1);
 
   if (!record) {
-    return undefined;
+    return null;
   }
 
-  return userAuthResult("oauth", record, {
-    token,
-    clientId,
-    scopes:
-      typeof payload.scope === "string"
-        ? payload.scope.split(" ").filter(Boolean)
-        : [],
-  });
+  return {
+    type: "oauth",
+    user: record,
+    authInfo: {
+      token,
+      clientId,
+      scopes:
+        typeof payload.scope === "string"
+          ? payload.scope.split(" ").filter(Boolean)
+          : [],
+      extra: {
+        userId: record.id,
+        userEmail: record.email,
+        userName: record.name,
+        userRole: record.role,
+      },
+    },
+  };
 }
 
 /**
- * Try a JWT OAuth access token. It is verified locally against the provider's
- * JWKS, then the owning user (and role) is loaded by subject. Returns
- * `undefined` to fall through to the static token.
+ * Validates MCP API authentication. OAuth is the only accepted method: the
+ * bearer must be a JWT access token issued by the OAuth provider plugin,
+ * verified locally against the provider's JWKS, whose issuing client is still
+ * active and whose subject is a known user.
+ *
+ * @param request - The incoming HTTP request
+ * @returns Auth result on success, null on failure
  */
-async function tryOAuthAuth(token: string): Promise<OAuthOutcome> {
+export async function validateMcpAuth(
+  request: Request,
+): Promise<McpAuthResult | null> {
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return null;
+  }
+  const token = authHeader.slice("Bearer ".length);
+
   try {
     // Verify locally against the provider's published JWKS. We pass the
     // `jwksUrl` explicitly (rather than relying on the resource-client wrapper
@@ -165,63 +131,10 @@ async function tryOAuthAuth(token: string): Promise<OAuthOutcome> {
 
     return await resolveOAuthUser(token, payload);
   } catch (error) {
-    // A JWT-shaped token that fails here is a real problem (audience/issuer
-    // mismatch, bad signature, expiry); a non-JWT is just the static token
-    // legitimately taking the next branch, so only log the former.
-    if (token.split(".").length === 3) {
-      logWarning("OAuth access token verification failed", {
-        errorId: AUTH_ERROR.OAUTH_TOKEN_VALIDATION_FAILED,
-        message: error instanceof Error ? error.message : String(error),
-      });
-    }
-    // Fall through to the static token.
-    return undefined;
+    logWarning("OAuth access token verification failed", {
+      errorId: AUTH_ERROR.OAUTH_TOKEN_VALIDATION_FAILED,
+      message: error instanceof Error ? error.message : String(error),
+    });
+    return null;
   }
-}
-
-/**
- * Validates MCP API authentication using a layered strategy:
- * 1. Better Auth session (primary) — validates bearer token or cookie session
- * 2. OAuth access token — JWT issued by the OAuth provider plugin, verified
- *    locally against the provider's JWKS, for clients that obtain a
- *    user-scoped token via the Authorization Code flow with PKCE
- * 3. Static MCP token (fallback) — DEPRECATED, marked for deletion. Retained
- *    only until the remote MCP server migrates to OAuth; remove this branch
- *    (and `BLOG_MCP_AUTH_TOKEN`) once it has.
- *
- * @param request - The incoming HTTP request
- * @returns Auth result on success, null on failure
- */
-export async function validateMcpAuth(
-  request: Request,
-): Promise<McpAuthResult | null> {
-  // 1. Try Better Auth session first
-  const sessionResult = await trySessionAuth(request);
-  if (sessionResult) {
-    return sessionResult;
-  }
-
-  const authHeader = request.headers.get("authorization");
-  const token = authHeader?.replace("Bearer ", "");
-
-  // 2. Try a JWT OAuth access token.
-  if (token) {
-    const oauthResult = await tryOAuthAuth(token);
-    if (oauthResult === OAUTH_REJECTED) {
-      return null;
-    }
-    if (oauthResult) {
-      return oauthResult;
-    }
-  }
-
-  // 3. Fall back to static MCP token.
-  // TODO(remove): delete this fallback and BLOG_MCP_AUTH_TOKEN once the remote
-  // MCP server authenticates via OAuth.
-  if (token && token === process.env.BLOG_MCP_AUTH_TOKEN) {
-    return { type: "token" };
-  }
-
-  // 4. No valid auth
-  return null;
 }

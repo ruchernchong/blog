@@ -2,10 +2,7 @@
   "mcpServers": {
     "blog": {
       "type": "http",
-      "url": "https://ruchern.dev/api/mcp",
-      "headers": {
-        "Authorization": "Bearer ${BLOG_MCP_AUTH_TOKEN}"
-      }
+      "url": "https://ruchern.dev/api/mcp"
     },
     "heroui-pro": {
       "type": "http",

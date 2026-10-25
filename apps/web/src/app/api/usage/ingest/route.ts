@@ -98,9 +98,7 @@ return 0`,
  */
 export async function POST(request: Request) {
   const auth = await validateMcpAuth(request);
-  // OAuth is the only accepted auth: the static MCP token and cookie/bearer
-  // sessions are rejected even when they would otherwise resolve to an admin.
-  const allowed = auth?.type === "oauth" && auth.user?.role === "admin";
+  const allowed = auth?.user.role === "admin";
 
   if (!allowed) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });

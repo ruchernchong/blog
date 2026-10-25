@@ -30,10 +30,25 @@ vi.mock("@/lib/api/mcp-auth", () => ({
 
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { createServer } from "@workspace/mcp/server";
-import { validateMcpAuth } from "@/lib/api/mcp-auth";
+import { type McpAuthResult, validateMcpAuth } from "@/lib/api/mcp-auth";
 import { DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT } from "./route";
 
 const mockValidateMcpAuth = vi.mocked(validateMcpAuth);
+
+const adminOAuth: McpAuthResult = {
+  type: "oauth",
+  user: {
+    id: "user-1",
+    email: "owner@example.com",
+    name: "Owner",
+    role: "admin",
+  },
+  authInfo: {
+    token: "oauth-token",
+    clientId: "client-1",
+    scopes: ["openid", "email", "mcp"],
+  },
+};
 
 describe("MCP API Route", () => {
   beforeEach(() => {
@@ -92,6 +107,23 @@ describe("MCP API Route", () => {
       );
     });
 
+    it("should return 403 when the OAuth user is not an admin", async () => {
+      mockValidateMcpAuth.mockResolvedValue({
+        ...adminOAuth,
+        user: { ...adminOAuth.user, role: "user" },
+      });
+
+      const request = new Request("http://localhost/api/mcp", {
+        method: "POST",
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
+      });
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(403);
+      expect(createServer).not.toHaveBeenCalled();
+    });
+
     it("should forward an OAuth token that carries the mcp scope", async () => {
       mockValidateMcpAuth.mockResolvedValue({
         type: "oauth",
@@ -126,69 +158,8 @@ describe("MCP API Route", () => {
       );
     });
 
-    it("should call transport with authInfo when session auth succeeds", async () => {
-      mockValidateMcpAuth.mockResolvedValue({
-        type: "session",
-        user: {
-          id: "user-123",
-          email: "test@example.com",
-          name: "Test User",
-          role: "admin",
-        },
-        authInfo: {
-          token: "session-token",
-          clientId: "user-123",
-          scopes: ["mcp:read", "mcp:write"],
-        },
-      });
-
-      const request = new Request("http://localhost/api/mcp", {
-        method: "POST",
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
-      });
-
-      await POST(request);
-
-      expect(createServer).toHaveBeenCalled();
-      expect(WebStandardStreamableHTTPServerTransport).toHaveBeenCalledWith({
-        sessionIdGenerator: undefined,
-        enableJsonResponse: true,
-      });
-
-      const transportInstance = vi.mocked(
-        WebStandardStreamableHTTPServerTransport,
-      ).mock.results[0].value;
-      expect(transportInstance.handleRequest).toHaveBeenCalledWith(
-        request,
-        expect.objectContaining({
-          authInfo: expect.objectContaining({
-            token: "session-token",
-            clientId: "user-123",
-          }),
-        }),
-      );
-    });
-
-    it("should call transport without authInfo when static token auth succeeds", async () => {
-      mockValidateMcpAuth.mockResolvedValue({
-        type: "token",
-      });
-
-      const request = new Request("http://localhost/api/mcp", {
-        method: "POST",
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
-      });
-
-      await POST(request);
-
-      const transportInstance = vi.mocked(
-        WebStandardStreamableHTTPServerTransport,
-      ).mock.results[0].value;
-      expect(transportInstance.handleRequest).toHaveBeenCalledWith(request, {});
-    });
-
     it("should close the server and transport after handling the request", async () => {
-      mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+      mockValidateMcpAuth.mockResolvedValue(adminOAuth);
 
       const request = new Request("http://localhost/api/mcp", {
         method: "POST",
@@ -206,7 +177,7 @@ describe("MCP API Route", () => {
     });
 
     it("should still clean up when handling the request fails", async () => {
-      mockValidateMcpAuth.mockResolvedValue({ type: "token" });
+      mockValidateMcpAuth.mockResolvedValue(adminOAuth);
       vi.mocked(
         WebStandardStreamableHTTPServerTransport,
       ).mockImplementationOnce(function (

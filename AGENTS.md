@@ -160,37 +160,10 @@ Claude mobile app.
 
 **Endpoint:** `https://ruchern.dev/api/mcp`
 
-**Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
-
-```json
-{
-  "mcpServers": {
-    "blog": {
-      "url": "https://ruchern.dev/api/mcp",
-      "auth": {
-        "type": "bearer",
-        "token": "your-mcp-auth-token"
-      }
-    }
-  }
-}
-```
-
-**Claude Code** (`.mcp.json` or global settings):
-
-```json
-{
-  "mcpServers": {
-    "blog-remote": {
-      "type": "http",
-      "url": "https://ruchern.dev/api/mcp",
-      "headers": {
-        "Authorization": "Bearer ${BLOG_MCP_AUTH_TOKEN}"
-      }
-    }
-  }
-}
-```
+**Auth:** OAuth only (admin account, `mcp` scope). Clients discover the provider via
+`/.well-known/oauth-protected-resource`, self-register, and sign in at `/consent`; no
+static token or session is accepted. Add the URL as a remote MCP server with no
+`headers` (Claude Code: `"type": "http"`, then authenticate via `/mcp`).
 
 ## OAuth Provider
 
@@ -304,7 +277,7 @@ See `apps/web/.env.example` for all required variables:
 - `POSTHOG_API_KEY` - PostHog Personal API Key with `query:read` scope
 - `CLOUDFLARE_ACCOUNT_ID` - R2 storage
 - `R2_ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET_NAME/PUBLIC_URL` - R2 config
-- `BLOG_MCP_AUTH_TOKEN` - Static bearer for headless MCP/CLI clients (remote MCP server). Retained alongside OAuth; slated for removal once the remote MCP server migrates. The OAuth provider itself needs no extra env vars
+- The OAuth provider (the only MCP auth) needs no extra env vars
 
 ## Code Conventions
 

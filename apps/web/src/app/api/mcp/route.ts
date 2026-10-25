@@ -1,4 +1,3 @@
-import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { createServer } from "@workspace/mcp/server";
 import { methodNotAllowedResponse } from "@/lib/api";
@@ -6,10 +5,10 @@ import { type McpAuthResult, validateMcpAuth } from "@/lib/api/mcp-auth";
 import { bearerChallenge, MCP_SCOPE } from "@/lib/api/oauth-protected-resource";
 
 /**
- * Authenticates the request and enforces the `mcp` scope on OAuth tokens.
+ * Authenticates the OAuth bearer and enforces the `mcp` scope and admin role.
  * Returns the auth result, or a ready-to-send challenge response: 401 for an
- * unauthenticated request, 403 `insufficient_scope` for a valid OAuth token that
- * lacks the `mcp` scope. Session and static-token auth are already trusted.
+ * unauthenticated request, 403 `insufficient_scope` for a valid token that
+ * lacks the `mcp` scope, 403 for a non-admin user.
  */
 async function requireMcpAuth(
   request: Request,
@@ -25,10 +24,7 @@ async function requireMcpAuth(
     };
   }
 
-  if (
-    authResult.type === "oauth" &&
-    !authResult.authInfo?.scopes?.includes(MCP_SCOPE)
-  ) {
+  if (!authResult.authInfo.scopes.includes(MCP_SCOPE)) {
     return {
       error: Response.json(
         { error: "insufficient_scope" },
@@ -42,7 +38,7 @@ async function requireMcpAuth(
     };
   }
 
-  if (authResult.type === "oauth" && authResult.user?.role !== "admin") {
+  if (authResult.user.role !== "admin") {
     return {
       error: Response.json({ error: "Forbidden" }, { status: 403 }),
     };
@@ -71,13 +67,10 @@ export async function POST(request: Request) {
   const server = createServer();
   await server.connect(transport);
 
-  const handleOptions: { authInfo?: AuthInfo } = {};
-  if (authResult.authInfo) {
-    handleOptions.authInfo = authResult.authInfo;
-  }
-
   try {
-    return await transport.handleRequest(request, handleOptions);
+    return await transport.handleRequest(request, {
+      authInfo: authResult.authInfo,
+    });
   } finally {
     await server.close().catch(() => {});
     await transport.close().catch(() => {});
