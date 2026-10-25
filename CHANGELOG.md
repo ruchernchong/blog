@@ -1,3 +1,12 @@
+## [1.58.0](https://github.com/ruchernchong/blog/compare/v1.57.0...v1.58.0) (2026-10-25)
+
+### Features
+
+* accept mcp worker url as token audience ([9bd953f](https://github.com/ruchernchong/blog/commit/9bd953f392869d1e5d5056f4b5a0242730d0d591))
+* add cloudflare worker for mcp server ([5ecef6b](https://github.com/ruchernchong/blog/commit/5ecef6b553da483f363f960b9d9e496a0771b584))
+* add tag revalidation route ([416957f](https://github.com/ruchernchong/blog/commit/416957fb3b6b5986cbaa63bcc393dd6ee1bd7b48))
+* serve mcp server from mcp.ruchern.dev ([6ce6327](https://github.com/ruchernchong/blog/commit/6ce6327f7cd180b2782ca8a8d41a43a4662725b7))
+
 ## [1.57.0](https://github.com/ruchernchong/blog/compare/v1.56.5...v1.57.0) (2026-10-25)
 
 ### Features
