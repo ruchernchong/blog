@@ -22,6 +22,7 @@
     "apps/docs": {
       "entry": ["src/lib/cn.ts"]
     },
+    "apps/mcp-worker": {},
     "apps/web": {
       "entry": [
         "src/app/**/about/components/about-card.tsx",
