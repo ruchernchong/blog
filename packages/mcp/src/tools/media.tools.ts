@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { mediaService } from "@/lib/services";
+import type { ServerDeps } from "../server";
 import type { ToolExtra } from "./posts.tools";
 
 function makeError(message: string): CallToolResult {
@@ -242,7 +243,10 @@ export async function deleteMediaHandler(args: {
   };
 }
 
-export function registerMediaTools(server: McpServer): void {
+export function registerMediaTools(
+  server: McpServer,
+  deps: Pick<ServerDeps, "localFiles">,
+): void {
   server.registerTool(
     "list_media",
     {
@@ -372,33 +376,36 @@ export function registerMediaTools(server: McpServer): void {
     (args, extra) => confirmUploadHandler(args, extra),
   );
 
-  server.registerTool(
-    "upload_from_path",
-    {
-      title: "Upload From Path",
-      description:
-        "Upload an image from a local file path to R2 storage. The MCP server reads the file directly from disk.",
-      inputSchema: z.object({
-        filePath: z
-          .string()
-          .describe(
-            "Absolute path to the image file (e.g., '/Users/name/image.png')",
-          ),
-        alt: z.string().optional().describe("Alt text for accessibility"),
-        caption: z.string().optional().describe("Caption for the image"),
-      }),
-      outputSchema: z.object({
-        media: z.object({
-          id: z.string(),
-          filename: z.string(),
-          url: z.string(),
-          mimeType: z.string(),
-          size: z.number(),
+  // Reads the host's disk, so only a local (stdio) server can offer it.
+  if (deps.localFiles) {
+    server.registerTool(
+      "upload_from_path",
+      {
+        title: "Upload From Path",
+        description:
+          "Upload an image from a local file path to R2 storage. The MCP server reads the file directly from disk.",
+        inputSchema: z.object({
+          filePath: z
+            .string()
+            .describe(
+              "Absolute path to the image file (e.g., '/Users/name/image.png')",
+            ),
+          alt: z.string().optional().describe("Alt text for accessibility"),
+          caption: z.string().optional().describe("Caption for the image"),
         }),
-      }),
-    },
-    (args, extra) => uploadFromPathHandler(args, extra),
-  );
+        outputSchema: z.object({
+          media: z.object({
+            id: z.string(),
+            filename: z.string(),
+            url: z.string(),
+            mimeType: z.string(),
+            size: z.number(),
+          }),
+        }),
+      },
+      (args, extra) => uploadFromPathHandler(args, extra),
+    );
+  }
 
   server.registerTool(
     "upload_from_url",

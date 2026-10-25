@@ -41,11 +41,7 @@ vi.mock("@/schema", () => ({
 
 // Import after mocks
 import redis from "@/config/redis";
-import {
-  getPopularPosts,
-  removeFromPopular,
-  updatePopularScore,
-} from "./popular-posts";
+import { getPopularPosts, updatePopularScore } from "./popular-posts";
 
 describe("popular-posts", () => {
   beforeEach(() => {
@@ -220,19 +216,6 @@ describe("popular-posts", () => {
           score: 150,
           member: "test-post",
         },
-      );
-    });
-  });
-
-  describe("removeFromPopular", () => {
-    it("should remove post from Redis sorted set", async () => {
-      vi.mocked(redis.zrem).mockResolvedValue(undefined as any);
-
-      await removeFromPopular("test-post");
-
-      expect(redis.zrem).toHaveBeenCalledWith(
-        CacheConfig.REDIS_KEYS.POPULAR_SET,
-        "test-post",
       );
     });
   });

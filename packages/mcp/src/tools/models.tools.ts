@@ -3,8 +3,9 @@ import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { entryToRow, keepOpenWeights } from "@/lib/queries/model-registry";
-import { repriceAndRevalidateUsage } from "@/lib/queries/models";
+import { repriceUsage } from "@/lib/queries/usage-reprice";
 import { db, model } from "@/schema";
+import type { ServerDeps } from "../server";
 
 /**
  * MCP tools for the curated model-pricing overrides that back the `/usage`
@@ -74,19 +75,22 @@ export async function getModelHandler(args: {
   return serialise(output);
 }
 
-export async function upsertModelOverrideHandler(args: {
-  provider: string;
-  id: string;
-  displayName?: string;
-  inputRate?: number;
-  outputRate?: number;
-  cacheReadRate?: number;
-  cacheWriteRate?: number;
-  contextLimit?: number;
-  releaseDate?: string;
-  openWeights?: boolean;
-  aliasTarget?: string;
-}): Promise<CallToolResult> {
+export async function upsertModelOverrideHandler(
+  args: {
+    provider: string;
+    id: string;
+    displayName?: string;
+    inputRate?: number;
+    outputRate?: number;
+    cacheReadRate?: number;
+    cacheWriteRate?: number;
+    contextLimit?: number;
+    releaseDate?: string;
+    openWeights?: boolean;
+    aliasTarget?: string;
+  },
+  deps: Pick<ServerDeps, "revalidateTags">,
+): Promise<CallToolResult> {
   const row = entryToRow({
     provider: args.provider,
     id: args.id,
@@ -117,15 +121,18 @@ export async function upsertModelOverrideHandler(args: {
     })
     .returning();
 
-  await repriceAndRevalidateUsage();
+  await repriceUsage(deps.revalidateTags);
 
   return serialise({ model: rowToOutput(saved) });
 }
 
-export async function deleteModelOverrideHandler(args: {
-  provider: string;
-  id: string;
-}): Promise<CallToolResult> {
+export async function deleteModelOverrideHandler(
+  args: {
+    provider: string;
+    id: string;
+  },
+  deps: Pick<ServerDeps, "revalidateTags">,
+): Promise<CallToolResult> {
   // Guard on is_override so a source-derived row is never deleted.
   const deleted = await db
     .delete(model)
@@ -138,7 +145,7 @@ export async function deleteModelOverrideHandler(args: {
     )
     .returning({ provider: model.provider, id: model.id });
 
-  if (deleted.length > 0) await repriceAndRevalidateUsage();
+  if (deleted.length > 0) await repriceUsage(deps.revalidateTags);
 
   return serialise({ deleted: deleted.length > 0 });
 }
@@ -160,7 +167,7 @@ const modelOutputSchema = z.object({
   updatedAt: z.string(),
 });
 
-export function registerModelTools(server: McpServer): void {
+export function registerModelTools(server: McpServer, deps: ServerDeps): void {
   server.registerTool(
     "list_model_overrides",
     {
@@ -239,7 +246,7 @@ export function registerModelTools(server: McpServer): void {
       outputSchema: z.object({ model: modelOutputSchema }),
       annotations: { idempotentHint: true },
     },
-    (args) => upsertModelOverrideHandler(args),
+    (args) => upsertModelOverrideHandler(args, deps),
   );
 
   server.registerTool(
@@ -255,6 +262,6 @@ export function registerModelTools(server: McpServer): void {
       outputSchema: z.object({ deleted: z.boolean() }),
       annotations: { destructiveHint: true },
     },
-    (args) => deleteModelOverrideHandler(args),
+    (args) => deleteModelOverrideHandler(args, deps),
   );
 }

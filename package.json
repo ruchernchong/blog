@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "turbo run @workspace/web#dev",
     "dev:docs": "turbo run @workspace/docs#dev",
+    "dev:mcp-worker": "turbo run @workspace/mcp-worker#dev",
     "build": "turbo run build",
     "build:web": "turbo run @workspace/web#build",
     "start": "turbo run start",

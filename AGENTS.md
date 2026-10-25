@@ -138,7 +138,7 @@ An MCP (Model Context Protocol) server for managing blog posts and media via Cla
 - `get_media` - Get single media item
 - `request_upload` - Get presigned R2 upload URL
 - `confirm_upload` - Confirm upload and create database record
-- `upload_from_path` - Upload image directly from local file path
+- `upload_from_path` - Upload image directly from local file path (stdio server only)
 - `upload_from_url` - Upload image from a public URL
 - `delete_media` - Soft delete media
 
@@ -153,6 +153,13 @@ An MCP (Model Context Protocol) server for managing blog posts and media via Cla
 
 The MCP server is configured in `.mcp.json` and uses stdio transport for local CLI integration.
 
+`createServer(deps)` (`packages/mcp/src/server.ts`) keeps its import graph free of Next.js
+(`server-imports.test.ts` enforces this). Hosts inject `revalidateTags(tags)` and `localFiles`
+(registers `upload_from_path`). `/api/mcp` revalidates in-process with no local files; the stdio
+entry POSTs `{ tags }` to `REVALIDATE_URL` with `Bearer REVALIDATE_SECRET`, or warns and skips
+revalidation when either is unset. Tag and Redis invalidation lives in the Next-free
+`lib/services/post-cache.ts` and `lib/queries/usage-reprice.ts`.
+
 ### Remote Access
 
 The MCP server is also available as a serverless API route for remote access from Claude Desktop, Claude Code, or the
@@ -164,6 +171,19 @@ Claude mobile app.
 `/.well-known/oauth-protected-resource`, self-register, and sign in at `/consent`; no
 static token or session is accepted. Add the URL as a remote MCP server with no
 `headers` (Claude Code: `"type": "http"`, then authenticate via `/mcp`).
+
+### MCP Worker
+
+`apps/mcp-worker` (`@workspace/mcp-worker`, Worker `blog-mcp`) serves the same `createServer`
+at `POST /mcp` on Cloudflare Workers, bundling `packages/mcp` and its `@/` imports from
+`apps/web/src` through tsconfig `paths`. It mirrors `/api/mcp`: stateless transport, OAuth-only
+auth (jose against `${BETTER_AUTH_URL}/api/auth/jwks`, then the shared client/user lookup in
+`lib/api/oauth-user.ts`), revalidation over HTTP via `@workspace/mcp/revalidate-tags`, and no
+`upload_from_path`. No route or custom domain yet, and there is no deploy script.
+
+- `pnpm dev:mcp-worker` - `wrangler dev`; copy `.dev.vars.example` to `.dev.vars` first
+- `pnpm --filter @workspace/mcp-worker exec wrangler deploy --dry-run --outdir dist` - Bundle without deploying; the bundle must contain no `next/*` module
+- Secrets (`wrangler secret put`): `DATABASE_URL`, `UPSTASH_REDIS_REST_URL`/`TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `R2_*`, `REVALIDATE_SECRET`. `BETTER_AUTH_URL` and `REVALIDATE_URL` are vars in `wrangler.jsonc`. `DATABASE_URL` must be set: `neon()` throws at isolate start without it
 
 ## OAuth Provider
 
@@ -240,6 +260,7 @@ apps/
 │   ├── public/
 │   └── migrations/
 ├── docs/             # @workspace/docs Fumadocs documentation site
+├── mcp-worker/       # @workspace/mcp-worker Cloudflare Worker serving the MCP server
 └── cli/              # @workspace/cli agent-usage Rust usage collector CLI (macOS)
 packages/
 ├── mcp/              # @workspace/mcp private MCP server package
@@ -277,6 +298,8 @@ See `apps/web/.env.example` for all required variables:
 - `POSTHOG_API_KEY` - PostHog Personal API Key with `query:read` scope
 - `CLOUDFLARE_ACCOUNT_ID` - R2 storage
 - `R2_ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET_NAME/PUBLIC_URL` - R2 config
+- `REVALIDATE_SECRET` - Bearer for `POST /api/revalidate` (`{ tags: string[] }`), which lets the external MCP server invalidate Cache Components after a database write. Only allowlisted tags (see the route) are accepted; unset → 401
+- `REVALIDATE_URL` - Optional, stdio MCP server and MCP Worker only: the `POST /api/revalidate` URL it calls with `REVALIDATE_SECRET`; without both, either server skips cache revalidation
 - The OAuth provider (the only MCP auth) needs no extra env vars
 
 ## Code Conventions

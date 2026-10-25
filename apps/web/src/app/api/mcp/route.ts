@@ -1,5 +1,6 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { createServer } from "@workspace/mcp/server";
+import { revalidateTag } from "next/cache";
 import { methodNotAllowedResponse } from "@/lib/api";
 import { type McpAuthResult, validateMcpAuth } from "@/lib/api/mcp-auth";
 import { bearerChallenge, MCP_SCOPE } from "@/lib/api/oauth-protected-resource";
@@ -64,7 +65,15 @@ export async function POST(request: Request) {
     enableJsonResponse: true,
   });
 
-  const server = createServer();
+  // Remote: no local filesystem, and writes revalidate this app's own cache.
+  const server = createServer({
+    revalidateTags: async (tags) => {
+      for (const tag of tags) {
+        revalidateTag(tag, "max");
+      }
+    },
+    localFiles: false,
+  });
   await server.connect(transport);
 
   try {

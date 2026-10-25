@@ -5,11 +5,12 @@ import slugify from "slugify";
 import { z } from "zod";
 import { generatePostMetadata } from "@/lib/post-metadata";
 import {
-  invalidatePopularPost,
-  invalidatePost,
-  invalidateRelatedByTags,
-} from "@/lib/services/cache-invalidation";
+  invalidatePopularPostCache,
+  invalidatePostCache,
+  invalidateRelatedCacheByTags,
+} from "@/lib/services/post-cache";
 import { db, posts } from "@/schema";
+import type { ServerDeps } from "../server";
 
 function makeError(message: string): CallToolResult {
   return {
@@ -126,6 +127,7 @@ export async function createPostHandler(
     featured?: boolean;
   },
   extra: ToolExtra,
+  deps: Pick<ServerDeps, "revalidateTags">,
 ): Promise<CallToolResult> {
   const {
     title,
@@ -166,7 +168,7 @@ export async function createPostHandler(
     })
     .returning();
 
-  await invalidatePost(created.slug);
+  await invalidatePostCache(created.slug, deps.revalidateTags);
 
   const output = {
     post: {
@@ -193,6 +195,7 @@ export async function saveDraftHandler(
     tags?: string[];
   },
   extra: ToolExtra,
+  deps: Pick<ServerDeps, "revalidateTags">,
 ): Promise<CallToolResult> {
   const { id, title, slug: slugInput, content, summary, tags = [] } = args;
 
@@ -247,7 +250,7 @@ export async function saveDraftHandler(
       .where(eq(posts.id, id))
       .returning();
 
-    await invalidatePost(mergedSlug);
+    await invalidatePostCache(mergedSlug, deps.revalidateTags);
 
     const output = {
       post: {
@@ -305,17 +308,20 @@ export async function saveDraftHandler(
   };
 }
 
-export async function updatePostHandler(args: {
-  id: string;
-  title?: string;
-  slug?: string;
-  content?: string;
-  summary?: string;
-  status?: "draft" | "published";
-  tags?: string[];
-  coverImage?: string | null;
-  featured?: boolean;
-}): Promise<CallToolResult> {
+export async function updatePostHandler(
+  args: {
+    id: string;
+    title?: string;
+    slug?: string;
+    content?: string;
+    summary?: string;
+    status?: "draft" | "published";
+    tags?: string[];
+    coverImage?: string | null;
+    featured?: boolean;
+  },
+  deps: Pick<ServerDeps, "revalidateTags">,
+): Promise<CallToolResult> {
   const { id, ...updates } = args;
 
   const [existing] = await db
@@ -367,19 +373,23 @@ export async function updatePostHandler(args: {
     .where(eq(posts.id, id))
     .returning();
 
-  await invalidatePost(slug);
+  await invalidatePostCache(slug, deps.revalidateTags);
 
   if (updates.slug && updates.slug !== oldSlug) {
-    await invalidatePopularPost(oldSlug);
+    await invalidatePopularPostCache(oldSlug, deps.revalidateTags);
   }
   if (updates.status === "draft" && existing.status === "published") {
-    await invalidatePopularPost(oldSlug);
+    await invalidatePopularPostCache(oldSlug, deps.revalidateTags);
   }
   if (
     updates.tags &&
     JSON.stringify(updates.tags) !== JSON.stringify(oldTags)
   ) {
-    await invalidateRelatedByTags([...oldTags, ...updates.tags], slug);
+    await invalidateRelatedCacheByTags(
+      [...oldTags, ...updates.tags],
+      slug,
+      deps.revalidateTags,
+    );
   }
 
   const output = {
@@ -397,9 +407,12 @@ export async function updatePostHandler(args: {
   };
 }
 
-export async function deletePostHandler(args: {
-  id: string;
-}): Promise<CallToolResult> {
+export async function deletePostHandler(
+  args: {
+    id: string;
+  },
+  deps: Pick<ServerDeps, "revalidateTags">,
+): Promise<CallToolResult> {
   const { id } = args;
 
   const [deleted] = await db
@@ -409,7 +422,7 @@ export async function deletePostHandler(args: {
     .returning();
 
   if (deleted) {
-    await invalidatePopularPost(deleted.slug);
+    await invalidatePopularPostCache(deleted.slug, deps.revalidateTags);
   }
 
   const output = {
@@ -423,9 +436,12 @@ export async function deletePostHandler(args: {
   };
 }
 
-export async function restorePostHandler(args: {
-  id: string;
-}): Promise<CallToolResult> {
+export async function restorePostHandler(
+  args: {
+    id: string;
+  },
+  deps: Pick<ServerDeps, "revalidateTags">,
+): Promise<CallToolResult> {
   const { id } = args;
 
   const [restored] = await db
@@ -435,7 +451,7 @@ export async function restorePostHandler(args: {
     .returning();
 
   if (restored) {
-    await invalidatePost(restored.slug);
+    await invalidatePostCache(restored.slug, deps.revalidateTags);
   }
 
   const output = {
@@ -455,9 +471,12 @@ export async function restorePostHandler(args: {
   };
 }
 
-export async function publishPostHandler(args: {
-  id: string;
-}): Promise<CallToolResult> {
+export async function publishPostHandler(
+  args: {
+    id: string;
+  },
+  deps: Pick<ServerDeps, "revalidateTags">,
+): Promise<CallToolResult> {
   const { id } = args;
 
   const [existing] = await db
@@ -504,7 +523,7 @@ export async function publishPostHandler(args: {
     .where(eq(posts.id, id))
     .returning();
 
-  await invalidatePost(published.slug);
+  await invalidatePostCache(published.slug, deps.revalidateTags);
 
   const output = {
     success: true,
@@ -522,7 +541,7 @@ export async function publishPostHandler(args: {
   };
 }
 
-export function registerPostTools(server: McpServer): void {
+export function registerPostTools(server: McpServer, deps: ServerDeps): void {
   server.registerTool(
     "list_posts",
     {
@@ -642,7 +661,7 @@ export function registerPostTools(server: McpServer): void {
         }),
       }),
     },
-    (args, extra) => createPostHandler(args, extra),
+    (args, extra) => createPostHandler(args, extra, deps),
   );
 
   server.registerTool(
@@ -685,7 +704,7 @@ export function registerPostTools(server: McpServer): void {
         idempotentHint: true,
       },
     },
-    (args, extra) => saveDraftHandler(args, extra),
+    (args, extra) => saveDraftHandler(args, extra, deps),
   );
 
   server.registerTool(
@@ -733,7 +752,7 @@ export function registerPostTools(server: McpServer): void {
         idempotentHint: true,
       },
     },
-    (args) => updatePostHandler(args),
+    (args) => updatePostHandler(args, deps),
   );
 
   server.registerTool(
@@ -753,7 +772,7 @@ export function registerPostTools(server: McpServer): void {
         destructiveHint: true,
       },
     },
-    (args) => deletePostHandler(args),
+    (args) => deletePostHandler(args, deps),
   );
 
   server.registerTool(
@@ -775,7 +794,7 @@ export function registerPostTools(server: McpServer): void {
           .nullable(),
       }),
     },
-    (args) => restorePostHandler(args),
+    (args) => restorePostHandler(args, deps),
   );
 
   server.registerTool(
@@ -802,6 +821,6 @@ export function registerPostTools(server: McpServer): void {
         destructiveHint: true,
       },
     },
-    (args) => publishPostHandler(args),
+    (args) => publishPostHandler(args, deps),
   );
 }

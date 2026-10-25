@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CacheConfig } from "@/lib/config/cache.config";
-import * as postsQueries from "@/lib/queries/posts";
+import * as postsQueries from "@/lib/queries/overlapping-posts";
 
 // Mock dependencies
 vi.mock("next/cache", () => ({
@@ -14,12 +14,8 @@ vi.mock("@/config/redis", () => ({
   },
 }));
 
-vi.mock("@/lib/queries/posts", () => ({
+vi.mock("@/lib/queries/overlapping-posts", () => ({
   getPostsWithOverlappingTags: vi.fn(),
-}));
-
-vi.mock("./popular-posts", () => ({
-  removeFromPopular: vi.fn(),
 }));
 
 // Import after mocks
@@ -30,7 +26,6 @@ import {
   invalidatePost,
   invalidateRelatedByTags,
 } from "./cache-invalidation";
-import { removeFromPopular } from "./popular-posts";
 
 describe("cache-invalidation", () => {
   beforeEach(() => {
@@ -125,12 +120,15 @@ describe("cache-invalidation", () => {
 
   describe("invalidatePopularPost", () => {
     it("should remove from popular and invalidate post caches", async () => {
-      vi.mocked(removeFromPopular).mockResolvedValue(undefined);
+      vi.mocked(redis.zrem).mockResolvedValue(undefined as any);
       vi.mocked(redis.del).mockResolvedValue(undefined as any);
 
       await invalidatePopularPost("test-post");
 
-      expect(removeFromPopular).toHaveBeenCalledWith("test-post");
+      expect(redis.zrem).toHaveBeenCalledWith(
+        CacheConfig.REDIS_KEYS.POPULAR_SET,
+        "test-post",
+      );
       expect(redis.del).toHaveBeenCalledWith(
         CacheConfig.REDIS_KEYS.POST_STATS("test-post"),
       );
@@ -139,12 +137,12 @@ describe("cache-invalidation", () => {
     });
 
     it("should run operations in parallel", async () => {
-      vi.mocked(removeFromPopular).mockResolvedValue(undefined);
+      vi.mocked(redis.zrem).mockResolvedValue(undefined as any);
       vi.mocked(redis.del).mockResolvedValue(undefined as any);
 
       await invalidatePopularPost("test-post");
 
-      expect(removeFromPopular).toHaveBeenCalled();
+      expect(redis.zrem).toHaveBeenCalled();
       expect(redis.del).toHaveBeenCalled();
     });
   });

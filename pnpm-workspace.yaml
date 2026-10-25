@@ -18,6 +18,9 @@ allowBuilds:
   msw: false
   protobufjs: false
   sharp: false
+  # Like esbuild, workerd ships its binary as an optional platform package; the
+  # install script only verifies it.
+  workerd: false
 
 catalog:
   "@tailwindcss/postcss": ^4.3.0

@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "exports": {
+    "./revalidate-tags": "./src/revalidate-tags.ts",
     "./server": "./src/server.ts"
   },
   "dependencies": {

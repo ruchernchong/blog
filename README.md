@@ -24,6 +24,7 @@ pnpm build           # Build for production
 - **Database**: Neon PostgreSQL with Drizzle ORM
 - **Cache**: Upstash Redis for analytics and stats
 - **Storage**: Cloudflare R2 for media assets
+- **MCP Worker**: Cloudflare Workers runtime for the remote MCP server
 - **Auth**: Better Auth with OAuth (GitHub, Google)
 
 ### Content & Editor

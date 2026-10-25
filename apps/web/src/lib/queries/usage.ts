@@ -24,7 +24,7 @@ import {
   buildWeeklyShare,
 } from "@workspace/usage/weekly-insights";
 import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns";
-import { and, asc, desc, eq, gt, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, or, sql } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { cacheLife, cacheTag } from "next/cache";
 import {
@@ -32,6 +32,7 @@ import {
   pricingRowToEntry,
 } from "@/lib/queries/model-registry";
 import { excludedColumns } from "@/lib/queries/upsert";
+import { tokensOf } from "@/lib/queries/usage-reprice";
 import {
   db,
   type InsertTokenEffortUsage,
@@ -40,6 +41,8 @@ import {
   tokenEffortUsage,
   tokenUsage,
 } from "@/schema";
+
+export { repriceUnpricedTokenUsage } from "@/lib/queries/usage-reprice";
 
 /** Postgres caps bound parameters per statement; chunk large upserts under it. */
 const UPSERT_CHUNK_SIZE = 1000;
@@ -176,73 +179,6 @@ export async function upsertTokenEffortUsage(
     await db.batch([first, ...remaining]);
   }
   return rows.length;
-}
-
-export interface RepriceResult {
-  /** Rows that were `NULL`-cost going in. */
-  scanned: number;
-  /** Rows that now resolve to a price and were updated. */
-  repriced: number;
-  /** Rows still unpriceable (e.g. legacy `unknown`, or a model no pricing DB lists). */
-  stillUnpriced: number;
-}
-
-/**
- * Recompute cost for every `NULL`-cost row from its *stored* token columns using
- * current pricing, and persist the ones that now resolve.
- *
- * A row's cost is `NULL` when the model had no price at ingest time (models.dev
- * had not yet listed it). The ingest upsert self-heals such a row on the next
- * run — but only while its source log still exists; once the log is pruned the
- * parser stops regenerating that (date, agent, provider, model) key, leaving a
- * permanently stale-`NULL` orphan that re-ingesting can never reach. This pass
- * is log-independent: it reprices straight from the persisted aggregate, so an
- * orphan heals as soon as pricing catches up. Run after each ingest.
- */
-export async function repriceUnpricedTokenUsage(
-  pricing: Pricing,
-): Promise<RepriceResult> {
-  const rows = await db
-    .select()
-    .from(tokenUsage)
-    .where(isNull(tokenUsage.costUsd));
-
-  let repriced = 0;
-  let stillUnpriced = 0;
-  for (const row of rows) {
-    const cost = pricing.costOf(tokensOf(row), row.model, {
-      agent: row.agent,
-      provider: row.provider,
-    });
-    if (cost === null) {
-      stillUnpriced++;
-      continue;
-    }
-    // `costUsd IS NULL` guards against a concurrent ingest that upserted this
-    // same key (with fresh tokens + a real cost) between the select above and
-    // this write — without it, we'd clobber the newer cost with one computed
-    // from now-stale token counts. The narrowed WHERE makes the write a no-op
-    // in that race instead of a silent overwrite.
-    const updated = await db
-      .update(tokenUsage)
-      .set({ costUsd: cost.toFixed(6) })
-      .where(
-        and(
-          eq(tokenUsage.date, row.date),
-          eq(tokenUsage.agent, row.agent),
-          eq(tokenUsage.provider, row.provider),
-          eq(tokenUsage.model, row.model),
-          sql`${tokenUsage.device} is not distinct from ${row.device}`,
-          isNull(tokenUsage.costUsd),
-        ),
-      )
-      .returning({ date: tokenUsage.date });
-    if (updated.length > 0) {
-      repriced++;
-    }
-  }
-
-  return { scanned: rows.length, repriced, stillUnpriced };
 }
 
 /**
@@ -589,16 +525,6 @@ function addTokens(breakdown: TokenBreakdown, row: UsageRow): void {
   breakdown.cacheRead += row.cacheReadTokens;
   breakdown.cacheWrite += row.cacheWriteTokens;
   breakdown.reasoning += row.reasoningTokens;
-}
-
-function tokensOf(row: UsageRow): TokenBreakdown {
-  return {
-    input: row.inputTokens,
-    output: row.outputTokens,
-    cacheRead: row.cacheReadTokens,
-    cacheWrite: row.cacheWriteTokens,
-    reasoning: row.reasoningTokens,
-  };
 }
 
 /**
