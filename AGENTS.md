@@ -138,7 +138,7 @@ An MCP (Model Context Protocol) server for managing blog posts and media via Cla
 - `get_media` - Get single media item
 - `request_upload` - Get presigned R2 upload URL
 - `confirm_upload` - Confirm upload and create database record
-- `upload_from_path` - Upload image directly from local file path
+- `upload_from_path` - Upload image directly from local file path (stdio server only)
 - `upload_from_url` - Upload image from a public URL
 - `delete_media` - Soft delete media
 
@@ -152,6 +152,13 @@ An MCP (Model Context Protocol) server for managing blog posts and media via Cla
 ### Configuration
 
 The MCP server is configured in `.mcp.json` and uses stdio transport for local CLI integration.
+
+`createServer(deps)` (`packages/mcp/src/server.ts`) keeps its import graph free of Next.js
+(`server-imports.test.ts` enforces this). Hosts inject `revalidateTags(tags)` and `localFiles`
+(registers `upload_from_path`). `/api/mcp` revalidates in-process with no local files; the stdio
+entry POSTs `{ tags }` to `REVALIDATE_URL` with `Bearer REVALIDATE_SECRET`, or warns and skips
+revalidation when either is unset. Tag and Redis invalidation lives in the Next-free
+`lib/services/post-cache.ts` and `lib/queries/usage-reprice.ts`.
 
 ### Remote Access
 
@@ -278,6 +285,7 @@ See `apps/web/.env.example` for all required variables:
 - `CLOUDFLARE_ACCOUNT_ID` - R2 storage
 - `R2_ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET_NAME/PUBLIC_URL` - R2 config
 - `REVALIDATE_SECRET` - Bearer for `POST /api/revalidate` (`{ tags: string[] }`), which lets the external MCP server invalidate Cache Components after a database write. Only allowlisted tags (see the route) are accepted; unset → 401
+- `REVALIDATE_URL` - Optional, stdio MCP server only: the `POST /api/revalidate` URL it calls with `REVALIDATE_SECRET`; without both the stdio server skips cache revalidation
 - The OAuth provider (the only MCP auth) needs no extra env vars
 
 ## Code Conventions

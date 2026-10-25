@@ -6,6 +6,7 @@ vi.mock("@/schema", () => ({
     select: vi.fn(),
     insert: vi.fn(),
     update: vi.fn(),
+    delete: vi.fn(),
   },
   posts: {
     id: "posts.id",
@@ -13,6 +14,13 @@ vi.mock("@/schema", () => ({
     status: "posts.status",
     deletedAt: "posts.deletedAt",
   },
+  model: {
+    table: "model",
+    provider: "model.provider",
+    id: "model.id",
+    isOverride: "model.isOverride",
+  },
+  tokenUsage: { table: "token_usage", costUsd: "token_usage.costUsd" },
 }));
 
 vi.mock("@/lib/post-metadata", () => ({
@@ -26,10 +34,21 @@ vi.mock("@/lib/post-metadata", () => ({
   })),
 }));
 
-vi.mock("@/lib/services/cache-invalidation", () => ({
-  invalidatePost: vi.fn(),
-  invalidatePopularPost: vi.fn(),
-  invalidateRelatedByTags: vi.fn(),
+vi.mock("@/config/redis", () => ({
+  default: {
+    del: vi.fn(),
+    zrem: vi.fn(),
+  },
+}));
+
+vi.mock("@/lib/queries/overlapping-posts", () => ({
+  getPostsWithOverlappingTags: vi.fn(),
+}));
+
+vi.mock("@/lib/queries/model-registry", () => ({
+  entryToRow: (entry: unknown) => entry,
+  keepOpenWeights: "keep-open-weights",
+  rowToEntry: (row: unknown) => row,
 }));
 
 vi.mock("@/lib/services", () => ({
@@ -40,20 +59,77 @@ vi.mock("@/lib/services", () => ({
   },
 }));
 
+import redis from "@/config/redis";
+import { CacheConfig } from "@/lib/config/cache.config";
 import { generatePostMetadata } from "@/lib/post-metadata";
+import { getPostsWithOverlappingTags } from "@/lib/queries/overlapping-posts";
 import { mediaService } from "@/lib/services";
-import { db, posts } from "@/schema";
+import { db, model, posts } from "@/schema";
 import {
   confirmUploadHandler,
   uploadFromPathHandler,
   uploadFromUrlHandler,
 } from "./media.tools";
-import { createPostHandler, saveDraftHandler } from "./posts.tools";
+import {
+  deleteModelOverrideHandler,
+  upsertModelOverrideHandler,
+} from "./models.tools";
+import {
+  createPostHandler,
+  deletePostHandler,
+  publishPostHandler,
+  restorePostHandler,
+  saveDraftHandler,
+  updatePostHandler,
+} from "./posts.tools";
 
 const mockDbSelect = vi.mocked(db.select);
 const mockDbInsert = vi.mocked(db.insert);
 const mockDbUpdate = vi.mocked(db.update);
+const mockDbDelete = vi.mocked(db.delete);
 const mockGeneratePostMetadata = vi.mocked(generatePostMetadata);
+const revalidateTags = vi.fn().mockResolvedValue(undefined);
+const deps = { revalidateTags };
+
+/** Every tag `invalidatePostCache` revalidates for a slug. */
+function postTags(slug: string): string[] {
+  return [
+    `post:${slug}`,
+    `mdx:${slug}`,
+    `related:${slug}`,
+    "posts:list",
+    "posts:count",
+    "posts:featured",
+  ];
+}
+
+function mockInsertReturning(row: unknown) {
+  mockDbInsert.mockReturnValue({
+    values: vi.fn().mockReturnValue({
+      returning: vi.fn().mockResolvedValue([row]),
+    }),
+  } as any);
+}
+
+function mockSelectOne(row: unknown) {
+  mockDbSelect.mockReturnValue({
+    from: vi.fn().mockReturnValue({
+      where: vi.fn().mockReturnValue({
+        limit: vi.fn().mockResolvedValue([row]),
+      }),
+    }),
+  } as any);
+}
+
+function mockUpdateReturning(row: unknown) {
+  mockDbUpdate.mockReturnValue({
+    set: vi.fn().mockReturnValue({
+      where: vi.fn().mockReturnValue({
+        returning: vi.fn().mockResolvedValue(row ? [row] : []),
+      }),
+    }),
+  } as any);
+}
 
 function createMockExtra(userId?: string) {
   return {
@@ -92,6 +168,7 @@ describe("MCP Tool Handlers", () => {
           content: "# Hello",
         },
         createMockExtra("user-123"),
+        deps,
       );
 
       expect(mockDbInsert).toHaveBeenCalledWith(posts);
@@ -122,6 +199,7 @@ describe("MCP Tool Handlers", () => {
           content: "# Hello",
         },
         createMockExtra(),
+        deps,
       );
 
       const insertCall =
@@ -150,6 +228,7 @@ describe("MCP Tool Handlers", () => {
           status: "published",
         },
         createMockExtra(),
+        deps,
       );
 
       expect(mockGeneratePostMetadata).toHaveBeenCalledWith(
@@ -183,6 +262,7 @@ describe("MCP Tool Handlers", () => {
           content: "Draft content",
         },
         createMockExtra("user-456"),
+        deps,
       );
 
       const insertCall =
@@ -211,6 +291,7 @@ describe("MCP Tool Handlers", () => {
           title: "Another Draft",
         },
         createMockExtra(),
+        deps,
       );
 
       const insertCall =
@@ -260,6 +341,7 @@ describe("MCP Tool Handlers", () => {
           title: "New Title",
         },
         createMockExtra("user-789"),
+        deps,
       );
 
       // For updates, authorId should not be modified
@@ -298,6 +380,7 @@ describe("MCP Tool Handlers", () => {
           title: "New Title",
         },
         createMockExtra(),
+        deps,
       );
 
       expect(result.isError).toBe(true);
@@ -475,6 +558,270 @@ describe("MCP Tool Handlers", () => {
         }),
       );
       expect(result.structuredContent).toEqual({ media: mockMedia });
+    });
+  });
+
+  describe("cache revalidation", () => {
+    it("should revalidate the post tags after create_post", async () => {
+      mockInsertReturning({
+        id: "1",
+        slug: "hello",
+        title: "Hello",
+        status: "draft",
+      });
+
+      await createPostHandler(
+        { title: "Hello", slug: "hello", content: "# Hi" },
+        createMockExtra(),
+        deps,
+      );
+
+      expect(redis.del).toHaveBeenCalledWith(
+        CacheConfig.REDIS_KEYS.POST_STATS("hello"),
+      );
+      expect(revalidateTags.mock.calls).toEqual([[postTags("hello")]]);
+    });
+
+    it("should revalidate the merged slug's tags after save_draft updates a draft", async () => {
+      mockSelectOne({
+        id: "draft-1",
+        title: "Old",
+        slug: "old",
+        content: "Body",
+        summary: null,
+        status: "draft",
+      });
+      mockUpdateReturning({
+        id: "draft-1",
+        slug: "new-title",
+        title: "New Title",
+        status: "draft",
+      });
+
+      await saveDraftHandler(
+        { id: "draft-1", title: "New Title" },
+        createMockExtra(),
+        deps,
+      );
+
+      expect(revalidateTags.mock.calls).toEqual([[postTags("new-title")]]);
+    });
+
+    it("should not revalidate when save_draft creates a new draft", async () => {
+      mockInsertReturning({
+        id: "draft-2",
+        slug: "fresh",
+        title: "Fresh",
+        status: "draft",
+      });
+
+      await saveDraftHandler({ title: "Fresh" }, createMockExtra(), deps);
+
+      expect(revalidateTags).not.toHaveBeenCalled();
+    });
+
+    it("should revalidate new, old and overlapping-tag posts after update_post", async () => {
+      mockSelectOne({
+        id: "post-1",
+        title: "Post",
+        slug: "old",
+        content: "Body",
+        summary: null,
+        status: "published",
+        tags: ["a"],
+        publishedAt: new Date("2026-01-01"),
+      });
+      mockUpdateReturning({
+        id: "post-1",
+        slug: "new",
+        title: "Post",
+        status: "draft",
+      });
+      vi.mocked(getPostsWithOverlappingTags).mockResolvedValue([
+        { slug: "other" },
+      ] as any);
+
+      await updatePostHandler(
+        { id: "post-1", slug: "new", status: "draft", tags: ["a", "b"] },
+        deps,
+      );
+
+      // The slug change and the unpublish each drop the old slug from popular.
+      expect(redis.zrem).toHaveBeenCalledTimes(2);
+      expect(redis.zrem).toHaveBeenCalledWith(
+        CacheConfig.REDIS_KEYS.POPULAR_SET,
+        "old",
+      );
+      expect(getPostsWithOverlappingTags).toHaveBeenCalledWith(
+        ["a", "a", "b"],
+        "new",
+      );
+      expect(revalidateTags.mock.calls).toEqual([
+        [postTags("new")],
+        [postTags("old")],
+        [postTags("old")],
+        [["related:other", "post:other"]],
+      ]);
+    });
+
+    it("should revalidate only the post tags when update_post keeps slug, status and tags", async () => {
+      mockSelectOne({
+        id: "post-1",
+        title: "Post",
+        slug: "same",
+        content: "Body",
+        summary: null,
+        status: "published",
+        tags: ["a"],
+        publishedAt: new Date("2026-01-01"),
+      });
+      mockUpdateReturning({
+        id: "post-1",
+        slug: "same",
+        title: "Renamed",
+        status: "published",
+      });
+
+      await updatePostHandler({ id: "post-1", title: "Renamed" }, deps);
+
+      expect(redis.zrem).not.toHaveBeenCalled();
+      expect(getPostsWithOverlappingTags).not.toHaveBeenCalled();
+      expect(revalidateTags.mock.calls).toEqual([[postTags("same")]]);
+    });
+
+    it("should drop the post from popular and revalidate its tags after delete_post", async () => {
+      mockUpdateReturning({ id: "post-1", slug: "gone" });
+
+      await deletePostHandler({ id: "post-1" }, deps);
+
+      expect(redis.zrem).toHaveBeenCalledWith(
+        CacheConfig.REDIS_KEYS.POPULAR_SET,
+        "gone",
+      );
+      expect(revalidateTags.mock.calls).toEqual([[postTags("gone")]]);
+    });
+
+    it("should not revalidate when delete_post finds no post", async () => {
+      mockUpdateReturning(undefined);
+
+      await deletePostHandler({ id: "missing" }, deps);
+
+      expect(revalidateTags).not.toHaveBeenCalled();
+    });
+
+    it("should revalidate the post tags after restore_post", async () => {
+      mockUpdateReturning({ id: "post-1", slug: "back", title: "Back" });
+
+      await restorePostHandler({ id: "post-1" }, deps);
+
+      expect(revalidateTags.mock.calls).toEqual([[postTags("back")]]);
+    });
+
+    it("should revalidate the post tags after publish_post", async () => {
+      mockSelectOne({
+        id: "post-1",
+        title: "Draft",
+        slug: "draft",
+        content: "Body",
+        summary: null,
+        status: "draft",
+        publishedAt: null,
+      });
+      mockUpdateReturning({
+        id: "post-1",
+        slug: "draft",
+        title: "Draft",
+        publishedAt: new Date("2026-01-01"),
+      });
+
+      await publishPostHandler({ id: "post-1" }, deps);
+
+      expect(revalidateTags.mock.calls).toEqual([[postTags("draft")]]);
+    });
+
+    describe("model overrides", () => {
+      const savedRow = {
+        provider: "openai",
+        id: "gpt-x",
+        displayName: "GPT X",
+        inputRate: "1",
+        outputRate: "2",
+        cacheReadRate: null,
+        cacheWriteRate: null,
+        contextLimit: null,
+        releaseDate: null,
+        openWeights: null,
+        source: "override",
+        isOverride: true,
+        aliasTarget: null,
+        updatedAt: new Date("2026-01-01"),
+      };
+
+      beforeEach(() => {
+        // Empty registry for loadPricing, no unpriced token_usage rows.
+        mockDbSelect.mockImplementation(
+          () =>
+            ({
+              from: (table: unknown) =>
+                table === model
+                  ? Promise.resolve([])
+                  : { where: vi.fn().mockResolvedValue([]) },
+            }) as any,
+        );
+      });
+
+      it("should reprice and revalidate the usage tags after upsert_model_override", async () => {
+        mockDbInsert.mockReturnValue({
+          values: vi.fn().mockReturnValue({
+            onConflictDoUpdate: vi.fn().mockReturnValue({
+              returning: vi.fn().mockResolvedValue([savedRow]),
+            }),
+          }),
+        } as any);
+
+        await upsertModelOverrideHandler(
+          { provider: "openai", id: "gpt-x", inputRate: 1, outputRate: 2 },
+          deps,
+        );
+
+        expect(revalidateTags.mock.calls).toEqual([
+          [["usage", "models:providers"]],
+        ]);
+      });
+
+      it("should reprice and revalidate the usage tags after delete_model_override removes a row", async () => {
+        mockDbDelete.mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            returning: vi
+              .fn()
+              .mockResolvedValue([{ provider: "openai", id: "gpt-x" }]),
+          }),
+        } as any);
+
+        await deleteModelOverrideHandler(
+          { provider: "openai", id: "gpt-x" },
+          deps,
+        );
+
+        expect(revalidateTags.mock.calls).toEqual([
+          [["usage", "models:providers"]],
+        ]);
+      });
+
+      it("should not revalidate when delete_model_override removes nothing", async () => {
+        mockDbDelete.mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            returning: vi.fn().mockResolvedValue([]),
+          }),
+        } as any);
+
+        await deleteModelOverrideHandler(
+          { provider: "openai", id: "gpt-x" },
+          deps,
+        );
+
+        expect(revalidateTags).not.toHaveBeenCalled();
+      });
     });
   });
 });

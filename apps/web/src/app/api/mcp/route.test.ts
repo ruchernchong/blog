@@ -28,8 +28,13 @@ vi.mock("@/lib/api/mcp-auth", () => ({
   validateMcpAuth: vi.fn(),
 }));
 
+vi.mock("next/cache", () => ({
+  revalidateTag: vi.fn(),
+}));
+
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { createServer } from "@workspace/mcp/server";
+import { revalidateTag } from "next/cache";
 import { type McpAuthResult, validateMcpAuth } from "@/lib/api/mcp-auth";
 import { DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT } from "./route";
 
@@ -156,6 +161,24 @@ describe("MCP API Route", () => {
           authInfo: expect.objectContaining({ token: "oauth-token" }),
         }),
       );
+    });
+
+    it("should create a server without local files that revalidates each tag with the max profile", async () => {
+      mockValidateMcpAuth.mockResolvedValue(adminOAuth);
+
+      await POST(
+        new Request("http://localhost/api/mcp", {
+          method: "POST",
+          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
+        }),
+      );
+
+      const [deps] = vi.mocked(createServer).mock.calls[0];
+      expect(deps.localFiles).toBe(false);
+
+      await deps.revalidateTags(["post:hello", "posts:list"]);
+      expect(revalidateTag).toHaveBeenCalledWith("post:hello", "max");
+      expect(revalidateTag).toHaveBeenCalledWith("posts:list", "max");
     });
 
     it("should close the server and transport after handling the request", async () => {

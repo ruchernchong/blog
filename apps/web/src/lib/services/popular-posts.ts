@@ -87,15 +87,6 @@ export async function updatePopularScore(
 }
 
 /**
- * Remove a post from popular sorted set
- *
- * @param slug - Post slug to remove
- */
-export async function removeFromPopular(slug: string): Promise<void> {
-  await redis.zrem(CacheConfig.REDIS_KEYS.POPULAR_SET, slug);
-}
-
-/**
  * Fallback to recent published posts when Redis is unavailable
  *
  * @param limit - Maximum number of posts to return

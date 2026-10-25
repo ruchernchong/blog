@@ -16,11 +16,12 @@ import {
   SEED_OVERRIDES,
 } from "@workspace/usage/registry";
 import { and, eq, inArray } from "drizzle-orm";
-import { cacheLife, cacheTag, revalidateTag } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import redis from "@/config/redis";
 import { rowToEntry, upsertModelRegistry } from "@/lib/queries/model-registry";
-import { repriceUnpricedTokenUsage } from "@/lib/queries/usage";
 import { db, model } from "@/schema";
+
+export { loadPricing } from "@/lib/queries/usage-reprice";
 
 const MODELS_API_URL = "https://models.dev/api.json";
 /**
@@ -80,19 +81,6 @@ async function getModelsApi(): Promise<ModelsApi> {
   cacheTag("models:providers");
 
   return fetchModelsApi();
-}
-
-/**
- * Build {@link Pricing} from the persisted `model` registry.
- *
- * The registry is the merged snapshot written by {@link syncModelRegistry} at
- * most once per 24 hours after an ingest. It is also the last-good fallback
- * when a live source fetch fails. Used by the reprice pass and the prod ingest
- * route.
- */
-export async function loadPricing(): Promise<Pricing> {
-  const rows = await db.select().from(model);
-  return buildPricingFromRegistry(rows.map(rowToEntry));
 }
 
 /**
@@ -240,22 +228,6 @@ async function fetchModelsDevEntries(): Promise<ModelEntry[]> {
 async function loadOverrideEntries(): Promise<ModelEntry[]> {
   const rows = await db.select().from(model).where(eq(model.isOverride, true));
   return rows.map(rowToEntry);
-}
-
-/**
- * After a curated override changes, heal any `N.A.` (cost-`NULL`) `token_usage`
- * rows against the new pricing and revalidate the `/usage` page. Best-effort:
- * the override row is already persisted, so a failure here just defers pricing
- * to the next ingest's registry sync. Called by the MCP override tools.
- */
-export async function repriceAndRevalidateUsage(): Promise<void> {
-  try {
-    await repriceUnpricedTokenUsage(await loadPricing());
-    revalidateTag("usage", "max");
-    revalidateTag("models:providers", "max");
-  } catch {
-    // Override persisted; the next ingest reprices from stored tokens.
-  }
 }
 
 export async function getProviderDisplayNames(

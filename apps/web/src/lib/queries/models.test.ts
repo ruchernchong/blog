@@ -3,25 +3,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // `vi.mock` factories are hoisted above module scope, so the spies they close
 // over have to be created with `vi.hoisted`.
-const {
-  redisGet,
-  redisSet,
-  upsertModelRegistry,
-  selectRows,
-  whereRows,
-  repriceUnpricedTokenUsage,
-  revalidateTag,
-} = vi.hoisted(() => ({
-  redisGet: vi.fn(),
-  redisSet: vi.fn(),
-  upsertModelRegistry: vi.fn(),
-  // Rows for an unfiltered `select().from(model)` (the full registry).
-  selectRows: vi.fn(),
-  // Rows for a filtered `select().from(model).where(...)`.
-  whereRows: vi.fn(),
-  repriceUnpricedTokenUsage: vi.fn(),
-  revalidateTag: vi.fn(),
-}));
+const { redisGet, redisSet, upsertModelRegistry, selectRows, whereRows } =
+  vi.hoisted(() => ({
+    redisGet: vi.fn(),
+    redisSet: vi.fn(),
+    upsertModelRegistry: vi.fn(),
+    // Rows for an unfiltered `select().from(model)` (the full registry).
+    selectRows: vi.fn(),
+    // Rows for a filtered `select().from(model).where(...)`.
+    whereRows: vi.fn(),
+  }));
 
 vi.mock("@/config/redis", () => ({
   default: { get: redisGet, set: redisSet },
@@ -36,10 +27,7 @@ vi.mock("@/lib/logger", () => ({
 vi.mock("next/cache", () => ({
   cacheLife: vi.fn(),
   cacheTag: vi.fn(),
-  revalidateTag,
 }));
-
-vi.mock("@/lib/queries/usage", () => ({ repriceUnpricedTokenUsage }));
 
 vi.mock("@/schema", () => ({
   db: {
@@ -68,7 +56,6 @@ import {
   getProviderDisplayNames,
   loadPricing,
   refreshRegistrySource,
-  repriceAndRevalidateUsage,
   syncModelRegistry,
 } from "./models";
 
@@ -322,30 +309,6 @@ describe("loadPricing", () => {
 
     expect(pricing).toBeDefined();
     expect(selectRows).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe("repriceAndRevalidateUsage", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    selectRows.mockResolvedValue([]);
-  });
-
-  it("should reprice unpriced usage and revalidate the usage caches", async () => {
-    repriceUnpricedTokenUsage.mockResolvedValue({ repriced: 3 });
-
-    await repriceAndRevalidateUsage();
-
-    expect(repriceUnpricedTokenUsage).toHaveBeenCalledTimes(1);
-    expect(revalidateTag).toHaveBeenCalledWith("usage", "max");
-    expect(revalidateTag).toHaveBeenCalledWith("models:providers", "max");
-  });
-
-  it("should swallow a repricing failure without revalidating", async () => {
-    repriceUnpricedTokenUsage.mockRejectedValue(new Error("db down"));
-
-    await expect(repriceAndRevalidateUsage()).resolves.toBeUndefined();
-    expect(revalidateTag).not.toHaveBeenCalled();
   });
 });
 
