@@ -12,6 +12,8 @@
   // Run in AWS ap-southeast-1 (Singapore) rather than near each client.
   "placement": { "region": "aws:ap-southeast-1" },
   "observability": { "enabled": true },
+  // ruchern.dev's DNS is on Cloudflare, so deploy creates the record and cert.
+  "routes": [{ "pattern": "mcp.ruchern.dev", "custom_domain": true }],
   "vars": {
     "BETTER_AUTH_URL": "https://ruchern.dev",
     "REVALIDATE_URL": "https://ruchern.dev/api/revalidate"

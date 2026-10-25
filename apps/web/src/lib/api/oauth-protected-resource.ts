@@ -43,9 +43,13 @@ export const protectedResourceMetadata = {
 /**
  * Builds a `WWW-Authenticate: Bearer …` challenge that advertises the required
  * scope and the metadata document so MCP clients can discover the auth server.
- * Pass `insufficient_scope` when a valid token simply lacks the `mcp` scope.
+ * Pass `insufficient_scope` when a valid token simply lacks the `mcp` scope, and
+ * `metadataUrl` when the resource is served from another origin (the Worker).
  */
-export function bearerChallenge(error?: "insufficient_scope"): string {
+export function bearerChallenge(
+  error?: "insufficient_scope",
+  metadataUrl = protectedResourceMetadataUrl,
+): string {
   const parts: string[] = [];
   if (error) {
     parts.push(
@@ -53,9 +57,6 @@ export function bearerChallenge(error?: "insufficient_scope"): string {
       `error_description="The '${MCP_SCOPE}' scope is required to access this resource"`,
     );
   }
-  parts.push(
-    `scope="${MCP_SCOPE}"`,
-    `resource_metadata="${protectedResourceMetadataUrl}"`,
-  );
+  parts.push(`scope="${MCP_SCOPE}"`, `resource_metadata="${metadataUrl}"`);
   return `Bearer ${parts.join(", ")}`;
 }
