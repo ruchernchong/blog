@@ -1,6 +1,5 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignore": [".deepsec/**"],
   "ignoreDependencies": [
     "@commitlint/cli",
     "@semantic-release/commit-analyzer",

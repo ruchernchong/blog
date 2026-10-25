@@ -12,7 +12,7 @@ Never bypass the minimum package release age or add `minimumReleaseAgeExclude`; 
 - `pnpm build` - Build all workspace packages
 - `pnpm start` - Start the web production server
 - `pnpm lint` - Run linting across workspaces with Biome
-- `pnpm knip` - Find unused files, exports, and dependencies (root config in `knip.json`; `.deepsec` is vendored and ignored)
+- `pnpm knip` - Find unused files, exports, and dependencies (root config in `knip.json`)
 - `pnpm format` - Format code with Biome
 - `pnpm typecheck` - TypeScript type checking across workspaces
 
