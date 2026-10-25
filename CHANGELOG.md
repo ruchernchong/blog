@@ -1,3 +1,9 @@
+## [1.57.0](https://github.com/ruchernchong/blog/compare/v1.56.5...v1.57.0) (2026-10-25)
+
+### Features
+
+* require OAuth for MCP and usage ingest ([ded395d](https://github.com/ruchernchong/blog/commit/ded395d73c2ec643c8d5846cbfbf3ed2ec00953b))
+
 ## [1.56.5](https://github.com/ruchernchong/blog/compare/v1.56.4...v1.56.5) (2026-10-15)
 
 ### Bug Fixes
