@@ -167,7 +167,8 @@ Claude mobile app.
 
 **Endpoints (dual-run):** `https://ruchern.dev/api/mcp` (`blog` in `.mcp.json`) and the
 Worker at `https://mcp.ruchern.dev/mcp` (`blog-worker`). Both serve the same tools and data
-until `/api/mcp` is retired.
+until `/api/mcp` is retired. A third, `https://<project>.vercel.app/mcp` (Hono on Vercel, `sin1`),
+serves the same tools for comparison with the Worker.
 
 **Auth:** OAuth only (admin account, `mcp` scope). Clients discover the provider via
 `/.well-known/oauth-protected-resource` on the endpoint's own origin, self-register, and sign
@@ -176,9 +177,11 @@ with no `headers` (Claude Code: `"type": "http"`, then authenticate via `/mcp`).
 endpoint publishes its own server URL as `resource` (MCP clients reject one that does not cover
 the URL they connect to, and request it as the token audience): `https://ruchern.dev/api/mcp`
 (`MCP_RESOURCE`, metadata at `/.well-known/oauth-protected-resource/api/mcp`) and
-`https://mcp.ruchern.dev/mcp` (`MCP_WORKER_RESOURCE`). The root metadata keeps the provider issuer
+`https://mcp.ruchern.dev/mcp` (`MCP_WORKER_RESOURCE`), and the Vercel server's
+`https://<project>.vercel.app/mcp` (`MCP_VERCEL_RESOURCE`). The root metadata keeps the provider issuer
 (`https://ruchern.dev/api/auth`), the audience the CLI requests for `/api/usage/ingest`.
-`oauthProvider` lists all three in `resources`, and each endpoint only accepts tokens issued for
+`oauthProvider` lists all of them in `resources` (the Vercel one only when `MCP_VERCEL_RESOURCE`
+is set), and each endpoint only accepts tokens issued for
 its own audience.
 
 ### MCP Worker
@@ -197,6 +200,26 @@ its 401/403 challenges point `resource_metadata` at the `/mcp` document on its o
 - `pnpm --filter @workspace/mcp-worker exec wrangler deploy --dry-run --outdir dist` - Bundle without deploying; the bundle must contain no `next/*` module
 - Deploy manually from `apps/mcp-worker` with `pnpm exec wrangler deploy` (Cloudflare login required); the first deploy creates the `mcp.ruchern.dev` DNS record and certificate
 - Secrets (`wrangler secret put`): `DATABASE_URL`, `UPSTASH_REDIS_REST_URL`/`TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `R2_*`, `REVALIDATE_SECRET`. `BETTER_AUTH_URL` and `REVALIDATE_URL` are vars in `wrangler.jsonc`. `DATABASE_URL` must be set: `neon()` throws at isolate start without it
+
+### MCP Vercel
+
+`apps/mcp-vercel` (`@workspace/mcp-vercel`) serves the same `createServer` as a Hono app on
+Vercel Functions (Node, Fluid compute, `sin1`), on its own Vercel project's default
+`*.vercel.app` URL, so it can be compared with the Worker. The project's Root Directory is
+`apps/mcp-vercel`, with "Include files outside the Root Directory" left on. It serves the
+Worker's routes (`POST /mcp`, `GET /health` and both protected-resource metadata paths) with
+the same auth and revalidation, plus a `Server-Timing` header (`auth`, `mcp`, `total`). HEAD
+on `/health` and the metadata paths returns 200 (Hono dispatches HEAD as GET), where the Worker
+returns 404; HEAD `/mcp` is still 405. There is no CI deploy.
+
+- `VERCEL_EXPERIMENTAL_BACKENDS=1` must be set on the project: the default Hono builder
+  transpiles each file on its own and resolves neither the `@/` alias nor extensionless imports
+- Env vars (Production and Preview): see `apps/mcp-vercel/.env.example` (`DATABASE_URL`,
+  `UPSTASH_REDIS_REST_URL`/`TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `R2_*`, `REVALIDATE_SECRET`,
+  `BETTER_AUTH_URL`, `REVALIDATE_URL`, `MCP_VERCEL_RESOURCE`)
+- `MCP_VERCEL_RESOURCE` (`https://<project>.vercel.app/mcp`) must also be set on the web
+  project, so the provider accepts it as an audience. Unset, the metadata paths return 503 and
+  every `POST /mcp` returns 401
 
 ## OAuth Provider
 
@@ -274,6 +297,7 @@ apps/
 │   └── migrations/
 ├── docs/             # @workspace/docs Fumadocs documentation site
 ├── mcp-worker/       # @workspace/mcp-worker Cloudflare Worker serving the MCP server
+├── mcp-vercel/       # @workspace/mcp-vercel Hono app on Vercel serving the MCP server
 └── cli/              # @workspace/cli agent-usage Rust usage collector CLI (macOS)
 packages/
 ├── mcp/              # @workspace/mcp private MCP server package
@@ -312,8 +336,8 @@ See `apps/web/.env.example` for all required variables:
 - `CLOUDFLARE_ACCOUNT_ID` - R2 storage
 - `R2_ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET_NAME/PUBLIC_URL` - R2 config
 - `REVALIDATE_SECRET` - Bearer for `POST /api/revalidate` (`{ tags: string[] }`), which lets the external MCP server invalidate Cache Components after a database write. Only allowlisted tags (see the route) are accepted; unset → 401
-- `REVALIDATE_URL` - Optional, stdio MCP server and MCP Worker only: the `POST /api/revalidate` URL it calls with `REVALIDATE_SECRET`; without both, either server skips cache revalidation
-- The OAuth provider (the only MCP auth) needs no extra env vars
+- `REVALIDATE_URL` - Optional, stdio MCP server, MCP Worker and Vercel MCP server only: the `POST /api/revalidate` URL it calls with `REVALIDATE_SECRET`; without both, each server skips cache revalidation
+- `MCP_VERCEL_RESOURCE` - Optional: the Vercel MCP server's resource URL (`https://<project>.vercel.app/mcp`); unset, the provider does not accept it as an audience. The OAuth provider (the only MCP auth) needs no other env vars
 
 ## Code Conventions
 

@@ -1,0 +1,23 @@
+{
+  "name": "@workspace/mcp-vercel",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "lint": "biome check .",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "@workspace/mcp": "workspace:*",
+    "hono": "4.12.28",
+    "jose": "6.2.10"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@vercel/config": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}
