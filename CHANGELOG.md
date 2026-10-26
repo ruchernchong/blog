@@ -1,3 +1,11 @@
+## [1.58.1](https://github.com/ruchernchong/blog/compare/v1.58.0...v1.58.1) (2026-10-26)
+
+### Bug Fixes
+
+* drop mcp worker placement hint ([846abf2](https://github.com/ruchernchong/blog/commit/846abf2afa766ba83c8fe7c362404a522913ecd8))
+* pre-bundle next/server for browser tests ([2d11b21](https://github.com/ruchernchong/blog/commit/2d11b21a5218e49708fc03c50b2ac3bf5687be88))
+* publish api/mcp url as its own resource ([687f1b4](https://github.com/ruchernchong/blog/commit/687f1b494e3623d9ded85dcabf87fbf4422a1685))
+
 ## [1.58.0](https://github.com/ruchernchong/blog/compare/v1.57.0...v1.58.0) (2026-10-25)
 
 ### Features
