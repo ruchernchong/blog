@@ -206,7 +206,7 @@ its 401/403 challenges point `resource_metadata` at the `/mcp` document on its o
 ### MCP Vercel
 
 `apps/mcp-vercel` (`@workspace/mcp-vercel`) serves the same `createServer` as a Hono app on
-Vercel Functions (Bun 1.x via `bunVersion`, Fluid compute, `sin1`), on its own Vercel project's default
+Vercel Functions (Bun 1.4 via `bunVersion`, Fluid compute, `sin1`), on its own Vercel project's default
 `*.vercel.app` URL, so it can be compared with the Worker. The project's Root Directory is
 `apps/mcp-vercel`, with "Include files outside the Root Directory" left on. It serves the
 Worker's routes (`POST /mcp`, `GET /health` and both protected-resource metadata paths) with
