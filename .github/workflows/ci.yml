@@ -40,6 +40,9 @@ jobs:
           - name: Run Typecheck
             run: pnpm typecheck
 
+          - name: Bundle MCP Worker
+            run: pnpm --filter @workspace/mcp-worker build
+
           - name: Run Test
             env:
               BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
