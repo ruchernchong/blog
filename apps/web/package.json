@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "portless blog next dev",
-    "build": "next build",
+    "build": "bun run --bun next build",
     "start": "portless blog next start",
     "test": "vitest run",
     "test:watch": "vitest",

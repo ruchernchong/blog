@@ -14,7 +14,7 @@ pnpm build           # Build for production
 ## Tech Stack
 
 ### Core Stack
-- **Framework**: Next.js 16.4 with App Router and React 19.3
+- **Framework**: Next.js 16.4 with App Router and React 19.3, served on the Vercel Bun 1.4 runtime (`bunVersion`); built with Bun, `next dev` stays on Node
 - **Language**: TypeScript 7 (strict mode)
 - **Styling**: Tailwind CSS v4 (PostCSS-only config)
 - **UI Components**: HeroUI v3 (Pro + OSS) with HugeIcons
@@ -82,6 +82,7 @@ pnpm build           # Build for production
 ### Prerequisites
 - PNPM 10.22.0 or later
 - Node.js 18+ (for compatibility)
+- Bun 1.4+ (`apps/web` builds with `bun run --bun next build`)
 - PostgreSQL database (Neon recommended)
 - Redis instance (Upstash recommended)
 

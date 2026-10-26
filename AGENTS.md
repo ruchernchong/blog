@@ -253,7 +253,7 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 
 ### Tech Stack
 
-- **Framework**: Next.js 16.4 with App Router and React 19.3
+- **Framework**: Next.js 16.4 with App Router and React 19.3, served on the Vercel Bun 1.4 runtime (`bunVersion`); built with Bun, `next dev` stays on Node
 - **Monorepo**: pnpm workspaces with Turborepo
 - **Content**: Database-backed MDX with next-mdx-remote
 - **Database**: Neon PostgreSQL with Drizzle ORM
