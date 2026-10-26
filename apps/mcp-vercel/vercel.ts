@@ -7,6 +7,9 @@ export const config: VercelConfig = {
   // Next to Neon (ap-southeast-1); Hobby allows a single region.
   regions: ["sin1"],
   fluid: true,
+  // Bun 1.3 (the release before the Rust rewrite) instead of Node, to
+  // compare memory and cold starts with the Worker.
+  bunVersion: "1.x",
   git: {
     deploymentEnabled: {
       "dependabot/*": false,
