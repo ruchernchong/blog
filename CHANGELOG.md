@@ -1,3 +1,10 @@
+## [1.60.0](https://github.com/ruchernchong/blog/compare/v1.59.0...v1.60.0) (2026-10-26)
+
+### Features
+
+* accept vercel mcp url as token audience ([8eb17f1](https://github.com/ruchernchong/blog/commit/8eb17f1a4d61ff406f508342e1d0998136b3e06b))
+* add hono mcp server for vercel ([ce787d4](https://github.com/ruchernchong/blog/commit/ce787d4fb5352e9e0ce9275e1ba93e021f43dada))
+
 ## [1.59.0](https://github.com/ruchernchong/blog/compare/v1.58.1...v1.59.0) (2026-10-26)
 
 ### Features
