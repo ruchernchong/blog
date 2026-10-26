@@ -8,6 +8,10 @@
       "type": "http",
       "url": "https://mcp.ruchern.dev/mcp"
     },
+    "blog-vercel": {
+      "type": "http",
+      "url": "https://blog-dun-two-53.vercel.app/mcp"
+    },
     "heroui-pro": {
       "type": "http",
       "url": "https://mcp.heroui.pro/mcp",
