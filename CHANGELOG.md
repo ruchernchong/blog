@@ -1,3 +1,13 @@
+## [1.60.3](https://github.com/ruchernchong/blog/compare/v1.60.2...v1.60.3) (2026-10-26)
+
+### Bug Fixes
+
+* bump next to 16.4.3 ([f0187f0](https://github.com/ruchernchong/blog/commit/f0187f03d1ed0e8785c84d999dec02c3900fdf96))
+
+### Performance Improvements
+
+* run web on bun 1.4 runtime ([aabf3f2](https://github.com/ruchernchong/blog/commit/aabf3f26173503ebe476aeaa7b35caf1c7575a92))
+
 ## [1.60.2](https://github.com/ruchernchong/blog/compare/v1.60.1...v1.60.2) (2026-10-26)
 
 ### Performance Improvements
