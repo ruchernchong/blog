@@ -1,3 +1,13 @@
+## [1.59.0](https://github.com/ruchernchong/blog/compare/v1.58.1...v1.59.0) (2026-10-26)
+
+### Features
+
+* enable mcp worker logs and traces ([220861a](https://github.com/ruchernchong/blog/commit/220861ae444cec5e01b688a2668de0e5442e3b12))
+
+### Performance Improvements
+
+* enable smart placement for mcp worker ([471a281](https://github.com/ruchernchong/blog/commit/471a28104694b34ba161bd918271a5a03ed37e37))
+
 ## [1.58.1](https://github.com/ruchernchong/blog/compare/v1.58.0...v1.58.1) (2026-10-26)
 
 ### Bug Fixes
