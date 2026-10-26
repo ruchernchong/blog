@@ -189,9 +189,11 @@ its own audience.
 `apps/mcp-worker` (`@workspace/mcp-worker`, Worker `blog-mcp`) serves the same `createServer`
 at `POST /mcp` on Cloudflare Workers, bundling `packages/mcp` and its `@/` imports from
 `apps/web/src` through tsconfig `paths`. It mirrors `/api/mcp`: stateless transport, OAuth-only
-auth (jose against `${BETTER_AUTH_URL}/api/auth/jwks`, then the shared client/user lookup in
-`lib/api/oauth-user.ts`), revalidation over HTTP via `@workspace/mcp/revalidate-tags`, and no
-`upload_from_path`. It is served on the `mcp.ruchern.dev` custom domain (`routes` in
+auth (jose against `${BETTER_AUTH_URL}/api/auth/jwks`, cached per colo for an hour through the
+Cache API, then the shared client/user lookup in `lib/api/oauth-user.ts`), revalidation over HTTP
+via `@workspace/mcp/revalidate-tags`, and no `upload_from_path`. `placement.region` pins it to
+`aws:ap-southeast-1` next to Neon; smart placement never had enough traffic to place it. It is
+served on the `mcp.ruchern.dev` custom domain (`routes` in
 `wrangler.jsonc`), with `GET /health` and the protected-resource metadata at
 `/.well-known/oauth-protected-resource/mcp` (and the root `/.well-known/oauth-protected-resource`);
 its 401/403 challenges point `resource_metadata` at the `/mcp` document on its own origin. There is no CI deploy.

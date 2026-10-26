@@ -1,4 +1,9 @@
-import { createRemoteJWKSet, jwtVerify } from "jose";
+import {
+  createRemoteJWKSet,
+  customFetch,
+  type FetchImplementation,
+  jwtVerify,
+} from "jose";
 import { AUTH_ERROR } from "@/constants/auth-error-ids";
 import {
   MCP_WORKER_RESOURCE,
@@ -9,8 +14,51 @@ import { logWarning } from "@/lib/logger";
 
 export type { McpAuthResult };
 
-/** Provider JWKS, fetched and cached per isolate by jose. */
-const jwks = createRemoteJWKSet(new URL(`${OAUTH_RESOURCE}/jwks`));
+/**
+ * How long a colo keeps the provider JWKS, in seconds. A rotated key is only
+ * picked up once this expires, so keep it short of any rotation overlap.
+ */
+const JWKS_CACHE_TTL = 3600;
+
+/** The slice of the Workers Cache API that `caches.default` exposes. */
+interface EdgeCache {
+  match(url: string): Promise<Response | undefined>;
+  put(url: string, response: Response): Promise<void>;
+}
+
+/**
+ * Fetches the JWKS through the colo's cache, so a fresh isolate does not pay
+ * a round trip to the web app on every cold start. Falls back to a plain
+ * fetch where `caches.default` is missing (tests, `wrangler dev`).
+ */
+export const fetchJwksCached: FetchImplementation = async (url, options) => {
+  const cache = (globalThis as { caches?: { default?: EdgeCache } }).caches
+    ?.default;
+  if (!cache) return fetch(url, options);
+
+  const cached = await cache.match(url);
+  if (cached) return cached;
+
+  const response = await fetch(url, options);
+  if (response.ok) {
+    await cache.put(
+      url,
+      new Response(await response.clone().arrayBuffer(), {
+        headers: {
+          "Cache-Control": `max-age=${JWKS_CACHE_TTL}`,
+          "Content-Type":
+            response.headers.get("Content-Type") ?? "application/json",
+        },
+      }),
+    );
+  }
+  return response;
+};
+
+/** Provider JWKS, cached per isolate by jose and per colo by the Cache API. */
+const jwks = createRemoteJWKSet(new URL(`${OAUTH_RESOURCE}/jwks`), {
+  [customFetch]: fetchJwksCached,
+});
 
 /** An RFC 6749 scope-token, as Better Auth validates it. */
 const SCOPE_TOKEN = /^[\x21\x23-\x5b\x5d-\x7e]+$/;

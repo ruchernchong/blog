@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 // resolves `{ payload }` or throws.
 vi.mock("jose", () => ({
   createRemoteJWKSet: vi.fn(() => "jwks"),
+  customFetch: Symbol("customFetch"),
   jwtVerify: vi.fn(),
 }));
 
@@ -32,7 +33,7 @@ vi.mock("@/lib/logger", () => ({ logWarning: vi.fn() }));
 
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { db } from "@/schema";
-import { validateMcpAuth } from "./auth";
+import { fetchJwksCached, validateMcpAuth } from "./auth";
 
 // Captured before any per-test mock reset clears the module-scope call.
 const jwksUrl = vi.mocked(createRemoteJWKSet).mock.calls[0]?.[0];
@@ -140,5 +141,84 @@ describe("validateMcpAuth", () => {
     mockLimit.mockResolvedValueOnce([adminRow]);
 
     expect(await validateMcpAuth(makeRequest("Bearer good"))).toBeNull();
+  });
+});
+
+describe("fetchJwksCached", () => {
+  const url = "https://auth.test/api/auth/jwks";
+  const options = {
+    headers: new Headers(),
+    method: "GET" as const,
+    redirect: "manual" as const,
+    signal: new AbortController().signal,
+  };
+  const jwksBody = JSON.stringify({ keys: [] });
+
+  function stubCache(hit?: Response) {
+    const cache = {
+      match: vi.fn().mockResolvedValue(hit),
+      put: vi.fn().mockResolvedValue(undefined),
+    };
+    vi.stubGlobal("caches", { default: cache });
+    return cache;
+  }
+
+  beforeEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("should fetch directly when the Cache API is unavailable", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(jwksBody));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await fetchJwksCached(url, options);
+
+    expect(fetchMock).toHaveBeenCalledWith(url, options);
+    expect(await response.text()).toBe(jwksBody);
+  });
+
+  it("should serve a cached JWKS without fetching", async () => {
+    stubCache(new Response(jwksBody));
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const response = await fetchJwksCached(url, options);
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(await response.text()).toBe(jwksBody);
+  });
+
+  it("should fetch and cache the JWKS for an hour on a miss", async () => {
+    const cache = stubCache();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(jwksBody, {
+          headers: { "Content-Type": "application/jwk-set+json" },
+        }),
+      ),
+    );
+
+    const response = await fetchJwksCached(url, options);
+
+    expect(await response.text()).toBe(jwksBody);
+    expect(cache.put).toHaveBeenCalledWith(url, expect.any(Response));
+    const stored = cache.put.mock.calls[0]?.[1] as Response;
+    expect(stored.headers.get("Cache-Control")).toBe("max-age=3600");
+    expect(stored.headers.get("Content-Type")).toBe("application/jwk-set+json");
+    expect(await stored.text()).toBe(jwksBody);
+  });
+
+  it("should not cache a failed JWKS response", async () => {
+    const cache = stubCache();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(new Response("nope", { status: 308 })),
+    );
+
+    const response = await fetchJwksCached(url, options);
+
+    expect(response.status).toBe(308);
+    expect(cache.put).not.toHaveBeenCalled();
   });
 });
