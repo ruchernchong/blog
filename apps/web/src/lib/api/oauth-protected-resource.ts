@@ -32,6 +32,13 @@ export const OAUTH_RESOURCE = `${BASE_URL}/api/auth`;
 export const MCP_WORKER_RESOURCE = "https://mcp.ruchern.dev/mcp";
 
 /**
+ * The Vercel MCP server's resource identifier (RFC 8707): its `*.vercel.app`
+ * URL + `/mcp`. Optional until that project exists; unset, the provider does
+ * not accept it as an audience and the Vercel server rejects every token.
+ */
+export const MCP_VERCEL_RESOURCE = process.env.MCP_VERCEL_RESOURCE || undefined;
+
+/**
  * The `/api/mcp` route's resource identifier (RFC 8707). Like the Worker, MCP
  * clients require the published `resource` to cover the server URL, which the
  * issuer (`/api/auth`) does not, so `/api/mcp` publishes and verifies this.
