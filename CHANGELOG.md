@@ -1,3 +1,14 @@
+## [1.60.1](https://github.com/ruchernchong/blog/compare/v1.60.0...v1.60.1) (2026-10-26)
+
+### Bug Fixes
+
+* drop types list from mcp-vercel tsconfig ([0edefdd](https://github.com/ruchernchong/blog/commit/0edefdd5ce3e859ac228a00ffbb7faf5741dbe5c))
+
+### Performance Improvements
+
+* cache mcp worker jwks per colo ([37124f2](https://github.com/ruchernchong/blog/commit/37124f2f74c0a71461aaef9740dee3099a62ae14))
+* pin mcp worker to ap-southeast-1 ([75bc440](https://github.com/ruchernchong/blog/commit/75bc440f8483d93bf3289f2848f43118bd7b9b85))
+
 ## [1.60.0](https://github.com/ruchernchong/blog/compare/v1.59.0...v1.60.0) (2026-10-26)
 
 ### Features
