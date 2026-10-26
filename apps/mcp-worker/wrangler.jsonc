@@ -11,7 +11,25 @@
   "tsconfig": "tsconfig.json",
   // Run near Neon (ap-southeast-1) rather than whichever colo took the request.
   "placement": { "mode": "smart" },
-  "observability": { "enabled": true },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1,
+    "redact_query_string": false,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "invocation_logs": true,
+      "persist": true
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true
+    },
+    "issues": {
+      "enabled": true
+    }
+  },
   // ruchern.dev's DNS is on Cloudflare, so deploy creates the record and cert.
   "routes": [{ "pattern": "mcp.ruchern.dev", "custom_domain": true }],
   "vars": {
