@@ -9,8 +9,9 @@
   // `@/` resolves into apps/web/src through the `paths` in tsconfig.json,
   // which wrangler's esbuild bundle honours.
   "tsconfig": "tsconfig.json",
-  // Run near Neon (ap-southeast-1) rather than whichever colo took the request.
-  "placement": { "mode": "smart" },
+  // Run next to Neon (ap-southeast-1) rather than whichever colo took the
+  // request. Smart placement never had enough traffic to place the Worker.
+  "placement": { "region": "aws:ap-southeast-1" },
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1,
