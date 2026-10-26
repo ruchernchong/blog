@@ -5,6 +5,7 @@ import { nextCookies } from "better-auth/next-js";
 import { admin, jwt, lastLoginMethod, oAuthProxy } from "better-auth/plugins";
 import { bearer } from "better-auth/plugins/bearer";
 import {
+  MCP_RESOURCE,
   MCP_WORKER_RESOURCE,
   OAUTH_RESOURCE,
 } from "@/lib/api/oauth-protected-resource";
@@ -81,10 +82,19 @@ export const auth = betterAuth({
       // clients request/inherit it, otherwise authorize returns invalid_target
       // and tokens without a resource are opaque (not JWTs) so validateMcpAuth
       // cannot verify them. The MCP Worker is a second resource: clients that
-      // connect to it request its URL, which becomes the token's `aud`.
-      resources: [OAUTH_RESOURCE, MCP_WORKER_RESOURCE],
-      clientRegistrationDefaultResources: [OAUTH_RESOURCE, MCP_WORKER_RESOURCE],
-      clientRegistrationAllowedResources: [OAUTH_RESOURCE, MCP_WORKER_RESOURCE],
+      // connect to it request its URL, which becomes the token's `aud`; `/api/mcp`
+      // is a third for the same reason.
+      resources: [OAUTH_RESOURCE, MCP_RESOURCE, MCP_WORKER_RESOURCE],
+      clientRegistrationDefaultResources: [
+        OAUTH_RESOURCE,
+        MCP_RESOURCE,
+        MCP_WORKER_RESOURCE,
+      ],
+      clientRegistrationAllowedResources: [
+        OAUTH_RESOURCE,
+        MCP_RESOURCE,
+        MCP_WORKER_RESOURCE,
+      ],
       // Clients registered before 1.7 have no oauth_client_resource link.
       enforcePerClientResources: false,
     }),

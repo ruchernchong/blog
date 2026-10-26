@@ -16,10 +16,12 @@ const OAUTH_JWKS_URL = `${OAUTH_RESOURCE}/jwks`;
  * active and whose subject is a known user.
  *
  * @param request - The incoming HTTP request
+ * @param audience - The token `aud` this endpoint accepts (defaults to the issuer)
  * @returns Auth result on success, null on failure
  */
 export async function validateMcpAuth(
   request: Request,
+  audience: string = OAUTH_RESOURCE,
 ): Promise<McpAuthResult | null> {
   const authHeader = request.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
@@ -35,9 +37,9 @@ export async function validateMcpAuth(
     const payload = await verifyBearerToken(token, {
       jwksUrl: OAUTH_JWKS_URL,
       verifyOptions: {
-        // The provider stamps the OIDC issuer (BASE_URL + /api/auth) into the
-        // token's `aud`/`iss`, so verify against that — not the bare origin.
-        audience: OAUTH_RESOURCE,
+        // `iss` is the OIDC issuer (BASE_URL + /api/auth); `aud` is the
+        // `resource` the client requested, which must be this endpoint's.
+        audience,
         issuer: OAUTH_RESOURCE,
       },
     });

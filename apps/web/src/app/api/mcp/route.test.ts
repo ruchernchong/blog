@@ -36,6 +36,10 @@ import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/
 import { createServer } from "@workspace/mcp/server";
 import { revalidateTag } from "next/cache";
 import { type McpAuthResult, validateMcpAuth } from "@/lib/api/mcp-auth";
+import {
+  MCP_RESOURCE,
+  mcpResourceMetadataUrl,
+} from "@/lib/api/oauth-protected-resource";
 import { DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT } from "./route";
 
 const mockValidateMcpAuth = vi.mocked(validateMcpAuth);
@@ -77,7 +81,20 @@ describe("MCP API Route", () => {
       expect(body.error).toBe("Unauthorized");
       const challenge = response.headers.get("WWW-Authenticate");
       expect(challenge).toContain('scope="mcp"');
-      expect(challenge).toContain("resource_metadata=");
+      expect(challenge).toContain(
+        `resource_metadata="${mcpResourceMetadataUrl}"`,
+      );
+    });
+
+    it("should verify the token against the /api/mcp resource", async () => {
+      mockValidateMcpAuth.mockResolvedValue(null);
+      const request = new Request("http://localhost/api/mcp", {
+        method: "POST",
+      });
+
+      await POST(request);
+
+      expect(mockValidateMcpAuth).toHaveBeenCalledWith(request, MCP_RESOURCE);
     });
 
     it("should return 403 insufficient_scope when an OAuth token lacks the mcp scope", async () => {

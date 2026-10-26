@@ -3,7 +3,12 @@ import { createServer } from "@workspace/mcp/server";
 import { revalidateTag } from "next/cache";
 import { methodNotAllowedResponse } from "@/lib/api";
 import { type McpAuthResult, validateMcpAuth } from "@/lib/api/mcp-auth";
-import { bearerChallenge, MCP_SCOPE } from "@/lib/api/oauth-protected-resource";
+import {
+  bearerChallenge,
+  MCP_RESOURCE,
+  MCP_SCOPE,
+  mcpResourceMetadataUrl,
+} from "@/lib/api/oauth-protected-resource";
 
 /**
  * Authenticates the OAuth bearer and enforces the `mcp` scope and admin role.
@@ -14,13 +19,21 @@ import { bearerChallenge, MCP_SCOPE } from "@/lib/api/oauth-protected-resource";
 async function requireMcpAuth(
   request: Request,
 ): Promise<{ authResult: McpAuthResult } | { error: Response }> {
-  const authResult = await validateMcpAuth(request);
+  const authResult = await validateMcpAuth(request, MCP_RESOURCE);
 
   if (!authResult) {
     return {
       error: Response.json(
         { error: "Unauthorized" },
-        { status: 401, headers: { "WWW-Authenticate": bearerChallenge() } },
+        {
+          status: 401,
+          headers: {
+            "WWW-Authenticate": bearerChallenge(
+              undefined,
+              mcpResourceMetadataUrl,
+            ),
+          },
+        },
       ),
     };
   }
@@ -32,7 +45,10 @@ async function requireMcpAuth(
         {
           status: 403,
           headers: {
-            "WWW-Authenticate": bearerChallenge("insufficient_scope"),
+            "WWW-Authenticate": bearerChallenge(
+              "insufficient_scope",
+              mcpResourceMetadataUrl,
+            ),
           },
         },
       ),

@@ -95,6 +95,26 @@ describe("validateMcpAuth", () => {
       expect(result?.authInfo?.scopes).toEqual(["openid", "email"]);
     });
 
+    it("should verify against the given audience with the OAuth issuer", async () => {
+      mockVerifyBearerToken.mockResolvedValue({
+        sub: "user-1",
+        scope: "openid",
+      });
+
+      await validateMcpAuth(
+        makeRequest("oauth-access-token"),
+        "https://auth.test/api/mcp",
+      );
+
+      expect(mockVerifyBearerToken).toHaveBeenCalledWith("oauth-access-token", {
+        jwksUrl: `${OAUTH_RESOURCE}/jwks`,
+        verifyOptions: {
+          audience: "https://auth.test/api/mcp",
+          issuer: OAUTH_RESOURCE,
+        },
+      });
+    });
+
     it("should verify the token against the OAuth issuer as audience and issuer", async () => {
       mockVerifyBearerToken.mockResolvedValue({
         sub: "user-1",

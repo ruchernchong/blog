@@ -172,11 +172,14 @@ until `/api/mcp` is retired.
 **Auth:** OAuth only (admin account, `mcp` scope). Clients discover the provider via
 `/.well-known/oauth-protected-resource` on the endpoint's own origin, self-register, and sign
 in at `/consent`; no static token or session is accepted. Add the URL as a remote MCP server
-with no `headers` (Claude Code: `"type": "http"`, then authenticate via `/mcp`). Each origin
-publishes its own `resource`, which clients request as the token audience: the provider issuer
-(`https://ruchern.dev/api/auth`) for `/api/mcp`, and `https://mcp.ruchern.dev/mcp`
-(`MCP_WORKER_RESOURCE`) for the Worker. `oauthProvider` lists both in `resources`, and each
-endpoint only accepts tokens issued for its own audience.
+with no `headers` (Claude Code: `"type": "http"`, then authenticate via `/mcp`). Each
+endpoint publishes its own server URL as `resource` (MCP clients reject one that does not cover
+the URL they connect to, and request it as the token audience): `https://ruchern.dev/api/mcp`
+(`MCP_RESOURCE`, metadata at `/.well-known/oauth-protected-resource/api/mcp`) and
+`https://mcp.ruchern.dev/mcp` (`MCP_WORKER_RESOURCE`). The root metadata keeps the provider issuer
+(`https://ruchern.dev/api/auth`), the audience the CLI requests for `/api/usage/ingest`.
+`oauthProvider` lists all three in `resources`, and each endpoint only accepts tokens issued for
+its own audience.
 
 ### MCP Worker
 

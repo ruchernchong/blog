@@ -31,6 +31,13 @@ export const OAUTH_RESOURCE = `${BASE_URL}/api/auth`;
  */
 export const MCP_WORKER_RESOURCE = "https://mcp.ruchern.dev/mcp";
 
+/**
+ * The `/api/mcp` route's resource identifier (RFC 8707). Like the Worker, MCP
+ * clients require the published `resource` to cover the server URL, which the
+ * issuer (`/api/auth`) does not, so `/api/mcp` publishes and verifies this.
+ */
+export const MCP_RESOURCE = `${BASE_URL}/api/mcp`;
+
 /** Scope a token must carry to reach the MCP API. */
 export const MCP_SCOPE = "mcp";
 
@@ -40,12 +47,21 @@ export const PROTECTED_RESOURCE_METADATA_PATH =
 
 export const protectedResourceMetadataUrl = `${BASE_URL}${PROTECTED_RESOURCE_METADATA_PATH}`;
 
+/** Path-suffixed metadata URL for the `/api/mcp` resource. */
+export const mcpResourceMetadataUrl = `${protectedResourceMetadataUrl}/api/mcp`;
+
 export const protectedResourceMetadata = {
   resource: OAUTH_RESOURCE,
   authorization_servers: [OAUTH_RESOURCE],
   jwks_uri: `${OAUTH_RESOURCE}/jwks`,
   scopes_supported: ["openid", "profile", "email", "offline_access", MCP_SCOPE],
   bearer_methods_supported: ["header"],
+};
+
+/** The issuer document with `/api/mcp` as `resource`. */
+export const mcpResourceMetadata = {
+  ...protectedResourceMetadata,
+  resource: MCP_RESOURCE,
 };
 
 /**
