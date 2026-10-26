@@ -1,3 +1,10 @@
+## [1.60.2](https://github.com/ruchernchong/blog/compare/v1.60.1...v1.60.2) (2026-10-26)
+
+### Performance Improvements
+
+* run mcp-vercel on bun 1.4 ([2b8e865](https://github.com/ruchernchong/blog/commit/2b8e865eb54f7f98b620e083592a15c17193e52a))
+* run mcp-vercel on bun 1.x ([114f903](https://github.com/ruchernchong/blog/commit/114f9039626d1d7559bf3c7036e389e8166684ea))
+
 ## [1.60.1](https://github.com/ruchernchong/blog/compare/v1.60.0...v1.60.1) (2026-10-26)
 
 ### Bug Fixes
