@@ -12,6 +12,7 @@
         "GITHUB_CLIENT_*",
         "GOOGLE_CLIENT_*",
         "IP_SALT",
+        "MCP_VERCEL_RESOURCE",
         "NEXT_PUBLIC_*",
         "POSTHOG_API_*",
         "POSTHOG_PROJECT_ID",

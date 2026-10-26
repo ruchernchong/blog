@@ -6,12 +6,24 @@ import { admin, jwt, lastLoginMethod, oAuthProxy } from "better-auth/plugins";
 import { bearer } from "better-auth/plugins/bearer";
 import {
   MCP_RESOURCE,
+  MCP_VERCEL_RESOURCE,
   MCP_WORKER_RESOURCE,
   OAUTH_RESOURCE,
 } from "@/lib/api/oauth-protected-resource";
 import { redisSecondaryStorage } from "@/lib/redis-secondary-storage";
 import { db } from "@/schema";
 import * as authSchema from "@/schema/auth";
+
+/**
+ * RFC 8707 resources the provider issues tokens for; the Vercel MCP server
+ * only once its URL is configured.
+ */
+const RESOURCES = [
+  OAUTH_RESOURCE,
+  MCP_RESOURCE,
+  MCP_WORKER_RESOURCE,
+  ...(MCP_VERCEL_RESOURCE ? [MCP_VERCEL_RESOURCE] : []),
+];
 
 /**
  * Better Auth configuration for the application.
@@ -83,18 +95,11 @@ export const auth = betterAuth({
       // and tokens without a resource are opaque (not JWTs) so validateMcpAuth
       // cannot verify them. The MCP Worker is a second resource: clients that
       // connect to it request its URL, which becomes the token's `aud`; `/api/mcp`
-      // is a third for the same reason.
-      resources: [OAUTH_RESOURCE, MCP_RESOURCE, MCP_WORKER_RESOURCE],
-      clientRegistrationDefaultResources: [
-        OAUTH_RESOURCE,
-        MCP_RESOURCE,
-        MCP_WORKER_RESOURCE,
-      ],
-      clientRegistrationAllowedResources: [
-        OAUTH_RESOURCE,
-        MCP_RESOURCE,
-        MCP_WORKER_RESOURCE,
-      ],
+      // is a third for the same reason. The Vercel MCP server is a fourth when
+      // MCP_VERCEL_RESOURCE is set.
+      resources: RESOURCES,
+      clientRegistrationDefaultResources: RESOURCES,
+      clientRegistrationAllowedResources: RESOURCES,
       // Clients registered before 1.7 have no oauth_client_resource link.
       enforcePerClientResources: false,
     }),
