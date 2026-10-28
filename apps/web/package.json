@@ -94,7 +94,7 @@
     "unist-util-visit": "^5.0.0",
     "vite": "^7.3.2",
     "workflow": "4.6.1",
-    "zod": "4.4.3"
+    "zod": "4.6.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.14",

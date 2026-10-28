@@ -11,7 +11,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.26.0",
     "@workspace/mcp": "workspace:*",
-    "hono": "4.12.28",
+    "hono": "4.13.11",
     "jose": "6.2.10"
   },
   "devDependencies": {
