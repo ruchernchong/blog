@@ -111,7 +111,7 @@ export function CostScatterChartClient({
         accessibilityLayer={false}
         margin={{ top: 24, right: 48, bottom: 8, left: 0 }}
       >
-        <CartesianGrid stroke="var(--border)" vertical={false} />
+        <CartesianGrid stroke="var(--border)" />
         <XAxis
           axisLine={false}
           dataKey="tokens"
