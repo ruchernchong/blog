@@ -1,3 +1,9 @@
+## [1.60.4](https://github.com/ruchernchong/blog/compare/v1.60.3...v1.60.4) (2026-11-11)
+
+### Bug Fixes
+
+* add x-axis grid lines to cost scatter chart ([7e9c8e4](https://github.com/ruchernchong/blog/commit/7e9c8e4a79395ca858fcab07b6aed80fd451ee3f))
+
 ## [1.60.3](https://github.com/ruchernchong/blog/compare/v1.60.2...v1.60.3) (2026-10-26)
 
 ### Bug Fixes
