@@ -1,3 +1,9 @@
+## [1.60.6](https://github.com/ruchernchong/blog/compare/v1.60.5...v1.60.6) (2026-11-14)
+
+### Bug Fixes
+
+* drop account issuer column and index ([b527b71](https://github.com/ruchernchong/blog/commit/b527b7185357400373f39a8b63e6a648a22f2a6c))
+
 ## [1.60.5](https://github.com/ruchernchong/blog/compare/v1.60.4...v1.60.5) (2026-11-14)
 
 ### Bug Fixes
