@@ -1,3 +1,9 @@
+## [1.60.5](https://github.com/ruchernchong/blog/compare/v1.60.4...v1.60.5) (2026-11-14)
+
+### Bug Fixes
+
+* align zod override and better-auth packages ([2af4bde](https://github.com/ruchernchong/blog/commit/2af4bdee988fb9b028d252250ad17f4ce0a6ba42))
+
 ## [1.60.4](https://github.com/ruchernchong/blog/compare/v1.60.3...v1.60.4) (2026-11-11)
 
 ### Bug Fixes
