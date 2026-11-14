@@ -47,7 +47,7 @@ catalog:
 # 4.x range to the version the workspace already uses. Scoped to `zod@4` so
 # @vercel/config's zod 3 dependency is left alone.
 overrides:
-  zod@4: 4.4.3
+  zod@4: 4.6.6
 
 minimumReleaseAgeStrict: true
 
