@@ -9,9 +9,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.26.0",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "@workspace/mcp": "workspace:*",
-    "hono": "4.13.11",
+    "hono": "4.13.16",
     "jose": "6.2.10"
   },
   "devDependencies": {
