@@ -34,6 +34,7 @@ describe("GET /openapi.json", () => {
       "/api/mcp/health",
       "/api/revalidate",
       "/.well-known/oauth-authorization-server",
+      "/.well-known/oauth-authorization-server/api/auth",
       "/.well-known/oauth-protected-resource",
     ]);
   });

@@ -197,6 +197,17 @@ const specification = {
         },
       },
     },
+    "/.well-known/oauth-authorization-server/api/auth": {
+      get: {
+        operationId: "authorizationServerMetadataForIssuer",
+        summary:
+          "OAuth 2.0 authorization server metadata at the RFC 8414 path for the /api/auth issuer",
+        security: [],
+        responses: {
+          "200": json({ type: "object" }, "Authorization server metadata"),
+        },
+      },
+    },
     "/.well-known/oauth-protected-resource": {
       get: {
         operationId: "protectedResourceMetadata",

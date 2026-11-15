@@ -1,9 +1,10 @@
 import type { NextConfig } from "next";
 import { withWorkflow } from "workflow/next";
+import { ACCEPTS_MARKDOWN_PATTERN } from "./src/lib/accepts-markdown";
 
 /** Matches a request whose `Accept` header lists `text/markdown` (agents). */
 const ACCEPTS_MARKDOWN = [
-  { type: "header" as const, key: "accept", value: "(.*)text/markdown(.*)" },
+  { type: "header" as const, key: "accept", value: ACCEPTS_MARKDOWN_PATTERN },
 ];
 
 const nextConfig: NextConfig = {
