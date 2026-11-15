@@ -7,6 +7,10 @@
   "navigation": {
     "groups": [
       {
+        "group": "Overview",
+        "pages": ["index"]
+      },
+      {
         "group": "Integration",
         "pages": ["oauth-provider", "usage-ingestion"]
       }
