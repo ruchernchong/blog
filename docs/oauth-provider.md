@@ -24,6 +24,14 @@ The JSON Web Key Set used to verify JWT access tokens is published at:
 GET /api/auth/jwks
 ```
 
+The same provider publishes RFC 8414 authorization server metadata. The issuer is `https://ruchern.dev/api/auth`, so the RFC 8414 location inserts the well-known segment before the issuer path. The bare root path serves the same document for clients that only probe the origin.
+
+```txt
+GET /.well-known/oauth-authorization-server/api/auth
+GET /.well-known/oauth-authorization-server
+GET /api/auth/.well-known/oauth-authorization-server
+```
+
 MCP clients can discover the authorization server from the MCP API's RFC 9728 protected-resource metadata, which is also advertised in the `WWW-Authenticate` header on a `401`/`403` from `/api/mcp`:
 
 ```txt

@@ -9,6 +9,7 @@ export {
   isUniqueConstraintError,
   methodNotAllowedResponse,
   notFoundResponse,
+  routeNotFoundResponse,
 } from "./errors";
 export { validateRouteParam } from "./params";
 export { validateSeriesExists } from "./series";

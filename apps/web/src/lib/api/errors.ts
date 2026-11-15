@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { BASE_URL } from "@/config";
 import type { ErrorId } from "@/constants/error-ids";
 import { type LogContext, logError } from "@/lib/logger";
 
@@ -31,6 +32,23 @@ export function databaseErrorResponse(): NextResponse {
 export function notFoundResponse(resource: string): NextResponse {
   return NextResponse.json(
     { message: API_ERROR_MESSAGES.NOT_FOUND(resource) },
+    { status: 404 },
+  );
+}
+
+/**
+ * Creates a 404 response for a request no API route handles, with a code and
+ * a hint pointing at the OpenAPI document.
+ *
+ * @param request - The unmatched request
+ */
+export function routeNotFoundResponse(request: Request): NextResponse {
+  return NextResponse.json(
+    {
+      error: "not_found",
+      message: `No API route matches ${request.method} ${new URL(request.url).pathname}`,
+      hint: `The available endpoints are listed in the OpenAPI specification at ${BASE_URL}/openapi.json`,
+    },
     { status: 404 },
   );
 }

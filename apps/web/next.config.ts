@@ -1,5 +1,11 @@
 import type { NextConfig } from "next";
 import { withWorkflow } from "workflow/next";
+import { ACCEPTS_MARKDOWN_PATTERN } from "./src/lib/accepts-markdown";
+
+/** Matches a request whose `Accept` header lists `text/markdown` (agents). */
+const ACCEPTS_MARKDOWN = [
+  { type: "header" as const, key: "accept", value: ACCEPTS_MARKDOWN_PATTERN },
+];
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -115,20 +121,35 @@ const nextConfig: NextConfig = {
     ];
   },
   async rewrites() {
-    return [
-      {
-        source: "/ingest/static/:path*",
-        destination: "https://eu-assets.i.posthog.com/static/:path*",
-      },
-      {
-        source: "/ingest/array/:path*",
-        destination: "https://eu-assets.i.posthog.com/array/:path*",
-      },
-      {
-        source: "/ingest/:path*",
-        destination: "https://eu.i.posthog.com/:path*",
-      },
-    ];
+    return {
+      beforeFiles: [
+        // The homepage as Markdown, ahead of the prerendered HTML page.
+        { source: "/", has: ACCEPTS_MARKDOWN, destination: "/index.md" },
+      ],
+      afterFiles: [
+        {
+          source: "/ingest/static/:path*",
+          destination: "https://eu-assets.i.posthog.com/static/:path*",
+        },
+        {
+          source: "/ingest/array/:path*",
+          destination: "https://eu-assets.i.posthog.com/array/:path*",
+        },
+        {
+          source: "/ingest/:path*",
+          destination: "https://eu.i.posthog.com/:path*",
+        },
+      ],
+      fallback: [
+        // Only paths no route matched get here: a Markdown 404 in place of
+        // the HTML one.
+        {
+          source: "/:path*",
+          has: ACCEPTS_MARKDOWN,
+          destination: "/not-found.md",
+        },
+      ],
+    };
   },
 };
 
