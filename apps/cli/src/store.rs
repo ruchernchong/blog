@@ -224,13 +224,15 @@ mod backend {
     use std::io::{ErrorKind, Write};
     use std::path::PathBuf;
 
+    #[cfg(target_os = "macos")]
     fn entry(service: &str) -> Result<keyring::Entry> {
         Ok(keyring::Entry::new(service, &scoped(KEYRING_ACCOUNT))?)
     }
 
-    /// Token file for a non-production server, or `None` on production.
+    /// Token file for a non-production server, or `None` on production. Only
+    /// macOS has a Keychain, so any other platform always uses the file.
     fn local_file(service: &str) -> Option<PathBuf> {
-        if crate::oauth::issuer() == crate::oauth::PRODUCTION_ISSUER {
+        if cfg!(target_os = "macos") && crate::oauth::issuer() == crate::oauth::PRODUCTION_ISSUER {
             return None;
         }
         Some(config_dir().join(format!("{service}.{}.json", scoped(KEYRING_ACCOUNT))))
@@ -244,11 +246,14 @@ mod backend {
                 Err(error) => Err(error).with_context(|| format!("read {}", path.display())),
             };
         }
-        match entry(service)?.get_password() {
+        #[cfg(target_os = "macos")]
+        return match entry(service)?.get_password() {
             Ok(value) => Ok(Some(value)),
             Err(keyring::Error::NoEntry) => Ok(None),
             Err(error) => Err(error.into()),
-        }
+        };
+        #[cfg(not(target_os = "macos"))]
+        unreachable!("local_file is always Some off macOS ({service})");
     }
 
     pub fn set(service: &str, value: &str) -> Result<()> {
@@ -260,6 +265,7 @@ mod backend {
                 .with_context(|| format!("write {}", path.display()))?;
             return Ok(());
         }
+        #[cfg(target_os = "macos")]
         entry(service)?.set_password(value)?;
         Ok(())
     }
@@ -273,10 +279,13 @@ mod backend {
                 _ => Ok(()),
             };
         }
-        match entry(service)?.delete_credential() {
+        #[cfg(target_os = "macos")]
+        return match entry(service)?.delete_credential() {
             Ok(()) | Err(keyring::Error::NoEntry) => Ok(()),
             Err(error) => Err(error.into()),
-        }
+        };
+        #[cfg(not(target_os = "macos"))]
+        unreachable!("local_file is always Some off macOS ({service})");
     }
 }
 
