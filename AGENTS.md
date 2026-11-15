@@ -304,7 +304,7 @@ apps/
 packages/
 ├── mcp/              # @workspace/mcp private MCP server package
 └── usage/            # @workspace/usage usage types, ingest schema, pricing, and aggregation helpers
-docs/                 # Agent reference: OAuth client integration and the usage ingest contract
+docs/                 # Agent reference, published with Docs7: OAuth client integration and the usage ingest contract
 ```
 
 ### Layered Architecture
@@ -406,9 +406,11 @@ Invoke skills with `/component-naming`, `/design-language-system`, or `/blog-voi
 
 - Update AGENTS.md when changing commands or architecture
 - Update README.md when modifying tech stack
-- `docs/` holds reference for agents, not a published site. Read `docs/oauth-provider.md` before working on an OAuth
-  client or token validation, and `docs/usage-ingestion.md` before changing `POST /api/usage/ingest` or anything that
-  sends to it; update them in the same change
+- `docs/` holds reference for agents and is published as a Docs7 site at `https://ruchernchong-blog.docs7.io`
+  (`docs/docs.json`; every push to `main` deploys it, so its contents are public). Read `docs/oauth-provider.md` before
+  working on an OAuth client or token validation, and `docs/usage-ingestion.md` before changing
+  `POST /api/usage/ingest` or anything that sends to it; update them in the same change. List a new page in the
+  `docs.json` navigation and give it `title` and `description` frontmatter
 
 
 <!-- BEGIN:nextjs-agent-rules -->
