@@ -1,3 +1,10 @@
+## [1.61.0](https://github.com/ruchernchong/blog/compare/v1.60.9...v1.61.0) (2026-11-15)
+
+### Features
+
+* show project preview images on home ([a78135f](https://github.com/ruchernchong/blog/commit/a78135ff6a3e47b392f5b71691c15ce14646722c))
+* try each preview image candidate ([48fbffc](https://github.com/ruchernchong/blog/commit/48fbffca4d8711519c1ee546cf4f6d6d89704857))
+
 ## [1.60.9](https://github.com/ruchernchong/blog/compare/v1.60.8...v1.60.9) (2026-11-15)
 
 ### Bug Fixes
