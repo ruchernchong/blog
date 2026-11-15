@@ -16,12 +16,6 @@ Never bypass the minimum package release age or add `minimumReleaseAgeExclude`; 
 - `pnpm format` - Format code with Biome
 - `pnpm typecheck` - TypeScript type checking across workspaces
 
-### Documentation Site
-
-- `pnpm docs:dev` - Start the `@workspace/docs` Fumadocs site (Next.js + `fumadocs-ui`/`fumadocs-mdx`)
-- `pnpm docs:build` - Build the docs site
-- `pnpm docs:typecheck` - Type check the docs site
-
 ### Database
 
 - `pnpm db:generate` - Generate migrations from schema
@@ -300,13 +294,13 @@ apps/
 │   ├── src/schema/   # Drizzle ORM database schemas
 │   ├── public/
 │   └── migrations/
-├── docs/             # @workspace/docs Fumadocs documentation site
 ├── mcp-worker/       # @workspace/mcp-worker Cloudflare Worker serving the MCP server
 ├── mcp-vercel/       # @workspace/mcp-vercel Hono app on Vercel serving the MCP server
 └── cli/              # @workspace/cli agent-usage Rust usage collector CLI (macOS)
 packages/
 ├── mcp/              # @workspace/mcp private MCP server package
 └── usage/            # @workspace/usage usage types, ingest schema, pricing, and aggregation helpers
+docs/                 # Agent reference: OAuth client integration and the usage ingest contract
 ```
 
 ### Layered Architecture
@@ -409,6 +403,9 @@ Invoke skills with `/component-naming`, `/design-language-system`, or `/blog-voi
 
 - Update AGENTS.md when changing commands or architecture
 - Update README.md when modifying tech stack
+- `docs/` holds reference for agents, not a published site. Read `docs/oauth-provider.md` before working on an OAuth
+  client or token validation, and `docs/usage-ingestion.md` before changing `POST /api/usage/ingest` or anything that
+  sends to it; update them in the same change
 
 
 <!-- BEGIN:nextjs-agent-rules -->

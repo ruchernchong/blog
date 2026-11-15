@@ -19,9 +19,6 @@
     "types": "off"
   },
   "workspaces": {
-    "apps/docs": {
-      "entry": ["src/lib/cn.ts"]
-    },
     "apps/mcp-worker": {},
     "apps/mcp-vercel": {},
     "apps/web": {
