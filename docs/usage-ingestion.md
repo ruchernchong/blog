@@ -1,7 +1,6 @@
----
-title: Token Usage Ingestion
-description: Endpoint contract and operator workflow for importing local agent token usage into ruchern.dev.
----
+# Token Usage Ingestion
+
+Endpoint contract and operator workflow for importing local agent token usage into ruchern.dev.
 
 The token usage ingestion workflow parses local coding-agent logs, prices the token usage, folds events into daily aggregates, and writes those aggregates into the `token_usage` table. The collector also sends session-level effort aggregates into `token_effort_usage` in the same requests.
 
@@ -31,12 +30,14 @@ The body must match `UsageIngestPayload` from `@workspace/usage/ingest`. Field n
 
 ```json
 {
+  "device": "<hashed device id>",
   "rows": [
     {
       "date": "2026-06-02",
       "agent": "claude",
       "provider": "anthropic",
       "model": "claude-sonnet-4-5",
+      "session": "<hashed session id>",
       "inputTokens": 1200,
       "outputTokens": 420,
       "cacheReadTokens": 3000,
@@ -62,9 +63,11 @@ The body must match `UsageIngestPayload` from `@workspace/usage/ingest`. Field n
 
 `effortRows` and `effortSnapshotComplete` are optional (default `[]` / `false`) for older clients. Token `rows` remain required — effort-only POSTs are rejected (`400`).
 
+`device` names the sending machine and applies to every row in the request. It is optional (at most 64 characters); older clients send none and it is stored as `null`.
+
 ## Row Contract
 
-Each row represents one daily aggregate for a specific `(date, agent, provider, model)` tuple.
+Each row represents one daily aggregate for a specific `(date, agent, provider, model, session)` tuple from the sending device.
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -72,6 +75,7 @@ Each row represents one daily aggregate for a specific `(date, agent, provider, 
 | `agent` | string | Coding tool that produced the logs, such as `claude`, `codex`, or `opencode`. |
 | `provider` | string | Inference provider that billed the usage, such as `anthropic`, `openai`, or `fireworks-ai`. |
 | `model` | string | Model identifier from the source log. |
+| `session` | string or `null` | Hashed session id, at most 64 characters. Optional; older clients send none. |
 | `inputTokens` | non-negative integer | Input token count. |
 | `outputTokens` | non-negative integer | Output token count. |
 | `cacheReadTokens` | non-negative integer | Cache-read input token count. |
@@ -102,8 +106,10 @@ Each effort row is one daily session-level aggregate for `(date, agent)`. Counts
 Ingestion is idempotent. Token rows are upserted by the composite key:
 
 ```txt
-date + agent + provider + model
+date + agent + provider + model + device + session
 ```
+
+A missing `device` or `session` is stored as `null`, and the key treats nulls as equal, so rows from older clients still dedupe. `/usage` takes the largest copy of each session across devices before summing, so the same session reported by two machines counts once.
 
 Effort rows are upserted by:
 

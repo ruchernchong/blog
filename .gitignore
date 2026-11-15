@@ -30,7 +30,6 @@ coverage/
 .turbo/
 .wrangler/
 apps/cli/target/
-apps/docs/.source/
 
 # Misc
 .DS_Store
