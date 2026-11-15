@@ -1,3 +1,9 @@
+## [1.60.8](https://github.com/ruchernchong/blog/compare/v1.60.7...v1.60.8) (2026-11-15)
+
+### Bug Fixes
+
+* run model registry sync in sin1 ([d39062b](https://github.com/ruchernchong/blog/commit/d39062ba61d68415df09ae8c2fcaff0df64a7d32))
+
 ## [1.60.7](https://github.com/ruchernchong/blog/compare/v1.60.6...v1.60.7) (2026-11-15)
 
 ### Bug Fixes
