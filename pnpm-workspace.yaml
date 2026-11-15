@@ -37,7 +37,7 @@ catalog:
   tailwindcss: ^4.3.0
   typescript: 7.0.2
   vitest: 5.0.0
-  "@vitest/browser": 5.0.0
+  "@vitest/browser": 5.0.5
   "@vitest/browser-playwright": 5.0.0
   "@vitest/coverage-v8": 5.0.0
 
