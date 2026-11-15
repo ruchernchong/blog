@@ -52,7 +52,7 @@
     "husky": "^9.1.6",
     "knip": "6.34.0",
     "lint-staged": "^16.2.7",
-    "portless": "0.10.2",
+    "portless": "0.17.0",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "semantic-release": "25.0.3",
