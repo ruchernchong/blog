@@ -39,6 +39,14 @@ MCP clients can discover the authorization server from the MCP API's RFC 9728 pr
 GET /.well-known/oauth-protected-resource
 ```
 
+The authorization server metadata is also described in the site's OpenAPI document (`GET /openapi.json`), alongside the protected routes it fronts.
+
+```txt
+GET https://ruchern.dev/openapi.json
+```
+
+A request to an unmatched `/api/*` path returns `404` with a JSON body whose `hint` points at that document, rather than the HTML error page.
+
 ## Endpoints
 
 | Purpose | Endpoint |
@@ -50,6 +58,7 @@ GET /.well-known/oauth-protected-resource
 | Dynamic client registration | `/api/auth/oauth2/register` |
 | Token introspection | `/api/auth/oauth2/introspect` |
 | JWKS | `/api/auth/jwks` |
+| OpenAPI document (all public API routes) | `/openapi.json` |
 
 ## Supported Behaviour
 
@@ -198,3 +207,5 @@ Access and refresh tokens are stored hashed in the provider's database.
 - `apps/web/src/lib/api/mcp-auth.ts` validates incoming bearers on protected routes.
 - `apps/web/src/app/consent/` and `apps/web/src/components/auth/consent-form.tsx` render the consent screen.
 - `apps/web/src/schema/auth.ts` holds the `oauthClient`, `oauthAccessToken`, `oauthRefreshToken`, `oauthConsent`, and `jwks` tables (generated via `pnpm auth:generate`).
+- `apps/web/src/app/.well-known/oauth-authorization-server/` serves the RFC 8414 metadata at the origin and at the path-inserted issuer location.
+- `apps/web/src/app/openapi.json/route.ts` builds the OpenAPI 3.1 document by hand; add a path there when adding a public API route.
