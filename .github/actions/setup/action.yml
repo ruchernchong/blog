@@ -3,5 +3,18 @@ description: Setup pnpm and Node.js, then install dependencies
 runs:
   using: composite
   steps:
+    # HeroUI Pro downloads from its CDN in postinstall, and each download counts
+    # against the token's daily limit. A restored node_modules makes the install
+    # a no-op, so postinstall only runs again when the lockfile changes it.
+    - name: Cache node_modules
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          node_modules
+          apps/*/node_modules
+          packages/*/node_modules
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: ${{ runner.os }}-node-modules-
+
     - name: Setup pnpm
       uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
