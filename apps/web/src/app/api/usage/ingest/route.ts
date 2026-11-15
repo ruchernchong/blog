@@ -39,7 +39,7 @@ async function scheduleRegistrySync(): Promise<string | null> {
       })) === "OK";
     if (!claimed) return null;
 
-    const run = await start(syncModelRegistryWorkflow);
+    const run = await start(syncModelRegistryWorkflow, { region: "sin1" });
     return run.runId;
   } catch (error) {
     // Redis failure skips scheduling rather than starting an unthrottled run.

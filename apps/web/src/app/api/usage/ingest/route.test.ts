@@ -35,6 +35,7 @@ import redis from "@/config/redis";
 import { type McpAuthResult, validateMcpAuth } from "@/lib/api/mcp-auth";
 import { getModelDisplayNames } from "@/lib/queries/models";
 import { upsertTokenEffortUsage, upsertTokenUsage } from "@/lib/queries/usage";
+import { syncModelRegistryWorkflow } from "@/workflows/sync-model-registry";
 import { POST } from "./route";
 
 const mockValidateMcpAuth = vi.mocked(validateMcpAuth);
@@ -160,7 +161,10 @@ describe("POST /api/usage/ingest", () => {
     );
 
     expect(await response.json()).toMatchObject({ syncRunId: "run_123" });
-    expect(mockStart).toHaveBeenCalledOnce();
+    expect(mockStart).toHaveBeenCalledExactlyOnceWith(
+      syncModelRegistryWorkflow,
+      { region: "sin1" },
+    );
   });
 
   it("should ingest every batch but start only one sync within 24 hours", async () => {
