@@ -1,3 +1,10 @@
+## [1.60.7](https://github.com/ruchernchong/blog/compare/v1.60.6...v1.60.7) (2026-11-15)
+
+### Bug Fixes
+
+* allow release upload to be re-run ([0abed92](https://github.com/ruchernchong/blog/commit/0abed92e7e6f0e1ec68a3c03f1577843e8e5efda))
+* publish release after attaching assets ([b3caf2d](https://github.com/ruchernchong/blog/commit/b3caf2d8804d3628693f9826587bd44ebe01a103))
+
 ## [1.60.6](https://github.com/ruchernchong/blog/compare/v1.60.5...v1.60.6) (2026-11-14)
 
 ### Bug Fixes
