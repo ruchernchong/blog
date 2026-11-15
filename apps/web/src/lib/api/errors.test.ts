@@ -4,6 +4,8 @@ vi.mock("@/lib/logger", () => ({
   logError: vi.fn(),
 }));
 
+vi.mock("@/config", () => ({ BASE_URL: "https://ruchern.dev" }));
+
 import { ERROR_IDS } from "@/constants/error-ids";
 import { logError } from "@/lib/logger";
 import {
@@ -15,6 +17,7 @@ import {
   isUniqueConstraintError,
   methodNotAllowedResponse,
   notFoundResponse,
+  routeNotFoundResponse,
 } from "./errors";
 
 describe("error responses", () => {
@@ -32,6 +35,19 @@ describe("error responses", () => {
 
     expect(response.status).toBe(404);
     expect(await response.json()).toEqual({ message: "Post not found" });
+  });
+
+  it("should return a 404 with a code and hint for an unmatched route", async () => {
+    const response = routeNotFoundResponse(
+      new Request("https://ruchern.dev/api/nope", { method: "POST" }),
+    );
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toEqual({
+      error: "not_found",
+      message: "No API route matches POST /api/nope",
+      hint: "The available endpoints are listed in the OpenAPI specification at https://ruchern.dev/openapi.json",
+    });
   });
 
   it("should return a 409 naming the resource and field", async () => {
