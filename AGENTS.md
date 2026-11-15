@@ -406,7 +406,7 @@ Invoke skills with `/component-naming`, `/design-language-system`, or `/blog-voi
 
 - Update AGENTS.md when changing commands or architecture
 - Update README.md when modifying tech stack
-- `docs/` holds reference for agents and is published as a Docs7 site at `https://ruchernchong-blog.docs7.io`
+- `docs/` holds reference for agents and is published as a Docs7 site at `https://docs.ruchern.dev`
   (`docs/docs.json`; every push to `main` deploys it, so its contents are public). Read `docs/oauth-provider.md` before
   working on an OAuth client or token validation, and `docs/usage-ingestion.md` before changing
   `POST /api/usage/ingest` or anything that sends to it; update them in the same change. List a new page in the
