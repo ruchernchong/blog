@@ -4,9 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "portless blog next dev",
+    "dev": "portless run --name blog next dev",
     "build": "next build",
-    "start": "portless blog next start",
+    "start": "portless run --name blog next start",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "biome check .",

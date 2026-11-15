@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "portless docs.blog next dev",
+    "dev": "portless run --name docs.blog next dev",
     "build": "next build",
     "start": "next start",
     "postinstall": "fumadocs-mdx",
