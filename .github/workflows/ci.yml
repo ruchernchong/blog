@@ -105,6 +105,8 @@ jobs:
     with:
       version: ${{ needs.release.outputs.version }}
 
+  # Releases are immutable once published, so semantic-release leaves a draft
+  # and this job publishes it after attaching the assets.
   agent-usage-upload:
     name: Agent Usage Upload
     needs: [ release, agent-usage-build ]
@@ -135,4 +137,6 @@ jobs:
             dist/agent-usage-macos.tar.gz \
             dist/agent-usage-macos.tar.gz.sha256 \
             apps/cli/macos/install.sh \
+            --clobber \
             --repo "$REPO"
+          gh release edit "v$VERSION" --draft=false --repo "$REPO"
