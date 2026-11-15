@@ -22,6 +22,25 @@ const projects: Project[] = [
     featured: true,
   },
   {
+    name: "SimplyCPF",
+    slug: "simplycpf",
+    description:
+      "CPF, simply explained. Plain-language CPF guides, contribution rates, projections and a developer API for Singapore.",
+    skills: [
+      "Next.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "HeroUI",
+      "Fumadocs",
+      "Upstash Redis",
+      "Vitest",
+    ],
+    links: [
+      "https://simplycpf.com",
+      "https://github.com/ruchernchong/simplycpf",
+    ],
+  },
+  {
     name: "Is Leap Year",
     slug: "isleapyear",
     description:
@@ -38,15 +57,6 @@ const projects: Project[] = [
       "https://isleapyear.app",
       "https://github.com/ruchernchong/is-leap-year",
     ],
-  },
-  {
-    name: "Claude Kit",
-    slug: "claude-kit",
-    coverImage: "/images/projects/claude-kit.png",
-    description:
-      "A collection of powertools for Claude Code including specialised agents, slash commands, and skills.",
-    skills: ["Shell", "TypeScript", "Claude Code"],
-    links: ["https://github.com/ruchernchong/claude-kit"],
   },
 ];
 

@@ -59,6 +59,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "simplycpf.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "opengraph.githubassets.com",
         pathname: "/**",
       },

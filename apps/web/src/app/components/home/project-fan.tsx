@@ -56,11 +56,11 @@ function FanCard({ label, title, image, className }: Readonly<FanCardProps>) {
 }
 
 export async function ProjectFan() {
-  const [isLeapYearImage, motorMetricsImage, claudeKitImage] =
+  const [isLeapYearImage, motorMetricsImage, simplyCpfImage] =
     await Promise.all([
       getPreviewImage("https://isleapyear.app"),
       getPreviewImage("https://motormetrics.app"),
-      getPreviewImage("https://github.com/ruchernchong/claude-kit"),
+      getPreviewImage("https://simplycpf.com"),
     ]);
 
   return (
@@ -77,8 +77,8 @@ export async function ProjectFan() {
         className="z-2 h-50 w-full transition-transform hover:-translate-y-1 md:w-60 lg:w-70"
       />
       <FanCard
-        label="claude-kit"
-        image={claudeKitImage}
+        label="simplycpf.com"
+        image={simplyCpfImage}
         className="h-[150px] w-full md:w-44 md:rotate-4 md:opacity-85 lg:w-50"
       />
     </section>
