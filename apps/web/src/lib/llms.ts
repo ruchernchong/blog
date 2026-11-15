@@ -66,28 +66,27 @@ Built with cutting-edge technologies:
 ### Content & Features
 - MDX blog posts with next-mdx-remote
 - Built-in CMS at /studio for content management
-- Umami-backed dashboard analytics while PostHog warms up in parallel
+- PostHog-backed dashboard analytics
 - Real-time visitor statistics visualization
 - SEO optimization with structured data
 
 ## API Routes
 
-Public API endpoints:
-- /api/trpc/* - tRPC API routes (type-safe API layer)
-- /api/analytics - Analytics data endpoints
-- /api/studio/posts - Content management endpoints (authenticated)
+The HTTP API is described in OpenAPI 3.1 at ${BASE_URL}/openapi.json:
+- /api/usage/ingest - Token usage ingestion (OAuth, admin)
+- /api/mcp - Model Context Protocol server for content management (OAuth, admin)
+- /.well-known/oauth-authorization-server - OAuth 2.1 server metadata
 
 ## Contact & Links
 
 - Website: ${BASE_URL}
 - GitHub: https://github.com/ruchernchong
-- Email: Contact form available on website
 
 ## Technical Details
 
 - Monorepo structure using Turborepo
 - Database-backed content with migrations
-- Parallel analytics instrumentation with Umami, PostHog, and Vercel Analytics
+- Analytics instrumentation with PostHog and Vercel Analytics
 - Optimized images and caching strategies
 - Core Web Vitals monitoring
 `;
