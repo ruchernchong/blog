@@ -137,5 +137,6 @@ jobs:
             dist/agent-usage-macos.tar.gz \
             dist/agent-usage-macos.tar.gz.sha256 \
             apps/cli/macos/install.sh \
+            --clobber \
             --repo "$REPO"
           gh release edit "v$VERSION" --draft=false --repo "$REPO"
