@@ -7,7 +7,7 @@ on:
   workflow_call:
     inputs:
       version:
-        description: Release version whose tag is built (Cargo.toml carries the version)
+        description: Release version whose tag is built and stamped into Cargo.toml
         type: string
         required: false
         default: ""
@@ -37,8 +37,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # The release commit (with the bumped Cargo.toml) lands after this
-          # run's commit, so build the tag rather than the triggering SHA.
+          # Build the release tag rather than the triggering SHA.
           ref: ${{ inputs.version && format('v{0}', inputs.version) || '' }}
           persist-credentials: false
 
@@ -59,6 +58,18 @@ jobs:
             apps/cli/target
           key: ${{ runner.os }}-cargo-release-${{ matrix.target }}-${{ hashFiles('apps/cli/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-release-${{ matrix.target }}-
+
+      # Releases are tags only, so the repository's Cargo.toml does not carry
+      # the release version. Stamp it before the build.
+      - name: Set version
+        if: inputs.version != ''
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          perl -0pi -e 's/^version = "[^"]*"/version = "$ENV{VERSION}"/m' Cargo.toml
+          perl -0pi -e 's/(name = "agent-usage"\nversion = )"[^"]*"/$1"$ENV{VERSION}"/' Cargo.lock
+          grep -q "^version = \"$VERSION\"$" Cargo.toml
+          grep -A1 '^name = "agent-usage"$' Cargo.lock | grep -q "^version = \"$VERSION\"$"
 
       - name: Build
         env:

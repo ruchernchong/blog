@@ -235,18 +235,12 @@ importers:
       '@commitlint/types':
         specifier: ^20.5.0
         version: 20.5.0
-      '@semantic-release/changelog':
-        specifier: 6.0.3
-        version: 6.0.3(semantic-release@25.0.3(supports-color@8.1.1)(typescript@7.0.2))
       '@semantic-release/commit-analyzer':
         specifier: 13.0.1
         version: 13.0.1(semantic-release@25.0.3(supports-color@8.1.1)(typescript@7.0.2))(supports-color@8.1.1)
       '@semantic-release/exec':
         specifier: 7.1.0
         version: 7.1.0(semantic-release@25.0.3(supports-color@8.1.1)(typescript@7.0.2))(supports-color@8.1.1)
-      '@semantic-release/git':
-        specifier: 11.0.1
-        version: 11.0.1(semantic-release@25.0.3(supports-color@8.1.1)(typescript@7.0.2))(supports-color@8.1.1)
       '@semantic-release/github':
         specifier: 12.0.8
         version: 12.0.8(semantic-release@25.0.3(supports-color@8.1.1)(typescript@7.0.2))(supports-color@8.1.1)
@@ -4175,21 +4169,11 @@ packages:
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
 
-  '@semantic-release/changelog@6.0.3':
-    resolution: {integrity: sha512-dZuR5qByyfe3Y03TpmCvAxCyTnp7r5XwtHRf/8vD9EAn4ZWbavUX8adMtXYzE86EVh0gyLA7lm5yW4IV30XUag==}
-    engines: {node: '>=14.17'}
-    peerDependencies:
-      semantic-release: '>=18.0.0'
-
   '@semantic-release/commit-analyzer@13.0.1':
     resolution: {integrity: sha512-wdnBPHKkr9HhNhXOhZD5a2LNl91+hs8CC2vsAVYxtZH3y0dV3wKn+uZSN61rdJQZ8EGxzWB3inWocBHV9+u/CQ==}
     engines: {node: '>=20.8.1'}
     peerDependencies:
       semantic-release: '>=20.1.0'
-
-  '@semantic-release/error@3.0.0':
-    resolution: {integrity: sha512-5hiM4Un+tpl4cKw3lV4UgzJj+SmfNIDCLLw0TepzQxz9ZGV5ixnqkzIVF+3tp0ZHgcMKE+VNGHJjEeyFG2dcSw==}
-    engines: {node: '>=14.17'}
 
   '@semantic-release/error@4.0.0':
     resolution: {integrity: sha512-mgdxrHTLOjOddRVYIYDo0fR3/v61GNN1YGkfbrjuIKg/uMgCd+Qzo3UAXJ+woLQQpos4pl5Esuw5A7AoNlzjUQ==}
@@ -4200,12 +4184,6 @@ packages:
     engines: {node: '>=20.8.1'}
     peerDependencies:
       semantic-release: '>=24.1.0'
-
-  '@semantic-release/git@11.0.1':
-    resolution: {integrity: sha512-Zr8BUYCTZMc8V6wDKN2dpR7nJgewd9I6THL3ydLTnp3OEdTo1/4RBLNYaeRucYMsjMv+BXoCNfXA0NADj1kwhw==}
-    engines: {node: ^22.22.2 || >=24.15}
-    peerDependencies:
-      semantic-release: '>=20.1.0'
 
   '@semantic-release/github@12.0.8':
     resolution: {integrity: sha512-tej5AAgK5X9wHRoDmYhecMXEHEkFeGOY1XsEblKxu8pIQwahzf1STYyr7iPU6Lpbg6C5I3N2w/ocXrBo+L7jhw==}
@@ -6697,10 +6675,6 @@ packages:
     resolution: {integrity: sha512-2GuF51iuHX6A9xdTccMTsNb7VO0lHZihApxhvQzJB5A03DvHDd2FQepodbMaztPBmBcE/ox7o2gqaxGhYB9LhQ==}
     engines: {node: '>=20.0.0'}
 
-  execa@10.0.1:
-    resolution: {integrity: sha512-ge98qjkRK4IB7tL7Ju/6qmm5LHoH1eEMt5FNZrz3f4UIYhF28lggX20z3FaX1sgc67msLEn0N0BscOs29iuwyw==}
-    engines: {node: '>=22'}
-
   execa@5.1.1:
     resolution: {integrity: sha512-8uSpZZocAZRBAPIEINJj3Lo9HyGitllczc27Eh5YYojjMFMn8yHMDMaUHE2Jqfq05D/wucwI4JGURyXt1vchyg==}
     engines: {node: '>=10'}
@@ -7799,9 +7773,6 @@ packages:
 
   lodash.upperfirst@4.3.1:
     resolution: {integrity: sha512-sReKOYJIJf74dhJONhU4e0/shzi1trVbSWDOhKYE5XV2O+H7Sb2Dihwuc7xWxVl+DgFPyTqIN3zMfT9cq5iWDg==}
-
-  lodash@4.18.1:
-    resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
   log-symbols@6.0.0:
     resolution: {integrity: sha512-i24m8rpwhmPIS4zscNzK6MSEhk0DUWa/8iYQWxhffV8jkI4Phvs3F+quL5xvS0gdQR0FyTCMMH33Y78dDTzzIw==}
@@ -10548,11 +10519,6 @@ packages:
   whatwg-url@14.2.0:
     resolution: {integrity: sha512-De72GdQZzNTUBBChsXueQUnPKDkg/5A5zp7pFDuQAj5UFoENpiACU0wlCvzpAGnTkj++ihpKwKyYewn/XNUbKw==}
     engines: {node: '>=18'}
-
-  which-command@0.1.0:
-    resolution: {integrity: sha512-XZyoF5/5hZtXitIwzrU4NKK+Wtbb9aB9CezUEw2Q0wlYK8NUYQxC1rRXgNueYLtBAJwXIb+/tFVk4dozciNJMA==}
-    engines: {node: '>=22'}
-    hasBin: true
 
   which@2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
@@ -14370,14 +14336,6 @@ snapshots:
 
   '@sec-ant/readable-stream@0.4.1': {}
 
-  '@semantic-release/changelog@6.0.3(semantic-release@25.0.3(supports-color@8.1.1)(typescript@7.0.2))':
-    dependencies:
-      '@semantic-release/error': 3.0.0
-      aggregate-error: 3.1.0
-      fs-extra: 11.3.6
-      lodash: 4.18.1
-      semantic-release: 25.0.3(supports-color@8.1.1)(typescript@7.0.2)
-
   '@semantic-release/commit-analyzer@13.0.1(semantic-release@25.0.3(supports-color@8.1.1)(typescript@7.0.2))(supports-color@8.1.1)':
     dependencies:
       conventional-changelog-angular: 8.3.1
@@ -14392,8 +14350,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@semantic-release/error@3.0.0': {}
-
   '@semantic-release/error@4.0.0': {}
 
   '@semantic-release/exec@7.1.0(semantic-release@25.0.3(supports-color@8.1.1)(typescript@7.0.2))(supports-color@8.1.1)':
@@ -14404,20 +14360,6 @@ snapshots:
       execa: 9.6.1
       lodash-es: 4.18.1
       parse-json: 8.3.0
-      semantic-release: 25.0.3(supports-color@8.1.1)(typescript@7.0.2)
-    transitivePeerDependencies:
-      - supports-color
-
-  '@semantic-release/git@11.0.1(semantic-release@25.0.3(supports-color@8.1.1)(typescript@7.0.2))(supports-color@8.1.1)':
-    dependencies:
-      '@semantic-release/error': 4.0.0
-      aggregate-error: 5.0.0
-      debug: 4.4.3(supports-color@8.1.1)
-      dir-glob: 3.0.1
-      execa: 10.0.1
-      lodash-es: 4.18.1
-      micromatch: 4.0.8
-      p-reduce: 3.0.0
       semantic-release: 25.0.3(supports-color@8.1.1)(typescript@7.0.2)
     transitivePeerDependencies:
       - supports-color
@@ -17100,21 +17042,6 @@ snapshots:
     dependencies:
       eventsource-parser: 3.1.0
 
-  execa@10.0.1:
-    dependencies:
-      '@sindresorhus/merge-streams': 4.0.0
-      figures: 6.1.0
-      get-stream: 9.0.1
-      human-signals: 8.0.1
-      is-plain-obj: 4.1.0
-      is-stream: 4.0.1
-      npm-run-path: 6.0.0
-      pretty-ms: 9.3.0
-      signal-exit: 4.1.0
-      strip-final-newline: 4.0.0
-      which-command: 0.1.0
-      yoctocolors: 2.1.2
-
   execa@5.1.1:
     dependencies:
       cross-spawn: 7.0.6
@@ -18291,8 +18218,6 @@ snapshots:
   lodash.uniqby@4.7.0: {}
 
   lodash.upperfirst@4.3.1: {}
-
-  lodash@4.18.1: {}
 
   log-symbols@6.0.0:
     dependencies:
@@ -21515,8 +21440,6 @@ snapshots:
       tr46: 5.1.1
       webidl-conversions: 7.0.0
     optional: true
-
-  which-command@0.1.0: {}
 
   which@2.0.2:
     dependencies:
