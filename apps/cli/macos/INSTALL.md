@@ -29,6 +29,10 @@ toolchain**, via [rustup](https://rustup.rs) or `brew install rust`):
 bash apps/cli/macos/install.sh
 ```
 
+A build from a checkout reports version `0.0.0` and shows no update notice.
+Release versions are stamped in by CI. Running `agent-usage update` replaces
+it with the latest release binary.
+
 Then sign in. Use the **installed** binary for login so Keychain access matches launchd.
 
 ```zsh

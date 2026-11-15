@@ -1,6 +1,7 @@
 //! Self-update and the "new version available" notice for the installed
-//! collector. The crate version is kept in sync with the monorepo release by
-//! semantic-release.
+//! collector. Release builds get their version stamped into `Cargo.toml` by
+//! `agent-usage-build.yml`; a build from a checkout keeps the committed
+//! `0.0.0` and shows no update notice.
 use crate::{oauth, store};
 use anyhow::{Context, Result, bail};
 use serde::{Deserialize, Serialize};
@@ -14,6 +15,8 @@ use std::time::Duration;
 use tempfile::{NamedTempFile, TempDir};
 
 const CURRENT_VERSION: &str = env!("CARGO_PKG_VERSION");
+/// The committed `Cargo.toml` version, which only a build from a checkout has.
+const SOURCE_BUILD_VERSION: &str = "0.0.0";
 const LATEST_RELEASE_URL: &str = "https://api.github.com/repos/ruchernchong/blog/releases/latest";
 const RELEASE_DOWNLOAD_URL: &str = "https://github.com/ruchernchong/blog/releases/download";
 /// Release package built by `agent-usage-build.yml`: `agent-usage/bin/agent-usage`
@@ -37,7 +40,8 @@ struct UpdateCheck {
 /// LaunchAgent), and never fails the command.
 pub fn notify() {
     let current = CURRENT_VERSION;
-    if !std::io::stderr().is_terminal()
+    if current == SOURCE_BUILD_VERSION
+        || !std::io::stderr().is_terminal()
         || crate::env_var(
             "AGENT_USAGE_NO_UPDATE_CHECK",
             "USAGE_INGEST_NO_UPDATE_CHECK",
