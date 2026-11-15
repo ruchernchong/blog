@@ -1,3 +1,5 @@
+> Release notes from 1.61.2 onwards are published on [GitHub releases](https://github.com/ruchernchong/blog/releases). This file is no longer updated.
+
 ## [1.61.1](https://github.com/ruchernchong/blog/compare/v1.61.0...v1.61.1) (2026-11-15)
 
 ### Bug Fixes

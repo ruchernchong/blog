@@ -89,8 +89,10 @@ window even if execution ultimately fails after its step retries.
   (flags win over `AGENT_USAGE_DRY_RUN` / `AGENT_USAGE_URL`), `auth login|logout|status`
   (hidden `login`/`logout` aliases), `update [--check]` (self-update from the latest release),
   and `completions <zsh|bash|fish>`; no subcommand
-  prints help. The installed binary is production only. semantic-release keeps
-  its `Cargo.toml` version in sync with the monorepo release, and it prints a once-a-day notice to run
+  prints help. The installed binary is production only. Releases are tags only
+  (no release commit), so `agent-usage-build.yml` stamps the release version into `Cargo.toml` and
+  `Cargo.lock` at build time. The committed version stays `0.0.0`, which a build from a checkout reports and which
+  shows no update notice. A release build prints a once-a-day notice to run
   `agent-usage update` in interactive terminals (`AGENT_USAGE_NO_UPDATE_CHECK=1` disables it). The CLI was
   renamed from `usage-ingest`: each `AGENT_USAGE_*` variable falls back to its legacy
   `USAGE_INGEST_*` name when unset, and the Keychain item, client id file, and

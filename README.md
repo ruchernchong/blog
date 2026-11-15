@@ -146,7 +146,7 @@ Commits are validated via Commitlint with a 72 character header limit.
 Automated via semantic-release on push to `main` branch:
 1. CI runs tests, linting, and builds
 2. Semantic version is determined from commit messages
-3. Changelog is auto-generated
+3. Release notes are generated on the GitHub release (no commit is pushed back to `main`)
 4. GitHub release is created with git tag
 
 ## Documentation
