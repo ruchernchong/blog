@@ -1,6 +1,6 @@
 [package]
 name = "agent-usage"
-version = "1.60.8"
+version = "1.60.9"
 edition = "2024"
 rust-version = "1.89"
 

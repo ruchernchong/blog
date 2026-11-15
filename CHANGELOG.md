@@ -1,3 +1,9 @@
+## [1.60.9](https://github.com/ruchernchong/blog/compare/v1.60.8...v1.60.9) (2026-11-15)
+
+### Bug Fixes
+
+* bump next to 16.4.6 ([b96a1a9](https://github.com/ruchernchong/blog/commit/b96a1a970dba25277d47e22dea744c404f46c597))
+
 ## [1.60.8](https://github.com/ruchernchong/blog/compare/v1.60.7...v1.60.8) (2026-11-15)
 
 ### Bug Fixes
