@@ -40,6 +40,27 @@ const nextConfig: NextConfig = {
         hostname: "assets.ruchern.dev",
         pathname: "/**",
       },
+      // Project preview (Open Graph) images on the landing page
+      {
+        protocol: "https",
+        hostname: "motormetrics.app",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "isleapyear.app",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "opengraph.githubassets.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "repository-images.githubusercontent.com",
+        pathname: "/**",
+      },
     ],
   },
   logging: {
