@@ -3,6 +3,7 @@ import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import Link from "next/link";
+import { getPreviewImage } from "@/lib/preview-image";
 import type { Project } from "@/types";
 
 export function isGitHubLink(url: string): boolean {
@@ -17,9 +18,14 @@ export function isGitHubLink(url: string): boolean {
   }
 }
 
-/** The mono URL shown in the browser-chrome header. Prefers the live link. */
+/** The link a card represents. Prefers the live link over the source. */
+function primaryLink(links: string[]): string | undefined {
+  return links.find((link) => !isGitHubLink(link)) ?? links[0];
+}
+
+/** The mono URL shown in the browser-chrome header. */
 function displayUrl(links: string[]): string {
-  const primary = links.find((link) => !isGitHubLink(link)) ?? links[0];
+  const primary = primaryLink(links);
 
   if (!primary) {
     return "";
@@ -43,35 +49,50 @@ const PREVIEW_BARS = [
   { id: "g", height: 72 },
 ];
 
-function PreviewPanel({
+async function PreviewPanel({
   project,
   featured,
 }: Readonly<{
   project: Project;
   featured: boolean;
 }>) {
+  const link = primaryLink(project.links);
+  // The image the project's own page advertises, as on the landing page.
+  const image =
+    (link ? await getPreviewImage(link) : null) ?? project.coverImage;
+
+  if (image) {
+    return (
+      <div className="relative aspect-[1200/630] bg-default/50">
+        <Image
+          fill
+          src={image}
+          alt={`${project.name} preview`}
+          sizes={
+            featured
+              ? "(min-width: 1024px) 960px, 100vw"
+              : "(min-width: 640px) 480px, 100vw"
+          }
+          className="object-cover"
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className={cn("bg-default/50", featured ? "h-52" : "h-32")}>
-      {project.coverImage ? (
-        <div className="relative size-full">
-          <Image
-            fill
-            src={project.coverImage}
-            alt={project.name}
-            className="object-cover"
-          />
-        </div>
-      ) : (
-        <div className="flex h-full items-end justify-center gap-2 p-6">
-          {PREVIEW_BARS.map((bar) => (
-            <div
-              key={bar.id}
-              className="w-3 rounded-t bg-accent/60"
-              style={{ height: `${bar.height}%` }}
-            />
-          ))}
-        </div>
+    <div
+      className={cn(
+        "flex items-end justify-center gap-2 bg-default/50 p-6",
+        featured ? "h-52" : "h-32",
       )}
+    >
+      {PREVIEW_BARS.map((bar) => (
+        <div
+          key={bar.id}
+          className="w-3 rounded-t bg-accent/60"
+          style={{ height: `${bar.height}%` }}
+        />
+      ))}
     </div>
   );
 }
