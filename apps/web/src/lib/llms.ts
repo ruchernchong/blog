@@ -60,7 +60,6 @@ Built with cutting-edge technologies:
 ### Backend & Data
 - Neon PostgreSQL with Drizzle ORM
 - Upstash Redis for caching
-- tRPC for type-safe APIs
 - Better Auth for authentication
 
 ### Content & Features
