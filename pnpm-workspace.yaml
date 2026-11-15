@@ -42,14 +42,6 @@ catalog:
   "@vitest/browser-playwright": 5.0.0
   "@vitest/coverage-v8": 5.0.0
 
-# `workflow` pulls in zod 4.3.6, and a second zod 4.x copy changes hoisting for
-# @hookform/resolvers@3, which declares zod only as a loose peer — it silently
-# picked up the wrong copy and broke typecheck in the Studio forms. Collapse the
-# 4.x range to the version the workspace already uses. Scoped to `zod@4` so
-# @vercel/config's zod 3 dependency is left alone.
-overrides:
-  zod@4: "catalog:"
-
 minimumReleaseAgeStrict: true
 
 savePrefix: ""
