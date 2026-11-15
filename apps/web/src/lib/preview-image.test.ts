@@ -51,6 +51,17 @@ describe("extractPreviewImage", () => {
     );
   });
 
+  it("should skip an unusable image for a later HTTPS one", () => {
+    const html = `
+      <meta property="og:image" content="http://example.com/og.png">
+      <meta name="twitter:image" content="https://example.com/twitter.png">
+    `;
+
+    expect(extractPreviewImage(html, PAGE_URL)).toBe(
+      "https://example.com/twitter.png",
+    );
+  });
+
   it("should return null when the page advertises no image", () => {
     const html = `<meta property="og:title" content="Demo">`;
 

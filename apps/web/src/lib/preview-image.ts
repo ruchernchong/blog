@@ -32,17 +32,23 @@ export const extractPreviewImage = (
     }
   }
 
-  const content = IMAGE_KEYS.map((key) => found.get(key)).find(Boolean);
-  if (!content) {
-    return null;
+  for (const key of IMAGE_KEYS) {
+    const content = found.get(key);
+    if (!content) {
+      continue;
+    }
+
+    try {
+      const url = new URL(content.replaceAll("&amp;", "&"), pageUrl);
+      if (url.protocol === "https:") {
+        return url.href;
+      }
+    } catch {
+      // Unparseable candidate: try the next one.
+    }
   }
 
-  try {
-    const url = new URL(content.replaceAll("&amp;", "&"), pageUrl);
-    return url.protocol === "https:" ? url.href : null;
-  } catch {
-    return null;
-  }
+  return null;
 };
 
 /**
