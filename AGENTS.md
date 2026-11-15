@@ -308,8 +308,7 @@ docs/                 # Agent reference: OAuth client integration and the usage 
 1. **Database Layer** (`lib/queries/`) - Pure Drizzle ORM queries
 2. **Service Layer** (`lib/services/`) - Business logic with class-based services
 3. **API Utilities** (`lib/api/`) - Standardised route handlers
-4. **tRPC Layer** (`server/`) - Type-safe API procedures for GitHub and analytics
-5. **Actions** (`app/_actions/`) - Server actions for mutations only
+4. **Actions** (`app/_actions/`) - Server actions for mutations only
 
 ### Database
 

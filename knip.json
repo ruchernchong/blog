@@ -35,7 +35,6 @@
         "src/app/**/blog/components/series-navigation.tsx",
         "src/hooks/use-mobile.ts",
         "src/lib/tags.ts",
-        "src/server/index.ts",
         "src/utils/get-ip-address.ts",
         "src/utils/stackoverflow.ts"
       ]
