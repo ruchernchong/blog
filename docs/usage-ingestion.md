@@ -210,10 +210,30 @@ curl -X POST "https://ruchern.dev/api/usage/ingest" \
 | `400` | Request body does not match the ingest schema. |
 | `500` | Database write or server-side ingestion failure. |
 
+## API Reference
+
+`GET /openapi.json` describes the public HTTP API in OpenAPI 3.1. Its `/api/usage/ingest` request body is generated from `usageIngestSchema`, so it stays in step with the contract above.
+
+```txt
+GET https://ruchern.dev/openapi.json
+```
+
+An unmatched `/api/*` path returns `404` with a JSON body:
+
+```json
+{
+  "error": "not_found",
+  "message": "No API route matches POST /api/nope",
+  "hint": "The available endpoints are listed in the OpenAPI specification at https://ruchern.dev/openapi.json"
+}
+```
+
 ## Source Files
 
 - `packages/usage/src/ingest.ts` defines the wire schema.
 - `apps/cli` parses, folds, and posts token rows.
 - `apps/web/src/app/api/usage/ingest/route.ts` authenticates and upserts rows.
+- `apps/web/src/app/openapi.json/route.ts` builds the OpenAPI document; add a path there when adding a public API route.
+- `apps/web/src/app/api/[...path]/route.ts` answers unmatched `/api/*` paths with the JSON 404.
 - `apps/web/src/lib/queries/usage.ts` performs the chunked upsert and usage profile aggregation.
 - `apps/web/src/schema/token-effort-usage.ts` defines the `token_effort_usage` table.
