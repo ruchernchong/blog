@@ -1,6 +1,7 @@
-# Token Usage Ingestion
-
-Endpoint contract and operator workflow for importing local agent token usage into ruchern.dev.
+---
+title: Token Usage Ingestion
+description: Endpoint contract and operator workflow for importing local agent token usage into ruchern.dev.
+---
 
 The token usage ingestion workflow parses local coding-agent logs, prices the token usage, folds events into daily aggregates, and writes those aggregates into the `token_usage` table. The collector also sends session-level effort aggregates into `token_effort_usage` in the same requests.
 

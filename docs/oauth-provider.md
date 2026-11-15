@@ -1,6 +1,7 @@
-# OAuth Provider Integration
-
-How a client application authenticates users and calls protected ruchern.dev routes using the OAuth 2.1 / OIDC provider.
+---
+title: OAuth Provider Integration
+description: How a client application authenticates users and calls protected ruchern.dev routes using the OAuth 2.1 / OIDC provider.
+---
 
 ruchern.dev is its own OAuth 2.1 / OIDC provider. A client application authenticates a user through the Authorization Code flow with PKCE, receives a JWT access token, and sends that token as a bearer against protected routes such as `POST /api/usage/ingest`.
 
