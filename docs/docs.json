@@ -1,0 +1,15 @@
+{
+  "$schema": "https://context7.com/schema/docs7.json",
+  "name": "ruchern.dev",
+  "colors": {
+    "primary": "#D74745"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Integration",
+        "pages": ["oauth-provider", "usage-ingestion"]
+      }
+    ]
+  }
+}
