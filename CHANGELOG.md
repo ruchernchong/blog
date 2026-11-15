@@ -1,4 +1,10 @@
-> Release notes from 1.61.1 onwards are published on [GitHub releases](https://github.com/ruchernchong/blog/releases). This file is no longer updated.
+> Release notes from 1.61.2 onwards are published on [GitHub releases](https://github.com/ruchernchong/blog/releases). This file is no longer updated.
+
+## [1.61.1](https://github.com/ruchernchong/blog/compare/v1.61.0...v1.61.1) (2026-11-15)
+
+### Bug Fixes
+
+* rebuild cli after rotating auth secrets ([588408a](https://github.com/ruchernchong/blog/commit/588408aba38e74ea9cfcd148b63ea5fe316a7c54))
 
 ## [1.61.0](https://github.com/ruchernchong/blog/compare/v1.60.9...v1.61.0) (2026-11-15)
 

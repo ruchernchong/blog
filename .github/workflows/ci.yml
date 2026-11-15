@@ -17,6 +17,7 @@ jobs:
       cancel-in-progress: true
     permissions:
       contents: read
+      id-token: write # Turborepo Remote Cache token exchange
     env:
       HEROUI_AUTH_TOKEN: ${{ secrets.HEROUI_AUTH_TOKEN }}
 
@@ -29,6 +30,13 @@ jobs:
 
       - name: Setup
         uses: ./.github/actions/setup # zizmor: ignore[self-repository]
+
+      # Fork pull requests cannot request an OIDC token, so they run uncached.
+      - name: Setup Turborepo Remote Cache
+        if: github.event.pull_request.head.repo.fork != true
+        uses: vercel/setup-turborepo-remote-cache-action@49d7b1b46ba4c9251e1977986bfe18336feabc8f # v1.1.0
+        with:
+          team: ${{ vars.TURBO_TEAM }}
 
       - parallel:
           - name: Run Lint
