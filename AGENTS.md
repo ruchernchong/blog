@@ -75,7 +75,8 @@ window even if execution ultimately fails after its step retries.
   the same server. Production tokens live in the Keychain; each non-production server
   keeps its own in a 0600 file in `~/.config/agent-usage` (ad-hoc signed rebuilds would
   otherwise trigger a Keychain password prompt every time), so local and production
-  logins never mix. `AGENT_USAGE_DRY_RUN=1` prints the payload
+  logins never mix. `keyring` is a macOS-only dependency: a build for any other platform
+  (Linux CI) keeps production tokens in a 0600 file too. `AGENT_USAGE_DRY_RUN=1` prints the payload
   without POSTing. Each install sends a `device` id (a hash of the Mac's LocalHostName, saved
   to `~/.config/agent-usage/device-id` on first use), and every row carries a hashed `session`
   id; the CLI POSTs in batches of 5,000 rows. `token_usage` is keyed per device and session,
