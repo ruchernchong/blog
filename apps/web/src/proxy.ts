@@ -10,9 +10,6 @@ import redis from "@/config/redis";
 
 const agentAnalytics = new AgentAnalytics({ redis });
 
-const HOMEPAGE_VARY =
-  "Accept, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch";
-
 function withPostHog(request: NextRequest) {
   return postHogMiddleware({
     apiKey: process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN,
@@ -34,19 +31,12 @@ function withPostHog(request: NextRequest) {
  *
  * @see {@link https://www.better-auth.com/docs/integrations/next Better Auth Next.js}
  */
-export const proxy = async (request: NextRequest, event: NextFetchEvent) => {
+export const proxy = (request: NextRequest, event: NextFetchEvent) => {
   // Public routes skip the auth check and only seed the PostHog identity cookie.
   if (!request.nextUrl.pathname.startsWith("/studio")) {
     event.waitUntil(agentAnalytics.track(request));
 
-    const response = await withPostHog(request);
-    // The homepage is HTML or Markdown depending on `Accept` (next.config.ts),
-    // so caches must key on it. Next.js sets `Vary` itself on pages and drops
-    // one from `headers()`, hence the full list here.
-    if (request.nextUrl.pathname === "/") {
-      response.headers.set("Vary", HOMEPAGE_VARY);
-    }
-    return response;
+    return withPostHog(request);
   }
 
   const sessionCookie = getSessionCookie(request);
