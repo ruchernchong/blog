@@ -3,6 +3,8 @@ import { cacheLife, cacheTag } from "next/cache";
 import { BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/config";
 import { db, posts } from "@/schema";
 
+const DOCS_URL = "https://docs.ruchern.dev";
+
 /**
  * The site overview in Markdown. Served as `/llms.txt`, and as the homepage
  * for clients that ask for `text/markdown` (see the rewrites in next.config.ts).
@@ -35,6 +37,24 @@ This is the personal portfolio and blog of Ru Chern Chong, featuring:
 - Custom-built content management system
 - Privacy-focused visitor tracking
 
+## When to use this site
+
+Reach for ruchern.dev when you need:
+- Ru Chern's own write-ups on TypeScript, Git, GitHub CLI, React and developer tooling. Each post is a short, practical explanation with code
+- Facts about Ru Chern: role, work history and projects (see /about and /projects)
+- His measured coding-agent token usage by model and provider (see /usage)
+
+Do not use it as a general-purpose API. The write endpoints (usage ingestion and the MCP server) only accept an OAuth token that belongs to the site's admin account.
+
+## How to call it
+
+- Send \`Accept: text/markdown\` to ${BASE_URL}/ for this overview as Markdown. An unknown path answers with a Markdown 404 that links back here
+- Read posts at ${BASE_URL}/blog/<slug>, discover them through ${BASE_URL}/sitemap.xml or ${BASE_URL}/feed.xml
+- Read ${BASE_URL}/openapi.json before calling the HTTP API; API errors are JSON with \`error\`, \`message\` and \`hint\`
+- Discover OAuth 2.1 (Authorization Code with PKCE, dynamic client registration) at ${BASE_URL}/.well-known/oauth-authorization-server
+- Connect an MCP client to ${BASE_URL}/api/mcp or https://mcp.ruchern.dev/mcp (OAuth, \`mcp\` scope, admin account)
+- Integration guides: ${DOCS_URL}
+
 ## Key Pages
 
 - Home: ${BASE_URL}/
@@ -45,7 +65,7 @@ This is the personal portfolio and blog of Ru Chern Chong, featuring:
 
 ## Recent Blog Posts
 
-${publishedPosts.map((post) => `- [${post.title}](${post.metadata.canonical})\n  ${post.summary || ""}`).join("\n\n")}
+${publishedPosts.map((post) => `- [${post.title}](${BASE_URL}${post.metadata.canonical})\n  ${post.summary || ""}`).join("\n\n")}
 
 ## Technology Stack
 
@@ -80,6 +100,8 @@ The HTTP API is described in OpenAPI 3.1 at ${BASE_URL}/openapi.json:
 
 - Website: ${BASE_URL}
 - GitHub: https://github.com/ruchernchong
+- Source code: https://github.com/ruchernchong/blog
+- API and integration docs: ${DOCS_URL}
 
 ## Technical Details
 
