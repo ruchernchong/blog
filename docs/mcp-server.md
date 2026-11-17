@@ -52,6 +52,7 @@ Use the MCP `tools/list` method for the current list and each tool's input schem
 | `list_posts` | List posts, with optional status, limit and offset filters |
 | `get_post` | Get one post by ID or slug |
 | `create_post` | Create a post with generated metadata |
+| `save_draft` | Create or update a draft post, for incremental drafting |
 | `update_post` | Update a post |
 | `delete_post` | Soft delete a post |
 | `restore_post` | Restore a soft-deleted post |
