@@ -12,7 +12,7 @@
       },
       {
         "group": "Integration",
-        "pages": ["oauth-provider", "usage-ingestion"]
+        "pages": ["oauth-provider", "mcp-server", "usage-ingestion"]
       }
     ]
   }

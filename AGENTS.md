@@ -274,7 +274,8 @@ A pnpm/Turborepo monorepo for the Next.js 16 portfolio website, private MCP serv
 - **Analytics**: PostHog-backed dashboard (Query API) with Vercel Analytics
 - **Public rendering**: Pages under `app/(main)` enforce `ensureStatic = "navigation"`. Data-backed server sections cache their rendered output with explicit `cacheLife` profiles; nested query tags propagate to those caches. Post changes invalidate list, featured, count, article and related-post caches, and series cards also depend on `posts:list`. Dashboard metrics prerender from cached queries (GitHub hourly, PostHog daily); authentication and Studio checks remain request-time. Article builds require at least one published slug from `generateStaticParams()`; `blog/[slug]/loading.tsx` provides the partial-prefetch shell while URL parameters resolve.
 - **Usage Page**: Public `/usage` page built from the cached `getUsageProfile()` (`lib/queries/usage.ts`). An editorial top half (generated summary, heatmap, "This period", stack shift, model character, cost vs volume, cache & effort) sits over an Explorer (DataGrid on desktop, card list on phones). A `?model=` profile drawer opens from the "View profile" buttons in Model character. Pure aggregation and shaping live in `@workspace/usage` (`narrative`, `period-comparison`, `weekly-insights`, `model-character`). Identity charts use the validated `--series-*` tokens in `globals.css`; magnitude uses the coral `--chart-*` ramp
-- **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers
+- **LLM SEO**: Dynamic `/llms.txt` endpoint for LLM crawlers, with "When to use this site" and "How to call it" sections for agents (`lib/llms.ts`)
+- **Structured data**: `StructuredData` renders JSON-LD as a plain `<script>` in the server HTML (not `next/script`, which keeps it out of the HTML). The homepage describes a schema.org `Person`
 - **Markdown negotiation**: A request whose `Accept` lists `text/markdown` gets Markdown for the homepage (`/` rewrites to `/index.md`, the `/llms.txt` content from `lib/llms.ts`) and for unknown paths (a `fallback` rewrite to `/not-found.md`, which keeps the 404 status). Both rewrites live in `next.config.ts`; every other page still answers with HTML, including a missing `/blog/[slug]`
 - **OpenAPI**: `/openapi.json` (`app/openapi.json/route.ts`) describes the public API in OpenAPI 3.1; the ingest body is generated from `usageIngestSchema`. Add a path there when adding a public API route. Studio routes are left out on purpose
 - **API 404s**: `app/api/[...path]/route.ts` answers any unmatched `/api/*` path with JSON (`error`, `message`, `hint`) in place of the HTML 404 page
@@ -407,7 +408,7 @@ Invoke skills with `/component-naming`, `/design-language-system`, or `/blog-voi
 - Update AGENTS.md when changing commands or architecture
 - Update README.md when modifying tech stack
 - `docs/` holds reference for agents and is published as a Docs7 site at `https://docs.ruchern.dev`
-  (`docs/docs.json`; every push to `main` deploys it, so its contents are public). Read `docs/oauth-provider.md` before
+  (`docs/docs.json`; every push to `main` deploys it, so its contents are public). `docs/mcp-server.md` is the public page for the MCP server: update it when the endpoints, auth or tool list change. Read `docs/oauth-provider.md` before
   working on an OAuth client or token validation, and `docs/usage-ingestion.md` before changing
   `POST /api/usage/ingest` or anything that sends to it; update them in the same change. List a new page in the
   `docs.json` navigation and give it `title` and `description` frontmatter
