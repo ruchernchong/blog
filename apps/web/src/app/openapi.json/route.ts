@@ -40,7 +40,7 @@ const specification = {
     title: "ruchern.dev API",
     version: VERSION,
     description:
-      "HTTP API of ruchern.dev. This is a private API for the site's own tools: it is unversioned and may change without notice, so do not build a third-party integration on it. Write endpoints need an OAuth 2.1 access token from this site's own provider (Authorization Code with PKCE; clients self-register) that belongs to an admin account. See /llms.txt for an overview of the site.",
+      "HTTP API of ruchern.dev. Write endpoints need an OAuth 2.1 access token from this site's own provider (Authorization Code with PKCE; clients self-register) that belongs to an admin account. See /llms.txt for an overview of the site.",
   },
   servers: [{ url: BASE_URL }],
   externalDocs: {

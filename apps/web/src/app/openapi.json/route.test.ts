@@ -25,13 +25,6 @@ describe("GET /openapi.json", () => {
     expect(specification.servers).toEqual([{ url: "https://ruchern.dev" }]);
   });
 
-  it("should say the API is private and carries no stability guarantee", async () => {
-    const { info } = await GET().json();
-
-    expect(info.description).toContain("private API");
-    expect(info.description).toContain("unversioned");
-  });
-
   it("should describe every public API route", async () => {
     const { paths } = await GET().json();
 
