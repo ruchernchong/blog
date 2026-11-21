@@ -53,7 +53,6 @@ export const auth = betterAuth({
       "*.blog.localhost",
     ],
   },
-  trustedOrigins: ["https://*.vercel.app"],
   disabledPaths: ["/token"],
   database: drizzleAdapter(db, { provider: "pg", schema: authSchema }),
   account: {
@@ -78,6 +77,7 @@ export const auth = betterAuth({
       productionURL: process.env.VERCEL_PROJECT_PRODUCTION_URL
         ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
         : "https://ruchern.dev",
+      secret: process.env.OAUTH_PROXY_SECRET,
     }),
     bearer(),
     jwt(),
