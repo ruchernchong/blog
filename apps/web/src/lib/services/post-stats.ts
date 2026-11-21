@@ -28,30 +28,15 @@ export async function getPostStats(slug: string): Promise<PostStats> {
 /**
  * Increment view count for a post
  *
- * Updates both the post stats hash and the popular posts sorted set.
+ * One atomic `ZINCRBY` on the popular posts sorted set, which is the source of
+ * truth for views. It survives post edits: `invalidatePostCache` deletes the
+ * `post:<slug>` stats key, which used to reset the count to 1 on the next view.
  *
  * @param slug - Post slug
- * @returns Updated post statistics
+ * @returns The post's new view count
  */
-export async function incrementViews(slug: string): Promise<PostStats> {
-  const stats = await getPostStats(slug);
-  const updatedStats: PostStats = {
-    ...stats,
-    views: stats.views + 1,
-  };
-
-  const key = CacheConfig.REDIS_KEYS.POST_STATS(slug);
-
-  // Update both stats hash and popular sorted set atomically
-  await Promise.all([
-    redis.set(key, updatedStats),
-    redis.zadd(CacheConfig.REDIS_KEYS.POPULAR_SET, {
-      score: updatedStats.views,
-      member: slug,
-    }),
-  ]);
-
-  return updatedStats;
+export async function incrementViews(slug: string): Promise<number> {
+  return redis.zincrby(CacheConfig.REDIS_KEYS.POPULAR_SET, 1, slug);
 }
 
 /**

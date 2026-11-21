@@ -17,8 +17,7 @@ export function StatsBar({ slug }: StatsBarProps) {
 
   const onTrackViews = useEffectEvent(async () => {
     await incrementViews(slug);
-    // const stats = await incrementViews(slug);
-    // setViews(stats.views);
+    // setViews(await incrementViews(slug));
   });
 
   useEffect(() => {
