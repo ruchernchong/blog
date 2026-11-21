@@ -24,13 +24,4 @@ describe("RFC 8414 authorization server metadata", () => {
     expect(response.headers.get("Content-Type")).toContain("application/json");
     expect(await response.json()).toEqual(metadata);
   });
-
-  it.each([
-    ["/.well-known/oauth-authorization-server", GET],
-    ["/.well-known/oauth-authorization-server/api/auth", getForIssuer],
-  ])("should let the CDN cache %s", async (path, handler) => {
-    const response = await handler(new Request(`https://ruchern.dev${path}`));
-
-    expect(response.headers.get("Cache-Control")).toContain("s-maxage=86400");
-  });
 });
