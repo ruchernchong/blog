@@ -52,7 +52,7 @@ export const ensureStatic = "navigation";
 
 export default async function UsagePage() {
   "use cache";
-  cacheLife("days");
+  cacheLife("hours");
 
   const profile = await getUsageProfile();
   const [providerDisplayNames, modelDisplayNames, openWeightModelIds] =

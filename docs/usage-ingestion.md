@@ -122,7 +122,7 @@ date + agent
 
 ## Cache Revalidation
 
-After a successful upsert, the route revalidates the `usage` cache tag so the public usage page can pick up the new data (tokens and effort share this tag via `getUsageProfile`).
+The route does not revalidate the `usage` cache tag after an upsert. `getUsageProfile` (tokens and effort) and the `/usage` page use the `hours` cache profile instead, so new rows appear within about an hour of the next visit. The model registry sync and repricing still revalidate `usage` when they change prices or display names.
 
 ## Ingesting From This Machine
 

@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto";
 import { usageIngestSchema } from "@workspace/usage/ingest";
-import { revalidateTag } from "next/cache";
 import { start } from "workflow/api";
 import redis from "@/config/redis";
 import { ERROR_IDS } from "@/constants/error-ids";
@@ -93,6 +92,10 @@ return 0`,
  * record. This route used to do all of it inline behind a `logWarning`, which
  * is how a missing table went unnoticed for a week.
  *
+ * The route does not revalidate the `"usage"` cache: the collector posts every
+ * 15 minutes and each revalidation rebuilds `/`, `/usage` and its OG image,
+ * which used up Hobby's Active CPU. `getUsageProfile` expires hourly instead.
+ *
  * Optional `effortRows` (AgentUsage) are upserted after token rows when present.
  * Effort lives inside the same `"usage"` cache tag via `getUsageProfile`.
  */
@@ -126,9 +129,6 @@ export async function POST(request: Request) {
       ? await scheduleRegistrySync()
       : null;
 
-    // Publish the rows just written. The workflow revalidates again once the
-    // registry lands, which is what refreshes display names.
-    revalidateTag("usage", "max");
     return Response.json({ ok: true, upserted, effortUpserted, syncRunId });
   } catch (error) {
     return handleApiError(
