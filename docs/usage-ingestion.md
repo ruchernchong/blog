@@ -122,7 +122,9 @@ date + agent
 
 ## Cache Revalidation
 
-The route does not revalidate the `usage` cache tag after an upsert. `getUsageProfile` (tokens and effort) and the `/usage` page use the `hours` cache profile instead, so new rows appear within about an hour of the next visit. The model registry sync and repricing still revalidate `usage` when they change prices or display names.
+`getUsageProfile` (tokens and effort) and the `/usage` page use the `max` cache profile and refresh on demand. The route revalidates the `usage` cache tag only when an upsert wrote at least one row: a resent snapshot that inserts or grows nothing leaves the cache untouched. Revalidation serves the old page while the next visit rebuilds it, so new rows appear from the visit after that. The model registry sync and repricing also revalidate `usage` when they change prices or display names.
+
+`upserted` and `effortUpserted` in the response count the rows submitted, not the rows written.
 
 ## Ingesting From This Machine
 

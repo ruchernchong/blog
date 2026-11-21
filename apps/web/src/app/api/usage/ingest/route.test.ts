@@ -147,7 +147,7 @@ describe("POST /api/usage/ingest", () => {
     expect(mockGetModelDisplayNames).toHaveBeenCalledWith(["claude-opus-4-8"]);
     expect(mockSet).not.toHaveBeenCalled();
     expect(mockStart).not.toHaveBeenCalled();
-    expect(mockRevalidateTag).not.toHaveBeenCalled();
+    expect(mockRevalidateTag).toHaveBeenCalledExactlyOnceWith("usage", "max");
   });
 
   it("should start the sync when any model has no display name", async () => {
@@ -219,7 +219,7 @@ describe("POST /api/usage/ingest", () => {
     expect(await response.json()).toMatchObject({ ok: true, syncRunId: null });
     expect(mockStart).not.toHaveBeenCalled();
     expect(mockEval).not.toHaveBeenCalled();
-    expect(mockRevalidateTag).not.toHaveBeenCalled();
+    expect(mockRevalidateTag).toHaveBeenCalledExactlyOnceWith("usage", "max");
   });
 
   it("should keep ingesting when releasing a failed scheduling claim fails", async () => {
@@ -253,7 +253,7 @@ describe("POST /api/usage/ingest", () => {
     expect(mockStart).not.toHaveBeenCalled();
   });
 
-  it("should upsert and start the sync workflow without revalidating usage", async () => {
+  it("should upsert, revalidate usage and start the sync workflow when rows change", async () => {
     mockValidateMcpAuth.mockResolvedValue(adminOAuth);
 
     const response = await POST(postRequest({ rows: [validRow] }));
@@ -270,7 +270,35 @@ describe("POST /api/usage/ingest", () => {
     ]);
     expect(mockUpsertTokenEffortUsage).not.toHaveBeenCalled();
     expect(mockStart).toHaveBeenCalledOnce();
+    expect(mockRevalidateTag).toHaveBeenCalledExactlyOnceWith("usage", "max");
+  });
+
+  it("should not revalidate usage when the snapshot changes nothing", async () => {
+    mockValidateMcpAuth.mockResolvedValue(adminOAuth);
+    mockUpsertTokenUsage.mockResolvedValue(0);
+    mockUpsertTokenEffortUsage.mockResolvedValue(0);
+
+    const response = await POST(
+      postRequest({ rows: [validRow], effortRows: [validEffortRow] }),
+    );
+
+    expect(response.status).toBe(200);
+    // The response still reports the rows submitted.
+    expect(await response.json()).toMatchObject({
+      upserted: 1,
+      effortUpserted: 1,
+    });
     expect(mockRevalidateTag).not.toHaveBeenCalled();
+  });
+
+  it("should revalidate usage when only effort rows change", async () => {
+    mockValidateMcpAuth.mockResolvedValue(adminOAuth);
+    mockUpsertTokenUsage.mockResolvedValue(0);
+    mockUpsertTokenEffortUsage.mockResolvedValue(1);
+
+    await POST(postRequest({ rows: [validRow], effortRows: [validEffortRow] }));
+
+    expect(mockRevalidateTag).toHaveBeenCalledExactlyOnceWith("usage", "max");
   });
 
   it("should keep the session each row sends", async () => {
@@ -328,7 +356,7 @@ describe("POST /api/usage/ingest", () => {
       effortUpserted: 0,
       syncRunId: null,
     });
-    expect(mockRevalidateTag).not.toHaveBeenCalled();
+    expect(mockRevalidateTag).toHaveBeenCalledExactlyOnceWith("usage", "max");
   });
 
   it("should return 401 for a non-admin OAuth token", async () => {

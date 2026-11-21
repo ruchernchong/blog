@@ -52,7 +52,8 @@ export const ensureStatic = "navigation";
 
 export default async function UsagePage() {
   "use cache";
-  cacheLife("hours");
+  // Refreshed on demand: ingest revalidates the `usage` tag only when it wrote rows.
+  cacheLife("max");
 
   const profile = await getUsageProfile();
   const [providerDisplayNames, modelDisplayNames, openWeightModelIds] =
