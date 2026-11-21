@@ -194,8 +194,9 @@ export async function upsertTokenEffortUsage(
  */
 export async function getUsageProfile(): Promise<UsageProfile> {
   "use cache";
-  // Data only changes when `/api/usage/ingest` runs; refresh ~daily.
-  cacheLife("days");
+  // Ingest posts every 15 minutes but does not revalidate; refresh at most
+  // hourly so `/usage` stays current without rebuilding on every ingest.
+  cacheLife("hours");
   cacheTag("usage");
 
   // A copied session (Migration Assistant) is stored once per device; keep the

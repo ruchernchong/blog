@@ -147,7 +147,7 @@ describe("POST /api/usage/ingest", () => {
     expect(mockGetModelDisplayNames).toHaveBeenCalledWith(["claude-opus-4-8"]);
     expect(mockSet).not.toHaveBeenCalled();
     expect(mockStart).not.toHaveBeenCalled();
-    expect(mockRevalidateTag).toHaveBeenCalledWith("usage", "max");
+    expect(mockRevalidateTag).not.toHaveBeenCalled();
   });
 
   it("should start the sync when any model has no display name", async () => {
@@ -219,7 +219,7 @@ describe("POST /api/usage/ingest", () => {
     expect(await response.json()).toMatchObject({ ok: true, syncRunId: null });
     expect(mockStart).not.toHaveBeenCalled();
     expect(mockEval).not.toHaveBeenCalled();
-    expect(mockRevalidateTag).toHaveBeenCalledWith("usage", "max");
+    expect(mockRevalidateTag).not.toHaveBeenCalled();
   });
 
   it("should keep ingesting when releasing a failed scheduling claim fails", async () => {
@@ -253,7 +253,7 @@ describe("POST /api/usage/ingest", () => {
     expect(mockStart).not.toHaveBeenCalled();
   });
 
-  it("should upsert, start the sync workflow, and revalidate", async () => {
+  it("should upsert and start the sync workflow without revalidating usage", async () => {
     mockValidateMcpAuth.mockResolvedValue(adminOAuth);
 
     const response = await POST(postRequest({ rows: [validRow] }));
@@ -270,7 +270,7 @@ describe("POST /api/usage/ingest", () => {
     ]);
     expect(mockUpsertTokenEffortUsage).not.toHaveBeenCalled();
     expect(mockStart).toHaveBeenCalledOnce();
-    expect(mockRevalidateTag).toHaveBeenCalledWith("usage", "max");
+    expect(mockRevalidateTag).not.toHaveBeenCalled();
   });
 
   it("should keep the session each row sends", async () => {
@@ -328,7 +328,7 @@ describe("POST /api/usage/ingest", () => {
       effortUpserted: 0,
       syncRunId: null,
     });
-    expect(mockRevalidateTag).toHaveBeenCalledWith("usage", "max");
+    expect(mockRevalidateTag).not.toHaveBeenCalled();
   });
 
   it("should return 401 for a non-admin OAuth token", async () => {
