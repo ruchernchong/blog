@@ -200,7 +200,33 @@ pub struct TokenLock {
 }
 
 pub fn lock_tokens() -> Result<TokenLock> {
-    let path = ensure_config_dir()?.join("tokens.lock");
+    lock_file("tokens.lock")
+}
+
+/// Rows this server has acknowledged, so `ingest` sends only what changed.
+/// Scoped like the client id: each server keeps its own.
+pub fn ledger_path() -> PathBuf {
+    config_dir().join(scoped("sent.json"))
+}
+
+/// Held for a whole ingest, so the LaunchAgent and a manual run never
+/// interleave their ledger updates.
+pub fn lock_ledger() -> Result<TokenLock> {
+    lock_file(&scoped("sent.lock"))
+}
+
+/// Writes 0600 by rename, so a crash leaves the old file whole.
+pub fn write_private(path: &std::path::Path, value: &[u8]) -> Result<()> {
+    use std::io::Write;
+    let mut file = tempfile::NamedTempFile::new_in(ensure_config_dir()?)?;
+    file.write_all(value)?;
+    file.persist(path)
+        .with_context(|| format!("write {}", path.display()))?;
+    Ok(())
+}
+
+fn lock_file(name: &str) -> Result<TokenLock> {
+    let path = ensure_config_dir()?.join(name);
     let file = OpenOptions::new()
         .create(true)
         .truncate(false)

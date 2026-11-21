@@ -1,8 +1,8 @@
 use crate::collect::{CollectResult, EffortRow, IngestRow, print_table};
 use crate::{oauth, store};
 use anyhow::{Result, bail};
-use serde::Serialize;
-use std::collections::HashSet;
+use serde::{Deserialize, Serialize};
+use std::collections::{BTreeMap, HashSet};
 use std::ffi::OsString;
 use std::io::{self, Write};
 use std::sync::OnceLock;
@@ -15,6 +15,125 @@ const BATCH_ROWS: usize = 5_000;
 /// Matches Go's `io.LimitReader(resp.Body, 1<<20)`.
 const RESPONSE_BODY_LIMIT: u64 = 1 << 20;
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(120);
+/// A ledger in any other format is ignored, which means a full send.
+const LEDGER_VERSION: u32 = 1;
+/// Send everything at least this often, so the server heals after anything
+/// the ledger cannot see (a restored database, a reset dev branch).
+const FULL_SYNC_SECS: i64 = 86_400;
+
+/// What this server has acknowledged with a 2xx, so a run sends only rows
+/// that differ. It is only ever written from acknowledged batches: any doubt
+/// leaves it behind, and the worst case is a resend the server ignores.
+#[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct Ledger {
+    version: u32,
+    endpoint: String,
+    device: String,
+    /// Unix seconds of the last complete full send; `0` until one finishes.
+    full_sync_at: i64,
+    rows: BTreeMap<String, [i64; 7]>,
+    effort: BTreeMap<String, EffortRow>,
+}
+
+impl Ledger {
+    /// The stored ledger, or an empty one (a full send) when it is missing,
+    /// unreadable, for another endpoint or device, a day old, or `full` is set.
+    fn load(endpoint: &str, device: &str, now: i64, full: bool) -> Self {
+        let stored = std::fs::read(store::ledger_path())
+            .ok()
+            .and_then(|raw| serde_json::from_slice::<Ledger>(&raw).ok())
+            .filter(|ledger| {
+                !full
+                    && ledger.version == LEDGER_VERSION
+                    && ledger.endpoint == endpoint
+                    && ledger.device == device
+                    && now - ledger.full_sync_at <= FULL_SYNC_SECS
+            });
+        stored.unwrap_or_else(|| Self {
+            version: LEDGER_VERSION,
+            endpoint: endpoint.to_string(),
+            device: device.to_string(),
+            ..Default::default()
+        })
+    }
+
+    fn save(&self) -> Result<()> {
+        store::write_private(&store::ledger_path(), &serde_json::to_vec(self)?)
+    }
+
+    /// Rows to send: those that differ from what was acknowledged, plus the
+    /// token rows of any effort day that changed on its own, because the
+    /// server rejects a body without token rows and effort rides with them.
+    fn changes(&self, result: &CollectResult) -> Vec<IngestRow> {
+        let changed: Vec<bool> = result
+            .rows
+            .iter()
+            .map(|row| self.rows.get(&row_key(row)) != Some(&row_value(row)))
+            .collect();
+        let covered: HashSet<_> = result
+            .rows
+            .iter()
+            .zip(&changed)
+            .filter(|(_, changed)| **changed)
+            .map(|(row, _)| day_key(&row.date, &row.agent))
+            .collect();
+        let effort_only: HashSet<_> = result
+            .effort_rows
+            .iter()
+            .map(|row| (day_key(&row.date, &row.agent), row))
+            .filter(|(key, row)| self.effort.get(key) != Some(row) && !covered.contains(key))
+            .map(|(key, _)| key)
+            .collect();
+        result
+            .rows
+            .iter()
+            .zip(changed)
+            .filter(|(row, changed)| {
+                *changed || effort_only.contains(&day_key(&row.date, &row.agent))
+            })
+            .map(|(row, _)| row.clone())
+            .collect()
+    }
+
+    fn record(&mut self, payload: &Payload) {
+        for row in payload.rows {
+            self.rows.insert(row_key(row), row_value(row));
+        }
+        for row in &payload.effort_rows {
+            self.effort
+                .insert(day_key(&row.date, &row.agent), (*row).clone());
+        }
+    }
+}
+
+fn row_key(row: &IngestRow) -> String {
+    format!(
+        "{}|{}|{}|{}|{}",
+        row.date,
+        row.agent,
+        row.provider,
+        row.model,
+        row.session.as_deref().unwrap_or("-")
+    )
+}
+
+/// Every field the server stores; `costUsd` is always `null`.
+fn row_value(row: &IngestRow) -> [i64; 7] {
+    [
+        row.input_tokens,
+        row.output_tokens,
+        row.cache_read_tokens,
+        row.cache_write_tokens,
+        row.reasoning_tokens,
+        row.total_tokens,
+        row.messages,
+    ]
+}
+
+fn day_key(date: &str, agent: &str) -> String {
+    format!("{date}|{agent}")
+}
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -46,8 +165,14 @@ static URL_FLAG: OnceLock<String> = OnceLock::new();
 
 /// POST daily rows to `/api/usage/ingest` (OAuth bearer; the server prices them).
 /// `url` and `dry_run` are the command-line flags; each falls back to the
-/// environment when not given.
-pub fn ingest(result: &CollectResult, url: Option<String>, dry_run: bool) -> Result<()> {
+/// environment when not given. Only rows changed since the last acknowledged
+/// ingest are sent, unless `full` is set or the last full send is a day old.
+pub fn ingest(
+    result: &CollectResult,
+    url: Option<String>,
+    dry_run: bool,
+    full: bool,
+) -> Result<()> {
     if let Some(url) = url {
         let _ = URL_FLAG.set(url);
     }
@@ -59,7 +184,7 @@ pub fn ingest(result: &CollectResult, url: Option<String>, dry_run: bool) -> Res
     );
 
     let mut out = io::stdout().lock();
-    ingest_inner(result, &endpoint, &device, dry_run, &mut out)
+    ingest_inner(result, &endpoint, &device, dry_run, full, &mut out)
 }
 
 /// Testable core: takes the endpoint and dry-run flag explicitly instead of
@@ -69,6 +194,7 @@ fn ingest_inner(
     endpoint: &str,
     device: &str,
     dry_run: bool,
+    full: bool,
     out: &mut dyn Write,
 ) -> Result<()> {
     if result.rows.is_empty() {
@@ -78,9 +204,27 @@ fn ingest_inner(
     print_table(out, &result.stats)?;
     writeln!(out)?;
 
+    // A dry run reads the ledger to show what would be sent, but never locks
+    // or writes it.
+    let _lock = if dry_run {
+        None
+    } else {
+        Some(store::lock_ledger()?)
+    };
+    let now = oauth::unix_now();
+    let mut ledger = Ledger::load(endpoint, device, now, full);
+    let full = ledger.full_sync_at == 0;
+    let mode = if full { "full" } else { "changes" };
+    let rows = ledger.changes(result);
+
+    if rows.is_empty() {
+        writeln!(out, "No changes since the last ingest.")?;
+        return Ok(());
+    }
+
     if dry_run {
-        let payload = Payload::new(device, &result.rows, &result.effort_rows);
-        writeln!(out, "Dry run: {} rows → {endpoint}", result.rows.len())?;
+        let payload = Payload::new(device, &rows, &result.effort_rows);
+        writeln!(out, "Dry run: {} rows ({mode}) → {endpoint}", rows.len())?;
         writeln!(out, "{}", serde_json::to_string_pretty(&payload)?)?;
         return Ok(());
     }
@@ -89,12 +233,13 @@ fn ingest_inner(
 
     writeln!(
         out,
-        "Upserting {} rows → {endpoint}",
-        format_count(result.rows.len() as i64)
+        "Upserting {} rows ({mode}) → {endpoint}",
+        format_count(rows.len() as i64)
     )?;
 
-    for rows in result.rows.chunks(BATCH_ROWS) {
-        let body = serde_json::to_vec(&Payload::new(device, rows, &result.effort_rows))?;
+    for batch in rows.chunks(BATCH_ROWS) {
+        let payload = Payload::new(device, batch, &result.effort_rows);
+        let body = serde_json::to_vec(&payload)?;
         let started = Instant::now();
         let mut response = oauth::http()
             .post(endpoint)
@@ -125,9 +270,18 @@ fn ingest_inner(
             "Response: {status} in {} {detail}",
             format_duration(elapsed)
         )?;
+        // Saved per batch, so a later failure resends only what is left.
+        ledger.record(&payload);
+        ledger.save()?;
     }
 
-    print_ingest_summary(out, &result.rows)?;
+    if full {
+        // Built from this run alone, so keys whose logs were pruned drop out.
+        ledger.full_sync_at = now;
+        ledger.save()?;
+    }
+
+    print_ingest_summary(out, &rows)?;
     Ok(())
 }
 
@@ -455,6 +609,7 @@ mod tests {
             "http://unused.invalid",
             "device-1",
             false,
+            true,
             &mut out,
         );
         assert!(result.is_ok());
@@ -493,7 +648,7 @@ mod tests {
             ..Default::default()
         };
         let mut out = Vec::new();
-        ingest_inner(&collected, &server.url(), "device-1", false, &mut out).unwrap();
+        ingest_inner(&collected, &server.url(), "device-1", false, true, &mut out).unwrap();
 
         mock.assert();
         assert_eq!(*sizes.lock().unwrap(), vec![BATCH_ROWS, 1]);
@@ -522,10 +677,10 @@ mod tests {
             ..Default::default()
         };
         let mut out = Vec::new();
-        ingest_inner(&collected, &server.url(), "device-1", true, &mut out).unwrap();
+        ingest_inner(&collected, &server.url(), "device-1", true, true, &mut out).unwrap();
 
         let out = String::from_utf8(out).unwrap();
-        assert!(out.contains(&format!("Dry run: 2 rows → {}", server.url())));
+        assert!(out.contains(&format!("Dry run: 2 rows (full) → {}", server.url())));
         let idx = out
             .find("\n{")
             .expect("output should contain a JSON payload");
@@ -579,7 +734,7 @@ mod tests {
             ..Default::default()
         };
         let mut out = Vec::new();
-        ingest_inner(&collected, &server.url(), "device-1", false, &mut out).unwrap();
+        ingest_inner(&collected, &server.url(), "device-1", false, true, &mut out).unwrap();
 
         let captured = captured.lock().unwrap();
         assert_eq!(captured.content_type.as_deref(), Some("application/json"));
@@ -588,7 +743,7 @@ mod tests {
 
         let out = String::from_utf8(out).unwrap();
         for want in [
-            format!("Upserting 2 rows → {}", server.url()),
+            format!("Upserting 2 rows (full) → {}", server.url()),
             "Response: 200 in ".to_string(),
             r#" {"ok":true}"#.to_string(),
             "Done.".to_string(),
@@ -624,7 +779,8 @@ mod tests {
             ..Default::default()
         };
         let mut out = Vec::new();
-        let err = ingest_inner(&collected, &server.url(), "device-1", false, &mut out).unwrap_err();
+        let err =
+            ingest_inner(&collected, &server.url(), "device-1", false, true, &mut out).unwrap_err();
         assert_eq!(err.to_string(), "ingest endpoint 403: forbidden");
         assert!(!String::from_utf8(out).unwrap().contains("Done."));
     }
@@ -645,8 +801,297 @@ mod tests {
             ..Default::default()
         };
         let mut out = Vec::new();
-        let err = ingest_inner(&collected, &server.url(), "device-1", false, &mut out).unwrap_err();
+        let err =
+            ingest_inner(&collected, &server.url(), "device-1", false, true, &mut out).unwrap_err();
         assert!(err.to_string().contains("not signed in"));
+    }
+
+    /// Signed in, with no ledger left over from another test.
+    fn fresh_signed_in() {
+        store::save_tokens(&OauthTokens {
+            access_token: "access-123".into(),
+            expiry_unix: oauth::unix_now() + 3600,
+            client_id: "client".into(),
+            ..Default::default()
+        })
+        .unwrap();
+        let _ = std::fs::remove_file(store::ledger_path());
+    }
+
+    /// Answers 200 and keeps every request body.
+    fn recording_server() -> (mockito::ServerGuard, Arc<Mutex<Vec<serde_json::Value>>>) {
+        let mut server = mockito::Server::new();
+        let bodies = Arc::new(Mutex::new(Vec::new()));
+        let writer = Arc::clone(&bodies);
+        server
+            .mock("POST", "/")
+            .with_body_from_request(move |req| {
+                writer
+                    .lock()
+                    .unwrap()
+                    .push(serde_json::from_slice(req.body().unwrap()).unwrap());
+                br#"{"ok":true}"#.to_vec()
+            })
+            .expect_at_least(0)
+            .create();
+        (server, bodies)
+    }
+
+    fn run(result: &CollectResult, url: &str, full: bool) -> String {
+        let mut out = Vec::new();
+        ingest_inner(result, url, "device-1", false, full, &mut out).unwrap();
+        String::from_utf8(out).unwrap()
+    }
+
+    fn sent_models(body: &serde_json::Value) -> Vec<String> {
+        body["rows"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|row| row["model"].as_str().unwrap().to_string())
+            .collect()
+    }
+
+    fn stored_ledger() -> Ledger {
+        serde_json::from_slice(&std::fs::read(store::ledger_path()).unwrap()).unwrap()
+    }
+
+    fn collected(rows: Vec<IngestRow>) -> CollectResult {
+        CollectResult {
+            rows,
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn should_send_everything_and_record_it_on_the_first_run() {
+        let _guard = store::backend::serial();
+        fresh_signed_in();
+        let (server, bodies) = recording_server();
+
+        let out = run(&collected(sample_rows()), &server.url(), false);
+
+        assert!(out.contains("Upserting 2 rows (full)"), "{out}");
+        assert_eq!(bodies.lock().unwrap().len(), 1);
+        let ledger = stored_ledger();
+        assert_eq!(ledger.rows.len(), 2);
+        assert!(ledger.full_sync_at > 0);
+        assert_eq!(ledger.device, "device-1");
+    }
+
+    #[test]
+    fn should_send_nothing_when_nothing_changed() {
+        let _guard = store::backend::serial();
+        fresh_signed_in();
+        let (server, bodies) = recording_server();
+        let result = collected(sample_rows());
+        run(&result, &server.url(), false);
+
+        // No request, so no token is needed either.
+        store::backend::fail_with("keychain must not be used");
+        let out = run(&result, &server.url(), false);
+
+        assert!(out.contains("No changes since the last ingest."), "{out}");
+        assert_eq!(bodies.lock().unwrap().len(), 1);
+    }
+
+    #[test]
+    fn should_send_only_rows_that_grew_or_are_new() {
+        let _guard = store::backend::serial();
+        fresh_signed_in();
+        let (server, bodies) = recording_server();
+        let mut rows = sample_rows();
+        run(&collected(rows.clone()), &server.url(), false);
+
+        rows[0].total_tokens += 10;
+        rows.push(IngestRow {
+            session: Some("new-session".into()),
+            ..rows[1].clone()
+        });
+        let out = run(&collected(rows), &server.url(), false);
+
+        assert!(out.contains("Upserting 2 rows (changes)"), "{out}");
+        let bodies = bodies.lock().unwrap();
+        assert_eq!(
+            sent_models(&bodies[1]),
+            vec!["claude-sonnet-4-5", "gpt-5-codex"]
+        );
+        assert_eq!(bodies[1]["rows"][1]["session"], "new-session");
+        assert_eq!(stored_ledger().rows.len(), 3);
+    }
+
+    #[test]
+    fn should_keep_the_ledger_and_resend_after_a_failed_post() {
+        let _guard = store::backend::serial();
+        fresh_signed_in();
+        let mut server = mockito::Server::new();
+        let failing = server.mock("POST", "/").with_status(500).create();
+        let result = collected(sample_rows());
+
+        let mut out = Vec::new();
+        assert!(ingest_inner(&result, &server.url(), "device-1", false, false, &mut out).is_err());
+        assert!(!store::ledger_path().exists());
+
+        failing.remove();
+        let (server, bodies) = recording_server();
+        run(&result, &server.url(), false);
+        assert_eq!(
+            bodies.lock().unwrap()[0]["rows"].as_array().unwrap().len(),
+            2
+        );
+    }
+
+    #[test]
+    fn should_record_batches_acknowledged_before_a_failure() {
+        let _guard = store::backend::serial();
+        fresh_signed_in();
+        let rows: Vec<_> = (0..=BATCH_ROWS)
+            .map(|i| IngestRow {
+                model: format!("model-{i}"),
+                ..Default::default()
+            })
+            .collect();
+        let mut server = mockito::Server::new();
+        // The first matching mock still short of its hits answers, so the
+        // first batch gets 200 and the second 500.
+        let _ok = server.mock("POST", "/").with_body("{}").expect(1).create();
+        let _fail = server.mock("POST", "/").with_status(500).create();
+
+        let mut out = Vec::new();
+        let result = collected(rows);
+        assert!(ingest_inner(&result, &server.url(), "device-1", false, false, &mut out).is_err());
+
+        let ledger = stored_ledger();
+        assert_eq!(ledger.rows.len(), BATCH_ROWS);
+        // The full send never finished, so the next run is full again.
+        assert_eq!(ledger.full_sync_at, 0);
+    }
+
+    #[test]
+    fn should_send_a_day_whose_effort_changed_alone() {
+        use crate::collect::EffortLevelCount;
+        let _guard = store::backend::serial();
+        fresh_signed_in();
+        let (server, bodies) = recording_server();
+        let effort = |level: &str| EffortRow {
+            date: "2026-09-13".into(),
+            agent: "codex".into(),
+            levels: vec![EffortLevelCount {
+                level: level.into(),
+                session_count: 1,
+            }],
+            classified_session_count: 1,
+            unclassified_session_count: 0,
+        };
+        let mut result = collected(sample_rows());
+        result.effort_rows = vec![effort("high")];
+        run(&result, &server.url(), false);
+
+        result.effort_rows = vec![effort("xhigh")];
+        run(&result, &server.url(), false);
+
+        let bodies = bodies.lock().unwrap();
+        assert_eq!(sent_models(&bodies[1]), vec!["gpt-5-codex"]);
+        assert_eq!(bodies[1]["effortRows"][0]["levels"][0]["level"], "xhigh");
+        assert_eq!(
+            stored_ledger().effort["2026-09-13|codex"].levels[0].level,
+            "xhigh"
+        );
+    }
+
+    #[test]
+    fn should_send_everything_with_full_or_a_day_old_ledger() {
+        let _guard = store::backend::serial();
+        fresh_signed_in();
+        let (server, bodies) = recording_server();
+        let result = collected(sample_rows());
+        run(&result, &server.url(), false);
+
+        let out = run(&result, &server.url(), true);
+        assert!(out.contains("Upserting 2 rows (full)"), "{out}");
+
+        let mut ledger = stored_ledger();
+        ledger.full_sync_at -= FULL_SYNC_SECS + 1;
+        ledger.save().unwrap();
+        let out = run(&result, &server.url(), false);
+        assert!(out.contains("Upserting 2 rows (full)"), "{out}");
+        assert_eq!(bodies.lock().unwrap().len(), 3);
+    }
+
+    #[test]
+    fn should_send_everything_when_the_ledger_does_not_fit_this_run() {
+        let _guard = store::backend::serial();
+        let (server, bodies) = recording_server();
+        let result = collected(sample_rows());
+        type Change = fn(&mut Ledger);
+        let cases: [(&str, Change); 3] = [
+            ("endpoint", |ledger| {
+                ledger.endpoint = "https://other.example".into()
+            }),
+            ("device", |ledger| ledger.device = "device-2".into()),
+            ("version", |ledger| ledger.version = LEDGER_VERSION + 1),
+        ];
+        for (name, change) in cases {
+            fresh_signed_in();
+            run(&result, &server.url(), false);
+            let mut ledger = stored_ledger();
+            change(&mut ledger);
+            ledger.save().unwrap();
+            let out = run(&result, &server.url(), false);
+            assert!(
+                out.contains("Upserting 2 rows (full)"),
+                "case {name}: {out}"
+            );
+        }
+
+        fresh_signed_in();
+        std::fs::write(store::ledger_path(), "not json").unwrap();
+        let out = run(&result, &server.url(), false);
+        assert!(out.contains("Upserting 2 rows (full)"), "corrupt: {out}");
+        assert_eq!(bodies.lock().unwrap().len(), 7);
+    }
+
+    #[test]
+    fn should_drop_pruned_rows_only_on_a_full_send() {
+        let _guard = store::backend::serial();
+        fresh_signed_in();
+        let (server, _bodies) = recording_server();
+        let rows = sample_rows();
+        run(&collected(rows.clone()), &server.url(), false);
+
+        // A pruned log drops a row locally; the server keeps its copy.
+        let pruned = collected(rows[..1].to_vec());
+        run(&pruned, &server.url(), false);
+        assert_eq!(stored_ledger().rows.len(), 2);
+
+        run(&pruned, &server.url(), true);
+        assert_eq!(stored_ledger().rows.len(), 1);
+    }
+
+    #[test]
+    fn should_leave_the_ledger_alone_on_a_dry_run() {
+        let _guard = store::backend::serial();
+        fresh_signed_in();
+        store::backend::fail_with("keychain must not be used");
+        let result = collected(sample_rows());
+
+        let mut out = Vec::new();
+        ingest_inner(
+            &result,
+            "http://unused.invalid",
+            "device-1",
+            true,
+            false,
+            &mut out,
+        )
+        .unwrap();
+
+        assert!(
+            String::from_utf8(out)
+                .unwrap()
+                .contains("Dry run: 2 rows (full)")
+        );
+        assert!(!store::ledger_path().exists());
     }
 
     #[test]

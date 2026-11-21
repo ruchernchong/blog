@@ -62,6 +62,10 @@ call; it exits non-zero when signed out.
 timestamped `=== … start` and `=== … end exit=… duration=…s` lines in the log.
 
 If there are no local log rows it prints `Nothing to ingest.` and does not POST.
+It sends only rows that changed since the server last acknowledged them (kept in
+`~/.config/agent-usage/sent.json`); when nothing changed it prints
+`No changes since the last ingest.` and does not POST. Everything is sent on the
+first run, at least once a day, and with `ingest --full`.
 Otherwise check `/usage`. Costs may show N.A. until the server model-registry
 workflow finishes. Then:
 
@@ -96,7 +100,7 @@ or `update`; set `AGENT_USAGE_NO_UPDATE_CHECK=1` to turn it off.
 
 ```zsh
 agent-usage measure [--json]                  # stats table, or JSON only
-agent-usage ingest [--dry-run] [--url <URL>]  # what the LaunchAgent runs
+agent-usage ingest [--dry-run] [--url <URL>] [--full]  # what the LaunchAgent runs
 agent-usage auth login | logout | status
 agent-usage update [--check]                  # install the latest release
 agent-usage completions zsh > "${fpath[1]}/_agent-usage"   # or bash, fish
