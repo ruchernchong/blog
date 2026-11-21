@@ -43,7 +43,7 @@ const isShippingRole = (companyTitle: string) =>
 
 export default async function AboutPage() {
   "use cache";
-  cacheLife("days");
+  cacheLife("max");
 
   const sortedCompanies = companies.toSorted(
     (a, b) => new Date(b.dateStart).getTime() - new Date(a.dateStart).getTime(),

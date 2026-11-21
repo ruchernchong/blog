@@ -209,13 +209,13 @@ export async function getUsageProfile(): Promise<UsageProfile> {
 }
 
 /**
- * Total tokens for the homepage stat. It caches for days under its own tag,
- * not `usage`, so an ingest that writes rows does not rebuild `/`. The
+ * Total tokens for the homepage stat. It caches under its own tag, not
+ * `usage`, so an ingest that writes rows does not rebuild `/`. The
  * profile is loaded uncached, so `usage` does not propagate to this entry.
  */
 export async function getHomeTokenTotal(): Promise<number> {
   "use cache";
-  cacheLife("days");
+  cacheLife("max");
   cacheTag("usage:home");
   const profile = await loadUsageProfile();
   return profile.summary.totalTokens;

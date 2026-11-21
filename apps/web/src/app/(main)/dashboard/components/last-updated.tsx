@@ -4,7 +4,7 @@ import { getLastUpdated } from "@/lib/queries/posthog";
 
 export async function LastUpdated() {
   "use cache";
-  cacheLife("days");
+  cacheLife("max");
 
   const raw = await getLastUpdated();
   if (!raw) return null;

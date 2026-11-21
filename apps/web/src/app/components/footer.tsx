@@ -17,7 +17,7 @@ const footerLinks = [
 
 export async function Footer() {
   "use cache";
-  cacheLife("days");
+  cacheLife("max");
 
   const year = new Date().getFullYear();
 

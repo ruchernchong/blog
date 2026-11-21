@@ -77,7 +77,7 @@ type ModelsApi = ModelsDevApi & Record<string, ModelsProviderMetadata>;
 
 async function getModelsApi(): Promise<ModelsApi> {
   "use cache";
-  cacheLife("days");
+  cacheLife("max");
   cacheTag("models:providers");
 
   return fetchModelsApi();
@@ -234,7 +234,7 @@ export async function getProviderDisplayNames(
   providerIds: string[],
 ): Promise<Record<string, string>> {
   "use cache";
-  cacheLife("days");
+  cacheLife("max");
   cacheTag("models:providers");
 
   const providers = [...new Set(providerIds)].sort((a, b) =>
@@ -273,7 +273,7 @@ export async function getModelDisplayNames(
   modelIds: string[],
 ): Promise<Record<string, string>> {
   "use cache";
-  cacheLife("days");
+  cacheLife("max");
   cacheTag("models:providers");
 
   const ids = [...new Set(modelIds)].sort((a, b) => a.localeCompare(b));
@@ -311,7 +311,7 @@ export async function getOpenWeightModelIds(
   modelIds: string[],
 ): Promise<string[]> {
   "use cache";
-  cacheLife("days");
+  cacheLife("max");
   cacheTag("models:providers");
 
   const ids = [...new Set(modelIds)].sort((a, b) => a.localeCompare(b));

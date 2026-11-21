@@ -60,7 +60,7 @@ export const getPreviewImage = async (
   pageUrl: string,
 ): Promise<string | null> => {
   "use cache";
-  cacheLife("hours");
+  cacheLife("max");
 
   try {
     const response = await fetch(pageUrl, {

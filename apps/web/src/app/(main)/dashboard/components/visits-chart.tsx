@@ -29,7 +29,7 @@ export function VisitsChartFallback() {
 
 async function VisitsChartContent() {
   "use cache";
-  cacheLife("days");
+  cacheLife("max");
 
   const visits = await getVisits();
   return <VisitsChartClient data={visits} />;
