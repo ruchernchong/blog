@@ -41,7 +41,8 @@ function ProjectStatsFallback() {
 
 async function ProjectStatsContent() {
   "use cache";
-  cacheLife("hours");
+  // Matches getGitHubStars: an explicit outer lifetime wins over inner ones.
+  cacheLife("max");
 
   const stars = await getGitHubStars().catch(() => 0);
 

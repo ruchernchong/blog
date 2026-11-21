@@ -205,7 +205,24 @@ export async function getUsageProfile(): Promise<UsageProfile> {
   // and the model registry sync does after repricing.
   cacheLife("max");
   cacheTag("usage");
+  return loadUsageProfile();
+}
 
+/**
+ * Total tokens for the homepage stat. It caches under its own tag, not
+ * `usage`, so an ingest that writes rows does not rebuild `/`. The
+ * profile is loaded uncached, so `usage` does not propagate to this entry.
+ */
+export async function getHomeTokenTotal(): Promise<number> {
+  "use cache";
+  cacheLife("max");
+  cacheTag("usage:home");
+  const profile = await loadUsageProfile();
+  return profile.summary.totalTokens;
+}
+
+/** Uncached body of {@link getUsageProfile}. */
+async function loadUsageProfile(): Promise<UsageProfile> {
   // A copied session (Migration Assistant) is stored once per device; keep the
   // largest copy. Rows with no session are legacy daily snapshots, and the same
   // rule keeps one device's snapshot of each day rather than adding them.

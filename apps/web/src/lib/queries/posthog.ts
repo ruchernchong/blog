@@ -51,7 +51,7 @@ async function queryPostHog<T>(query: string): Promise<T | null> {
 export async function getLastUpdated(): Promise<string | null> {
   "use cache";
   cacheTag("posthog:last-updated");
-  cacheLife("days");
+  cacheLife("max");
   const data = await queryPostHog<{ results: [[string]] }>(
     `SELECT max(timestamp) FROM events WHERE event = '$pageview' AND properties.$host = '${POSTHOG_PRODUCTION_HOST}'`,
   );
@@ -61,7 +61,7 @@ export async function getLastUpdated(): Promise<string | null> {
 export async function getTotalVisits(): Promise<number> {
   "use cache";
   cacheTag("posthog:visits:total");
-  cacheLife("days");
+  cacheLife("max");
   const data = await queryPostHog<{ results: [[number]] }>(
     `SELECT count() FROM events WHERE event = '$pageview' AND properties.$host = '${POSTHOG_PRODUCTION_HOST}'`,
   );
@@ -71,7 +71,7 @@ export async function getTotalVisits(): Promise<number> {
 export async function getVisits(): Promise<Visit[]> {
   "use cache";
   cacheTag("posthog:visits");
-  cacheLife("days");
+  cacheLife("max");
   const data = await queryPostHog<{ results: [string, number][] }>(`
       SELECT toDate(toTimeZone(timestamp, '${POSTHOG_TIMEZONE}')) AS date, count() AS visits
       FROM events
@@ -89,7 +89,7 @@ export async function getVisits(): Promise<Visit[]> {
 export async function getPages(): Promise<PageMetric[]> {
   "use cache";
   cacheTag("posthog:pages");
-  cacheLife("days");
+  cacheLife("max");
   const data = await queryPostHog<{ results: [string, number][] }>(`
       SELECT properties.$pathname AS path, count() AS views
       FROM events

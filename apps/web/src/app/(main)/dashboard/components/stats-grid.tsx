@@ -46,7 +46,7 @@ export function StatsGridFallback() {
 
 async function StatsGridContent() {
   "use cache";
-  cacheLife("hours");
+  cacheLife("max");
 
   const [totalVisits, followers, stars, contributions] = await Promise.all([
     getTotalVisits(),

@@ -44,7 +44,7 @@ export function ViewsByPageFallback() {
 
 async function ViewsByPageContent() {
   "use cache";
-  cacheLife("days");
+  cacheLife("max");
 
   const data = await getPages();
 

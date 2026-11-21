@@ -13,6 +13,7 @@ const ALLOWED_TAGS = new Set([
   "posts:featured",
   "series:list",
   "usage",
+  "usage:home",
   "models:providers",
 ]);
 
