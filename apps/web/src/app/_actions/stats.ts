@@ -2,7 +2,6 @@
 
 // import { headers } from "next/headers";
 import { incrementViews as incrementViewsService } from "@/lib/services/post-stats";
-import type { PostStats } from "@/types";
 // import type { Likes } from "@/types";
 // import { generateUserHash } from "@/utils/hash";
 
@@ -18,7 +17,7 @@ import type { PostStats } from "@/types";
 //   return realIp ?? DEFAULT_IP;
 // }
 
-export async function incrementViews(slug: string): Promise<PostStats> {
+export async function incrementViews(slug: string): Promise<number> {
   return incrementViewsService(slug);
 }
 

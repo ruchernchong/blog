@@ -2,7 +2,7 @@ import { render } from "vitest-browser-react";
 import { ViewCounter } from "@/app/(main)/blog/components/view-counter";
 
 vi.mock("@/app/_actions/stats", () => ({
-  incrementViews: vi.fn(() => Promise.resolve({ views: 42 })),
+  incrementViews: vi.fn(() => Promise.resolve(42)),
 }));
 
 describe("ViewCounter", () => {

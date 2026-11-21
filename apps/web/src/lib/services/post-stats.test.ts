@@ -13,6 +13,7 @@ vi.mock("@/config/redis", () => ({
     get: vi.fn(),
     set: vi.fn(),
     zadd: vi.fn(),
+    zincrby: vi.fn(),
     zrange: vi.fn(),
   },
 }));
@@ -75,43 +76,20 @@ describe("post-stats", () => {
   });
 
   describe("incrementViews", () => {
-    it("should increment view count and update cache and sorted set", async () => {
-      const existingStats: PostStats = {
-        slug: "test-post",
-        likesByUser: {},
-        views: 5,
-      };
-
-      vi.mocked(redis.get).mockResolvedValue(existingStats);
-      vi.mocked(redis.set).mockResolvedValue(undefined as any);
-      vi.mocked(redis.zadd).mockResolvedValue(undefined as any);
+    it("should increment the sorted set score in a single call", async () => {
+      vi.mocked(redis.zincrby).mockResolvedValue(6);
 
       const result = await incrementViews("test-post");
 
-      expect(result.views).toBe(6);
-      expect(redis.set).toHaveBeenCalledWith(
-        CacheConfig.REDIS_KEYS.POST_STATS("test-post"),
-        { slug: "test-post", likesByUser: {}, views: 6 },
-      );
-      expect(redis.zadd).toHaveBeenCalledWith(
+      expect(result).toBe(6);
+      expect(redis.zincrby).toHaveBeenCalledWith(
         CacheConfig.REDIS_KEYS.POPULAR_SET,
-        {
-          score: 6,
-          member: "test-post",
-        },
+        1,
+        "test-post",
       );
-    });
-
-    it("should handle first view correctly", async () => {
-      vi.mocked(redis.get).mockResolvedValue({
-        slug: "test-post",
-        likesByUser: {},
-        views: 0,
-      });
-
-      const result = await incrementViews("test-post");
-
-      expect(result.views).toBe(1);
+      expect(redis.get).not.toHaveBeenCalled();
+      expect(redis.set).not.toHaveBeenCalled();
+      expect(redis.zadd).not.toHaveBeenCalled();
     });
   });
 
