@@ -107,6 +107,8 @@ pub fn login() -> Result<()> {
 
 pub fn logout() -> Result<()> {
     let _ = std::fs::remove_file(store::client_id_path());
+    // A later sign-in may point at another account or database: send everything.
+    let _ = std::fs::remove_file(store::ledger_path());
     store::delete_tokens()?;
     println!("Signed out.");
     Ok(())

@@ -92,6 +92,9 @@ struct IngestArgs {
     /// Ingest endpoint [env: AGENT_USAGE_URL] [default: https://ruchern.dev/api/usage/ingest]
     #[arg(long, value_name = "URL", value_parser = clap::builder::NonEmptyStringValueParser::new())]
     url: Option<String>,
+    /// Send every row, not only those changed since the last ingest
+    #[arg(long)]
+    full: bool,
 }
 
 #[derive(Debug, Subcommand)]
@@ -223,7 +226,7 @@ fn run(command: Command) -> Result<()> {
 
 fn ingest_home(args: IngestArgs) -> Result<()> {
     let result = collect_home()?;
-    ingest::ingest(&result, args.url, args.dry_run).context("ingest")
+    ingest::ingest(&result, args.url, args.dry_run, args.full).context("ingest")
 }
 
 /// Runs `ingest` between `=== <time> start` and `=== <time> end exit=<code>
@@ -235,6 +238,7 @@ fn scheduled_run() -> i32 {
     let code = match ingest_home(IngestArgs {
         dry_run: false,
         url: None,
+        full: false,
     }) {
         Ok(()) => 0,
         Err(error) => {
