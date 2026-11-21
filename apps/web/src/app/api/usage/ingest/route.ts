@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { usageIngestSchema } from "@workspace/usage/ingest";
+import { revalidateTag } from "next/cache";
 import { start } from "workflow/api";
 import redis from "@/config/redis";
 import { ERROR_IDS } from "@/constants/error-ids";
@@ -92,9 +93,11 @@ return 0`,
  * record. This route used to do all of it inline behind a `logWarning`, which
  * is how a missing table went unnoticed for a week.
  *
- * The route does not revalidate the `"usage"` cache: the collector posts every
- * 15 minutes and each revalidation rebuilds `/`, `/usage` and its OG image,
- * which used up Hobby's Active CPU. `getUsageProfile` expires hourly instead.
+ * The `"usage"` cache (`getUsageProfile`, `/usage`) uses `cacheLife("max")`
+ * and is revalidated here only when the upserts wrote at least one row. The
+ * collector posts every 15 minutes and resends days that have not changed;
+ * revalidating on every post rebuilt `/`, `/usage` and its OG image each time,
+ * which used up Hobby's Active CPU.
  *
  * Optional `effortRows` (AgentUsage) are upserted after token rows when present.
  * Effort lives inside the same `"usage"` cache tag via `getUsageProfile`.
@@ -111,25 +114,34 @@ export async function POST(request: Request) {
   if (!result.success) return result.response;
 
   try {
-    const { device } = result.data;
-    const upserted = await upsertTokenUsage(
-      result.data.rows.map((row) => ({ ...row, device })),
+    const { device, rows, effortRows } = result.data;
+    const written = await upsertTokenUsage(
+      rows.map((row) => ({ ...row, device })),
     );
-    const effortUpserted =
-      result.data.effortRows.length > 0
-        ? await upsertTokenEffortUsage(result.data.effortRows)
-        : 0;
+    const effortWritten =
+      effortRows.length > 0 ? await upsertTokenEffortUsage(effortRows) : 0;
+
+    // `/usage` caches with `cacheLife("max")`, so it only goes stale here, and
+    // only when this ingest actually changed a row: a re-sent snapshot of an
+    // idle day writes nothing. Revalidation is lazy, so pages rebuild on their
+    // next visit, not now.
+    if (written + effortWritten > 0) {
+      revalidateTag("usage", "max");
+    }
 
     // Fire-and-forget: `start` returns as soon as the run is enqueued. The
     // upsert above is the durable operation, so a scheduling failure must not
     // turn a successful write into a caller-visible 500.
-    const syncRunId = (await hasUnmappedModels(
-      result.data.rows.map((row) => row.model),
-    ))
+    const syncRunId = (await hasUnmappedModels(rows.map((row) => row.model)))
       ? await scheduleRegistrySync()
       : null;
 
-    return Response.json({ ok: true, upserted, effortUpserted, syncRunId });
+    return Response.json({
+      ok: true,
+      upserted: rows.length,
+      effortUpserted: effortRows.length,
+      syncRunId,
+    });
   } catch (error) {
     return handleApiError(
       error,

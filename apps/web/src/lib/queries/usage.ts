@@ -92,7 +92,8 @@ const EFFORT_UPDATE_COLUMNS = [
  * Upsert daily `token_usage` aggregates on the composite key
  * (date, agent, provider, model, device, session). Called by `POST /api/usage/ingest`, which
  * writes into whichever DB the deployment is configured for. Returns the number
- * of rows submitted.
+ * of rows written (inserted, or updated past the guard below); a re-sent
+ * snapshot that changes nothing returns 0.
  *
  * **Non-decreasing on conflict.** The DB is the permanent lifetime record, but
  * the ingest clients (e.g. ClaudeMeter) send an absolute snapshot recomputed from
@@ -114,9 +115,12 @@ export async function upsertTokenUsage(
   rows: InsertTokenUsage[],
 ): Promise<number> {
   const excluded = excludedColumns(tokenUsage, UPDATE_COLUMNS);
+  let written = 0;
   for (let i = 0; i < rows.length; i += UPSERT_CHUNK_SIZE) {
     const chunk = rows.slice(i, i + UPSERT_CHUNK_SIZE);
-    await db
+    // A row the `setWhere` guard skips is not returned, so this counts only
+    // real inserts and updates.
+    const returned = await db
       .insert(tokenUsage)
       .values(chunk)
       .onConflictDoUpdate({
@@ -129,9 +133,11 @@ export async function upsertTokenUsage(
             gt(excluded.reasoningTokens, tokenUsage.reasoningTokens),
           ),
         ),
-      });
+      })
+      .returning({ date: tokenUsage.date });
+    written += returned.length;
   }
-  return rows.length;
+  return written;
 }
 
 /**
@@ -145,7 +151,8 @@ export async function upsertTokenUsage(
  * existing sessions can acquire effort metadata or change their dominant level.
  * Identical snapshots are ignored. Provided keys only —
  * unspecified dates are never deleted, even when `effortSnapshotComplete` is
- * true on the wire.
+ * true on the wire. Returns the number of rows written, like
+ * {@link upsertTokenUsage}.
  */
 export async function upsertTokenEffortUsage(
   rows: InsertTokenEffortUsage[],
@@ -170,15 +177,15 @@ export async function upsertTokenEffortUsage(
           and excluded.classified_session_count >= ${tokenEffortUsage.classifiedSessionCount}
           and (excluded.classified_session_count > ${tokenEffortUsage.classifiedSessionCount} or excluded.levels is distinct from ${tokenEffortUsage.levels})
         )`,
-        }),
+        })
+        .returning({ date: tokenEffortUsage.date }),
     );
   }
   // Neon executes these chunks sequentially in one transaction and HTTP call.
   const [first, ...remaining] = queries;
-  if (first) {
-    await db.batch([first, ...remaining]);
-  }
-  return rows.length;
+  if (!first) return 0;
+  const results = await db.batch([first, ...remaining]);
+  return results.reduce((sum, returned) => sum + returned.length, 0);
 }
 
 /**
@@ -194,9 +201,9 @@ export async function upsertTokenEffortUsage(
  */
 export async function getUsageProfile(): Promise<UsageProfile> {
   "use cache";
-  // Ingest posts every 15 minutes but does not revalidate; refresh at most
-  // hourly so `/usage` stays current without rebuilding on every ingest.
-  cacheLife("hours");
+  // Refreshed on demand: ingest revalidates `usage` only when it wrote rows,
+  // and the model registry sync does after repricing.
+  cacheLife("max");
   cacheTag("usage");
 
   // A copied session (Migration Assistant) is stored once per device; keep the
@@ -274,7 +281,15 @@ export async function getUsageProfile(): Promise<UsageProfile> {
       )
       .orderBy(asc(copies.date), asc(copies.agent), asc(copies.model)),
     db.select().from(tokenEffortUsage),
-    db.select(MODEL_PRICING_COLUMNS).from(model),
+    // Pricing resolves within each row's own provider, so only the providers
+    // with usage matter. The registry spans every source's providers (about
+    // 11k rows); this keeps the load to the ones the profile can price.
+    db
+      .select(MODEL_PRICING_COLUMNS)
+      .from(model)
+      .where(
+        sql`${model.provider} in (select distinct ${tokenUsage.provider} from ${tokenUsage})`,
+      ),
   ]);
   const rows = reconcileLegacyRows(snapshots);
 

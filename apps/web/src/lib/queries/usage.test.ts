@@ -23,7 +23,8 @@ vi.mock("@/schema", async () => {
       values: () => ({
         onConflictDoUpdate: (config: (typeof onConflictConfigs)[number]) => {
           onConflictConfigs.push(config);
-          return Promise.resolve();
+          // Every row is written: the stub returns one row per statement.
+          return { returning: () => Promise.resolve([{ date: "2026-05-30" }]) };
         },
       }),
     }),
@@ -143,10 +144,11 @@ describe("upsertTokenUsage", () => {
       model: `model-${i}`,
     }));
 
-    const submitted = await upsertTokenUsage(rows);
+    const written = await upsertTokenUsage(rows);
 
     // 2500 rows / 1000 per chunk = 3 statements, all carrying the same guard.
-    expect(submitted).toBe(2500);
+    // The stub returns one written row per statement.
+    expect(written).toBe(3);
     expect(onConflictConfigs).toHaveLength(3);
     for (const config of onConflictConfigs) {
       expect(config.setWhere).toBeDefined();
@@ -190,9 +192,9 @@ describe("upsertTokenEffortUsage", () => {
   });
 
   it("should return 0 and skip the DB when given an empty array", async () => {
-    const submitted = await upsertTokenEffortUsage([]);
+    const written = await upsertTokenEffortUsage([]);
 
-    expect(submitted).toBe(0);
+    expect(written).toBe(0);
     expect(onConflictConfigs).toHaveLength(0);
     expect(batch).not.toHaveBeenCalled();
   });
@@ -200,7 +202,8 @@ describe("upsertTokenEffortUsage", () => {
   it("should submit all effort chunks in one database batch", async () => {
     const rows = Array.from({ length: 2500 }, () => baseEffortRow);
 
-    expect(await upsertTokenEffortUsage(rows)).toBe(2500);
+    // One written row per statement from the stub, summed across the batch.
+    expect(await upsertTokenEffortUsage(rows)).toBe(3);
     expect(onConflictConfigs).toHaveLength(3);
     expect(batch).toHaveBeenCalledOnce();
     expect(batch.mock.calls[0][0]).toHaveLength(3);
