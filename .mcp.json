@@ -1,9 +1,5 @@
 {
   "mcpServers": {
-    "blog": {
-      "type": "http",
-      "url": "https://ruchern.dev/api/mcp"
-    },
     "blog-worker": {
       "type": "http",
       "url": "https://mcp.ruchern.dev/mcp"

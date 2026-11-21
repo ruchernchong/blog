@@ -213,7 +213,7 @@ export const getGitHubFollowers = async (): Promise<number> => {
 
 export const getGitHubStars = async (): Promise<number> => {
   "use cache";
-  cacheLife("hours");
+  cacheLife("days");
   cacheTag("github:stars");
 
   try {

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { getGitHubStars, getGitHubTotalCommits } from "@/lib/github";
 import { getTotalVisits } from "@/lib/queries/posthog";
-import { getUsageProfile } from "@/lib/queries/usage";
+import { getHomeTokenTotal } from "@/lib/queries/usage";
 import { AnimatedCounter } from "./animated-counter";
 
 function StatItem({
@@ -43,9 +43,7 @@ async function StarsStat() {
 }
 
 async function TokensStat() {
-  const tokens = await getUsageProfile()
-    .then((profile) => profile.summary.totalTokens)
-    .catch(() => 0);
+  const tokens = await getHomeTokenTotal().catch(() => 0);
   return <StatItem value={tokens} label="AI tokens" />;
 }
 
