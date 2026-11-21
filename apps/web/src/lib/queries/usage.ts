@@ -281,7 +281,15 @@ export async function getUsageProfile(): Promise<UsageProfile> {
       )
       .orderBy(asc(copies.date), asc(copies.agent), asc(copies.model)),
     db.select().from(tokenEffortUsage),
-    db.select(MODEL_PRICING_COLUMNS).from(model),
+    // Pricing resolves within each row's own provider, so only the providers
+    // with usage matter. The registry spans every source's providers (about
+    // 11k rows); this keeps the load to the ones the profile can price.
+    db
+      .select(MODEL_PRICING_COLUMNS)
+      .from(model)
+      .where(
+        sql`${model.provider} in (select distinct ${tokenUsage.provider} from ${tokenUsage})`,
+      ),
   ]);
   const rows = reconcileLegacyRows(snapshots);
 

@@ -1,9 +1,11 @@
 import type { Pricing } from "@workspace/usage/pricing";
+import { PgDialect } from "drizzle-orm/pg-core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mocks } = vi.hoisted(() => ({
   mocks: {
     batchResult: [[], [], []] as unknown[],
+    whereClauses: [] as unknown[],
     unpricedRows: [] as unknown[],
     updated: [] as unknown[],
   },
@@ -23,7 +25,10 @@ vi.mock("@/schema", async () => {
       from: () => ({
         orderBy: () => ({}),
         groupBy: () => ({ orderBy: () => ({}) }),
-        where: () => Promise.resolve(mocks.unpricedRows),
+        where: (clause: unknown) => {
+          mocks.whereClauses.push(clause);
+          return Promise.resolve(mocks.unpricedRows);
+        },
       }),
     }),
     update: () => ({
@@ -87,11 +92,21 @@ const base = {
 describe("getUsageProfile", () => {
   beforeEach(() => {
     mocks.batchResult = [[], [], []];
+    mocks.whereClauses = [];
     vi.spyOn(console, "warn").mockImplementation(() => {});
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+  });
+
+  it("should load pricing only for providers that have usage", async () => {
+    await getUsageProfile();
+
+    const { sql } = new PgDialect().sqlToQuery(mocks.whereClauses[0] as never);
+    expect(sql).toBe(
+      '"model"."provider" in (select distinct "token_usage"."provider" from "token_usage")',
+    );
   });
 
   it("should return an empty profile when there are no rows", async () => {
