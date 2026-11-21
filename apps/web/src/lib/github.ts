@@ -65,7 +65,7 @@ export const getGitHubPinnedRepositories = async (): Promise<
   PinnedRepository[]
 > => {
   "use cache";
-  cacheLife("hours");
+  cacheLife("max");
   cacheTag("github:pinned");
 
   const { data } = await gqlClient.query<GetPinnedRepositoriesResult>({
@@ -98,7 +98,7 @@ export const getGitHubPinnedRepositories = async (): Promise<
 
 export const getGitHubContributions = async (): Promise<GitHubProfile> => {
   "use cache";
-  cacheLife("hours");
+  cacheLife("max");
   cacheTag("github:contributions");
 
   const { data } = await gqlClient.query({
@@ -153,9 +153,9 @@ const fetchCommitsForYear = async (year: number): Promise<number> =>
     )
     .catch(() => 0);
 
-// A finished year's commit count never changes, so cache it forever. This keeps
-// the daily refresh of the total down to one live request instead of one per
-// year since 2014.
+// A finished year's commit count never changes, so it is cached separately from
+// the current year. This keeps each refresh of the total down to one live
+// request instead of one per year since 2014.
 const getCommitsForClosedYear = async (year: number): Promise<number> => {
   "use cache";
   cacheLife("max");
@@ -166,7 +166,7 @@ const getCommitsForClosedYear = async (year: number): Promise<number> => {
 
 const getCommitsForCurrentYear = async (year: number): Promise<number> => {
   "use cache";
-  cacheLife("days");
+  cacheLife("max");
   cacheTag(`github:commits:${year}`);
 
   return fetchCommitsForYear(year);
@@ -174,7 +174,7 @@ const getCommitsForCurrentYear = async (year: number): Promise<number> => {
 
 export const getGitHubTotalCommits = async (): Promise<number> => {
   "use cache";
-  cacheLife("days");
+  cacheLife("max");
   cacheTag("github:commits:total");
 
   const START_YEAR = 2014; // account created 2014-12-29
@@ -197,7 +197,7 @@ export const getGitHubTotalCommits = async (): Promise<number> => {
 
 export const getGitHubFollowers = async (): Promise<number> => {
   "use cache";
-  cacheLife("hours");
+  cacheLife("max");
   cacheTag("github:followers");
 
   try {
@@ -213,7 +213,7 @@ export const getGitHubFollowers = async (): Promise<number> => {
 
 export const getGitHubStars = async (): Promise<number> => {
   "use cache";
-  cacheLife("days");
+  cacheLife("max");
   cacheTag("github:stars");
 
   try {

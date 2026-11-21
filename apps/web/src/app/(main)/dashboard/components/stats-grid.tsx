@@ -46,7 +46,8 @@ export function StatsGridFallback() {
 
 async function StatsGridContent() {
   "use cache";
-  cacheLife("hours");
+  // Daily, for the PostHog visit total; the GitHub stats inside cache longer.
+  cacheLife("days");
 
   const [totalVisits, followers, stars, contributions] = await Promise.all([
     getTotalVisits(),
